@@ -6,16 +6,18 @@ SRCS		=	main.c				\
 SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))
 OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.c=.o))
 DEPS		=	$(OBJS:.o=.d)
-CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH)
-LDFLAGS		=	
+CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) -g3 $(COMMONFLAGS)
+COMMONFLAGS	=	-fsanitize=address
+LDFLAGS		=	$(COMMONFLAGS)
 INCLUDEPATH	=	./include/
 FSANITIZE	=	-fsanitize=address
 CC			=	gcc
 RM			=	rm -Rf
 
--include	$(DEPS)
 
 all:	$(NAME)
+
+-include	$(DEPS)
 
 $(OBJSPATH)%.o:	$(SRCSPATH)%.c
 	@mkdir -p $(@D)
@@ -41,6 +43,9 @@ debug:		$(NAME)
 
 tag:
 	ctags	$(SRCS)
+
+run:		$(NAME)
+			./$(NAME)
 
 .SILENT:	clean fclean tag
 .PHONY:		all clean fclean re debug tag
