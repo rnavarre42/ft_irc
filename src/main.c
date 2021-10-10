@@ -34,17 +34,17 @@ ssize_t	send_to(t_client *client, char *data, ...)
 	return (ret);
 }
 
-int	get_max_fd(t_client *clients)
+int	get_highest_fd(t_client *clients)
 {
-	int	max_fd;
+	int	highest_fd;
 
-	max_fd = clients[0].fd;
+	highest_fd = clients[0].fd;
 	for (int i = 1; i < MAXCLIENTS; i++)
 	{
-		if (max_fd < clients[i].fd)
-			max_fd = clients[i].fd;
+		if (highest_fd < clients[i].fd)
+			highest_fd = clients[i].fd;
 	}
-	return (max_fd);
+	return (highest_fd);
 }
 
 t_server	*init_ircserver(char *ip, int port, int timeout)
@@ -98,7 +98,7 @@ void		bind_ircserver(t_server *ircserver)
 int	select_ircserver(t_server *ircserver)
 {
 	memcpy(&ircserver->cset, &ircserver->set, FD_SETSIZE / 8);
-	ircserver->last_fd = get_max_fd(ircserver->clients);
+	ircserver->last_fd = get_highest_fd(ircserver->clients);
 	if (ircserver->last_fd < ircserver->fd)
 		ircserver->last_fd = ircserver->fd;
 	ircserver->timeout.tv_sec = ircserver->selecttimeout;
@@ -119,6 +119,37 @@ t_server	*start_ircserver(char *ip, int port, int timeout)
 	}
 	bind_ircserver(ircserver);
 	return (ircserver);
+}
+
+t_client	*client_free_slot(t_ircserver *ircserver)
+{
+	for (int i = 0; i < MAXCLIENTS; i++)
+	{
+		if (!ircserver->clients[i].fd)
+			return (ircserver->clients + i);
+	}
+	return (NULL);
+}
+
+t_client	*accept_ircserver(t_ircserver *ircserver)
+{
+	t_client	*client;
+	int			newfd;
+
+	client = client_free_slot(ircserver);
+	newfd = accept(ircserver->fd, (struct sockaddr *)&ircserver->address, (socklen_t *)&ircserver->addrlen);
+	if (newfd < 0)
+	{
+		perror("accept");
+		exit(EXIT_FAILURE);
+	}
+	if (!client)
+	{
+		send(newfd, "The server is full. Please, try again more later.\n\r", 51, 0);
+		close(newfd);
+	}
+	FD_SET(client->fd, &ircserver->set);
+	return (newfd);
 }
 
 int main(void)
@@ -172,29 +203,16 @@ int main(void)
 			}
 			if (FD_ISSET(ircserver->fd, &ircserver->cset))
 			{
-				client = ircserver->clients + ircserver->clients_count;
-				if ((client->fd = accept(ircserver->fd, (struct sockaddr *)&ircserver->address, (socklen_t *)&ircserver->addrlen)) < 0)
-				{
-					perror("accept");
-					exit(EXIT_FAILURE);
-				}
-				if (ircserver->clients_count < MAXCLIENTS)
-				{
-					FD_SET(client->fd, &ircserver->set);
-					client->logon_time = time(NULL);
-					send_to(client, HELLO_STRING);
-					printf("New connection. Hello message sent\n");
-					client->id = ircserver->last_id++;
-					send_to(client, "You are the connection #%i width fd %i in this server.\n\rYour logon time is %lu\n\r", client->id, client->fd, client->logon_time);
-					send_to(client, "To disconnect from server, press ctrl+c\n");
-					send_to(client, "server> ");
-					ircserver->clients_count++;
-				}
-				else
-				{
-					send_to(client, "The server is full. Please, try again more later.\n\r");
-					close(client->fd);
-				}
+				client = client_free_slot(ircserver);
+				client = accept_ircserver(ircserver);
+				client->logon_time = time(NULL);
+				send_to(client, HELLO_STRING);
+				printf("New connection. Hello message sent\n");
+				client->id = ircserver->last_id++;
+				send_to(client, "You are the connection #%i with fd %i in this server.\n\rYour logon time is %lu\n\r", client->id, client->fd, client->logon_time);
+				send_to(client, "To disconnect from server, press ctrl+c\n");
+				send_to(client, "server> ");
+				ircserver->clients_count++;
 			}
 		}
 	}
