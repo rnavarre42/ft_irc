@@ -4,23 +4,23 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 
-# define READBUFFER			1024
+# define BUFFERSIZE			1024
 
 # define SELECTTIMEOUT		1
 # define NICKLEN			40
 # define REALNAME			20
 # define SERVER_PORT 		6667
-# define MAXCLIENTS			10
+# define MAXCLIENTS			3
 # define MAXCOMMANDS		4
 
 typedef struct	s_client
 {
-	uint64_t	id;
-	int			fd;
-	char		nick[NICKLEN];
-	char		realname[REALNAME];
-	uint64_t	logon_time;
-	uint64_t	idle;
+	unsigned long	id;
+	int				fd;
+	char			nick[NICKLEN];
+	char			realname[REALNAME];
+	uint64_t		logon_time;
+	uint64_t		idle;
 }				t_client;
 
 typedef struct  s_message
@@ -53,6 +53,7 @@ typedef	struct	s_server
 	int					clients_count;
 	char				*ip;
 	int					port;
+	_Bool				stop;
 	t_client			clients[MAXCLIENTS];
 	t_command			commands[MAXCOMMANDS];
 }				t_server;

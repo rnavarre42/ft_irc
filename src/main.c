@@ -26,7 +26,9 @@ ssize_t	send_to(t_client *client, char *data, ...)
 	char	*strp;
 	int		len;
 	ssize_t	ret;
-	
+
+	if (!client->fd)
+		return (-1);
 	va_start(ap, data);
 	len = vasprintf(&strp, data, ap);
 	ret = send(client->fd, strp, len, 0);
@@ -66,8 +68,9 @@ t_server	*init_ircserver(char *ip, int port, int timeout)
 	ircserver->port = port;
 	ircserver->selecttimeout = timeout;
 	ircserver->addrlen = sizeof(ircserver->address);
-	if (setsockopt(ircserver->fd, SOL_SOCKET, SO_REUSEADDR |
-			SO_REUSEPORT, &ircserver->opt, sizeof(ircserver->opt)))
+	if (setsockopt(ircserver->fd, SOL_SOCKET, SO_REUSEADDR
+			, &ircserver->opt, sizeof(ircserver->opt)))
+	//		| SO_REUSEPORT <-- mac compatibility
 	{
 		perror("setsockopt");
 		exit(EXIT_FAILURE);
@@ -111,6 +114,7 @@ t_server	*start_ircserver(char *ip, int port, int timeout)
 {
 	t_server *ircserver;
 
+	signal(SIGPIPE, SIG_IGN);
 	ircserver = init_ircserver(ip, port, timeout);
 	if (!ircserver)
 	{
@@ -118,86 +122,12 @@ t_server	*start_ircserver(char *ip, int port, int timeout)
 		exit(EXIT_FAILURE);
 	}
 	bind_ircserver(ircserver);
+	loop_ircserver(ircserver);
 	return (ircserver);
 }
 
 int main(void)
 {
-	int			size;
-	char		buffer[READBUFFER] = {0};
-	int 		rv;
-	t_server	*ircserver;
-	t_client	*client;
-
-	ircserver = start_ircserver("0.0.0.0", 6667, SELECTTIMEOUT);
 	printf("Waiting connect clients...\n");
-	while (1)
-	{
-		rv = select_ircserver(ircserver);
-		if (rv == -1)
-		{
-			perror("select");
-			exit(EXIT_FAILURE);
-		}
-		else if (rv == 0)
-		{
-			//check_idle(ircserver);
-			//check idle
-			//check ping timeout
-			//check new connection timeout
-//			printf("timeout occurred (20 seconds)\n");
-//			return (1);
-		}
-		else
-		{
-			for (int i = 0; i < MAXCLIENTS; i++)
-			{
-				client = ircserver->clients + i;
-				if (client->fd && FD_ISSET(client->fd, &ircserver->cset))
-				{
-					send_to(client, "server> ");
-					size = read(client->fd, buffer, READBUFFER);
-					buffer[size] = 0;
-					if (telnet_ctrlc(buffer))
-					{
-						printf("Client #%lu close connection\n", client->id);
-						close(client->fd);
-						FD_CLR(client->fd, &ircserver->set);
-						client->fd = 0;
-						ircserver->clients_count--;
-					}
-					else
-						printf("#%lu> %s", client->id, buffer);
-				}
-			}
-			if (FD_ISSET(ircserver->fd, &ircserver->cset))
-			{
-				client = ircserver->clients + ircserver->clients_count;
-				if ((client->fd = accept(ircserver->fd, (struct sockaddr *)&ircserver->address, (socklen_t *)&ircserver->addrlen)) < 0)
-				{
-					perror("accept");
-					exit(EXIT_FAILURE);
-				}
-				if (ircserver->clients_count < MAXCLIENTS)
-				{
-					FD_SET(client->fd, &ircserver->set);
-					client->logon_time = time(NULL);
-					send_to(client, HELLO_STRING);
-					printf("New connection. Hello message sent\n");
-					client->id = ircserver->last_id++;
-					send_to(client, "You are the connection #%i width fd %i in this server.\n\rYour logon time is %lu\n\r", client->id, client->fd, client->logon_time);
-					send_to(client, "To disconnect from server, press ctrl+c\n");
-					send_to(client, "server> ");
-					ircserver->clients_count++;
-				}
-				else
-				{
-					send_to(client, "The server is full. Please, try again more later.\n\r");
-					close(client->fd);
-				}
-			}
-		}
-	}
-	free(ircserver);
-	return (EXIT_SUCCESS);
+	start_ircserver("0.0.0.0", 6667, SELECTTIMEOUT);
 }
