@@ -9,7 +9,8 @@ void	fill_commands(t_command *commands)
 }
 
 void	usr_quit(t_server *server, t_client *client, t_message *msg)
-{		
+{
+		
 }
 
 void	usr_connect(t_server *server, t_client *client, t_message *msg)
