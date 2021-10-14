@@ -3,6 +3,7 @@
 
 # include <sys/socket.h>
 # include <netinet/in.h>
+# include <sys/time.h>
 
 # define BUFFERSIZE			1024
 
@@ -25,22 +26,24 @@ typedef struct	s_client
 	uint64_t		idle;
 }				t_client;
 
-typedef struct  s_message
-{
-	char		*name;
-	void		*source;
-	void		*target;
-	char		**argv;
-	char		*msg;
-}				t_message;
-
 struct s_server;
+struct s_message;
 
 typedef struct	s_command
 {
 	char	*name;
-	void	(*exec)(struct s_server *server, t_client *client, t_message *msg);
+	void	(*exec)(struct s_server *server, t_client *client, struct s_message *msg);
 }				t_command;
+
+typedef struct  s_message
+{
+	char		*mask;
+	t_client	*source;
+	t_client	*target;
+	char		*argv[16];
+	char		*msg;
+	t_command	*cmd;
+}				t_message;
 
 typedef	struct	s_server
 {
@@ -81,6 +84,8 @@ t_server	*singleton_server(void);
 void		disconnect_client(t_server *server, t_client *client);
 void		disconnect_all(t_server *server, char *msg);
 t_message	*build_message(t_server *server, t_client *client, char *data);
+void		print_message(t_message *message);
+void		fill_commands(t_command *commands);
 
 void 	usr_quit(t_server *server, t_client *client, t_message *msg);
 void 	usr_connect(t_server *server, t_client *client, t_message *msg);

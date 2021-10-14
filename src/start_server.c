@@ -12,7 +12,7 @@ void	signal_handler(int signal)
 	{
 		server = singleton_server();
 		printf("Disconnecting clients...\n");
-		disconnect_all(server, "Shutodn server. Please, reconnect to another server.");
+		disconnect_all(server, "Shutdown server. Please, reconnect to another server.");
 		exit(EXIT_SUCCESS);
 	}
 }
@@ -24,6 +24,7 @@ t_server	*start_server(char *ip, int port, int timeout)
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, signal_handler);
 	server = init_server(ip, port, timeout);
+	fill_commands(server->commands);
 	if (!server)
 	{
 		perror("init_server");

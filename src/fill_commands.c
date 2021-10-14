@@ -10,18 +10,29 @@ void	fill_commands(t_command *commands)
 
 void	usr_quit(t_server *server, t_client *client, t_message *msg)
 {
-		
+	(void)server;
+	(void)client;
+	(void)msg;	
 }
 
 void	usr_connect(t_server *server, t_client *client, t_message *msg)
 {
+	(void)server;
+	(void)client;
+	(void)msg;	
 }
 
 void	usr_user(t_server *server, t_client *client, t_message *msg)
 {
+	(void)server;
+	(void)client;
+	(void)msg;	
 }
 
 void	usr_nick(t_server *server, t_client *client, t_message *msg)
 {
+	(void)server;
+	(void)client;
+	(void)msg;	
 }
 

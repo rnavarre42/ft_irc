@@ -7,6 +7,7 @@ SRCS		=	accept_client.c				\
 				get_client_slot.c			\
 				disconnect_client.c			\
 				disconnect_all.c			\
+				fill_commands.c				\
 				get_highest_fd.c			\
 				init_server.c				\
 				loop_server.c				\
@@ -20,6 +21,7 @@ SRCS		=	accept_client.c				\
 				start_server.c				\
 				singleton_server.c			\
 				build_message.c				\
+				print_message.c				\
 
 
 SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))
