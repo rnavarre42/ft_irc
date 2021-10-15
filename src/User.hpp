@@ -29,7 +29,7 @@ class User
 		void		setAwayMsg(std::string value);
 		std::string const	&getAwayMsg(void) const;
 
-		std::map<std::string, Channel *> &getChannels(void);
+		std::map<std::string, Channel *> &getChannelMap(void);
 		Server const	&getServer(void) const;
 
 		void 			setAwayTime(time_t value);
@@ -65,7 +65,7 @@ class User
 		std::string							real;
 		std::string 						awayMsg;
 		Server								&server;
-		std::map<std::string, Channel *>	channels;
+		std::map<std::string, Channel *>	channelMap;
 		time_t								signTime;
 		bool								registered;
 		time_t								awayTime;

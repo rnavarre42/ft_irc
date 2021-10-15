@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <ctime>
 #include <netinet/in.h>
 #include <poll.h>
@@ -22,54 +23,64 @@
 # define MAXKICK		255
 # define MAXREAL		100
 
-# define MAXUSERS		1
+# define BUFFERSIZE		1024
+# define MAXUSERS		3
 # define MAXLISTEN		5
+
 class User;
 class Channel;
 
 class Server
 {
 	public:
-		Server(std::string ip, int port);
 		~Server(void);
 
+		static void		signalHandler(int sig);
 		static Server	&getInstance(void);
 		static Server	&getInstance(std::string ip, int port);
 		void	start(void);
 		void	sendTo(std::string msg);
 		void	quit(std::string msg);
+		int		count(void);
 
-		class ServerFullException : std::exception
+		struct ServerFullException : public std::exception
 		{
 			virtual const char	*what(void) const throw();
 		};
 	private:
+		Server(std::string ip, int port);
 		Server(void);
 
-		std::string							ip;
-		int									port;
-		int									fd;
-		std::map<std::string, User *>		users;
-		std::map<std::string, Channel *>	channels;
-		bool								stop;
-		struct sockaddr_in					address;
-		int									addrlen;
-		int									opt;
-		int									timeout;
-		struct pollfd						pollfds[MAXUSERS + 1];
-		static Server						*instance;
+		std::string	ip;
+		int			fd;
+		int			port;
+		int			opt;
+		int			addrlen;
+		int			timeout;
+		
+		bool		stop;
 
+		struct sockaddr_in	address;
+		struct pollfd		pollfds[MAXUSERS + 1];
+		static Server		*instance;
+
+		std::vector<User *>					userVector;
+		std::map<int, User *>				fdMap;
+		std::map<std::string, User *>		userMap;
+		std::map<std::string, Channel *>	channelMap;
 
 		int		findFreePollIndex(void);
+		int		_poll(void);
+		int		checkUserConnection(void);
+
+		void	checkUserInput(void);
 		void	closeClients(std::string msg);
-//		void	signalHandler(int sig);
 		void	loop(void);
 		void	initSocket(void);
 		void	_bind(void);
-		int		_poll(void);
 		void	_listen(void);
-		int		checkUserConnection(void);
-		void	checkUserInput(void);
+		void	_addUser(User &user);
+		void	_delUser(User &user);
 		User	&_accept();
 };
 

@@ -14,7 +14,7 @@ class Channel
 		~Channel(void);
 
 		std::string const					&getName(void) const;
-		std::map<std::string, User *> const	&getUsers(void) const;
+		std::map<std::string, User *> const	&getUserMap(void) const;
 
 		void							setOwner(std::string value);
 		std::string const				&getOwner(void) const;
@@ -37,7 +37,7 @@ class Channel
 		std::string						owner;
 		std::string						topicOwn;
 		time_t							topicTime;
-		std::map<std::string, User *>	users;
+		std::map<std::string, User *>	userMap;
 
 		Channel(void);
 };

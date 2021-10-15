@@ -11,7 +11,7 @@ _Bool	telnet_ctrlc(char *buffer)
 */
 int main(void)
 {
-	Server	server("0.0.0.0", 6667);
+	Server	server = Server::getInstance("0.0.0.0", 6667);
 
 	std::cout << "Waiting connect clients..." << std::endl;
 	server.start();

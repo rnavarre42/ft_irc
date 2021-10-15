@@ -1,26 +1,31 @@
 #include <string>
 #include <cstring>
 #include <iostream>
+#include <algorithm>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <ctime>
 #include <exception>
+#include <csignal>
+#include <cstdlib>
 #include "Server.hpp"
 #include "User.hpp"
 
-Server	*Server::instance = nullptr;
+Server	*Server::instance = NULL;
 
-void	signalHandler(int sig)
+void	Server::signalHandler(int sig)
 {
-	Server server = Server::getInstance();
+//	Server &server = Server::getInstance();
 
+	std::cerr << "server = " << std::hex << &Server::instance << std::endl;
+	std::cerr << "server has " << Server::instance->count() << std::endl;
 	if (sig == SIGINT)
 	{
 //		log(LOG_CONNECT, "Disconnecting clients...");
-		server.quit("Shutdown. Please, reconnect to another server.");
 	}
+	Server::instance->quit("Shutdown. Please, reconnect to another server.");
 }
 
 const char	*Server::ServerFullException::what(void) const throw()
@@ -32,7 +37,7 @@ Server::Server(std::string ip, int port)
 	: ip(ip), port(port)
 {
 	signal(SIGPIPE, SIG_IGN);
-	signal(SIGINT, signalHandler);
+	signal(SIGINT, Server::signalHandler);
 	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 1));
 	this->stop = false;
 	this->initSocket();
@@ -45,28 +50,43 @@ Server::~Server(void)
 
 Server	&Server::getInstance(void)
 {
+	std::cerr << "getInstance = " << std::hex << Server::instance << std::endl;
 	return (*Server::instance);
 }
 Server	&Server::getInstance(std::string ip, int port)
 {
-	if (Server::instance == nullptr)
+	if (Server::instance == NULL)
 		Server::instance = new Server(ip, port);
+	std::cerr << "getInstance = " << std::hex << Server::instance << std::endl;
 	return (*Server::instance);
 }
 
+int		Server::count(void)
+{
+	return (this->userVector.size());
+}
 
 void	Server::sendTo(std::string msg)
-{	
-	for (std::map<std::string, User *>::iterator it = users.begin(); it != users.end(); it++)
-		it->second->sendTo(msg);
+{
+	for (size_t i = 0; i < userVector.size(); i++)
+		userVector[i]->sendTo(msg);
+	
+//	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
+//		it->sendTo(msg);
 }
 
 void	Server::quit(std::string msg)
 {
-	for (std::map<std::string, User *>::iterator it = users.begin(); it != users.end(); it++)
+//	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
+//	{
+//		it->sendTo(msg);
+//		it->disconnect();
+//	}
+	std::cerr << "que nos vamos con " << this->userVector.size() << " clientes dentro" << std::endl;
+	for (size_t i = 0; i < userVector.size(); i++)
 	{
-		it->second->sendTo(msg);
-		it->second->disconnect();
+		userVector[i]->sendTo(msg);
+		userVector[i]->disconnect();
 	}
 	this->stop = true;
 }
@@ -115,11 +135,11 @@ User	&Server::_accept(void)
 		std::cerr << "Server::accept function accept() failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	if (this->users.size() == MAXUSERS)
+	if (this->userVector.size() == MAXUSERS)
 	{
 		send(newFd, "The server is full. Please, try again more later.\r\n", 52, 0);
 		close(newFd);
-		throw std::exception();
+		throw Server::ServerFullException();
 	}
 	user = new User(newFd, *this);
 	user->setPollIndex(findFreePollIndex());
@@ -157,38 +177,73 @@ int		Server::_poll(void)
 	return (poll(this->pollfds, MAXUSERS + 1, this->timeout));
 }
 
+void	Server::_addUser(User &user)
+{
+	this->userVector.push_back(&user);
+	this->fdMap[user.getFd()] = &user;
+	std::cerr << "Server::_addUser() userVector.size() = " << this->userVector.size() << std::endl;
+}
+
+void	Server::_delUser(User &user)
+{
+	if (user.isRegistered())
+		this->userMap.erase(user.getNick());
+	this->fdMap.erase(user.getFd());
+	this->pollfds[user.getPollIndex()].fd = 0;
+	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
+	std::cerr << "Server::_delUser() userVector.size() = " << this->userVector.size() << std::endl;
+}
+
 int	Server::checkUserConnection(void)
 {
 	User	*user;
 
 	if (this->pollfds[0].revents & POLLIN)
 	{
-		user = &this->_accept();
-		user->setSignTime(time(NULL));
-		if (user->sendTo("Hello\r\n") <= 0)
+		try
 		{
-			std::cerr << "Server::checkUserConnection function user->sendTo() failed" << std::endl;
-			exit(EXIT_FAILURE);
+			user = &this->_accept();
+			user->setSignTime(time(NULL));
+			if (user->sendTo("Hello\r\n") <= 0)
+			{
+				std::cerr << "Server::checkUserConnection function user->sendTo() failed" << std::endl;
+				exit(EXIT_FAILURE);
+			}
+			this->_addUser(*user);
+			this->sendTo("New user is connected.\r\n");
+			return (1);
 		}
-		this->sendTo("New user is connected.\r\n");
-		return (1);
+		catch (const Server::ServerFullException &e)
+		{
+			std::cerr << e.what() << std::endl;
+		}
 	}
 	return (0);
-	// TODO hay que crear una lista de usuarios no registrados para verificar que no se le agote el tiempo
-	// antes de ser expulsados por no identificarse.
-//	this->users[user.getNick()] = user;
 }
 
 void	Server::checkUserInput(void)
 {
-//	int		size;
+	int		size;
+	char	buffer[BUFFERSIZE + 1];
+	User	*user;
 
 	for (int i = 1; i < MAXUSERS + 1; i++)
 	{
 		if (this->pollfds[i].revents & POLLIN)
 		{
+			user = this->fdMap[pollfds[i].fd];
 			std::cerr << "hay inforacion de " << i << std::endl;
-			size = recv(
+			size = recv(pollfds[i].fd, buffer, BUFFERSIZE, 0);
+			buffer[size] = '\0';
+			if (size <= 0)
+			{
+				this->_delUser(*user);
+				user->disconnect();
+			}
+			else
+			{
+				this->sendTo(user->getNick() + "> " + buffer);
+			}
 		}
 	}
 }
@@ -208,7 +263,7 @@ void	Server::loop(void)
 		else if (rv == 0)
 		{
 			//timeout
-			//check idle
+			//check idle to send ping
 			//check ping timeout
 			//check register timeout
 		}

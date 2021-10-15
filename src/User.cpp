@@ -10,7 +10,9 @@ User::User(int fd, Server &server) : server(server), fd(fd)
 {}
 
 User::~User(void)
-{}
+{
+	std::cerr << "User destroyed" << std::endl;
+}
 
 void	User::setHost(std::string value)
 {
@@ -102,9 +104,9 @@ bool const	&User::isRegistered(void) const
 	return(this->registered);
 }
 
-std::map<std::string, Channel *> &User::getChannels(void)
+std::map<std::string, Channel *> &User::getChannelMap(void)
 {
-	return (this->channels);
+	return (this->channelMap);
 }
 
 Server const	&User::getServer(void) const
@@ -125,9 +127,10 @@ ssize_t	User::sendTo(std::string msg)
 void	User::disconnect(void)
 {
 	if (this->isRegistered())
-		std::cout << "Client <" << this->nick << "> close connection" << std::endl;
+		std::cout << "Client <" << this->nick << "> disconnected" << std::endl;
 	else
-		std::cout << "Client <anonymous> close connection" << std::endl;
+		std::cout << "Client <anonymous> disconnected" << std::endl;
 	close(this->fd);
+	this->channelMap.clear();
 	this->fd = 0;
 }
