@@ -22,6 +22,7 @@ SRCS		=	accept_client.c				\
 				singleton_server.c			\
 				build_message.c				\
 				print_message.c				\
+				poll_server.c
 
 
 SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))

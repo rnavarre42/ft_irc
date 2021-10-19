@@ -8,7 +8,8 @@ void	loop_server(t_server *server)
 
 	while (!server->stop)
 	{
-		rv = select_server(server);
+		rv = poll_server(server);
+//		rv = select_server(server);
 		if (rv == -1)
 		{
 			perror("select");
@@ -22,9 +23,9 @@ void	loop_server(t_server *server)
 		}
 		else
 		{
-			read_console(server);
+//			read_console(server);
 			read_clients(server);
-			check_client_connection(server);
+//			check_client_connection(server);
 		}
 	}
 }
