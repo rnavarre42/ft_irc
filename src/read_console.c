@@ -8,7 +8,7 @@ void	read_console(t_server *server)
 	char	buffer[BUFFERSIZE];
 	ssize_t	size;	
 
-	if (FD_ISSET(0, &server->cset))
+	if (server->pollfds[0].revents & POLLIN)
 	{
 		size = read(0, buffer, BUFFERSIZE);
 		if (size == -1)

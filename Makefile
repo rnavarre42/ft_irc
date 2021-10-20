@@ -9,6 +9,7 @@ SRCS		=	accept_client.c				\
 				disconnect_all.c			\
 				fill_commands.c				\
 				get_highest_fd.c			\
+				get_poll_slot.c				\
 				init_server.c				\
 				loop_server.c				\
 				main.c						\
@@ -22,6 +23,7 @@ SRCS		=	accept_client.c				\
 				singleton_server.c			\
 				build_message.c				\
 				print_message.c				\
+				poll_server.c
 
 
 SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))

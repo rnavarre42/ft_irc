@@ -4,6 +4,7 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <sys/time.h>
+# include <poll.h>
 
 # define BUFFERSIZE			1024
 
@@ -20,6 +21,7 @@ typedef struct	s_client
 {
 	unsigned long	id;
 	int				fd;
+	int				poll_index;
 	char			nick[NICKLEN];
 	char			realname[REALNAME];
 	uint64_t		logon_time;
@@ -53,6 +55,7 @@ typedef	struct	s_server
 	int					opt;
 	struct sockaddr_in	address;
 	int					addrlen;
+	struct pollfd		pollfds[MAXCLIENTS + 2];
 	fd_set				set;
 	fd_set				cset;
 	struct timeval		timeout;
@@ -66,15 +69,17 @@ typedef	struct	s_server
 }				t_server;
 
 t_client	*accept_client(t_server *server);
-void		check_client_connection(t_server *server);
+int			check_client_connection(t_server *server);
 void		bind_server(t_server *server);
 t_client	*get_client_slot(t_server *server);
+int			get_poll_slot(t_server *server);
 int			get_highest_fd(t_client *clients);
 t_server	*init_server(char *ip, int port, int timeout);
 void		loop_server(t_server *server);
 void		read_clients(t_server *server);
 void		read_console(t_server *server);
 int			select_server(t_server *server);
+int			poll_server(t_server *server); //Poll implementation
 ssize_t		send_to(t_client *client, char *data, ...);
 ssize_t		send_all(t_server *server, char *data, ...);
 ssize_t		send_except(t_server *server, t_client *sender, char *data, ...);
