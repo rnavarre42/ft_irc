@@ -9,6 +9,7 @@ void	loop_server(t_server *server)
 	while (!server->stop)
 	{
 		rv = poll_server(server);
+		printf("revents = %d\n", server->pollfds[1].revents);
 //		rv = select_server(server);
 		if (rv == -1)
 		{
@@ -23,9 +24,9 @@ void	loop_server(t_server *server)
 		}
 		else
 		{
-//			read_console(server);
+			read_console(server);
 			read_clients(server);
-//			check_client_connection(server);
+			check_client_connection(server);
 		}
 	}
 }

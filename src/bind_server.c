@@ -13,6 +13,7 @@ void		bind_server(t_server *server)
 		perror("bind failed");
 		exit(EXIT_FAILURE);
 	}
+	printf("server->fd = %d\n", server->fd);
 	if (listen(server->fd, 3) < 0)
 	{
 		perror("listen failed");

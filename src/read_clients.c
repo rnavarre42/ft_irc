@@ -12,9 +12,8 @@ void	read_clients(t_server *server)
 	for (int i = 0; i < MAXCLIENTS; i++)
 	{
 		client = server->clients + i;
-		printf("revents = %d\n", server->pollfds[i].revents);
 		printf("client fd = %d\n", client->fd);
-		if (client->fd && (server->pollfds[i].revents & POLLIN))//FD_ISSET(client->fd, &server->cset))
+		if (FD_ISSET(client->fd, &server->cset))
 		{
 			size = read(client->fd, buffer, BUFFERSIZE);
 			if (size == 0 || telnet_ctrlc(buffer))
