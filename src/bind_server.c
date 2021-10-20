@@ -13,13 +13,13 @@ void		bind_server(t_server *server)
 		perror("bind failed");
 		exit(EXIT_FAILURE);
 	}
-	printf("server->fd = %d\n", server->fd);
 	if (listen(server->fd, 3) < 0)
 	{
 		perror("listen failed");
 		exit(EXIT_FAILURE);
 	}
-	FD_ZERO(&server->set);
-	FD_SET(server->fd, &server->set);
-	FD_SET(0, &server->set);
+	server->pollfds[0].fd = 0;
+	server->pollfds[0].events = POLLIN; 
+	server->pollfds[1].fd = server->fd;
+	server->pollfds[1].events = POLLIN; 
 }

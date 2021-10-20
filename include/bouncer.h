@@ -21,6 +21,7 @@ typedef struct	s_client
 {
 	unsigned long	id;
 	int				fd;
+	int				poll_index;
 	char			nick[NICKLEN];
 	char			realname[REALNAME];
 	uint64_t		logon_time;
@@ -54,7 +55,7 @@ typedef	struct	s_server
 	int					opt;
 	struct sockaddr_in	address;
 	int					addrlen;
-	struct pollfd		pollfds[MAXCLIENTS];
+	struct pollfd		pollfds[MAXCLIENTS + 2];
 	fd_set				set;
 	fd_set				cset;
 	struct timeval		timeout;
@@ -68,9 +69,10 @@ typedef	struct	s_server
 }				t_server;
 
 t_client	*accept_client(t_server *server);
-void		check_client_connection(t_server *server);
+int			check_client_connection(t_server *server);
 void		bind_server(t_server *server);
 t_client	*get_client_slot(t_server *server);
+int			get_poll_slot(t_server *server);
 int			get_highest_fd(t_client *clients);
 t_server	*init_server(char *ip, int port, int timeout);
 void		loop_server(t_server *server);

@@ -22,6 +22,9 @@ t_client	*accept_client(t_server *server)
 		return (NULL);
 	}
 	client->fd = newfd;
-	FD_SET(client->fd, &server->set);
+	client->poll_index = get_poll_slot(server);
+//	FD_SET(client->fd, &server->set);
+	server->pollfds[client->poll_index].fd = client->fd;
+	server->pollfds[client->poll_index].events = POLLIN; 
 	return (client);
 }
