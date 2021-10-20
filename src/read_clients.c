@@ -14,7 +14,6 @@ void	read_clients(t_server *server)
 		client = server->clients + i;
 		if (server->pollfds[i + 2].revents & POLLIN)
 		{
-			printf("i = %i max = %i\n", i, MAXCLIENTS);
 			size = read(client->fd, buffer, BUFFERSIZE);
 			if (size == 0 || telnet_ctrlc(buffer))
 				disconnect_client(server, client);
