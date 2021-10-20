@@ -1,0 +1,31 @@
+entrando al canal:
+client> JOIN #channel
+
+client> :tomas!ident@host JOIN #channel
+
+El servidor advierte al reto de usuarios que otro está entrando.
+
+server> :tomas!ident@host JOIN #channel
+server> :tomas!ident@host PART #channel
+server> :tomas!ident@host JOIN #channel
+
+
+server> :server_name KICK #channel
+server> :server_name MODE #channel +oooo-ooo+ooo-ooo tomas fulanito menganito futanito
+
+struct message
+{
+	char *source	-- puede ser un servidor o un cliente
+	char *target	-- puede ser un cliente o un canal
+	cmd				-- MODE, NICK, KICK...
+	argc			-- numero de argumentos
+	argv[15]		-- !!
+
+	argv[0] = #channel
+	argv[1] = +oooo-ooo+ooo...
+	argv[2] = tomas ...
+}
+
+si esta estructura fuese para enviar, source ya tendría información.
+
+si fuese para leer, entonces source podria contener un prefijo o nada.
