@@ -11,7 +11,7 @@ SRCS		=	accept_client.c				\
 				get_highest_fd.c			\
 				init_server.c				\
 				loop_server.c				\
-				main.c						\
+				main.cpp					\
 				read_clients.c				\
 				read_console.c				\
 				select_server.c				\
@@ -32,7 +32,7 @@ COMMONFLAGS	=
 LDFLAGS		=	$(COMMONFLAGS)
 INCLUDEPATH	=	./include/
 FSANITIZE	=	-fsanitize=address
-CC			=	gcc
+CC			=	g++
 RM			=	rm -Rf
 
 
