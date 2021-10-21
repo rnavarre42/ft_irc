@@ -29,3 +29,18 @@ struct message
 si esta estructura fuese para enviar, source ya tendría información.
 
 si fuese para leer, entonces source podria contener un prefijo o nada.
+
+9 bytes :longitud máxima del nick de cada cliente 
+
+Todos los servidores deben de tener:
+
+	*	Nombre real del host donde se conecta el cliente
+	*	Nombre de usuario del cliente en ese host
+	*	Servidor al que se conecta el cliente
+
+Operadores (cliente especial) : SQUIT, CONNECT, KILL
+
+Nombre del canal:
+-	200 bytes
+-	empieza por # y &
+-	no contiene espacios en blanco, control G, ni comas
