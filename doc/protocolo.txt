@@ -44,3 +44,22 @@ Nombre del canal:
 -	200 bytes
 -	empieza por # y &
 -	no contiene espacios en blanco, control G, ni comas
+
+Se recomienda 10 canales máximo por usuario
+
+Operador del canal, chop o chanop
+
+Owner del canal :usuario que ha creado el canal
+
+@nickname(cuando se asocia a un canal)
+
+Comandos de los operadores de canal:
+-	KICK
+-	MODE
+-	INVITE
+-	TOPIC
+
+Único nick prefijo es el asociado al cliente registrado
+Si el prefijo no se encuentra en la base del servidor, el mensaje es ignorado selinciosamente
+
+Comando posible :irc command o 3 caracteres
