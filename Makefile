@@ -1,33 +1,15 @@
-NAME		=	irc_bouncer
+NAME		=	server
 SRCSPATH	=	src/
 OBJSPATH	=	obj/
-SRCS		=	accept_client.c				\
-				check_client_connection.c	\
-				bind_server.c				\
-				get_client_slot.c			\
-				disconnect_client.c			\
-				disconnect_all.c			\
-				fill_commands.c				\
-				get_highest_fd.c			\
-				init_server.c				\
-				loop_server.c				\
-				main.cpp					\
-				read_clients.c				\
-				read_console.c				\
-				select_server.c				\
-				send_to.c					\
-				send_all.c					\
-				send_except.c				\
-				start_server.c				\
-				singleton_server.c			\
-				build_message.c				\
-				print_message.c				\
-
+SRCS		=	main.cpp					\
+				Server.cpp					\
+				User.cpp					\
+				Channel.cpp					\
 
 SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))
-OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.c=.o))
+OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
 DEPS		=	$(OBJS:.o=.d)
-CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) -g3 $(COMMONFLAGS)
+CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) -g3 $(COMMONFLAGS) -std=c++98
 COMMONFLAGS	=	
 LDFLAGS		=	$(COMMONFLAGS)
 INCLUDEPATH	=	./include/
@@ -40,7 +22,7 @@ all:	$(NAME)
 
 -include	$(DEPS)
 
-$(OBJSPATH)%.o:	$(SRCSPATH)%.c
+$(OBJSPATH)%.o:	$(SRCSPATH)%.cpp
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 

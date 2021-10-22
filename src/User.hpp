@@ -12,43 +12,49 @@ class User
 		~User(void);
 
 		void		setHost(std::string value);
-		std::string &getHost(void) const;
+		std::string const	&getHost(void) const;
 
 		void		setIdent(std::string value);
-		std::string &getIdent(void) const;
+		std::string const	&getIdent(void) const;
 
 		void		setReal(std::string value);
-		std::string &getReal(void) const;
+		std::string const	&getReal(void) const;
 
-		void		setSignTime(time_t volue);
-		time_t 		&getSignTime(void) const;
+		void			setSignTime(time_t volue);
+		time_t const	&getSignTime(void) const;
 		
 		void		setNick(std::string value);
-		std::string	&getNick(void) const;
+		std::string const	&getNick(void) const;
 
 		void		setAwayMsg(std::string value);
-		std::string &getAwayMsg(void) const;
+		std::string const	&getAwayMsg(void) const;
 
-		std::map<std::string, Channel *>	&getChannels(void) const;
-		Server								&getServer(void) const;
+		std::map<std::string, Channel *> &getChannels(void);
+		Server const	&getServer(void) const;
 
-		void 	setAwayTime(time_t value);
-		time_t	&getAwayTime(void) const;
+		void 			setAwayTime(time_t value);
+		time_t const	&getAwayTime(void) const;
 
-		void 	setNextPing(time_t value);
-		time_t	&getNextPing(void) const;
+		void 			setNextPing(time_t value);
+		time_t const	&getNextPing(void) const;
 
-		void	setIdleTime(time_t value);
-		time_t	&getIdleTime(void) const;
+		void			setIdleTime(time_t value);
+		time_t const	&getIdleTime(void) const;
 
-		void	setRegistered(bool value);
-		bool	isRegistered(void);
+		void		setRegistered(bool value);
+		bool const	&isRegistered(void) const;
+
+		void		setPollIndex(int value);
+		int const	&getPollIndex(void) const;
+
+		void		setFd(int value);
+		int	const	&getFd(void) const;
 
 		bool	isAway(void);
 //		bool	isOper(void);
 
-		int		send(std::string msg);
-		void	disconnec(std::string msg);
+		ssize_t		sendTo(std::string msg);
+		void	disconnect(void);
 
 	private:
 		User(void);
@@ -65,7 +71,8 @@ class User
 		time_t								awayTime;
 		time_t								nextPing;
 		time_t								idleTime;
+		int									pollIndex;
 		int									fd;
-}
+};
 
 #endif

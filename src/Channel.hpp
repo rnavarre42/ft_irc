@@ -13,33 +13,33 @@ class Channel
 		Channel(std::string name);
 		~Channel(void);
 
-		std::string						&getName(void) const;
-		std::map<std::string, User *>	&getUsers(void) const;
+		std::string const					&getName(void) const;
+		std::map<std::string, User *> const	&getUsers(void) const;
 
-		void							setCreator(std::string value);
-		std::string						&getCreator(void) const;
+		void							setOwner(std::string value);
+		std::string const				&getOwner(void) const;
 	
 		void							setTopic(std::string value);
-		std::string						&getTopic(void) const;
+		std::string	const				&getTopic(void) const;
 		
 		void							setTopicOwn(std::string value);
-		std::string						&getTopicOwn(void) const;
+		std::string	const				&getTopicOwn(void) const;
 
 		void							setTopicTime(time_t value);
-		time_t							&getTopicTime(void) const;
+		time_t const					&getTopicTime(void) const;
 
-		void send(std::string msg);
+		void sendTo(std::string msg);
 		void join(User user);
 		void part(User user);
 	private:
 		std::string						name;
 		std::string						topic;
-		std::string						creator;
+		std::string						owner;
 		std::string						topicOwn;
 		time_t							topicTime;
 		std::map<std::string, User *>	users;
 
 		Channel(void);
-}
+};
 
 #endif

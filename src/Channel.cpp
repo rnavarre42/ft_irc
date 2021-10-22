@@ -10,90 +10,90 @@ Channel::Channel(std::string name) : name(name)
 Channel::Channel(void)
 {}
 
-std::string	&getName(void) const
+std::string	const &Channel::getName(void) const
 {
-	return (&this->name);
+	return (this->name);
 }
 
-std::map<std::string, User *> &getUsers(void) const
+std::map<std::string, User *> const	&Channel::getUsers(void) const
 {
-	return (&this->users);
+	return (this->users);
 }
 
-void setCreator(std::string value)
+void Channel::setOwner(std::string value)
 {
-	this->creator = value;
+	this->owner = value;
 }
 
-std::string &getCreator(void) const
+std::string const	&Channel::getOwner(void) const
 {
-	return (&this->creator);
+	return (this->owner);
 }
 
-void setTopic(std::string value)
+void Channel::setTopic(std::string value)
 {
 	this->topic = value;
 }
 
-std::string &getTopic(void) const
+std::string const	&Channel::getTopic(void) const
 {
-	return (&this->topic);
+	return (this->topic);
 }
 
-void setTopicOwn(std::string value)
+void Channel::setTopicOwn(std::string value)
 {
 	this->topicOwn = value;
 }
 
-std::string &getTopicOwn(void) const
+std::string const	&Channel::getTopicOwn(void) const
 {
-	return (&this->topicOwn);
+	return (this->topicOwn);
 }
 
-void setTopicTime(time_t value)
+void Channel::setTopicTime(time_t value)
 {
 	this->topicTime = value;
 }
 
-time_t &getTopicTime(void) const
+time_t const	&Channel::getTopicTime(void) const
 {
-	return (&this->topicTime);
+	return (this->topicTime);
 }
 
-void send(std::string msg)
+void Channel::sendTo(std::string msg)
 {
-	for (User user : this->users)
-		user.send(msg);
+	for (std::map<std::string, User *>::iterator it = this->users.begin(); it != this->users.end(); it++)
+		it->second->sendTo(msg);
 }
 
-void join(User user)
+void Channel::join(User user)
 {
 	std::map<std::string, User *>::iterator it;
 
-	it = users.find(user.nick);
-	if (it == users.end())
+	it = this->users.find(user.getNick());
+	if (it == this->users.end())
 	{
-		this->send(user.nick + " ha entrado al canal " + channel.name + "\r\n");
-		users.insert(user.name, user);
-		user.getChannels.insert(this->name, this);
-		user.send("Has entrado al canal " + channel.name + "\r\n");
+		this->sendTo(user.getNick() + " ha entrado al canal " + this->name + "\r\n");
+		this->users[user.getNick()] = &user;
+		user.getChannels()[this->name] = this;
+		user.sendTo("Has entrado al canal " + this->name + "\r\n");
 	}
 	else
-		user.send("Ya estas dentro de " + channel.name + "\r\n");
+		user.sendTo("Ya estas dentro de " + this->name + "\r\n");
 }
 
-void part(User user)
+void Channel::part(User user)
 {
 	std::map<std::string, User *>::iterator it;
 
-	it = users.find(user.nick);
-	if (it == users.end())
-		user.send("No estas dentro de " + channel.name + "\r\n");
+	it = this->users.find(user.getNick());
+	if (it == this->users.end())
+		user.sendTo("No estas dentro de " + this->name + "\r\n");
 	else
 	{
-		user.send("Has salido de " + channel.name + "\r\n");
-		users.rease(it);
-		user.getChannels.erase(this->name);
-		this->send(user.nick + " ha salido de " + channel.name + "\r\n");
+		user.sendTo("Has salido de " + this->name + "\r\n");
+		this->users.erase(it);
+		user.getChannels().erase(this->name);
+		this->sendTo(user.getNick() + " ha salido de " + this->name + "\r\n");
 	}
 }
