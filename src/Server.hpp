@@ -22,7 +22,7 @@
 # define MAXKICK		255
 # define MAXREAL		100
 
-# define MAXUSERS		5
+# define MAXUSERS		1
 # define MAXLISTEN		5
 class User;
 class Channel;
@@ -68,6 +68,8 @@ class Server
 		void	_bind(void);
 		int		_poll(void);
 		void	_listen(void);
+		int		checkUserConnection(void);
+		void	checkUserInput(void);
 		User	&_accept();
 };
 

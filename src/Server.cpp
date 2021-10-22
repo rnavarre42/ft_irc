@@ -1,9 +1,11 @@
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <ctime>
 #include <exception>
 #include "Server.hpp"
 #include "User.hpp"
@@ -31,6 +33,7 @@ Server::Server(std::string ip, int port)
 {
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, signalHandler);
+	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 1));
 	this->stop = false;
 	this->initSocket();
 	this->timeout = 1000;
@@ -95,7 +98,7 @@ int		Server::findFreePollIndex(void)
 {
 	for (int i = 1; i < MAXUSERS + 1; i++)
 	{
-		if (this->pollfds[i].fd == 0)			
+		if (this->pollfds[i].fd == 0)
 			return (i);
 	}
 	return (0);
@@ -120,6 +123,7 @@ User	&Server::_accept(void)
 	}
 	user = new User(newFd, *this);
 	user->setPollIndex(findFreePollIndex());
+	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
 	this->pollfds[user->getPollIndex()].fd = newFd;
 	this->pollfds[user->getPollIndex()].events = POLLIN;
 	return (*user);
@@ -153,6 +157,42 @@ int		Server::_poll(void)
 	return (poll(this->pollfds, MAXUSERS + 1, this->timeout));
 }
 
+int	Server::checkUserConnection(void)
+{
+	User	*user;
+
+	if (this->pollfds[0].revents & POLLIN)
+	{
+		user = &this->_accept();
+		user->setSignTime(time(NULL));
+		if (user->sendTo("Hello\r\n") <= 0)
+		{
+			std::cerr << "Server::checkUserConnection function user->sendTo() failed" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		this->sendTo("New user is connected.\r\n");
+		return (1);
+	}
+	return (0);
+	// TODO hay que crear una lista de usuarios no registrados para verificar que no se le agote el tiempo
+	// antes de ser expulsados por no identificarse.
+//	this->users[user.getNick()] = user;
+}
+
+void	Server::checkUserInput(void)
+{
+//	int		size;
+
+	for (int i = 1; i < MAXUSERS + 1; i++)
+	{
+		if (this->pollfds[i].revents & POLLIN)
+		{
+			std::cerr << "hay inforacion de " << i << std::endl;
+			size = recv(
+		}
+	}
+}
+
 void	Server::loop(void)
 {
 	int	rv;
@@ -174,8 +214,8 @@ void	Server::loop(void)
 		}
 		else
 		{
-			//new connections
-			//client data
+			if (!this->checkUserConnection())
+				this->checkUserInput();
 		}
 	}
 }
