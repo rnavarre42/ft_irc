@@ -17,10 +17,10 @@ Server	*Server::instance = NULL;
 
 void	Server::signalHandler(int sig)
 {
-//	Server &server = Server::getInstance();
+	Server &server = Server::getInstance();
 
-	std::cerr << "server = " << std::hex << &Server::instance << std::endl;
-	std::cerr << "server has " << Server::instance->count() << std::endl;
+	std::cerr << "server = " << std::hex << &server << std::endl;
+	std::cerr << "server has " << server.count() << std::endl;
 	if (sig == SIGINT)
 	{
 //		log(LOG_CONNECT, "Disconnecting clients...");
@@ -63,13 +63,22 @@ Server	&Server::getInstance(std::string ip, int port)
 
 int		Server::count(void)
 {
-	return (this->userVector.size());
+	return (this->fdMap.size());
 }
 
 void	Server::sendTo(std::string msg)
 {
-	for (size_t i = 0; i < userVector.size(); i++)
-		userVector[i]->sendTo(msg);
+	int left;
+
+	left = this->fdMap.size();
+	for (size_t i = 1; left; i++)
+	{
+		if (this->pollfds[i].fd)
+		{
+			this->fdMap[this->pollfds[i].fd]->sendTo(msg);
+			left--;
+		}
+	}
 	
 //	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
 //		it->sendTo(msg);
@@ -82,11 +91,18 @@ void	Server::quit(std::string msg)
 //		it->sendTo(msg);
 //		it->disconnect();
 //	}
-	std::cerr << "que nos vamos con " << this->userVector.size() << " clientes dentro" << std::endl;
-	for (size_t i = 0; i < userVector.size(); i++)
+	int left;
+	std::cerr << "que nos vamos con " << this->fdMap.size() << " clientes dentro" << std::endl;
+
+	left = this->fdMap.size();
+	for (size_t i = 1; left; i++)
 	{
-		userVector[i]->sendTo(msg);
-		userVector[i]->disconnect();
+		if (this->pollfds[i].fd)
+		{
+			this->fdMap[this->pollfds[i].fd]->sendTo(msg);
+			this->_delUser(*this->fdMap[this->pollfds[i].fd]);
+			left--;
+		}
 	}
 	this->stop = true;
 }
@@ -135,7 +151,7 @@ User	&Server::_accept(void)
 		std::cerr << "Server::accept function accept() failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	if (this->userVector.size() == MAXUSERS)
+	if (this->fdMap.size() == MAXUSERS)
 	{
 		send(newFd, "The server is full. Please, try again more later.\r\n", 52, 0);
 		close(newFd);
@@ -179,9 +195,9 @@ int		Server::_poll(void)
 
 void	Server::_addUser(User &user)
 {
-	this->userVector.push_back(&user);
+//	this->userVector.push_back(&user);
 	this->fdMap[user.getFd()] = &user;
-	std::cerr << "Server::_addUser() userVector.size() = " << this->userVector.size() << std::endl;
+	std::cerr << "Server::_addUser() userVector.size() = " << this->fdMap.size() << std::endl;
 }
 
 void	Server::_delUser(User &user)
@@ -190,8 +206,10 @@ void	Server::_delUser(User &user)
 		this->userMap.erase(user.getNick());
 	this->fdMap.erase(user.getFd());
 	this->pollfds[user.getPollIndex()].fd = 0;
-	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
-	std::cerr << "Server::_delUser() userVector.size() = " << this->userVector.size() << std::endl;
+//	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
+	std::cerr << "Server::_delUser() userVector.size() = " << this->fdMap.size() << std::endl;
+	this->sendTo("User <anonymous> disconnect");
+	delete &user;
 }
 
 int	Server::checkUserConnection(void)
@@ -213,7 +231,7 @@ int	Server::checkUserConnection(void)
 			this->sendTo("New user is connected.\r\n");
 			return (1);
 		}
-		catch (const Server::ServerFullException &e)
+		catch (Server::ServerFullException &e)
 		{
 			std::cerr << e.what() << std::endl;
 		}
@@ -236,10 +254,7 @@ void	Server::checkUserInput(void)
 			size = recv(pollfds[i].fd, buffer, BUFFERSIZE, 0);
 			buffer[size] = '\0';
 			if (size <= 0)
-			{
 				this->_delUser(*user);
-				user->disconnect();
-			}
 			else
 			{
 				this->sendTo(user->getNick() + "> " + buffer);
@@ -257,7 +272,7 @@ void	Server::loop(void)
 		rv = this->_poll();
 		if (rv == -1)
 		{
-			std::cerr << "Server::loop function pool() failed" << std::endl;
+			std::cerr << "Server::loop function poll() failed" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 		else if (rv == 0)

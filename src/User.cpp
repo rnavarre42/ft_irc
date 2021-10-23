@@ -11,7 +11,13 @@ User::User(int fd, Server &server) : server(server), fd(fd)
 
 User::~User(void)
 {
-	std::cerr << "User destroyed" << std::endl;
+	if (this->isRegistered())
+		std::cout << "Client <" << this->nick << "> disconnected" << std::endl;
+	else
+		std::cout << "Client <anonymous> disconnected" << std::endl;
+	close(this->fd);
+	this->channelMap.clear();
+	this->fd = 0;
 }
 
 void	User::setHost(std::string value)
@@ -122,15 +128,4 @@ bool	User::isAway(void)
 ssize_t	User::sendTo(std::string msg)
 {
 	return (send(this->fd, msg.c_str(), msg.size(), 0));
-}
-
-void	User::disconnect(void)
-{
-	if (this->isRegistered())
-		std::cout << "Client <" << this->nick << "> disconnected" << std::endl;
-	else
-		std::cout << "Client <anonymous> disconnected" << std::endl;
-	close(this->fd);
-	this->channelMap.clear();
-	this->fd = 0;
 }

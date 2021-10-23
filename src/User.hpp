@@ -54,7 +54,6 @@ class User
 //		bool	isOper(void);
 
 		ssize_t		sendTo(std::string msg);
-		void	disconnect(void);
 
 	private:
 		User(void);

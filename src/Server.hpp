@@ -64,7 +64,7 @@ class Server
 		struct pollfd		pollfds[MAXUSERS + 1];
 		static Server		*instance;
 
-		std::vector<User *>					userVector;
+//		std::vector<User *>					userVector;
 		std::map<int, User *>				fdMap;
 		std::map<std::string, User *>		userMap;
 		std::map<std::string, Channel *>	channelMap;
