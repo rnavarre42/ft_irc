@@ -7,6 +7,7 @@ SRCS		=	main.cpp					\
 				Channel.cpp					\
 				Console.cpp					\
 				CommandBase.cpp				\
+				ISender.cpp					\
 
 
 SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))

@@ -7,6 +7,8 @@
 #include <ctime>
 #include <netinet/in.h>
 #include <poll.h>
+#include "ISender.hpp"
+#include "CommandBase.hpp"
 
 # define LOG_CONNECT		0x0001
 
@@ -29,60 +31,67 @@
 
 class User;
 class Channel;
+class CommandBase;
 
-class Server
+class Server : public ISender
 {
-	public:
-		~Server(void);
+public:
+	~Server(void);
 
-		static void		signalHandler(int sig);
-		static Server	&getInstance(void);
-		static Server	&getInstance(std::string ip, int port);
-		void	start(void);
-		void	send(std::string msg);
-		void	quit(std::string msg);
-		int		count(void);
+	static void			signalHandler(int sig);
+	static Server		&getInstance(void);
+	static Server		&getInstance(std::string ip, int port);
+	std::string const	&getName(void) const;
 
-		struct ServerFullException : public std::exception
-		{
-			virtual const char	*what(void) const throw();
-		};
-	private:
-		Server(std::string ip, int port);
-		Server(void);
+	void	start(void);
+	ssize_t	send(std::string msg);
+	void	quit(std::string msg);
+	int		count(void);
 
-		std::string	ip;
-		int			fd;
-		int			port;
-		int			opt;
-		int			addrlen;
-		int			timeout;
+	struct ServerFullException : public std::exception
+	{
+		virtual const char	*what(void) const throw();
+	};
+
+private:
+	Server(std::string ip, int port);
+	Server(void);
+
+	std::string	ip;
+	int			fd;
+	int			port;
+	int			opt;
+	int			addrlen;
+	int			timeout;
 		
-		bool		stop;
+	bool		stop;
 
-		struct sockaddr_in	address;
-		struct pollfd		pollfds[MAXUSERS + 2];
-		static Server		*instance;
+	std::string	name;
 
-//		std::vector<User *>					userVector;
-		std::map<int, User *>				fdMap;
-		std::map<std::string, User *>		userMap;
-		std::map<std::string, Channel *>	channelMap;
+	struct sockaddr_in	address;
+	struct pollfd		pollfds[MAXUSERS + 2];
+	static Server		*instance;
 
-		int		findFreePollIndex(void);
-		int		_poll(void);
-		int		checkUserConnection(void);
+//	std::vector<User *>						userVector;
+	std::map<int, User *>					fdMap;
+	std::map<std::string, User *>			userMap;
+	std::map<std::string, Channel *>		channelMap;
+	std::map<std::string, CommandBase *>	commandMap;
 
-		void	checkConsoleInput(void);
-		void	checkUserInput(void);
-		void	closeClients(std::string msg);
-		void	loop(void);
-		void	initSocket(void);
-		void	_bind(void);
-		void	_listen(void);
-		void	_addUser(User &user);
-		void	_delUser(User &user);
-		User	&_accept();
+	int		findFreePollIndex(void);
+	int		_poll(void);
+	int		checkUserConnection(void);
+
+	void	checkConsoleInput(void);
+	void	checkUserInput(void);
+	void	closeClients(std::string msg);
+	void	loop(void);
+	void	initSocket(void);
+	void	_bind(void);
+	void	_listen(void);
+	void	_addUser(User &user);
+	void	_delUser(User &user);
+	User	&_accept();
 };
 
 #endif

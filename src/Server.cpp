@@ -69,7 +69,7 @@ int		Server::count(void)
 	return (this->fdMap.size());
 }
 
-void	Server::send(std::string msg)
+ssize_t	Server::send(std::string msg)
 {
 	int left;
 
@@ -85,6 +85,7 @@ void	Server::send(std::string msg)
 	
 //	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
 //		it->sendTo(msg);
+	return (0);
 }
 
 void	Server::quit(std::string msg)
@@ -141,6 +142,11 @@ int		Server::findFreePollIndex(void)
 			return (i);
 	}
 	return (0);
+}
+
+std::string const	&Server::getName(void) const
+{
+	return (this->name);
 }
 
 User	&Server::_accept(void)
@@ -208,7 +214,7 @@ void	Server::_addUser(User &user)
 void	Server::_delUser(User &user)
 {
 	if (user.isRegistered())
-		this->userMap.erase(user.getNick());
+		this->userMap.erase(user.getName());
 	this->fdMap.erase(user.getFd());
 	this->pollfds[user.getPollIndex()].fd = 0;
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
@@ -262,7 +268,7 @@ void	Server::checkUserInput(void)
 				this->_delUser(*user);
 			else
 			{
-				this->send(user->getNick() + "> " + buffer);
+				this->send(user->getName() + "> " + buffer);
 			}
 		}
 	}

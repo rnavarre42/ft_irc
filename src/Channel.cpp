@@ -70,11 +70,11 @@ void Channel::join(User user)
 {
 	std::map<std::string, User *>::iterator it;
 
-	it = this->userMap.find(user.getNick());
+	it = this->userMap.find(user.getName());
 	if (it == this->userMap.end())
 	{
-		this->send(user.getNick() + " ha entrado al canal " + this->name + "\r\n");
-		this->userMap[user.getNick()] = &user;
+		this->send(user.getName() + " ha entrado al canal " + this->name + "\r\n");
+		this->userMap[user.getName()] = &user;
 		user.getChannelMap()[this->name] = this;
 		user.send("Has entrado al canal " + this->name + "\r\n");
 	}
@@ -86,7 +86,7 @@ void Channel::part(User user)
 {
 	std::map<std::string, User *>::iterator it;
 
-	it = this->userMap.find(user.getNick());
+	it = this->userMap.find(user.getName());
 	if (it == this->userMap.end())
 		user.send("No estas dentro de " + this->name + "\r\n");
 	else
@@ -94,6 +94,6 @@ void Channel::part(User user)
 		user.send("Has salido de " + this->name + "\r\n");
 		this->userMap.erase(it);
 		user.getChannelMap().erase(this->name);
-		this->send(user.getNick() + " ha salido de " + this->name + "\r\n");
+		this->send(user.getName() + " ha salido de " + this->name + "\r\n");
 	}
 }

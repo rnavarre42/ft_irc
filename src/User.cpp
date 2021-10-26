@@ -12,7 +12,7 @@ User::User(int fd, Server &server) : server(server), fd(fd)
 User::~User(void)
 {
 	if (this->isRegistered())
-		std::cout << "Client <" << this->nick << "> disconnected" << std::endl;
+		std::cout << "Client <" << this->name << "> disconnected" << std::endl;
 	else
 		std::cout << "Client <anonymous> disconnected" << std::endl;
 	close(this->fd);
@@ -60,14 +60,14 @@ time_t const	&User::getSignTime(void) const
 	return (this->signTime);
 }
 
-void	User::setNick(std::string value)
+void	User::setName(std::string value)
 {
-	this->nick = value;
+	this->name = value;
 }
 
-std::string const	&User::getNick(void) const
+std::string const	&User::getName(void) const
 {
-	return (this->nick);
+	return (this->name);
 }
 
 void	User::setPollIndex(int value)
