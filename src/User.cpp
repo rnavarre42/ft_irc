@@ -125,7 +125,7 @@ bool	User::isAway(void)
 	return (!this->awayMsg.empty());
 }
 
-ssize_t	User::sendTo(std::string msg)
+ssize_t	User::send(std::string msg)
 {
-	return (send(this->fd, msg.c_str(), msg.size(), 0));
+	return (::send(this->fd, msg.c_str(), msg.size(), 0));
 }

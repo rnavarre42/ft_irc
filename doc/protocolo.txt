@@ -1,0 +1,108 @@
+entrando al canal:
+client> JOIN #channel
+
+client> :tomas!ident@host JOIN #channel
+
+El servidor advierte al reto de usuarios que otro está entrando.
+
+server> :tomas!ident@host JOIN #channel
+server> :tomas!ident@host PART #channel
+server> :tomas!ident@host JOIN #channel
+
+
+server> :server_name KICK #channel
+server> :server_name MODE #channel +oooo-ooo+ooo-ooo tomas fulanito menganito futanito
+
+struct message
+{
+	char *source	-- puede ser un servidor o un cliente
+	char *target	-- puede ser un cliente o un canal
+	cmd				-- MODE, NICK, KICK...
+	argc			-- numero de argumentos
+	argv[15]		-- !!
+
+	argv[0] = #channel
+	argv[1] = +oooo-ooo+ooo...
+	argv[2] = tomas ...
+}
+
+si esta estructura fuese para enviar, source ya tendría información.
+
+si fuese para leer, entonces source podria contener un prefijo o nada.
+
+9 bytes :longitud máxima del nick de cada cliente 
+
+Todos los servidores deben de tener:
+
+	*	Nombre real del host donde se conecta el cliente
+	*	Nombre de usuario del cliente en ese host
+	*	Servidor al que se conecta el cliente
+
+Operadores (cliente especial) : SQUIT, CONNECT, KILL
+
+Nombre del canal:
+-	200 bytes
+-	empieza por # y &
+-	no contiene espacios en blanco, control G, ni comas
+
+Se recomienda 10 canales máximo por usuario
+
+Operador del canal, chop o chanop
+
+Owner del canal :usuario que ha creado el canal
+
+@nickname(cuando se asocia a un canal)
+
+Comandos de los operadores de canal:
+-	KICK
+-	MODE
+-	INVITE
+-	TOPIC
+
+Único nick prefijo es el asociado al cliente registrado
+Si el prefijo no se encuentra en la base del servidor, el mensaje es ignorado selinciosamente
+
+Comando posible :irc command o 3 caracteres
+
+**		JOIN <canal>{,<canal>...} <clave>{,clave...}
+		-	el usuario debe ser invitado con el modo solo invitados activado
+		-	el prefijo del usuario no debe cumplir nigun ban activo del canal
+		-	debe ser una clave correcta sin esta activado ese modo
+		-	el usuario recibe info de los comandos una vez conectado al canal:
+				+	MODE
+				+	KICK
+				+	PART
+				+	QUIT
+				+	PRIMSG/NOTICE
+		-	al usuario se le envía una RPL_TOPIC con el topic del canal
+		-	el usuario recibe un lista de usuarios del canal RPL_NAMREPLY,
+			nombre del usuario incluido
+		-	el comando join debe ser enviado a todos los servidores de la red
+
+**		MODE <channel> {[+|-]|o|p|s|i|t|n|b|v  } [<limit>] [<user>]
+			 <nick>    {[+|-]|o| |s|i|       |w}
+		-	el comando tiene doble proposito: modo de usuario y de canal
+		-	al recibir el comando se recomienda analizar el comando primero y
+			pasar los datos después
+		-	los operados y los servidores pueden cambiar el modo al canal
+		-	modos de canal disponibles:
+				-+	o: dar/quitar privilegios de operador
+				-+	p: canal privado
+				-+	s: canal secreto
+				-+	i: solo invitados
+				-+	t: solo operadores pueden cambiar el topic
+				-+	n: no se permiten mensajes desde fuera del canal
+				-+	m: canal moderado
+				-+	l: establecer un límite de usuarios del canal
+				-+	b: establecer una máscara de ban de usuarios
+				-+	v: dar/quitar voz en un canal moderado
+				-+	k: poner clave al canal
+		-	opciones 'o' y 'b' tienen una restricción de 3 parametros por comando
+		-	modos de usuario disponible:
+				-+	i: marcar al usuario invisible
+				-+	s: marcar al usuario para que reciba los mensajes del servidor
+				-+	w: el usuario recibe mensajes wallops
+				-+	o: modo de operador
+		-	el comando solo es aceptado si el nick del usuario y el que envía el
+			mensaje coinciden
+		-	si es un usuario se da el modo operador el '+o' es ignorado

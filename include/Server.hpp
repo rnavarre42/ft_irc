@@ -39,7 +39,7 @@ class Server
 		static Server	&getInstance(void);
 		static Server	&getInstance(std::string ip, int port);
 		void	start(void);
-		void	sendTo(std::string msg);
+		void	send(std::string msg);
 		void	quit(std::string msg);
 		int		count(void);
 

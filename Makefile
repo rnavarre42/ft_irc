@@ -9,12 +9,12 @@ SRCS		=	main.cpp					\
 SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))
 OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
 DEPS		=	$(OBJS:.o=.d)
-CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) -g3 $(COMMONFLAGS) -std=c++11
+CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) -g3 $(COMMONFLAGS) -std=c++98
 COMMONFLAGS	=	
 LDFLAGS		=	$(COMMONFLAGS)
 INCLUDEPATH	=	./include/
 FSANITIZE	=	-fsanitize=address
-CC			=	g++
+CC			=	clang++
 RM			=	rm -Rf
 
 
@@ -48,7 +48,10 @@ tag:
 	ctags	$(SRCS)
 
 run:		$(NAME)
-			./$(NAME)
+	./$(NAME)
+
+cli:
+	nc localhost 6667
 
 .SILENT:	clean fclean tag
 .PHONY:		all clean fclean re debug tag

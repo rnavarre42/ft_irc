@@ -60,10 +60,10 @@ time_t const	&Channel::getTopicTime(void) const
 	return (this->topicTime);
 }
 
-void Channel::sendTo(std::string msg)
+void Channel::send(std::string msg)
 {
 	for (std::map<std::string, User *>::iterator it = this->userMap.begin(); it != this->userMap.end(); it++)
-		it->second->sendTo(msg);
+		it->second->send(msg);
 }
 
 void Channel::join(User user)
@@ -73,13 +73,13 @@ void Channel::join(User user)
 	it = this->userMap.find(user.getNick());
 	if (it == this->userMap.end())
 	{
-		this->sendTo(user.getNick() + " ha entrado al canal " + this->name + "\r\n");
+		this->send(user.getNick() + " ha entrado al canal " + this->name + "\r\n");
 		this->userMap[user.getNick()] = &user;
 		user.getChannelMap()[this->name] = this;
-		user.sendTo("Has entrado al canal " + this->name + "\r\n");
+		user.send("Has entrado al canal " + this->name + "\r\n");
 	}
 	else
-		user.sendTo("Ya estas dentro de " + this->name + "\r\n");
+		user.send("Ya estas dentro de " + this->name + "\r\n");
 }
 
 void Channel::part(User user)
@@ -88,12 +88,12 @@ void Channel::part(User user)
 
 	it = this->userMap.find(user.getNick());
 	if (it == this->userMap.end())
-		user.sendTo("No estas dentro de " + this->name + "\r\n");
+		user.send("No estas dentro de " + this->name + "\r\n");
 	else
 	{
-		user.sendTo("Has salido de " + this->name + "\r\n");
+		user.send("Has salido de " + this->name + "\r\n");
 		this->userMap.erase(it);
 		user.getChannelMap().erase(this->name);
-		this->sendTo(user.getNick() + " ha salido de " + this->name + "\r\n");
+		this->send(user.getNick() + " ha salido de " + this->name + "\r\n");
 	}
 }

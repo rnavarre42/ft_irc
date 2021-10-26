@@ -66,7 +66,7 @@ int		Server::count(void)
 	return (this->fdMap.size());
 }
 
-void	Server::sendTo(std::string msg)
+void	Server::send(std::string msg)
 {
 	int left;
 
@@ -75,7 +75,7 @@ void	Server::sendTo(std::string msg)
 	{
 		if (this->pollfds[i].fd)
 		{
-			this->fdMap[this->pollfds[i].fd]->sendTo(msg);
+			this->fdMap[this->pollfds[i].fd]->send(msg);
 			left--;
 		}
 	}
@@ -99,7 +99,7 @@ void	Server::quit(std::string msg)
 	{
 		if (this->pollfds[i].fd)
 		{
-			this->fdMap[this->pollfds[i].fd]->sendTo(msg);
+			this->fdMap[this->pollfds[i].fd]->send(msg);
 			this->_delUser(*this->fdMap[this->pollfds[i].fd]);
 			left--;
 		}
@@ -153,7 +153,7 @@ User	&Server::_accept(void)
 	}
 	if (this->fdMap.size() == MAXUSERS)
 	{
-		send(newFd, "The server is full. Please, try again more later.\r\n", 52, 0);
+		::send(newFd, "The server is full. Please, try again more later.\r\n", 52, 0);
 		close(newFd);
 		throw Server::ServerFullException();
 	}
@@ -197,7 +197,7 @@ void	Server::_addUser(User &user)
 {
 //	this->userVector.push_back(&user);
 	this->fdMap[user.getFd()] = &user;
-	std::cerr << "Server::_addUser() userVector.size() = " << this->fdMap.size() << std::endl;
+	std::cerr << "Server::_addUser() fdMap.size() = " << this->fdMap.size() << std::endl;
 }
 
 void	Server::_delUser(User &user)
@@ -207,8 +207,8 @@ void	Server::_delUser(User &user)
 	this->fdMap.erase(user.getFd());
 	this->pollfds[user.getPollIndex()].fd = 0;
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
-	std::cerr << "Server::_delUser() userVector.size() = " << this->fdMap.size() << std::endl;
-	this->sendTo("User <anonymous> disconnect");
+	std::cerr << "Server::_delUser() fdMap.size() = " << this->fdMap.size() << std::endl;
+	this->send("User <anonymous> disconnect");
 	delete &user;
 }
 
@@ -222,13 +222,13 @@ int	Server::checkUserConnection(void)
 		{
 			user = &this->_accept();
 			user->setSignTime(time(NULL));
-			if (user->sendTo("Hello\r\n") <= 0)
+			if (user->send("Hello\r\n") <= 0)
 			{
 				std::cerr << "Server::checkUserConnection function user->sendTo() failed" << std::endl;
 				exit(EXIT_FAILURE);
 			}
 			this->_addUser(*user);
-			this->sendTo("New user is connected.\r\n");
+			this->send("New user is connected.\r\n");
 			return (1);
 		}
 		catch (Server::ServerFullException &e)
@@ -257,7 +257,7 @@ void	Server::checkUserInput(void)
 				this->_delUser(*user);
 			else
 			{
-				this->sendTo(user->getNick() + "> " + buffer);
+				this->send(user->getNick() + "> " + buffer);
 			}
 		}
 	}

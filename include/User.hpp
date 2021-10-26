@@ -53,7 +53,7 @@ class User
 		bool	isAway(void);
 //		bool	isOper(void);
 
-		ssize_t		sendTo(std::string msg);
+		ssize_t		send(std::string msg);
 
 	private:
 		User(void);

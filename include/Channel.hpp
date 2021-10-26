@@ -28,7 +28,7 @@ class Channel
 		void							setTopicTime(time_t value);
 		time_t const					&getTopicTime(void) const;
 
-		void sendTo(std::string msg);
+		void send(std::string msg);
 		void join(User user);
 		void part(User user);
 	private:
