@@ -5,6 +5,9 @@ SRCS		=	main.cpp					\
 				Server.cpp					\
 				User.cpp					\
 				Channel.cpp					\
+				Console.cpp					\
+				CommandBase.cpp				\
+
 
 SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))
 OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))

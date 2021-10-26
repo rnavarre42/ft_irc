@@ -61,7 +61,7 @@ class Server
 		bool		stop;
 
 		struct sockaddr_in	address;
-		struct pollfd		pollfds[MAXUSERS + 1];
+		struct pollfd		pollfds[MAXUSERS + 2];
 		static Server		*instance;
 
 //		std::vector<User *>					userVector;
@@ -73,6 +73,7 @@ class Server
 		int		_poll(void);
 		int		checkUserConnection(void);
 
+		void	checkConsoleInput(void);
 		void	checkUserInput(void);
 		void	closeClients(std::string msg);
 		void	loop(void);

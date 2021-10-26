@@ -1,5 +1,4 @@
-#ifndef CONSOLE_HPP
-# define CONSOLE_HPP
+#pragma once
 
 #include <string>
 #include "Server.hpp"
@@ -15,4 +14,3 @@ class Console
 		Server	server;
 };
 
-#endif

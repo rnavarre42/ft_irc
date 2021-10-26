@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include "Server.hpp"
 #include "User.hpp"
+#include "CommandBase.hpp"
 
 Server	*Server::instance = NULL;
 
@@ -36,9 +37,11 @@ const char	*Server::ServerFullException::what(void) const throw()
 Server::Server(std::string ip, int port)
 	: ip(ip), port(port)
 {
+	UserCommand	usercmd(*this, LEVEL_ALL);
+
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, Server::signalHandler);
-	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 1));
+	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
 	this->stop = false;
 	this->initSocket();
 	this->timeout = 1000;
@@ -132,7 +135,7 @@ void	Server::initSocket(void)
 
 int		Server::findFreePollIndex(void)
 {
-	for (int i = 1; i < MAXUSERS + 1; i++)
+	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
 		if (this->pollfds[i].fd == 0)
 			return (i);
@@ -186,11 +189,13 @@ void	Server::_listen(void)
 	}
 	this->pollfds[0].fd = this->fd;
 	this->pollfds[0].events = POLLIN;
+	this->pollfds[1].fd = 0;
+	this->pollfds[1].events = POLLIN;
 }
 
 int		Server::_poll(void)
 {
-	return (poll(this->pollfds, MAXUSERS + 1, this->timeout));
+	return (poll(this->pollfds, MAXUSERS + 2, this->timeout));
 }
 
 void	Server::_addUser(User &user)
@@ -245,7 +250,7 @@ void	Server::checkUserInput(void)
 	char	buffer[BUFFERSIZE + 1];
 	User	*user;
 
-	for (int i = 1; i < MAXUSERS + 1; i++)
+	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
 		if (this->pollfds[i].revents & POLLIN)
 		{
@@ -260,6 +265,21 @@ void	Server::checkUserInput(void)
 				this->send(user->getNick() + "> " + buffer);
 			}
 		}
+	}
+}
+
+void	Server::checkConsoleInput(void)
+{
+	int		size;
+	char	buffer[BUFFERSIZE + 1];
+	std::string	str = "console> ";
+
+	if (this->pollfds[1].revents & POLLIN)
+	{
+		size = read(0, buffer, BUFFERSIZE);
+		buffer[size] = '\0';
+		if (size > 0)
+			this->send(buffer);
 	}
 }
 
@@ -286,6 +306,7 @@ void	Server::loop(void)
 		{
 			if (!this->checkUserConnection())
 				this->checkUserInput();
+			this->checkConsoleInput();
 		}
 	}
 }
