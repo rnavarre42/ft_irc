@@ -19,14 +19,5 @@ class CommandBase
 
 	protected:
 		Server		&server;
-//		std::string	name;
 		char		level;
-};
-
-class UserCommand : CommandBase
-{
-	public:
-		UserCommand(Server &server, char level);
-
-		virtual void	exec(void);
 };

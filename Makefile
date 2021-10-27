@@ -7,17 +7,20 @@ SRCS		=	main.cpp					\
 				Channel.cpp					\
 				Console.cpp					\
 				CommandBase.cpp				\
+				Message.cpp					\
+				UserCommand.cpp				\
 				ISender.cpp					\
+
 
 
 SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))
 OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
 DEPS		=	$(OBJS:.o=.d)
-CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) -g3 $(COMMONFLAGS) -std=c++98
-COMMONFLAGS	=	
+CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
+COMMONFLAGS	=	-O3
 LDFLAGS		=	$(COMMONFLAGS)
 INCLUDEPATH	=	./include/
-FSANITIZE	=	-fsanitize=address
+FSANITIZE	=	-g3 -fsanitize=address
 CC			=	clang++
 RM			=	rm -Rf
 
@@ -45,8 +48,11 @@ print:
 
 re:			fclean all
 
-debug:		LDFLAGS += $(FSANITIZE)
-debug:		$(NAME)
+debug:		COMMONFLAGS = $(FSANITIZE)
+debug:		$(NAME) tag
+
+release:	$(NAME)
+	strip $(NAME)
 
 tag:
 	ctags	$(SRCS)
@@ -57,5 +63,5 @@ run:		$(NAME)
 cli:
 	nc localhost 6667
 
-.SILENT:	clean fclean tag
-.PHONY:		all clean fclean re debug tag
+.SILENT:	clean fclean tag release
+.PHONY:		all clean fclean re debug tag release

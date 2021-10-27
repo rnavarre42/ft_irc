@@ -9,11 +9,3 @@ CommandBase::CommandBase(Server &server, char level) : server(server), level(lev
 
 CommandBase::~CommandBase(void)
 {}
-
-UserCommand::UserCommand(Server &server, char level) : CommandBase(server, level)
-{}
-
-void UserCommand::exec(void)
-{
-	std::cout << "al ataque" << std::endl;
-}

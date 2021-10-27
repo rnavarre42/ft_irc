@@ -12,7 +12,8 @@
 #include <cstdlib>
 #include "Server.hpp"
 #include "User.hpp"
-#include "CommandBase.hpp"
+#include "UserCommand.hpp"
+#include "Message.hpp"
 
 Server	*Server::instance = NULL;
 
@@ -20,13 +21,8 @@ void	Server::signalHandler(int sig)
 {
 	Server &server = Server::getInstance();
 
-	std::cerr << "server = " << std::hex << &server << std::endl;
-	std::cerr << "server has " << server.count() << std::endl;
 	if (sig == SIGINT)
-	{
-//		log(LOG_CONNECT, "Disconnecting clients...");
-	}
-	Server::instance->quit("Shutdown. Please, reconnect to another server.");
+		server.quit("Shutdown. Please, reconnect to another server.\n");
 }
 
 const char	*Server::ServerFullException::what(void) const throw()
@@ -53,14 +49,12 @@ Server::~Server(void)
 
 Server	&Server::getInstance(void)
 {
-	std::cerr << "getInstance = " << std::hex << Server::instance << std::endl;
 	return (*Server::instance);
 }
 Server	&Server::getInstance(std::string ip, int port)
 {
 	if (Server::instance == NULL)
 		Server::instance = new Server(ip, port);
-	std::cerr << "getInstance = " << std::hex << Server::instance << std::endl;
 	return (*Server::instance);
 }
 
@@ -71,15 +65,15 @@ int		Server::count(void)
 
 ssize_t	Server::send(std::string msg)
 {
-	int left;
+	int usersLeft;
 
-	left = this->fdMap.size();
-	for (size_t i = 1; left; i++)
+	usersLeft = this->fdMap.size();
+	for (size_t i = 1; usersLeft; i++)
 	{
 		if (this->pollfds[i].fd)
 		{
 			this->fdMap[this->pollfds[i].fd]->send(msg);
-			left--;
+			usersLeft--;
 		}
 	}
 	
@@ -95,17 +89,16 @@ void	Server::quit(std::string msg)
 //		it->sendTo(msg);
 //		it->disconnect();
 //	}
-	int left;
-	std::cerr << "que nos vamos con " << this->fdMap.size() << " clientes dentro" << std::endl;
+	int usersLeft;
 
-	left = this->fdMap.size();
-	for (size_t i = 1; left; i++)
+	usersLeft = this->fdMap.size();
+	for (size_t i = 1; usersLeft; i++)
 	{
 		if (this->pollfds[i].fd)
 		{
 			this->fdMap[this->pollfds[i].fd]->send(msg);
 			this->_delUser(*this->fdMap[this->pollfds[i].fd]);
-			left--;
+			usersLeft--;
 		}
 	}
 	this->stop = true;
@@ -219,7 +212,7 @@ void	Server::_delUser(User &user)
 	this->pollfds[user.getPollIndex()].fd = 0;
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
 	std::cerr << "Server::_delUser() fdMap.size() = " << this->fdMap.size() << std::endl;
-	this->send("User <anonymous> disconnect");
+	this->send("User <anonymous> disconnect\n");
 	delete &user;
 }
 
@@ -264,6 +257,8 @@ void	Server::checkUserInput(void)
 			std::cerr << "hay inforacion de " << i << std::endl;
 			size = recv(pollfds[i].fd, buffer, BUFFERSIZE, 0);
 			buffer[size] = '\0';
+			Message &message = Message::messageBuilder(*user, buffer);
+			(void)message;
 			if (size <= 0)
 				this->_delUser(*user);
 			else
@@ -298,6 +293,8 @@ void	Server::loop(void)
 		rv = this->_poll();
 		if (rv == -1)
 		{
+			if (this->stop)
+				exit(0);
 			std::cerr << "Server::loop function poll() failed" << std::endl;
 			exit(EXIT_FAILURE);
 		}
