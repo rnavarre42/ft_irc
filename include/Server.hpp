@@ -1,18 +1,17 @@
 #ifndef IRCSERVER_HPP
 # define IRCSERVER_HPP
 
+#include "ISender.hpp"
+#include "CommandBase.hpp"
+#include "log.hpp"
 #include <string>
 #include <map>
 #include <vector>
 #include <ctime>
 #include <netinet/in.h>
 #include <poll.h>
-#include "ISender.hpp"
-#include "CommandBase.hpp"
 
-# define LOG_CONNECT		0x0001
-
-# define DEBUG		LOG_CONNECT
+# define LOG_LEVEL LOG_INFO | LOG_WARNING | LOG_ERROR | LOG_FATAL
 
 # define MAXNICK		9
 # define MAXCHANNEL		50
@@ -42,6 +41,7 @@ public:
 	static Server		&getInstance(void);
 	static Server		&getInstance(std::string ip, int port);
 	std::string const	&getName(void) const;
+	int const			&getFd(void) const;
 
 	void	start(void);
 	ssize_t	send(std::string msg);
@@ -91,7 +91,7 @@ private:
 	void	_listen(void);
 	void	_addUser(User &user);
 	void	_delUser(User &user);
-	User	&_accept();
+	User	*_accept();
 };
 
 #endif

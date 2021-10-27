@@ -14,6 +14,7 @@
 #include "User.hpp"
 #include "UserCommand.hpp"
 #include "Message.hpp"
+#include "Console.hpp"
 
 Server	*Server::instance = NULL;
 
@@ -27,7 +28,7 @@ void	Server::signalHandler(int sig)
 
 const char	*Server::ServerFullException::what(void) const throw()
 {
-	return ("The server is full.");
+	return "The server is full.";
 }
 
 Server::Server(std::string ip, int port)
@@ -49,18 +50,23 @@ Server::~Server(void)
 
 Server	&Server::getInstance(void)
 {
-	return (*Server::instance);
+	return *Server::instance;
 }
 Server	&Server::getInstance(std::string ip, int port)
 {
 	if (Server::instance == NULL)
 		Server::instance = new Server(ip, port);
-	return (*Server::instance);
+	return *Server::instance;
 }
 
 int		Server::count(void)
 {
-	return (this->fdMap.size());
+	return this->fdMap.size();
+}
+
+int	const	&Server::getFd(void) const
+{
+	return this->fd;
 }
 
 ssize_t	Server::send(std::string msg)
@@ -79,7 +85,7 @@ ssize_t	Server::send(std::string msg)
 	
 //	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
 //		it->sendTo(msg);
-	return (0);
+	return 0;
 }
 
 void	Server::quit(std::string msg)
@@ -115,14 +121,14 @@ void	Server::initSocket(void)
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (!this->fd)
 	{
-		std::cerr << "Server::initSocket function socket() failed" << std::endl;
+		Console::log(LOG_ERROR, "Server::initSocket function socket() failed");
 		exit(EXIT_FAILURE);
 	}
 	this->opt = 1;
 	this->addrlen = sizeof(this->address);
 	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &this->opt, sizeof(this->opt)))
 	{
-		std::cerr << "Server::initSocket function setsockopt() failed" << std::endl;
+		Console::log(LOG_ERROR, "Server::initSocket function setsockopt() failed");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -132,17 +138,17 @@ int		Server::findFreePollIndex(void)
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
 		if (this->pollfds[i].fd == 0)
-			return (i);
+			return i;
 	}
-	return (0);
+	return 0;
 }
 
 std::string const	&Server::getName(void) const
 {
-	return (this->name);
+	return this->name;
 }
 
-User	&Server::_accept(void)
+User	*Server::_accept(void)
 {
 	User	*user;
 	int		newFd;
@@ -150,21 +156,22 @@ User	&Server::_accept(void)
 	newFd = accept(this->fd, (struct sockaddr *)&this->address, (socklen_t *)&this->addrlen);
 	if (newFd < 0)
 	{
-		std::cerr << "Server::accept function accept() failed" << std::endl;
+		Console::log(LOG_ERROR, "Server::accept function accept() failed");
 		exit(EXIT_FAILURE);
 	}
 	if (this->fdMap.size() == MAXUSERS)
 	{
 		::send(newFd, "The server is full. Please, try again more later.\r\n", 52, 0);
 		close(newFd);
-		throw Server::ServerFullException();
+		return NULL;
+//		throw Server::ServerFullException();
 	}
 	user = new User(newFd, *this);
 	user->setPollIndex(findFreePollIndex());
-	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
+//	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
 	this->pollfds[user->getPollIndex()].fd = newFd;
 	this->pollfds[user->getPollIndex()].events = POLLIN;
-	return (*user);
+	return user;
 }
 
 void	Server::_bind(void)
@@ -174,7 +181,7 @@ void	Server::_bind(void)
 	this->address.sin_port = htons(this->port);
 	if (bind(this->fd, (struct sockaddr *)&this->address, sizeof(this->address)) < 0)
 	{
-		std::cerr << "Server::bind function bind() failed" << std::endl;
+		Console::log(LOG_ERROR, "Server::bind function bind() failed");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -183,7 +190,7 @@ void	Server::_listen(void)
 {
 	if (listen(this->fd, MAXLISTEN) < 0)
 	{
-		std::cerr << "Server::listen function listen() failed" << std::endl;
+		Console::log(LOG_ERROR, "Server::listen function listen() failed");
 		exit(EXIT_FAILURE);
 	}
 	this->pollfds[0].fd = this->fd;
@@ -194,14 +201,13 @@ void	Server::_listen(void)
 
 int		Server::_poll(void)
 {
-	return (poll(this->pollfds, MAXUSERS + 2, this->timeout));
+	return poll(this->pollfds, MAXUSERS + 2, this->timeout);
 }
 
 void	Server::_addUser(User &user)
 {
 //	this->userVector.push_back(&user);
 	this->fdMap[user.getFd()] = &user;
-	std::cerr << "Server::_addUser() fdMap.size() = " << this->fdMap.size() << std::endl;
 }
 
 void	Server::_delUser(User &user)
@@ -211,7 +217,6 @@ void	Server::_delUser(User &user)
 	this->fdMap.erase(user.getFd());
 	this->pollfds[user.getPollIndex()].fd = 0;
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
-	std::cerr << "Server::_delUser() fdMap.size() = " << this->fdMap.size() << std::endl;
 	this->send("User <anonymous> disconnect\n");
 	delete &user;
 }
@@ -222,25 +227,32 @@ int	Server::checkUserConnection(void)
 
 	if (this->pollfds[0].revents & POLLIN)
 	{
-		try
+		user = this->_accept();
+		if (!user)
 		{
-			user = &this->_accept();
-			user->setSignTime(time(NULL));
-			if (user->send("Hello\r\n") <= 0)
-			{
-				std::cerr << "Server::checkUserConnection function user->sendTo() failed" << std::endl;
-				exit(EXIT_FAILURE);
-			}
-			this->_addUser(*user);
-			this->send("New user is connected.\r\n");
-			return (1);
+			Console::log(LOG_WARNING, "Server full, rejecting new connection");
+			return 1;
 		}
-		catch (Server::ServerFullException &e)
+		user->setSignTime(time(NULL));
+		if (user->send("Hello\r\n") <= 0)
 		{
-			std::cerr << e.what() << std::endl;
+			Console::log(LOG_ERROR, "Server::checkUserConnection function user->sendTo() failed");
+			exit(EXIT_FAILURE);
 		}
+		this->_addUser(*user);
+		this->send("New user is connected.\r\n");
+		Console::log(LOG_INFO, "User <anonymous> connected");
+		return 1;
 	}
-	return (0);
+	return 0;
+/* 
+ * Excepción eliminada al devolver _accept un puntero y no una referencia
+ *
+ *		catch (Server::ServerFullException &e)
+ *		{
+ *			std::cerr << e.what() << std::endl;
+ *		}
+ */
 }
 
 void	Server::checkUserInput(void)
@@ -254,7 +266,6 @@ void	Server::checkUserInput(void)
 		if (this->pollfds[i].revents & POLLIN)
 		{
 			user = this->fdMap[pollfds[i].fd];
-			std::cerr << "hay inforacion de " << i << std::endl;
 			size = recv(pollfds[i].fd, buffer, BUFFERSIZE, 0);
 			buffer[size] = '\0';
 			Message &message = Message::messageBuilder(*user, buffer);
@@ -265,6 +276,7 @@ void	Server::checkUserInput(void)
 			{
 				this->send(user->getName() + "> " + buffer);
 			}
+			delete &message;
 		}
 	}
 }
@@ -295,7 +307,7 @@ void	Server::loop(void)
 		{
 			if (this->stop)
 				exit(0);
-			std::cerr << "Server::loop function poll() failed" << std::endl;
+			Console::log(LOG_ERROR, "Server::loop function poll() failed");
 			exit(EXIT_FAILURE);
 		}
 		else if (rv == 0)

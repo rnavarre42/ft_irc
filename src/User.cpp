@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include "User.hpp"
 #include "Server.hpp"
+#include "Console.hpp"
 
 User::User(int fd, Server &server) : server(server), fd(fd)
 {}
@@ -12,9 +13,9 @@ User::User(int fd, Server &server) : server(server), fd(fd)
 User::~User(void)
 {
 	if (this->isRegistered())
-		std::cout << "Client <" << this->name << "> disconnected" << std::endl;
+		Console::log(LOG_INFO, "User <" + this->name + "> disconnected");
 	else
-		std::cout << "Client <anonymous> disconnected" << std::endl;
+		Console::log(LOG_INFO, "User <anonymous> disconnected");
 	close(this->fd);
 	this->channelMap.clear();
 	this->fd = 0;
@@ -127,5 +128,6 @@ bool	User::isAway(void)
 
 ssize_t	User::send(std::string msg)
 {
+	msg.append("\r\n");
 	return (::send(this->fd, msg.c_str(), msg.size(), 0));
 }

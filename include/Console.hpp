@@ -8,7 +8,7 @@ class Console
 	public:
 		Console(Server server);
 		
-		size_t	write(std::string cmd);
+		static void	log(int logLevel, std::string cmd);
 
 	private:
 		Server	server;

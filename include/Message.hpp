@@ -16,9 +16,14 @@ public:
 private:
 	Message(ISender &sender, std::string data);
 
-	int			size;
-	std::string	*param[15];
 	ISender		&sender;
+	std::string	name;
+	std::string	ident;
+	std::string	host;
+	std::string prefix;
+	std::string cmd;
+	int			size;
+	std::string	param[15];
 };
 
 #endif
