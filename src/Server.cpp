@@ -34,8 +34,7 @@ const char	*Server::ServerFullException::what(void) const throw()
 Server::Server(std::string ip, int port)
 	: ip(ip), port(port)
 {
-	UserCommand	usercmd(*this, LEVEL_ALL);
-
+	this->_loadCommands();
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, Server::signalHandler);
 	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
@@ -47,6 +46,12 @@ Server::Server(std::string ip, int port)
 
 Server::~Server(void)
 {}
+
+void	Server::_loadCommands(void)
+{
+	//UserCommand	usercmd(*this, LEVEL_ALL);
+	this->commandMap["USER"] = new UserCommand(*this, LEVEL_ALL);
+}
 
 Server	&Server::getInstance(void)
 {
@@ -279,24 +284,23 @@ void	Server::checkUserInput(void)
 			size = recv(pollfds[i].fd, buffer, BUFFERSIZE, 0);
 			buffer[size] = '\0';
 			user->getBuffer() += buffer;
-			while (user->getBuffer().size() > 0)
+			while ((pos = user->getBuffer().find('\n')) != std::string::npos)
 			{
-				pos = user->getBuffer().find('\n');
-				if (pos != std::string::npos)
-				{
-					msg = user->getBuffer().substr(0, pos);
-					user->getBuffer().erase(0, pos);
-					if ((pos = msg.find('\r')))
-						msg.erase(pos, 1);
-					Message &message = Message::messageBuilder(*user, msg);
-					(void)message;
-					delete &message;
-				}
+				msg = user->getBuffer().substr(0, pos);
+				user->getBuffer().erase(0, pos + 1);
+				if ((pos = msg.find('\r')) != std::string::npos)
+					msg.erase(pos, 1);
+				Message &message = Message::messageBuilder(*user, msg);
+				if (this->commandMap.find(message.getCmd()) != commandMap.end())
+					commandMap[message.getCmd()]->exec(message);
+				else
+					user->send("Command " + message.getCmd() + " not found.");
+				delete &message;
 			}
 			if (size <= 0)
 				this->_delUser(*user);
-			else
-				this->send(user->getName() + "> " + buffer);
+		//	else
+		//		this->send(user->getName() + "> " + buffer);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Server.hpp"
+#include "Message.hpp"
 #include <string>
 
 #define LEVEL_REGISTERED	0x01
@@ -8,6 +9,7 @@
 #define LEVEL_ALL			LEVEL_REGISTERED | LEVEL_UNREGISTERED
 
 class Server;
+class Message;
 
 class ACommand
 {
@@ -15,7 +17,7 @@ class ACommand
 		ACommand(Server &server, char level);
 		~ACommand(void);
 
-		virtual void	exec(void) = 0;
+		virtual void	exec(Message &msg) = 0;
 
 	protected:
 		Server		&server;

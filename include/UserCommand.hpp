@@ -1,10 +1,10 @@
 #include "ACommand.hpp"
 #include <string>
 
-class UserCommand : ACommand
+class UserCommand : public ACommand
 {
 	public:
 		UserCommand(Server &server, char level);
 
-		virtual void	exec(void);
+		virtual void	exec(Message &message);
 };

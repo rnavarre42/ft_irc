@@ -45,7 +45,7 @@ weroiweoriweoriwe 123456 234567 345678 456789 567890 678901 789012 890123 901234
     sock = *(int *)arg;
     while (1)
     {
-        line = readline("client> ");
+        line = readline("");
         add_history(line);
 		if (!strcmp(line, "FCK"))
 		{

@@ -30,7 +30,7 @@
 
 class User;
 class Channel;
-class CommandBase;
+class ACommand;
 
 class Server : public ISender
 {
@@ -76,12 +76,13 @@ private:
 	std::map<int, User *>					fdMap;
 	std::map<std::string, User *>			userMap;
 	std::map<std::string, Channel *>		channelMap;
-	std::map<std::string, CommandBase *>	commandMap;
+	std::map<std::string, ACommand *>		commandMap;
 
 	int		findFreePollIndex(void);
 	int		_poll(void);
 	int		checkUserConnection(void);
 
+	void	_loadCommands(void);
 	void	checkConsoleInput(void);
 	void	checkUserInput(void);
 	void	closeClients(std::string msg);

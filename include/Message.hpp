@@ -11,6 +11,8 @@ public:
 	~Message(void);
 
 	std::string const	*getParam(int index) const;
+	std::string const	&getCmd(void) const;
+	ISender				&getSender(void);
 	static Message		&messageBuilder(ISender &sender, std::string data);
 
 private:
