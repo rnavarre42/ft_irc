@@ -1,29 +1,17 @@
 NAME		=	server
 SRCSPATH	=	src/
 OBJSPATH	=	obj/
-SRCS		=	main.cpp					\
-				Server.cpp					\
-				User.cpp					\
-				Channel.cpp					\
-				Console.cpp					\
-				CommandBase.cpp				\
-				Message.cpp					\
-				UserCommand.cpp				\
-				ISender.cpp					\
-
-
-
-SRCS		:=	$(addprefix $(SRCSPATH), $(SRCS))
 OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
 DEPS		=	$(OBJS:.o=.d)
 CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
-COMMONFLAGS	=	-O3
+COMMONFLAGS	=	
 LDFLAGS		=	$(COMMONFLAGS)
 INCLUDEPATH	=	./include/
 FSANITIZE	=	-g3 -fsanitize=address
 CC			=	clang++
 RM			=	rm -Rf
 
+-include	sources.mk
 
 all:	$(NAME)
 
@@ -51,6 +39,7 @@ re:			fclean all
 debug:		COMMONFLAGS = $(FSANITIZE)
 debug:		$(NAME) tag
 
+release:	COMMONFLAGS += -O3
 release:	$(NAME)
 	strip $(NAME)
 
@@ -63,5 +52,11 @@ run:		$(NAME)
 cli:
 	nc localhost 6667
 
-.SILENT:	clean fclean tag release
+hispano:
+	make -C client run non NoSoyNadie 195.234.61.209 6667
+
+dalnet:
+	make -C client run non NoSoyNadie 143.244.34.1 6667
+
+.SILENT:	clean fclean tag release print
 .PHONY:		all clean fclean re debug tag release

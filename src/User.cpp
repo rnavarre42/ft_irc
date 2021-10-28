@@ -51,6 +51,11 @@ std::string const &User::getReal(void) const
 	return (this->real);
 }
 
+std::string &User::getBuffer(void)
+{
+	return (this->buffer);
+}
+
 void	User::setSignTime(time_t value)
 {
 	this->signTime = value;

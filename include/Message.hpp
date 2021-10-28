@@ -2,7 +2,7 @@
 # define MESSAGE_HPP
 
 # include "Server.hpp"
-# include "CommandBase.hpp"
+# include "ACommand.hpp"
 # include <string>
 
 class Message
@@ -17,9 +17,9 @@ private:
 	Message(ISender &sender, std::string data);
 
 	ISender		&sender;
-	std::string	name;
-	std::string	ident;
-	std::string	host;
+//	std::string	name;
+//	std::string	ident;
+//	std::string	host;
 	std::string prefix;
 	std::string cmd;
 	int			size;

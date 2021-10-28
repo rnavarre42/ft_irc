@@ -2,7 +2,7 @@
 #include "Server.hpp"
 #include <iostream>
 
-UserCommand::UserCommand(Server &server, char level) : CommandBase(server, level)
+UserCommand::UserCommand(Server &server, char level) : ACommand(server, level)
 {}
 
 void UserCommand::exec(void)

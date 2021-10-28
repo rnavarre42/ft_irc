@@ -29,6 +29,8 @@ public:
 	void		setName(std::string value);
 	std::string const	&getName(void) const;
 
+	std::string &getBuffer(void);
+
 	void		setAwayMsg(std::string value);
 	std::string const	&getAwayMsg(void) const;
 
@@ -65,6 +67,7 @@ private:
 	std::string							host;
 	std::string							ident;
 	std::string							real;
+	std::string							buffer;
 	std::string 						awayMsg;
 	Server								&server;
 	std::map<std::string, Channel *>	channelMap;

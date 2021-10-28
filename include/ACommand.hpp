@@ -9,11 +9,11 @@
 
 class Server;
 
-class CommandBase
+class ACommand
 {
 	public:
-		CommandBase(Server &server, char level);
-		~CommandBase(void);
+		ACommand(Server &server, char level);
+		~ACommand(void);
 
 		virtual void	exec(void) = 0;
 

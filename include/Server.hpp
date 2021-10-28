@@ -2,7 +2,7 @@
 # define IRCSERVER_HPP
 
 #include "ISender.hpp"
-#include "CommandBase.hpp"
+#include "ACommand.hpp"
 #include "log.hpp"
 #include <string>
 #include <map>
@@ -24,7 +24,7 @@
 # define MAXKICK		255
 # define MAXREAL		100
 
-# define BUFFERSIZE		1024
+# define BUFFERSIZE		512
 # define MAXUSERS		3
 # define MAXLISTEN		5
 

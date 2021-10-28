@@ -1,7 +1,7 @@
-#include "CommandBase.hpp"
+#include "ACommand.hpp"
 #include <string>
 
-class UserCommand : CommandBase
+class UserCommand : ACommand
 {
 	public:
 		UserCommand(Server &server, char level);

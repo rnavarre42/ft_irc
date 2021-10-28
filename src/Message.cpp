@@ -3,48 +3,65 @@
 #include <iostream>
 #include <stdio.h>
 
-std::string	substrchr(std::string str, size_t *offset, char chr)
+void	leftTrim(std::string &data)
 {
-	size_t pos;
-	size_t startOffset;
+	size_t i = 0;
+	while (data[i] && data[i] == ' ')
+		i++;
+	data.erase(0, i);
+}
 
+std::string	extractWord(std::string &data)
+{
+	size_t 		pos;
+	std::string	newStr;
 
-	if (str[*offset] == ':')
-	{
-		startOffset = *offset + 1;
-		*offset = str.size();
-		return str.substr(startOffset, str.size() - startOffset);
-	}
-	while (str[*offset] == chr)
-		(*offset)++;
-	pos = str.find(chr, *offset);
+	pos = data.find(' ');
 	if (pos != std::string::npos)
 	{
-		startOffset = *offset;
-		*offset += pos;
-		return str.substr(startOffset, pos - startOffset);
+		newStr = data.substr(0, pos);
+		data.erase(0, pos);
+		return newStr;
 	}
-	return str.substr(*offset, str.size() - *offset);
+	newStr = data;
+	data.clear();
+	return data;
+}
+
+std::string extractPhrase(std::string &data)
+{
+	std::string newStr;
+
+	if (data[0] == ':')
+	{
+		newStr = data;
+		newStr.erase(0, 1);
+		data.clear();
+		return newStr;
+	}
+	else
+		return extractWord(data);
 }
 
 Message::Message(ISender &sender, std::string data) : sender(sender)
 {
-	size_t	offset;
-//	servidor> :irc.chathispano.org eriuwer JOIN #canal
-//	cliente> :origen comando parametos :erir
-
-	//verifica si tiene prefijo
-	offset = 0;
-	while (data[offset] == ' ')
-		offset++;
-	if (data.find(':', offset) != std::string::npos)
+	leftTrim(data);
+	if (data[0] == ':')
 	{
-//		offset = 1;
-		this->prefix = data.substr(offset, data.find(' ', offset) - offset);
-		offset += this->prefix.size();
-//		this->prefix = substrchr(data, &offset, ' ');
+		this->prefix = extractWord(data);
+		this->prefix.erase(0, 1);
+		leftTrim(data);
 	}
-	this->cmd = substrchr(data, &offset, ' ');
+	this->cmd = extractPhrase(data);
+	leftTrim(data);
+	for (int i = 0; data.size() > 1 && i < 15; i++)
+	{
+		this->param[i] = extractPhrase(data);
+		leftTrim(data);
+	}
+	
+	for (int i = 0; !this->param[i].empty(); i++)
+		std::cout << "param[" << i << "] = '" << this->param[i] << "' " << data.size() << std::endl;
 	std::cout << "prefix = '" << this->prefix << "' cmd = '" << this->cmd << "' fd = " << this->sender.getFd() << std::endl;
 }
 

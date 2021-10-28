@@ -257,9 +257,19 @@ int	Server::checkUserConnection(void)
 
 void	Server::checkUserInput(void)
 {
-	int		size;
+	size_t	size;
+	size_t	pos;
 	char	buffer[BUFFERSIZE + 1];
+	std::string	msg;
 	User	*user;
+
+
+	/*	leemos entrada, hasta 512, procesamos mensajes independientes hasta el final.
+	 *  solo los que están con fin de linea.
+	 *  procesmos 2 mensajes, quedan 480bytes
+	 *	--> fd pendiente de leer.
+	 *	vuelvo y leo el siguiente paquete. descarto hasta el \r\n y mando los 480 a procesar.
+	*/
 
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
@@ -268,15 +278,25 @@ void	Server::checkUserInput(void)
 			user = this->fdMap[pollfds[i].fd];
 			size = recv(pollfds[i].fd, buffer, BUFFERSIZE, 0);
 			buffer[size] = '\0';
-			Message &message = Message::messageBuilder(*user, buffer);
-			(void)message;
+			user->getBuffer() += buffer;
+			while (user->getBuffer().size() > 0)
+			{
+				pos = user->getBuffer().find('\n');
+				if (pos != std::string::npos)
+				{
+					msg = user->getBuffer().substr(0, pos);
+					user->getBuffer().erase(0, pos);
+					if ((pos = msg.find('\r')))
+						msg.erase(pos, 1);
+					Message &message = Message::messageBuilder(*user, msg);
+					(void)message;
+					delete &message;
+				}
+			}
 			if (size <= 0)
 				this->_delUser(*user);
 			else
-			{
 				this->send(user->getName() + "> " + buffer);
-			}
-			delete &message;
 		}
 	}
 }
