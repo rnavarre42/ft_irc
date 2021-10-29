@@ -10,7 +10,9 @@ std::string	Numeric::_toString(Message &msg, int num, std::string str)
 {
 	std::ostringstream	ss;
 
-	ss << msg.getCmd() << " " << num << " " << str;
+	ss << msg.getSender().getName();
+	ss << " " << num << " * ";
+	ss << msg.getCmd() << " " << str;
 	return ss.str();
 }
 
