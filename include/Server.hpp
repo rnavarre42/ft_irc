@@ -42,6 +42,7 @@ public:
 	static Server		&getInstance(std::string ip, int port);
 	std::string const	&getName(void) const;
 	int const			&getFd(void) const;
+	bool const			&isRegistered(void) const;
 
 	void	start(void);
 	ssize_t	send(std::string msg);
@@ -63,7 +64,8 @@ private:
 	int			opt;
 	int			addrlen;
 	int			timeout;
-		
+
+	bool		registered;	
 	bool		stop;
 
 	std::string	name;

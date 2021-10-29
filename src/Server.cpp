@@ -13,6 +13,7 @@
 #include "Server.hpp"
 #include "User.hpp"
 #include "UserCommand.hpp"
+#include "PrivmsgCommand.hpp"
 #include "Message.hpp"
 #include "Console.hpp"
 
@@ -41,6 +42,7 @@ Server::Server(std::string ip, int port)
 	this->stop = false;
 	this->initSocket();
 	this->timeout = 1000;
+	this->registered = 1;
 	this->_bind();
 }
 
@@ -51,6 +53,7 @@ void	Server::_loadCommands(void)
 {
 	//UserCommand	usercmd(*this, LEVEL_ALL);
 	this->commandMap["USER"] = new UserCommand(*this, LEVEL_ALL);
+	this->commandMap["PRIVMSG"] = new PrivmsgCommand(*this, LEVEL_REGISTERED);
 }
 
 Server	&Server::getInstance(void)
@@ -224,6 +227,11 @@ void	Server::_delUser(User &user)
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
 	this->send("User <anonymous> disconnect\n");
 	delete &user;
+}
+
+bool const	&Server::isRegistered(void) const
+{
+	return this->registered;
 }
 
 int	Server::checkUserConnection(void)

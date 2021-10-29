@@ -8,10 +8,12 @@ BASE_SRCS		=	\
 					ACommand.cpp				\
 					Message.cpp					\
 					ISender.cpp					\
+					Numeric.cpp					\
 
 COMMAND_PATH	=	commands/
 COMMAND_SRCS	=	\
 					UserCommand.cpp				\
+					PrivmsgCommand.cpp			\
 
 SRCS			=	$(addprefix $(BASE_PATH), $(BASE_SRCS)				\
 						$(addprefix $(COMMAND_PATH), $(COMMAND_SRCS))	\

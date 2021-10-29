@@ -4,22 +4,25 @@
 #include "Message.hpp"
 #include <string>
 
+#define LEVEL_UNREGISTERED	0x00
 #define LEVEL_REGISTERED	0x01
-#define LEVEL_UNREGISTERED	0x02
-#define LEVEL_ALL			LEVEL_REGISTERED | LEVEL_UNREGISTERED
+#define LEVEL_ALL			0x02
 
 class Server;
 class Message;
 
 class ACommand
 {
-	public:
-		ACommand(Server &server, char level);
-		~ACommand(void);
+public:
+	ACommand(Server &server, int level);
+	~ACommand(void);
 
-		virtual void	exec(Message &msg) = 0;
+	void exec(Message &msg);
 
-	protected:
-		Server		&server;
-		char		level;
+private:
+	virtual void	_exec(Message &msg) = 0;
+
+protected:
+	Server		&server;
+	int			level;
 };
