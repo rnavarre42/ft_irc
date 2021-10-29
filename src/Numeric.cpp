@@ -6,17 +6,33 @@
 
 std::map<int, std::string> Numeric::_numericMap;
 
-std::string	Numeric::_toString(Message &msg, int num, std::string str)
+std::string	Numeric::_toString(Server &server, Message &msg, int num, std::string str)
 {
 	std::ostringstream	ss;
 
-	ss << msg.getSender().getName();
-	ss << " " << num << " * ";
+	/*
+	 *	Si esta registrado se usa el nick!ident@host,
+	 *	si no se usa la del servidor que procesa el mensaje
+	 *
+	 *	Podemos tener un getMask pure virtual de ISender
+	 *	implementada en user o server para esto
+	*/
+
+	if (!server.getName().empty())
+		ss << server.getName();
+	ss << " " << num;
+	if (msg.getSender().getName().empty())
+		ss << " * ";
+	else
+		ss << " " << msg.getSender().getName();
 	ss << msg.getCmd() << " " << str;
+
+//	std::cout << msg.getSender().getName() << " " << num << " * " << msg.getCmd() << " " << str << std::endl;
+
 	return ss.str();
 }
 
-std::string	Numeric::builder(Message &msg, int num, std::string p[], size_t size)
+std::string	Numeric::builder(Server &server, Message &msg, int num, std::string p[], size_t size)
 {
 	static Numeric	*instance;
 
@@ -35,7 +51,7 @@ std::string	Numeric::builder(Message &msg, int num, std::string p[], size_t size
 		offset += replacePos + p[i].size();
 		i++;
 	}
-	return instance->_toString(msg, num, str);
+	return instance->_toString(server, msg, num, str);
 }
 
 Numeric::Numeric(void)
