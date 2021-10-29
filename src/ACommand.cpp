@@ -16,7 +16,7 @@ void ACommand::exec(Message &message)
 	if (level == LEVEL_ALL || message.getSender().isRegistered() == level)
 		this->_exec(message);
 	else if (level == LEVEL_REGISTERED)
-		message.getSender().send(Numeric::builder(ERR_NOTREGISTERED));
+		message.getSender().send(Numeric::builder(message, ERR_NOTREGISTERED));
 	else if (level == LEVEL_UNREGISTERED)
-		message.getSender().send(Numeric::builder(ERR_ALREADYREGISTERED));
+		message.getSender().send(Numeric::builder(message, ERR_ALREADYREGISTERED));
 }

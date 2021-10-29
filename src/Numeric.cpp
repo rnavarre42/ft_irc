@@ -1,10 +1,20 @@
 #include "Numeric.hpp"
+#include "Message.hpp"
 #include <iostream>
+#include <sstream>
 #include <string>
 
 std::map<int, std::string> Numeric::_numericMap;
 
-std::string	Numeric::builder(int num, std::string p[], size_t size)
+std::string	Numeric::_toString(Message &msg, int num, std::string str)
+{
+	std::ostringstream	ss;
+
+	ss << msg.getCmd() << " " << num << " " << str;
+	return ss.str();
+}
+
+std::string	Numeric::builder(Message &msg, int num, std::string p[], size_t size)
 {
 	static Numeric	*instance;
 
@@ -23,7 +33,7 @@ std::string	Numeric::builder(int num, std::string p[], size_t size)
 		offset += replacePos + p[i].size();
 		i++;
 	}
-	return num + " " + str;
+	return instance->_toString(msg, num, str);
 }
 
 Numeric::Numeric(void)
