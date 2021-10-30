@@ -11,6 +11,13 @@ void	leftTrim(std::string &data)
 	data.erase(0, i);
 }
 
+void strToUpper(std::string &data)
+{
+	for (size_t i = 0; i < data.size(); i++)
+		if (data[i] >= 'a' && data[i] <= 'z')
+			data[i] -= 32;
+}
+
 std::string	extractWord(std::string &data)
 {
 	size_t 		pos;
@@ -54,6 +61,7 @@ Message::Message(ISender &sender, std::string data) : sender(sender)
 		leftTrim(data);
 	}
 	this->cmd = extractPhrase(data);
+	strToUpper(this->cmd);
 	leftTrim(data);
 	for (int i = 0; i < 15 && data.size() > 1; i++)
 	{
@@ -80,6 +88,11 @@ ISender &Message::getSender(void)
 	return this->sender;
 }
 
+int		Message::getCount(void)
+{
+	return this->count;
+}
+
 Message &Message::messageBuilder(ISender &sender, std::string data)
 {
 	return *new Message(sender, data);
@@ -87,7 +100,7 @@ Message &Message::messageBuilder(ISender &sender, std::string data)
 
 std::string	const *Message::getParam(int index) const
 {
-	if (index <= this->size)
+	if (index <= this->count)
 		return this->param + index;
 	return NULL;
 }

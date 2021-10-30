@@ -3,7 +3,7 @@
 #include "Server.hpp"
 #include <iostream>
 
-PrivmsgCommand::PrivmsgCommand(Server &server, char level) : ACommand(server, level)
+PrivmsgCommand::PrivmsgCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
 void PrivmsgCommand::_exec(Message &message)

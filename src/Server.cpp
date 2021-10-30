@@ -16,6 +16,8 @@
 #include "PrivmsgCommand.hpp"
 #include "Message.hpp"
 #include "Console.hpp"
+#include "Numeric.hpp"
+#include "numerics.hpp"
 
 Server	*Server::instance = NULL;
 
@@ -32,8 +34,8 @@ const char	*Server::ServerFullException::what(void) const throw()
 	return "The server is full.";
 }
 
-Server::Server(std::string ip, int port)
-	: ip(ip), port(port)
+Server::Server(std::string listenIp, int listenPort, std::string name)
+	: ip(listenIp), port(listenPort), name(name), type(TYPE_SERVER)
 {
 	this->_loadCommands();
 	signal(SIGPIPE, SIG_IGN);
@@ -52,18 +54,18 @@ Server::~Server(void)
 void	Server::_loadCommands(void)
 {
 	//UserCommand	usercmd(*this, LEVEL_ALL);
-	this->commandMap["USER"] = new UserCommand(*this, LEVEL_ALL);
-	this->commandMap["PRIVMSG"] = new PrivmsgCommand(*this, LEVEL_REGISTERED);
+	this->commandMap["USER"] = new UserCommand(*this, LEVEL_ALL, 4);
+	this->commandMap["PRIVMSG"] = new PrivmsgCommand(*this, LEVEL_REGISTERED, 2);
 }
 
 Server	&Server::getInstance(void)
 {
 	return *Server::instance;
 }
-Server	&Server::getInstance(std::string ip, int port)
+Server	&Server::getInstance(std::string listenIp, int listenPort, std::string name)
 {
 	if (Server::instance == NULL)
-		Server::instance = new Server(ip, port);
+		Server::instance = new Server(listenIp, listenPort, name);
 	return *Server::instance;
 }
 
@@ -154,6 +156,16 @@ int		Server::findFreePollIndex(void)
 std::string const	&Server::getName(void) const
 {
 	return this->name;
+}
+
+bool	Server::isUser(void)
+{
+	return (this->type == TYPE_USER);
+}
+
+bool	Server::isServer(void)
+{
+	return (this->type == TYPE_SERVER);
 }
 
 User	*Server::_accept(void)
@@ -302,7 +314,7 @@ void	Server::checkUserInput(void)
 				if (this->commandMap.find(message.getCmd()) != commandMap.end())
 					commandMap[message.getCmd()]->exec(message);
 				else
-					user->send("Command " + message.getCmd() + " not found.");
+					user->send(Numeric::builder(*this, message, ERR_UNKNOWNCOMMAND, (std::string[]){message.getSender().getName()}, 1));
 				delete &message;
 			}
 			if (size <= 0)

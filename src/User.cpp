@@ -7,7 +7,7 @@
 #include "Server.hpp"
 #include "Console.hpp"
 
-User::User(int fd, Server &server) : server(server), fd(fd)
+User::User(int fd, Server &server) : server(server), fd(fd), type(TYPE_USER)
 {}
 
 User::~User(void)
@@ -73,7 +73,17 @@ void	User::setName(std::string value)
 
 std::string const	&User::getName(void) const
 {
-	return (this->name);
+	return this->name;
+}
+
+bool	User::isUser(void)
+{
+	return (this->type == TYPE_USER);
+}
+
+bool	User::isServer(void)
+{
+	return (this->type == TYPE_SERVER);
 }
 
 void	User::setPollIndex(int value)
@@ -83,7 +93,7 @@ void	User::setPollIndex(int value)
 
 int	const	&User::getPollIndex(void) const
 {
-	return (this->pollIndex);
+	return this->pollIndex;
 }
 
 void	User::setAwayMsg(std::string value)
@@ -93,7 +103,7 @@ void	User::setAwayMsg(std::string value)
 
 std::string const	&User::getAwayMsg(void) const
 {
-	return (this->awayMsg);
+	return this->awayMsg;
 }
 
 void	User::setFd(int value)
@@ -103,7 +113,7 @@ void	User::setFd(int value)
 
 int const &User::getFd(void) const
 {
-	return (this->fd);
+	return this->fd;
 }
 
 void	User::setRegistered(bool value)

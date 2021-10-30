@@ -4,7 +4,7 @@
 class PrivmsgCommand : public ACommand
 {
 	public:
-		PrivmsgCommand(Server &server, char level);
+		PrivmsgCommand(Server &server, int accessLevel, int paramCount);
 
 	private:
 		virtual void	_exec(Message &message);

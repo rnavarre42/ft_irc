@@ -13,6 +13,7 @@ public:
 	std::string const	*getParam(int index) const;
 	std::string const	&getCmd(void) const;
 	ISender				&getSender(void);
+	int					getCount(void);
 	static Message		&messageBuilder(ISender &sender, std::string data);
 
 private:
@@ -24,7 +25,7 @@ private:
 //	std::string	host;
 	std::string prefix;
 	std::string cmd;
-	int			size;
+	int			count;
 	std::string	param[15];
 };
 

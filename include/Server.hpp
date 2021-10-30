@@ -39,8 +39,10 @@ public:
 
 	static void			signalHandler(int sig);
 	static Server		&getInstance(void);
-	static Server		&getInstance(std::string ip, int port);
+	static Server		&getInstance(std::string listenIp, int listenPort, std::string name);
 	std::string const	&getName(void) const;
+	bool				isUser(void);
+	bool				isServer(void);
 	int const			&getFd(void) const;
 	bool const			&isRegistered(void) const;
 
@@ -55,7 +57,7 @@ public:
 	};
 
 private:
-	Server(std::string ip, int port);
+	Server(std::string listenIp, int listenPort, std::string name);
 	Server(void);
 
 	std::string	ip;
@@ -69,6 +71,7 @@ private:
 	bool		stop;
 
 	std::string	name;
+	int			type;
 
 	struct sockaddr_in	address;
 	struct pollfd		pollfds[MAXUSERS + 2];

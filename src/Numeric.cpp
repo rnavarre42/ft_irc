@@ -1,12 +1,14 @@
 #include "Numeric.hpp"
 #include "Message.hpp"
+#include "numerics.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
 
-std::map<int, std::string> Numeric::_numericMap;
+std::map<int, std::string>	Numeric::_numericMap;
+Numeric						*Numeric::_instance;
 
-std::string	Numeric::_toString(Server &server, Message &msg, int num, std::string str)
+std::string	Numeric::_toString()
 {
 	std::ostringstream	ss;
 
@@ -18,47 +20,46 @@ std::string	Numeric::_toString(Server &server, Message &msg, int num, std::strin
 	 *	implementada en user o server para esto
 	*/
 
-	if (!server.getName().empty())
-		ss << server.getName();
+	if (!_instance->server.getName().empty())
+		ss << ":" << _instance->server.getName();
 	ss << " " << num;
-	if (msg.getSender().getName().empty())
+	if (_instance->message->getSender().getName().empty())
 		ss << " * ";
 	else
-		ss << " " << msg.getSender().getName();
-	ss << msg.getCmd() << " " << str;
+		ss << " " << _instance->message->getSender().getName();
+	ss << _instance->message->getCmd() << _instance->numericStr;
 
 //	std::cout << msg.getSender().getName() << " " << num << " * " << msg.getCmd() << " " << str << std::endl;
 
 	return ss.str();
 }
 
-std::string	Numeric::builder(Server &server, Message &msg, int num, std::string p[], size_t size)
+std::string	Numeric::builder(Server &server, Message &message, int num, std::string p[], size_t size)
 {
-	static Numeric	*instance;
-
 	size_t		i = 0;
-	std::string str;
 	size_t		replacePos, offset = 0;
 
-	if (!instance)
-		instance = new Numeric();
-	str = Numeric::_numericMap[num];
-	std::cout << "num = " << num << " : str = " << str << std::endl;
+	if (!Numeric::_instance)
+		_instance = new Numeric(server);
+	_instance->message = &message;
+	_instance->num = num;
+	_instance->numericStr = Numeric::_numericMap[num];
+	std::cout << "num = " << num << " : str = " << _instance->numericStr << std::endl;
 	while (i < size)
 	{
-		replacePos = str.find('$', offset);
-		str.replace(replacePos, 1, p[i]);
+		replacePos = _instance->numericStr.find('$', offset);
+		_instance->numericStr.replace(replacePos, 1, p[i]);
 		offset += replacePos + p[i].size();
 		i++;
 	}
-	return instance->_toString(server, msg, num, str);
+	return _instance->_toString();
 }
 
-Numeric::Numeric(void)
+Numeric::Numeric(Server &server) : server(server)
 {
-	Numeric::_numericMap[421] = "$ :Unknown command";
-	Numeric::_numericMap[433] = "$ :Is already in use";
-	Numeric::_numericMap[451] = ":You have not registered";
-	Numeric::_numericMap[461] = "$ :Not enough parameters";
-	Numeric::_numericMap[462] = ":Unauthorized command (already registered)";
+	Numeric::_numericMap[ERR_UNKNOWNCOMMAND] = "$ :Unknown command";
+	Numeric::_numericMap[ERR_NICKNAMEINUSE] = "$ :Is already in use";
+	Numeric::_numericMap[ERR_NOTREGISTERED] = " :You have not registered";
+	Numeric::_numericMap[ERR_NEEDMOREPARAMS] = "$ :Not enough parameters";
+	Numeric::_numericMap[ERR_ALREADYREGISTERED] = " :Unauthorized command (already registered)";
 }

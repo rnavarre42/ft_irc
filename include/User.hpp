@@ -14,24 +14,26 @@ public:
 	User(int fd, Server &server);
 	~User(void);
 
-	void		setHost(std::string value);
+	void				setHost(std::string value);
 	std::string const	&getHost(void) const;
 
-	void		setIdent(std::string value);
+	void				setIdent(std::string value);
 	std::string const	&getIdent(void) const;
 
-	void		setReal(std::string value);
+	void				setReal(std::string value);
 	std::string const	&getReal(void) const;
 
 	void			setSignTime(time_t volue);
 	time_t const	&getSignTime(void) const;
 		
-	void		setName(std::string value);
+	void				setName(std::string value);
 	std::string const	&getName(void) const;
 
 	std::string &getBuffer(void);
+	bool		isUser(void);
+	bool		isServer(void);
 
-	void		setAwayMsg(std::string value);
+	void				setAwayMsg(std::string value);
 	std::string const	&getAwayMsg(void) const;
 
 	std::map<std::string, Channel *> &getChannelMap(void);
@@ -78,6 +80,7 @@ private:
 	time_t								idleTime;
 	int									pollIndex;
 	int									fd;
+	int									type;
 };
 
 #endif

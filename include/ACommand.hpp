@@ -14,7 +14,7 @@ class Message;
 class ACommand
 {
 public:
-	ACommand(Server &server, int level);
+	ACommand(Server &server, int accessLeveli, int paramCount);
 	~ACommand(void);
 
 	void exec(Message &msg);
@@ -25,4 +25,5 @@ private:
 protected:
 	Server		&server;
 	int			level;
+	int			count;
 };

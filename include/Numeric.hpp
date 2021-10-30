@@ -8,12 +8,18 @@ class Numeric
 {
 public:
 	~Numeric(void);
-	static std::string	builder(Server &server, Message &msg, int num, std::string p[] = 0, size_t size = 0);
+	static std::string	builder(Server &server, Message &message, int num, std::string p[] = 0, size_t size = 0);
 	
 private:
-	Numeric(void);
+	Numeric(Server &server);
 
-	std::string		_toString(Server &server, Message &msg, int num, std::string str);
+	static Numeric			*_instance;
+	Server			&server;
+	Message			*message;
+	int				num;
+	std::string		numericStr;	
+
+	std::string		_toString(void);
 
 	static std::map<int, std::string>	_numericMap;
 };
