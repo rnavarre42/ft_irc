@@ -57,9 +57,10 @@ std::string	Numeric::builder(Server &server, Message &message, int num, std::str
 
 Numeric::Numeric(Server &server) : server(server)
 {
+	Numeric::_numericMap[ERR_NOTIMPLEMENTED] = " :Command not implemented yet";
 	Numeric::_numericMap[ERR_UNKNOWNCOMMAND] = "$ :Unknown command";
 	Numeric::_numericMap[ERR_NICKNAMEINUSE] = "$ :Is already in use";
 	Numeric::_numericMap[ERR_NOTREGISTERED] = " :You have not registered";
-	Numeric::_numericMap[ERR_NEEDMOREPARAMS] = "$ :Not enough parameters";
+	Numeric::_numericMap[ERR_NEEDMOREPARAMS] = " :Not enough parameters";
 	Numeric::_numericMap[ERR_ALREADYREGISTERED] = " :Unauthorized command (already registered)";
 }

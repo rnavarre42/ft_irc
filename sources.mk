@@ -12,8 +12,25 @@ BASE_SRCS		=	\
 
 COMMAND_PATH	=	commands/
 COMMAND_SRCS	=	\
-					UserCommand.cpp				\
+					AwayCommand.cpp				\
+					InviteCommand.cpp			\
+					JoinCommand.cpp				\
+					KickCommand.cpp				\
+					ListCommand.cpp				\
+					ModeCommand.cpp				\
+					NamesCommand.cpp			\
+					NickCommand.cpp				\
+					NoticeCommand.cpp			\
+					PartCommand.cpp				\
+					PassCommand.cpp				\
+					PingCommand.cpp				\
+					PongCommand.cpp				\
 					PrivmsgCommand.cpp			\
+					QuitCommand.cpp				\
+					UserCommand.cpp				\
+					WhoCommand.cpp				\
+					WhoisCommand.cpp			\
+					WhowasCommand.cpp			\
 
 SRCS			=	$(addprefix $(BASE_PATH), $(BASE_SRCS)				\
 						$(addprefix $(COMMAND_PATH), $(COMMAND_SRCS))	\

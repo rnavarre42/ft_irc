@@ -15,10 +15,11 @@ void ACommand::exec(Message &message)
 {
 	if (this->level == LEVEL_ALL || message.getSender().isRegistered() == level)
 	{
-		if (this->count < message.getCount())
-			message.getSender().send(Numeric::builder(this->server, message, ERR_NEEDMOREPARAMS, (std::string[]){message.getCmd()}, 1));
+		if (message.getCount() < this->count)
+			message.getSender().send(Numeric::builder(this->server, message, ERR_NEEDMOREPARAMS));
 		else
-			this->_exec(message);
+			if (!this->_exec(message))
+				message.getSender().send(Numeric::builder(this->server, message, ERR_NOTIMPLEMENTED));
 	}
 	else if (this->level == LEVEL_REGISTERED)
 		message.getSender().send(Numeric::builder(this->server, message, ERR_NOTREGISTERED));

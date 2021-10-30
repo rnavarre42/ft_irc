@@ -1,0 +1,21 @@
+#!/bin/bash
+if [[ "$#" -ne 1 ]]; then 
+	echo No enough arguments.
+	echo Use: $0 Command_Class_Name
+	echo
+	echo Example:
+	echo $0 Kick
+	exit 1
+fi
+COMMAND_SOURCE=Command.cpp
+COMMAND_HEADER=Command.hpp
+TEMPLATE_PATH=templates/
+INCLUDE_PATH=../include/
+COMMAND_PATH=../src/commands/
+
+export CLASS=$1
+export CLASS_UPPER=${CLASS^^}
+envsubst '$CLASS $CLASS_UPPER' < $TEMPLATE_PATH/$COMMAND_HEADER > $INCLUDE_PATH/$CLASS$COMMAND_HEADER
+envsubst '$CLASS' < $TEMPLATE_PATH/$COMMAND_SOURCE > $COMMAND_PATH/$CLASS$COMMAND_SOURCE
+unset CLASS
+unset CLASS_UPPER

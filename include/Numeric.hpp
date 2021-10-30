@@ -1,8 +1,9 @@
-#pragma once
+#ifndef NUMERIC_HPP
+# define NUMERIC_HPP
 
-#include "Message.hpp"
-#include <map>
-#include <string>
+# include "Message.hpp"
+# include <map>
+# include <string>
 
 class Numeric
 {
@@ -23,3 +24,5 @@ private:
 
 	static std::map<int, std::string>	_numericMap;
 };
+
+#endif

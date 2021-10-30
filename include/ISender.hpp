@@ -1,14 +1,14 @@
-#pragma once
+#ifndef ISENDER_HPP
+# define ISENDER_HPP
 
-#include <string>
-#include <sys/types.h>
+# include <string>
+# include <sys/types.h>
 
-#define TYPE_SERVER		0x0
-#define TYPE_USER		0x1
+# define TYPE_SERVER		0x0
+# define TYPE_USER		0x1
 
 class ISender
 {
-
 public:
 	virtual ~ISender(void);
 
@@ -20,3 +20,5 @@ public:
 	virtual bool				isUser(void) = 0;
 
 };
+
+#endif

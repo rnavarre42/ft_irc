@@ -9,37 +9,38 @@
 
 class Channel
 {
-	public:
-		Channel(std::string name);
-		~Channel(void);
+public:
+	Channel(std::string name);
+	~Channel(void);
 
-		std::string const					&getName(void) const;
-		std::map<std::string, User *> const	&getUserMap(void) const;
+	std::string const					&getName(void) const;
+	std::map<std::string, User *> const	&getUserMap(void) const;
 
-		void							setOwner(std::string value);
-		std::string const				&getOwner(void) const;
+	void							setOwner(std::string value);
+	std::string const				&getOwner(void) const;
 	
-		void							setTopic(std::string value);
-		std::string	const				&getTopic(void) const;
+	void							setTopic(std::string value);
+	std::string	const				&getTopic(void) const;
 		
-		void							setTopicOwn(std::string value);
-		std::string	const				&getTopicOwn(void) const;
+	void							setTopicOwn(std::string value);
+	std::string	const				&getTopicOwn(void) const;
 
-		void							setTopicTime(time_t value);
-		time_t const					&getTopicTime(void) const;
+	void							setTopicTime(time_t value);
+	time_t const					&getTopicTime(void) const;
 
-		void send(std::string msg);
-		void join(User user);
-		void part(User user);
-	private:
-		std::string						name;
-		std::string						topic;
-		std::string						owner;
-		std::string						topicOwn;
-		time_t							topicTime;
-		std::map<std::string, User *>	userMap;
+	void send(std::string msg);
+	void join(User user);
+	void part(User user);
 
-		Channel(void);
+private:
+	std::string						name;
+	std::string						topic;
+	std::string						owner;
+	std::string						topicOwn;
+	time_t							topicTime;
+	std::map<std::string, User *>	userMap;
+
+	Channel(void);
 };
 
 #endif

@@ -52,6 +52,7 @@ std::string extractPhrase(std::string &data)
 
 Message::Message(ISender &sender, std::string data) : sender(sender)
 {
+	int i = 0;
 //	std::cout << "message original: '" << data << "'" << std::endl;
 	leftTrim(data);
 	if (data[0] == ':')
@@ -63,11 +64,12 @@ Message::Message(ISender &sender, std::string data) : sender(sender)
 	this->cmd = extractPhrase(data);
 	strToUpper(this->cmd);
 	leftTrim(data);
-	for (int i = 0; i < 15 && data.size() > 1; i++)
+	for (; i < 15 && data.size() > 1; i++)
 	{
 		this->param[i] = extractPhrase(data);
 		leftTrim(data);
 	}
+	this->count = i + 1;
 //	std::cout << "prefix = '" << this->prefix << "' cmd = '" << this->cmd << "' fd = " << this->sender.getFd() << std::endl;
 //	for (int i = 0; i < 15 && !this->param[i].empty(); i++)
 //		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;

@@ -1,15 +1,15 @@
 #ifndef IRCSERVER_HPP
 # define IRCSERVER_HPP
 
-#include "ISender.hpp"
-#include "ACommand.hpp"
-#include "log.hpp"
-#include <string>
-#include <map>
-#include <vector>
-#include <ctime>
-#include <netinet/in.h>
-#include <poll.h>
+# include "ISender.hpp"
+# include "ACommand.hpp"
+# include "log.hpp"
+# include <string>
+# include <map>
+# include <vector>
+# include <ctime>
+# include <netinet/in.h>
+# include <poll.h>
 
 # define LOG_LEVEL LOG_INFO | LOG_WARNING | LOG_ERROR | LOG_FATAL
 

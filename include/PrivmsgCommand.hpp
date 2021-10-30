@@ -1,11 +1,16 @@
-#include "ACommand.hpp"
-#include <string>
+#ifndef PRIVATEMSGCOMMAND_HPP
+# define PRIVATEMSGCOMMAND_HPP
+
+# include "ACommand.hpp"
+# include <string>
 
 class PrivmsgCommand : public ACommand
 {
-	public:
-		PrivmsgCommand(Server &server, int accessLevel, int paramCount);
+public:
+	PrivmsgCommand(Server &server, int accessLevel, int paramCount);
 
-	private:
-		virtual void	_exec(Message &message);
+private:
+	virtual bool	_exec(Message &message);
 };
+
+#endif

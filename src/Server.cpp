@@ -12,8 +12,7 @@
 #include <cstdlib>
 #include "Server.hpp"
 #include "User.hpp"
-#include "UserCommand.hpp"
-#include "PrivmsgCommand.hpp"
+#include "commands.hpp"
 #include "Message.hpp"
 #include "Console.hpp"
 #include "Numeric.hpp"
@@ -52,10 +51,26 @@ Server::~Server(void)
 {}
 
 void	Server::_loadCommands(void)
-{
-	//UserCommand	usercmd(*this, LEVEL_ALL);
-	this->commandMap["USER"] = new UserCommand(*this, LEVEL_ALL, 4);
-	this->commandMap["PRIVMSG"] = new PrivmsgCommand(*this, LEVEL_REGISTERED, 2);
+{	
+	this->commandMap["NICK"]	= new NickCommand	(*this, LEVEL_ALL, 1);
+	this->commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 1);
+	this->commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
+	this->commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
+	this->commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
+	this->commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["LIST"]	= new ListCommand	(*this, LEVEL_REGISTERED, 0);
+	this->commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["MODE"]	= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["WHOIS"]	= new WhoisCommand	(*this, LEVEL_REGISTERED, 1); 
+	this->commandMap["INVITE"]	= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["WHOWAS"]	= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 1);
 }
 
 Server	&Server::getInstance(void)

@@ -83,6 +83,9 @@ enum
 	ERR_WILDTOPLEVEL		= 414,	// "<mask> :Wildcard in toplevel domain"
 	ERR_BADMASK				= 415,	// "<mask> :Bad server/host mask"
 
+									// custom numeric, only for ft_irc
+	ERR_NOTIMPLEMENTED		= 420,  // "<command> :Command not implemented yet"
+
 	ERR_UNKNOWNCOMMAND		= 421,	// "<command> :Unknown command"
 	ERR_NOMOTD				= 422,	// ":MOTD File is missing"
 	ERR_NOADMININFO			= 423,	// "<server> :No administrative info available"
