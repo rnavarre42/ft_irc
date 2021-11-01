@@ -1,4 +1,5 @@
 #include "Message.hpp"
+#include "utils.hpp"
 #include <string>
 #include <iostream>
 #include <stdio.h>
@@ -9,13 +10,6 @@ void	leftTrim(std::string &data)
 	while (data[i] && data[i] == ' ')
 		i++;
 	data.erase(0, i);
-}
-
-void strToUpper(std::string &data)
-{
-	for (size_t i = 0; i < data.size(); i++)
-		if (data[i] >= 'a' && data[i] <= 'z')
-			data[i] -= 32;
 }
 
 std::string	extractWord(std::string &data)
@@ -61,8 +55,7 @@ Message::Message(ISender &sender, std::string data) : sender(sender)
 		this->prefix.erase(0, 1);
 		leftTrim(data);
 	}
-	this->cmd = extractPhrase(data);
-	strToUpper(this->cmd);
+	this->cmd = strToUpper(extractPhrase(data));
 	leftTrim(data);
 	for (; i < 15 && data.size() > 1; i++)
 	{

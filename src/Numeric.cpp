@@ -26,9 +26,9 @@ std::string	Numeric::_toString()
 	if (_instance->message->getSender().getName().empty())
 		ss << " * ";
 	else
-		ss << " " << _instance->message->getSender().getName();
-	ss << _instance->message->getCmd() << _instance->numericStr;
-
+		ss << " " << _instance->message->getSender().getName() << " ";
+//	ss << _instance->message->getCmd() << _instance->numericStr;
+	ss << _instance->numericStr;
 //	std::cout << msg.getSender().getName() << " " << num << " * " << msg.getCmd() << " " << str << std::endl;
 
 	return ss.str();
@@ -44,7 +44,6 @@ std::string	Numeric::builder(Server &server, Message &message, int num, std::str
 	_instance->message = &message;
 	_instance->num = num;
 	_instance->numericStr = Numeric::_numericMap[num];
-	std::cout << "num = " << num << " : str = " << _instance->numericStr << std::endl;
 	while (i < size)
 	{
 		replacePos = _instance->numericStr.find('$', offset);
@@ -57,10 +56,11 @@ std::string	Numeric::builder(Server &server, Message &message, int num, std::str
 
 Numeric::Numeric(Server &server) : server(server)
 {
-	Numeric::_numericMap[ERR_NOTIMPLEMENTED] = " :Command not implemented yet";
+	Numeric::_numericMap[ERR_NOTIMPLEMENTED] = "$ :Command not implemented yet";
 	Numeric::_numericMap[ERR_UNKNOWNCOMMAND] = "$ :Unknown command";
 	Numeric::_numericMap[ERR_NICKNAMEINUSE] = "$ :Is already in use";
-	Numeric::_numericMap[ERR_NOTREGISTERED] = " :You have not registered";
-	Numeric::_numericMap[ERR_NEEDMOREPARAMS] = " :Not enough parameters";
-	Numeric::_numericMap[ERR_ALREADYREGISTERED] = " :Unauthorized command (already registered)";
+	Numeric::_numericMap[ERR_NOTREGISTERED] = ":You have not registered";
+	Numeric::_numericMap[ERR_NEEDMOREPARAMS] = "$ :Not enough parameters";
+	Numeric::_numericMap[ERR_ALREADYREGISTERED] = ":Unauthorized command (already registered)";
+	Numeric::_numericMap[ERR_NOPRIVILEGES] = ":Permision Denied- You're not an IRC operator";
 }

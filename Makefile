@@ -1,4 +1,4 @@
-NAME		=	server
+NAME		=	ircserv
 SRCSPATH	=	src/
 OBJSPATH	=	obj/
 OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
@@ -50,7 +50,7 @@ run:		$(NAME)
 	./$(NAME)
 
 cli:
-	nc localhost 6667
+	make -C client run non NoSoyNadie 127.0.0.1 6667
 
 hispano:
 	make -C client run non NoSoyNadie 195.234.61.209 6667

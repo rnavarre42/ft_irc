@@ -14,11 +14,15 @@ public:
 
 	virtual std::string const	&getName(void) const = 0;
 	virtual int const			&getFd(void) const = 0;
+	virtual std::string const	&getPass(void) const = 0;
+	virtual void				setPass(std::string value) = 0;
 	virtual ssize_t				send(std::string msg) = 0;
 	virtual bool const			&isRegistered(void) const = 0;
 	virtual bool				isServer(void) = 0;
 	virtual bool				isUser(void) = 0;
-
+	virtual bool				isOper(void) = 0;
+	virtual int					getType(void) = 0;
+	virtual std::string			getMask(void) = 0;
 };
 
 #endif

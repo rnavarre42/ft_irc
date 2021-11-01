@@ -17,6 +17,7 @@
 #include "Console.hpp"
 #include "Numeric.hpp"
 #include "numerics.hpp"
+#include "utils.hpp"
 
 Server	*Server::instance = NULL;
 
@@ -42,8 +43,8 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
 	this->stop = false;
 	this->initSocket();
-	this->timeout = 1000;
-	this->registered = 1;
+	this->pollTimeout = 1000;
+	this->registered = 0;
 	this->_bind();
 }
 
@@ -51,7 +52,7 @@ Server::~Server(void)
 {}
 
 void	Server::_loadCommands(void)
-{	
+{
 	this->commandMap["NICK"]	= new NickCommand	(*this, LEVEL_ALL, 1);
 	this->commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 1);
 	this->commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
@@ -61,11 +62,12 @@ void	Server::_loadCommands(void)
 	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["KILL"]	= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
 	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 2);
 	this->commandMap["LIST"]	= new ListCommand	(*this, LEVEL_REGISTERED, 0);
 	this->commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["MODE"]	= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["WHOIS"]	= new WhoisCommand	(*this, LEVEL_REGISTERED, 1); 
+	this->commandMap["WHOIS"]	= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["INVITE"]	= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 	this->commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
 	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 2);
@@ -84,6 +86,11 @@ Server	&Server::getInstance(std::string listenIp, int listenPort, std::string na
 	return *Server::instance;
 }
 
+std::map<std::string, User *>	&Server::getUserMap(void)
+{
+	return this->userMap;
+}
+
 int		Server::count(void)
 {
 	return this->fdMap.size();
@@ -92,6 +99,16 @@ int		Server::count(void)
 int	const	&Server::getFd(void) const
 {
 	return this->fd;
+}
+
+void	Server::setPass(std::string value)
+{
+	this->pass = value;
+}
+
+std::string	const	&Server::getPass(void) const
+{
+	return this->pass;
 }
 
 ssize_t	Server::send(std::string msg)
@@ -107,7 +124,7 @@ ssize_t	Server::send(std::string msg)
 			usersLeft--;
 		}
 	}
-	
+
 //	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
 //		it->sendTo(msg);
 	return 0;
@@ -173,6 +190,11 @@ std::string const	&Server::getName(void) const
 	return this->name;
 }
 
+std::string			Server::getMask(void)
+{
+	return this->name;
+}
+
 bool	Server::isUser(void)
 {
 	return (this->type == TYPE_USER);
@@ -181,6 +203,16 @@ bool	Server::isUser(void)
 bool	Server::isServer(void)
 {
 	return (this->type == TYPE_SERVER);
+}
+
+bool	Server::isOper(void)
+{
+	return false;
+}
+
+int	Server::getType(void)
+{
+	return this->type;
 }
 
 User	*Server::_accept(void)
@@ -196,7 +228,7 @@ User	*Server::_accept(void)
 	}
 	if (this->fdMap.size() == MAXUSERS)
 	{
-		::send(newFd, "The server is full. Please, try again more later.\r\n", 52, 0);
+		::send(newFd, "The server is full. Please, try again more later.\r\n", 51, 0);
 		close(newFd);
 		return NULL;
 //		throw Server::ServerFullException();
@@ -236,7 +268,7 @@ void	Server::_listen(void)
 
 int		Server::_poll(void)
 {
-	return poll(this->pollfds, MAXUSERS + 2, this->timeout);
+	return poll(this->pollfds, MAXUSERS + 2, this->pollTimeout);
 }
 
 void	Server::_addUser(User &user)
@@ -247,12 +279,17 @@ void	Server::_addUser(User &user)
 
 void	Server::_delUser(User &user)
 {
-	if (user.isRegistered())
-		this->userMap.erase(user.getName());
+	if (user.getName().empty())
+		this->send("User <anonymous> disconnect\n");
+	else
+	{
+		this->send("User <" + user.getName() + "> disconnect\n");
+		this->userMap.erase(strToUpper(user.getName()));
+	}
 	this->fdMap.erase(user.getFd());
 	this->pollfds[user.getPollIndex()].fd = 0;
+	this->pollfds[user.getPollIndex()].events = 0;
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
-	this->send("User <anonymous> disconnect\n");
 	delete &user;
 }
 
@@ -273,19 +310,20 @@ int	Server::checkUserConnection(void)
 			Console::log(LOG_WARNING, "Server full, rejecting new connection");
 			return 1;
 		}
-		user->setSignTime(time(NULL));
-		if (user->send("Hello\r\n") <= 0)
+/*
+ 		if (user->send("Hello\r\n") <= 0)
 		{
 			Console::log(LOG_ERROR, "Server::checkUserConnection function user->sendTo() failed");
 			exit(EXIT_FAILURE);
 		}
+*/
 		this->_addUser(*user);
-		this->send("New user is connected.\r\n");
+//		this->send("New user is connected.\r\n");
 		Console::log(LOG_INFO, "User <anonymous> connected");
 		return 1;
 	}
 	return 0;
-/* 
+/*
  * Excepción eliminada al devolver _accept un puntero y no una referencia
  *
  *		catch (Server::ServerFullException &e)
@@ -329,7 +367,7 @@ void	Server::checkUserInput(void)
 				if (this->commandMap.find(message.getCmd()) != commandMap.end())
 					commandMap[message.getCmd()]->exec(message);
 				else
-					user->send(Numeric::builder(*this, message, ERR_UNKNOWNCOMMAND, (std::string[]){message.getSender().getName()}, 1));
+					user->send(Numeric::builder(*this, message, ERR_UNKNOWNCOMMAND, (std::string[]){message.getCmd()}, 1));
 				delete &message;
 			}
 			if (size <= 0)
@@ -355,6 +393,24 @@ void	Server::checkConsoleInput(void)
 	}
 }
 
+void	Server::registrationTimeout(void)
+{
+	std::map<int, User *>::iterator	it;
+	std::map<int, User *>::iterator current;
+
+	for (it = this->fdMap.begin(); it != this->fdMap.end();)
+	{
+		current = it;
+		it++;
+		if (current->second->getNextTimeout() < time(NULL))
+		{
+			current->second->send("ERROR : registration timeout");
+			this->_delUser(*current->second);
+			std::cout << "ha" << std::endl;
+		}
+	}
+}
+
 void	Server::loop(void)
 {
 	int	rv;
@@ -365,12 +421,16 @@ void	Server::loop(void)
 		if (rv == -1)
 		{
 			if (this->stop)
+			{
+				Console::log(LOG_INFO, "Server stopped by user");
 				exit(0);
+			}
 			Console::log(LOG_ERROR, "Server::loop function poll() failed");
 			exit(EXIT_FAILURE);
 		}
 		else if (rv == 0)
 		{
+			this->registrationTimeout();
 			//timeout
 			//check idle to send ping
 			//check ping timeout

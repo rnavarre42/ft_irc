@@ -1,0 +1,8 @@
+{
+	"files.associations": {
+		"ctime": "cpp",
+		"cstdlib": "cpp",
+		"map": "cpp",
+		"vector": "cpp"
+	}
+}

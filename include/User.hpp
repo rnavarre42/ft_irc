@@ -3,10 +3,12 @@
 
 # include <string>
 # include <map>
+# include "Channel.hpp"
 # include "Server.hpp"
 # include "ISender.hpp"
 
 class ISender;
+class Server;
 
 class User : public ISender
 {
@@ -22,6 +24,10 @@ public:
 
 	void				setReal(std::string value);
 	std::string const	&getReal(void) const;
+	std::string			getMask(void);
+
+	void				setPass(std::string value);
+	std::string const	&getPass(void) const;
 
 	void			setSignTime(time_t volue);
 	time_t const	&getSignTime(void) const;
@@ -32,6 +38,11 @@ public:
 	std::string &getBuffer(void);
 	bool		isUser(void);
 	bool		isServer(void);
+	bool		isOper(void);
+	int			getType(void);
+
+	void				setPongChallenge(std::string value);
+	std::string const	&getPongChallenge(void) const;
 
 	void				setAwayMsg(std::string value);
 	std::string const	&getAwayMsg(void) const;
@@ -42,8 +53,8 @@ public:
 	void 			setAwayTime(time_t value);
 	time_t const	&getAwayTime(void) const;
 
-	void 			setNextPing(time_t value);
-	time_t const	&getNextPing(void) const;
+	void 			setNextTimeout(time_t value);
+	time_t const	&getNextTimeout(void) const;
 
 	void			setIdleTime(time_t value);
 	time_t const	&getIdleTime(void) const;
@@ -69,14 +80,16 @@ private:
 	std::string							host;
 	std::string							ident;
 	std::string							real;
+	std::string							pass;
 	std::string							buffer;
 	std::string 						awayMsg;
+	std::string							pongChallenge;
 	Server								&server;
 	std::map<std::string, Channel *>	channelMap;
-	time_t								signTime;
 	bool								registered;
+	time_t								signTime;
 	time_t								awayTime;
-	time_t								nextPing;
+	time_t								nextTimeout;
 	time_t								idleTime;
 	int									pollIndex;
 	int									fd;

@@ -1,3 +1,4 @@
+// Clase encargada de manejar todas las conexiones
 #ifndef IRCSERVER_HPP
 # define IRCSERVER_HPP
 
@@ -6,7 +7,6 @@
 # include "log.hpp"
 # include <string>
 # include <map>
-# include <vector>
 # include <ctime>
 # include <netinet/in.h>
 # include <poll.h>
@@ -24,9 +24,18 @@
 # define MAXKICK		255
 # define MAXREAL		100
 
+# define IDLETIMEOUT	30
+# define REGTIMEOUT		15
+# define NEXTTIMEOUT	120
 # define BUFFERSIZE		512
 # define MAXUSERS		3
 # define MAXLISTEN		5
+
+
+//hispano:
+//	registerTimeout	 30s
+//	idleTimeout		120s
+//	pingTimeout		120s
 
 class User;
 class Channel;
@@ -37,14 +46,22 @@ class Server : public ISender
 public:
 	~Server(void);
 
-	static void			signalHandler(int sig);
-	static Server		&getInstance(void);
-	static Server		&getInstance(std::string listenIp, int listenPort, std::string name);
-	std::string const	&getName(void) const;
-	bool				isUser(void);
-	bool				isServer(void);
-	int const			&getFd(void) const;
-	bool const			&isRegistered(void) const;
+	static void						signalHandler(int sig);
+	static Server					&getInstance(void);
+	static Server					&getInstance(std::string listenIp, int listenPort, std::string name);
+	std::string const				&getName(void) const;
+	std::map<std::string, User *>	&getUserMap(void);
+	std::string						getMask(void);
+
+	void							setPass(std::string value);
+	std::string const				&getPass(void) const;
+
+	bool							isUser(void);
+	bool							isServer(void);
+	bool							isOper(void);
+	int								getType(void);
+	int const						&getFd(void) const;
+	bool const						&isRegistered(void) const;
 
 	void	start(void);
 	ssize_t	send(std::string msg);
@@ -65,11 +82,12 @@ private:
 	int			port;
 	int			opt;
 	int			addrlen;
-	int			timeout;
+	int			pollTimeout;
 
-	bool		registered;	
+	bool		registered;
 	bool		stop;
 
+	std::string	pass;
 	std::string	name;
 	int			type;
 
@@ -90,6 +108,7 @@ private:
 	void	_loadCommands(void);
 	void	checkConsoleInput(void);
 	void	checkUserInput(void);
+	void	registrationTimeout(void);
 	void	closeClients(std::string msg);
 	void	loop(void);
 	void	initSocket(void);

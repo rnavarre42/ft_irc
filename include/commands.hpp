@@ -9,6 +9,8 @@
 # include "ModeCommand.hpp"
 # include "NamesCommand.hpp"
 # include "NickCommand.hpp"
+# include "KickCommand.hpp"
+# include "KillCommand.hpp"
 # include "NoticeCommand.hpp"
 # include "PartCommand.hpp"
 # include "PassCommand.hpp"

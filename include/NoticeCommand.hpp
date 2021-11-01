@@ -6,11 +6,12 @@
 
 class NoticeCommand : public ACommand
 {
-	public:
-		NoticeCommand(Server &server, int accessLevel, int paramCount);
+public:
+	NoticeCommand(Server &server, int accessLevel, int paramCount);
 
-	private:
-		virtual bool	_exec(Message &message);
+private:
+	virtual bool	_execUser(Message &message);
+	virtual bool	_execServer(Message &message);
 };
 
 #endif

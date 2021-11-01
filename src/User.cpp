@@ -7,7 +7,13 @@
 #include "Server.hpp"
 #include "Console.hpp"
 
-User::User(int fd, Server &server) : server(server), fd(fd), type(TYPE_USER)
+User::User(int fd, Server &server) :
+	server(server), 
+	registered(false), 
+	signTime(time(NULL)), 
+	nextTimeout(signTime + REGTIMEOUT), 
+	fd(fd), 
+	type(TYPE_USER)
 {}
 
 User::~User(void)
@@ -18,6 +24,7 @@ User::~User(void)
 		Console::log(LOG_INFO, "User <anonymous> disconnected");
 	close(this->fd);
 	this->channelMap.clear();
+	//this->setRegistered(false);
 	this->fd = 0;
 }
 
@@ -76,6 +83,21 @@ std::string const	&User::getName(void) const
 	return this->name;
 }
 
+void	User::setPass(std::string value)
+{
+	this->pass = value;
+}
+
+std::string			User::getMask(void)
+{
+	return (this->name + "!" + this->ident + "@" + this->host);
+}
+
+std::string const	&User::getPass(void) const
+{
+	return this->pass;
+}
+
 bool	User::isUser(void)
 {
 	return (this->type == TYPE_USER);
@@ -84,6 +106,17 @@ bool	User::isUser(void)
 bool	User::isServer(void)
 {
 	return (this->type == TYPE_SERVER);
+}
+
+bool	User::isOper(void)
+{
+	//TODO hay que extraer el modo de usuario +O
+	return false;
+}
+
+int		User::getType(void)
+{
+	return this->type;
 }
 
 void	User::setPollIndex(int value)
@@ -106,6 +139,17 @@ std::string const	&User::getAwayMsg(void) const
 	return this->awayMsg;
 }
 
+void	User::setNextTimeout(time_t value)
+{
+	this->nextTimeout = value;
+}
+
+time_t const	&User::getNextTimeout(void) const
+{
+	std::cout << "User::getNextTimeout = " << this->nextTimeout << " - " << time(NULL) << " used" << std::endl;
+	return this->nextTimeout;
+}
+
 void	User::setFd(int value)
 {
 	this->fd = value;
@@ -116,8 +160,20 @@ int const &User::getFd(void) const
 	return this->fd;
 }
 
+void	User::setPongChallenge(std::string value)
+{
+	this->pongChallenge = value;
+}
+
+std::string const	&User::getPongChallenge(void) const
+{
+	return this->pongChallenge;
+}
+
+
 void	User::setRegistered(bool value)
 {
+//	std::cout << "User::setRegisterd used" << std::endl;
 	this->registered = value;
 }
 

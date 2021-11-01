@@ -10,7 +10,8 @@ public:
 	NickCommand(Server &server, int accessLevel, int paramCount);
 
 private:
-	virtual bool	_exec(Message &message);
+	virtual bool	_execUser(Message &message);
+	virtual bool	_execServer(Message &message);
 };
 
 #endif

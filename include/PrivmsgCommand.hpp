@@ -1,5 +1,5 @@
-#ifndef PRIVATEMSGCOMMAND_HPP
-# define PRIVATEMSGCOMMAND_HPP
+#ifndef PRIVMSGCOMMAND_HPP
+# define PRIVMSGCOMMAND_HPP
 
 # include "ACommand.hpp"
 # include <string>
@@ -10,7 +10,8 @@ public:
 	PrivmsgCommand(Server &server, int accessLevel, int paramCount);
 
 private:
-	virtual bool	_exec(Message &message);
+	virtual bool	_execUser(Message &message);
+	virtual bool	_execServer(Message &message);
 };
 
 #endif

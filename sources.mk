@@ -1,6 +1,7 @@
 BASE_PATH		=	src/
 BASE_SRCS		=	\
 					main.cpp					\
+					utils.cpp					\
 					Server.cpp					\
 					User.cpp					\
 					Channel.cpp					\
@@ -16,6 +17,7 @@ COMMAND_SRCS	=	\
 					InviteCommand.cpp			\
 					JoinCommand.cpp				\
 					KickCommand.cpp				\
+					KillCommand.cpp				\
 					ListCommand.cpp				\
 					ModeCommand.cpp				\
 					NamesCommand.cpp			\
@@ -27,6 +29,7 @@ COMMAND_SRCS	=	\
 					PongCommand.cpp				\
 					PrivmsgCommand.cpp			\
 					QuitCommand.cpp				\
+					TopicCommand.cpp			\
 					UserCommand.cpp				\
 					WhoCommand.cpp				\
 					WhoisCommand.cpp			\

@@ -7,6 +7,8 @@
 # include "User.hpp"
 # include "Server.hpp"
 
+class User;
+
 class Channel
 {
 public:
