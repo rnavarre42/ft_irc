@@ -35,7 +35,9 @@ public:
 	void				setName(std::string value);
 	std::string const	&getName(void) const;
 
-	std::string &getBuffer(void);
+	std::string &getInputBuffer(void);
+	std::string &getOutputBuffer(void);
+
 	bool		isUser(void);
 	bool		isServer(void);
 	bool		isOper(void);
@@ -83,7 +85,8 @@ private:
 	std::string							ident;
 	std::string							real;
 	std::string							pass;
-	std::string							buffer;
+	std::string							inputBuffer;
+	std::string							outputBuffer;
 	std::string 						awayMsg;
 	std::string							pingChallenge;
 	Server								&server;

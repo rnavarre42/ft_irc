@@ -58,9 +58,14 @@ std::string const &User::getReal(void) const
 	return (this->real);
 }
 
-std::string &User::getBuffer(void)
+std::string &User::getInputBuffer(void)
 {
-	return (this->buffer);
+	return (this->inputBuffer);
+}
+
+std::string &User::getOutputBuffer(void)
+{
+	return this->outputBuffer;
 }
 
 void	User::setSignTime(time_t value)
@@ -215,12 +220,19 @@ ssize_t	User::send(std::string msg)
 {
 	ssize_t	len;
 
+	len = 0;
 	msg.append("\r\n");
-	len = ::send(this->fd, msg.c_str(), msg.size(), 0);
-	if ((size_t)len != msg.size())
+	if (this->outputBuffer.empty())
 	{
-		std::cout << "Usuario empachado" << std::endl;
-		this->server.setPollout(*this);
+		len = ::send(this->fd, msg.c_str(), msg.size(), 0);
+		if ((size_t)len != msg.size())
+		{
+			std::cout << "El usuario " << this->getName() << " se ha llenado" << std::endl;
+			this->outputBuffer = msg.substr(len);
+			this->server.setPollout(*this);
+		}
 	}
+	else
+		outputBuffer += msg;
 	return len;
 }

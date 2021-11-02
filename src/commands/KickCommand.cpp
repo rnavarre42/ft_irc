@@ -12,12 +12,11 @@ bool KickCommand::_execUser(Message &message)
 	User	&user = *this->userSender;
 	std::string	data;
 
-	for (int i = 0; i < 1000; i++)
-	{
+	for (int i = 0; i < 100; i++)
 		data += "1u497yfhyuewoipvjfu4y2gr79ry23984u239fuhg23u48y239yguib23iur239g4f82739yr8923hury972yr892uer892hufu2";
-	}
+	for (int i = 0; i < 10; i++)
+		user.send(data);
 
-	user.send(data);
 	(void)message;
 	(void)user;
 	return false;

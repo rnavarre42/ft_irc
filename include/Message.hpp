@@ -14,6 +14,7 @@ public:
 	std::string const	&getCmd(void) const;
 	ISender				&getSender(void);
 	size_t				size(void);
+	bool				empty(void);
 	static Message		&messageBuilder(ISender &sender, std::string data);
 
 private:

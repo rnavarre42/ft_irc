@@ -44,11 +44,13 @@ std::string extractPhrase(std::string &data)
 		return extractWord(data);
 }
 
-Message::Message(ISender &sender, std::string data) : sender(sender)
+Message::Message(ISender &sender, std::string data) : sender(sender), _size(0)
 {
 	size_t i = 0;
-//	std::cout << "message original: '" << data << "'" << std::endl;
+
 	leftTrim(data);
+	if (data.empty())
+		return;
 	if (data[0] == ':')
 	{
 		this->prefix = extractWord(data);
@@ -62,7 +64,8 @@ Message::Message(ISender &sender, std::string data) : sender(sender)
 		this->param[i] = extractPhrase(data);
 		leftTrim(data);
 	}
-	this->_size = i + 1;
+	if (i > 0)
+		this->_size = i + 1;
 //	std::cout << "prefix = '" << this->prefix << "' cmd = '" << this->cmd << "' fd = " << this->sender.getFd() << std::endl;
 //	for (int i = 0; i < 15 && !this->param[i].empty(); i++)
 //		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;
@@ -71,6 +74,11 @@ Message::Message(ISender &sender, std::string data) : sender(sender)
 Message::~Message(void)
 {
 //	std::cout << "Message destroyed" << std::endl;
+}
+
+bool Message::empty(void)
+{
+	return (this->prefix.empty() && this->cmd.empty() && !this->_size);
 }
 
 std::string const &Message::getCmd(void) const

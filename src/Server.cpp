@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <ctime>
 #include <exception>
 #include <csignal>
@@ -169,6 +170,11 @@ void	Server::initSocket(void)
 	if (!this->fd)
 	{
 		Console::log(LOG_ERROR, "Server::initSocket function socket() failed");
+		exit(EXIT_FAILURE);
+	}
+	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) == -1)
+	{
+		Console::log(LOG_ERROR, "Server::initSocket function fcntl() failed");
 		exit(EXIT_FAILURE);
 	}
 	this->opt = 1;
@@ -366,20 +372,23 @@ void	Server::checkUserInput(void)
 			user = this->fdMap[pollfds[i].fd];
 			size = recv(pollfds[i].fd, buffer, BUFFERSIZE, 0);
 			buffer[size] = '\0';
-			user->getBuffer() += buffer;
-			while ((pos = user->getBuffer().find('\n')) != std::string::npos)
+			user->getInputBuffer() += buffer;
+			while ((pos = user->getInputBuffer().find('\n')) != std::string::npos)
 			{
-				msg = user->getBuffer().substr(0, pos);
-				user->getBuffer().erase(0, pos + 1);
+				msg = user->getInputBuffer().substr(0, pos);
+				user->getInputBuffer().erase(0, pos + 1);
 				while ((pos = msg.find('\r')) != std::string::npos)
 				{
 					msg.erase(pos, 1);
 				}
 				Message &message = Message::messageBuilder(*user, msg);
-				if (this->commandMap.find(message.getCmd()) != commandMap.end())
-					commandMap[message.getCmd()]->exec(message);
-				else
-					user->send(Numeric::builder(*this, *user, ERR_UNKNOWNCOMMAND, (std::string[]){message.getCmd()}, 1));
+				if (!message.empty())
+				{
+					if (this->commandMap.find(message.getCmd()) != commandMap.end())
+						commandMap[message.getCmd()]->exec(message);
+					else
+						user->send(Numeric::builder(*this, *user, ERR_UNKNOWNCOMMAND, (std::string[]){message.getCmd()}, 1));
+				}
 				delete &message;
 			}
 			if (size <= 0)
@@ -390,7 +399,12 @@ void	Server::checkUserInput(void)
 		if (this->pollfds[i].revents & POLLOUT)
 		{
 			std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
-			this->pollfds[i].events ^= POLLOUT;
+			user = this->fdMap[pollfds[i].fd];
+			size = ::send(pollfds[i].fd, user->getOutputBuffer().c_str(), user->getOutputBuffer().size(), 0);
+			if (size == user->getOutputBuffer().size())
+				this->pollfds[i].events ^= POLLOUT;
+			else
+				user->getOutputBuffer().erase(0, size);
 		}
 	}
 }
