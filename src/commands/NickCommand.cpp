@@ -33,6 +33,11 @@ bool NickCommand::_execUser(Message &message)
 	it = userMap.find(strToUpper(newName));
 	if (it == userMap.end())
 	{
+		if (oldName.empty() && !user.getIdent().empty())
+		{
+			user.setPingChallenge("challenge-string");
+			user.send("PING :" + user.getPingChallenge());
+		}
 		if (!oldName.empty())
 		{
 			userMap.erase(oldName);
@@ -40,11 +45,9 @@ bool NickCommand::_execUser(Message &message)
 		}
 		user.setName(newName);
 		userMap[newName] = &user;
-		if (!user.isRegistered() && !user.getIdent().empty())
-			user.setRegistered(true);
 	}
 	else
-		user.send(Numeric::builder(this->server, message, ERR_NICKNAMEINUSE, (std::string[]){*message.getParam(0)}, 1));
+		user.send(Numeric::builder(this->server, user, ERR_NICKNAMEINUSE, (std::string[]){*message.getParam(0)}, 1));
 	return true;	
 }
 

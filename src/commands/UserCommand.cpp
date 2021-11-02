@@ -18,10 +18,13 @@ bool UserCommand::_execUser(Message &message)
 		user.setIdent(*message.getParam(0));
 		user.setReal(*message.getParam(3));
 		if (!user.getName().empty())
-			user.setRegistered(true);
+		{
+			user.setPingChallenge("challenge-string");
+			user.send("PING :" + user.getPingChallenge());
+		}
 	}
 	else
-		user.send(Numeric::builder(this->server, message, ERR_ALREADYREGISTERED));
+		user.send(Numeric::builder(this->server, user, ERR_ALREADYREGISTERED));
 	return true;
 }
 

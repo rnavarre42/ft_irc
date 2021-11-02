@@ -139,6 +139,16 @@ std::string const	&User::getAwayMsg(void) const
 	return this->awayMsg;
 }
 
+void	User::setIdleTime(time_t value)
+{
+	this->idleTime = value;
+}
+
+time_t const	&User::getIdleTime(void) const
+{
+	return this->idleTime;
+}
+
 void	User::setNextTimeout(time_t value)
 {
 	this->nextTimeout = value;
@@ -146,7 +156,7 @@ void	User::setNextTimeout(time_t value)
 
 time_t const	&User::getNextTimeout(void) const
 {
-	std::cout << "User::getNextTimeout = " << this->nextTimeout << " - " << time(NULL) << " used" << std::endl;
+//	std::cout << "User::getNextTimeout = " << this->nextTimeout << " - " << time(NULL) << " used" << std::endl;
 	return this->nextTimeout;
 }
 
@@ -160,16 +170,20 @@ int const &User::getFd(void) const
 	return this->fd;
 }
 
-void	User::setPongChallenge(std::string value)
+void	User::clearPingChallenge(void)
 {
-	this->pongChallenge = value;
+	this->pingChallenge.clear();
 }
 
-std::string const	&User::getPongChallenge(void) const
+void	User::setPingChallenge(std::string value)
 {
-	return this->pongChallenge;
+	this->pingChallenge = value;
 }
 
+std::string const	&User::getPingChallenge(void) const
+{
+	return this->pingChallenge;
+}
 
 void	User::setRegistered(bool value)
 {

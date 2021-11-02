@@ -30,7 +30,7 @@ private:
 protected:
 	Server		&server;
 	int			level;
-	int			count;
+	size_t		count;
 	Server		*serverSender;
 	User		*userSender;
 };

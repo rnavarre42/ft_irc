@@ -46,7 +46,7 @@ std::string extractPhrase(std::string &data)
 
 Message::Message(ISender &sender, std::string data) : sender(sender)
 {
-	int i = 0;
+	size_t i = 0;
 //	std::cout << "message original: '" << data << "'" << std::endl;
 	leftTrim(data);
 	if (data[0] == ':')
@@ -62,7 +62,7 @@ Message::Message(ISender &sender, std::string data) : sender(sender)
 		this->param[i] = extractPhrase(data);
 		leftTrim(data);
 	}
-	this->count = i + 1;
+	this->_size = i + 1;
 //	std::cout << "prefix = '" << this->prefix << "' cmd = '" << this->cmd << "' fd = " << this->sender.getFd() << std::endl;
 //	for (int i = 0; i < 15 && !this->param[i].empty(); i++)
 //		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;
@@ -83,9 +83,9 @@ ISender &Message::getSender(void)
 	return this->sender;
 }
 
-int		Message::getCount(void)
+size_t	Message::size(void)
 {
-	return this->count;
+	return this->_size;
 }
 
 Message &Message::messageBuilder(ISender &sender, std::string data)
@@ -93,9 +93,9 @@ Message &Message::messageBuilder(ISender &sender, std::string data)
 	return *new Message(sender, data);
 }
 
-std::string	const *Message::getParam(int index) const
+std::string	const *Message::getParam(size_t index) const
 {
-	if (index <= this->count)
+	if (index <= this->_size)
 		return this->param + index;
 	return NULL;
 }

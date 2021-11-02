@@ -10,9 +10,17 @@ bool PongCommand::_execUser(Message &message)
 {
 	User	&user = *this->userSender;
 
-	(void)message;
-	(void)user;
-	return false;
+
+	if (*message.getParam(0) == user.getPingChallenge())
+	{
+		if (!user.isRegistered())
+			user.setRegistered(true);
+		user.clearPingChallenge();
+		user.setNextTimeout(0);
+	}
+	else if (!user.isRegistered())
+		user.send("You should be dead now!");
+	return true;
 }
 
 bool PongCommand::_execServer(Message &message)

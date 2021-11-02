@@ -9,14 +9,14 @@ class Numeric
 {
 public:
 	~Numeric(void);
-	static std::string	builder(Server &server, Message &message, int num, std::string p[] = 0, size_t size = 0);
+	static std::string	builder(Server &server, ISender &sender, int num, std::string p[] = 0, size_t size = 0);
 	
 private:
 	Numeric(Server &server);
 
 	static Numeric			*_instance;
 	Server			&server;
-	Message			*message;
+	ISender			*sender;
 	int				num;
 	std::string		numericStr;	
 

@@ -15,10 +15,11 @@ void ACommand::exec(Message &message)
 {
 	bool	ret = true;
 
+	message.getSender().setIdleTime(time(NULL));
 	if (this->level == LEVEL_ALL || message.getSender().isRegistered() == level || message.getSender().isOper())
 	{
-		if (message.getCount() < this->count)
-			message.getSender().send(Numeric::builder(this->server, message, ERR_NEEDMOREPARAMS, (std::string[]){message.getCmd()}, 1));
+		if (message.size() < this->count)
+			message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NEEDMOREPARAMS, (std::string[]){message.getCmd()}, 1));
 		else
 		{
 			if (message.getSender().isUser())
@@ -32,13 +33,13 @@ void ACommand::exec(Message &message)
 				ret = this->_execServer(message);
 			}
 			if (!ret)
-				message.getSender().send(Numeric::builder(this->server, message, ERR_NOTIMPLEMENTED, (std::string[]){message.getCmd()}, 1));
+				message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NOTIMPLEMENTED, (std::string[]){message.getCmd()}, 1));
 		}
 	}
 	else if (this->level == LEVEL_REGISTERED)
-		message.getSender().send(Numeric::builder(this->server, message, ERR_NOTREGISTERED));
+		message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NOTREGISTERED));
 	else if (this->level == LEVEL_UNREGISTERED)
-		message.getSender().send(Numeric::builder(this->server, message, ERR_ALREADYREGISTERED));
+		message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_ALREADYREGISTERED));
 	else if (this->level == LEVEL_IRCOPERATOR)
-		message.getSender().send(Numeric::builder(this->server, message, ERR_NOPRIVILEGES));
+		message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NOPRIVILEGES));
 }

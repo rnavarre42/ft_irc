@@ -62,6 +62,7 @@ public:
 	int								getType(void);
 	int const						&getFd(void) const;
 	bool const						&isRegistered(void) const;
+	void							setIdleTime(time_t value);
 
 	void	start(void);
 	ssize_t	send(std::string msg);
@@ -90,8 +91,12 @@ private:
 	std::string	pass;
 	std::string	name;
 	int			type;
+	time_t		idleTime;
 
 	struct sockaddr_in	address;
+	// El motivo de usar una estructura de tamaño fijo es porque en user almacenamos el indice donde se encuentra registrado el fd en pollfds
+	// Si usamos un vector y eliminamos cualquier posición, nos obligaría a hacer un cambio a todos los usuarios que tengan un indice superior
+	// en pollIndex. Dado que la estructura pollfds consta de tres campos, creo que no es necesario hacer ningun cambio.
 	struct pollfd		pollfds[MAXUSERS + 2];
 	static Server		*instance;
 
@@ -108,7 +113,7 @@ private:
 	void	_loadCommands(void);
 	void	checkConsoleInput(void);
 	void	checkUserInput(void);
-	void	registrationTimeout(void);
+	void	checkTimeout(void);
 	void	closeClients(std::string msg);
 	void	loop(void);
 	void	initSocket(void);

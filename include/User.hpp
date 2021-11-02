@@ -41,8 +41,9 @@ public:
 	bool		isOper(void);
 	int			getType(void);
 
-	void				setPongChallenge(std::string value);
-	std::string const	&getPongChallenge(void) const;
+	void				clearPingChallenge();
+	void				setPingChallenge(std::string value);
+	std::string const	&getPingChallenge(void) const;
 
 	void				setAwayMsg(std::string value);
 	std::string const	&getAwayMsg(void) const;
@@ -68,9 +69,10 @@ public:
 	void		setFd(int value);
 	int	const	&getFd(void) const;
 
+	bool	isPingSended(void);
 	bool	isAway(void);
-//	bool	isOper(void);
 
+	void		sendPing(void);
 	ssize_t		send(std::string msg);
 
 private:
@@ -83,7 +85,7 @@ private:
 	std::string							pass;
 	std::string							buffer;
 	std::string 						awayMsg;
-	std::string							pongChallenge;
+	std::string							pingChallenge;
 	Server								&server;
 	std::map<std::string, Channel *>	channelMap;
 	bool								registered;

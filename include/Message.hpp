@@ -10,10 +10,10 @@ class Message
 public:
 	~Message(void);
 
-	std::string const	*getParam(int index) const;
+	std::string const	*getParam(size_t index) const;
 	std::string const	&getCmd(void) const;
 	ISender				&getSender(void);
-	int					getCount(void);
+	size_t				size(void);
 	static Message		&messageBuilder(ISender &sender, std::string data);
 
 private:
@@ -25,7 +25,7 @@ private:
 //	std::string	host;
 	std::string prefix;
 	std::string cmd;
-	int			count;
+	size_t		_size;
 	std::string	param[15];
 };
 

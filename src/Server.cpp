@@ -70,7 +70,7 @@ void	Server::_loadCommands(void)
 	this->commandMap["WHOIS"]	= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["INVITE"]	= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 	this->commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
-	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["WHOWAS"]	= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 1);
 }
@@ -214,6 +214,10 @@ int	Server::getType(void)
 {
 	return this->type;
 }
+void	Server::setIdleTime(time_t value)
+{
+	this->idleTime = value;
+}
 
 User	*Server::_accept(void)
 {
@@ -280,10 +284,11 @@ void	Server::_addUser(User &user)
 void	Server::_delUser(User &user)
 {
 	if (user.getName().empty())
-		this->send("User <anonymous> disconnect\n");
+		;
+//		this->send("User <anonymous> disconnect\n");
 	else
 	{
-		this->send("User <" + user.getName() + "> disconnect\n");
+//		this->send("User <" + user.getName() + "> disconnect\n");
 		this->userMap.erase(strToUpper(user.getName()));
 	}
 	this->fdMap.erase(user.getFd());
@@ -361,13 +366,15 @@ void	Server::checkUserInput(void)
 			{
 				msg = user->getBuffer().substr(0, pos);
 				user->getBuffer().erase(0, pos + 1);
-				if ((pos = msg.find('\r')) != std::string::npos)
+				while ((pos = msg.find('\r')) != std::string::npos)
+				{
 					msg.erase(pos, 1);
+				}
 				Message &message = Message::messageBuilder(*user, msg);
 				if (this->commandMap.find(message.getCmd()) != commandMap.end())
 					commandMap[message.getCmd()]->exec(message);
 				else
-					user->send(Numeric::builder(*this, message, ERR_UNKNOWNCOMMAND, (std::string[]){message.getCmd()}, 1));
+					user->send(Numeric::builder(*this, *user, ERR_UNKNOWNCOMMAND, (std::string[]){message.getCmd()}, 1));
 				delete &message;
 			}
 			if (size <= 0)
@@ -393,20 +400,28 @@ void	Server::checkConsoleInput(void)
 	}
 }
 
-void	Server::registrationTimeout(void)
+void	Server::checkTimeout(void)
 {
 	std::map<int, User *>::iterator	it;
-	std::map<int, User *>::iterator current;
+	User							*user;
 
 	for (it = this->fdMap.begin(); it != this->fdMap.end();)
 	{
-		current = it;
+		user = it->second;
 		it++;
-		if (current->second->getNextTimeout() < time(NULL))
+		if (user->getNextTimeout() && user->getNextTimeout() < time(NULL))
 		{
-			current->second->send("ERROR : registration timeout");
-			this->_delUser(*current->second);
-			std::cout << "ha" << std::endl;
+			user->send("ERROR :Ping timeout");
+			this->_delUser(*user);
+		}
+		else if (!user->getNextTimeout() && (user->getIdleTime() + IDLETIMEOUT < time(NULL)))
+		{
+			if (user->isRegistered())
+			{
+				user->setNextTimeout(time(NULL) + NEXTTIMEOUT);
+				user->setPingChallenge(this->name);
+			}
+			user->send("PING :" + user->getPingChallenge());
 		}
 	}
 }
@@ -422,20 +437,14 @@ void	Server::loop(void)
 		{
 			if (this->stop)
 			{
-				Console::log(LOG_INFO, "Server stopped by user");
+				Console::log(LOG_ERROR, "Server stopped by user");
 				exit(0);
 			}
 			Console::log(LOG_ERROR, "Server::loop function poll() failed");
 			exit(EXIT_FAILURE);
 		}
 		else if (rv == 0)
-		{
-			this->registrationTimeout();
-			//timeout
-			//check idle to send ping
-			//check ping timeout
-			//check register timeout
-		}
+			this->checkTimeout();
 		else
 		{
 			if (!this->checkUserConnection())

@@ -23,6 +23,7 @@ public:
 	virtual bool				isOper(void) = 0;
 	virtual int					getType(void) = 0;
 	virtual std::string			getMask(void) = 0;
+	virtual void				setIdleTime(time_t value) = 0;
 };
 
 #endif

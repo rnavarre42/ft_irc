@@ -1,5 +1,7 @@
 #include "PrivmsgCommand.hpp"
 #include "Message.hpp"
+#include "Numeric.hpp"
+#include "numerics.hpp"
 #include "Server.hpp"
 #include <iostream>
 
@@ -10,7 +12,8 @@ bool PrivmsgCommand::_execUser(Message &message)
 {
 	User	&user = *this->userSender;
 
-	(void)message;
+	if (message.size() < 2)
+		user.send(Numeric::builder(this->server, user, ERR_NOTEXTTOSEND));
 	(void)user;
 	return false;
 }

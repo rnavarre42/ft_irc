@@ -20,6 +20,7 @@ COMMAND_SRCS	=	\
 					KillCommand.cpp				\
 					ListCommand.cpp				\
 					ModeCommand.cpp				\
+					MotdCommand.cpp				\
 					NamesCommand.cpp			\
 					NickCommand.cpp				\
 					NoticeCommand.cpp			\
