@@ -111,6 +111,11 @@ std::string	const	&Server::getPass(void) const
 	return this->pass;
 }
 
+void	Server::setPollout(User &user)
+{
+	this->pollfds[user.getPollIndex()].events |= POLLOUT;
+}
+
 ssize_t	Server::send(std::string msg)
 {
 	int usersLeft;
@@ -241,7 +246,7 @@ User	*Server::_accept(void)
 	user->setPollIndex(findFreePollIndex());
 //	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
 	this->pollfds[user->getPollIndex()].fd = newFd;
-	this->pollfds[user->getPollIndex()].events = POLLIN | POLLOUT;
+	this->pollfds[user->getPollIndex()].events = POLLIN;
 	return user;
 }
 
@@ -384,7 +389,8 @@ void	Server::checkUserInput(void)
 		}
 		if (this->pollfds[i].revents & POLLOUT)
 		{
-			std::cout << "El usuario acepta mensajes" << std::endl;
+			std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
+			this->pollfds[i].events ^= POLLOUT;
 		}
 	}
 }

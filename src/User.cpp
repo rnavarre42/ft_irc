@@ -218,6 +218,9 @@ ssize_t	User::send(std::string msg)
 	msg.append("\r\n");
 	len = ::send(this->fd, msg.c_str(), msg.size(), 0);
 	if ((size_t)len != msg.size())
+	{
 		std::cout << "Usuario empachado" << std::endl;
+		this->server.setPollout(*this);
+	}
 	return len;
 }

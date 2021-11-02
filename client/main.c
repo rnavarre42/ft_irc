@@ -11,6 +11,8 @@
 
 #define BUFFERSIZE  4092
 
+int g_read = 1;
+
 void irc_send(int sock, char *data)
 {
     printf("client> %s\n", data);
@@ -52,6 +54,14 @@ weroiweoriweoriwe 123456 234567 345678 456789 567890 678901 789012 890123 901234
 			send(sock, fck, strlen(fck), 0);
 			send(sock, fck2, strlen(fck2), 0);
 		}
+		else if (!strcmp(line, "GO"))
+		{
+			g_read = 0;
+			for (int i = 0; i < 100; i++)
+				send(sock, "KILL\r\n", 6, 0);
+		}
+		else if (!strcmp(line, "END"))
+			g_read = 1;
 		else
 		{
         	send(sock, line, strlen(line), 0);
@@ -70,7 +80,10 @@ void	loop_client(int server_fd)
 
     while (1)
     {
-		ret = read(server_fd , buffer, BUFFERSIZE);
+		if (g_read)
+			ret = read(server_fd , buffer, BUFFERSIZE);
+		else
+			ret = 0;
 		buffer[ret] = 0;
 		line = strtok(buffer, "\n");
 		while (line)
@@ -89,6 +102,7 @@ void	loop_client(int server_fd)
 			}
 			line = strtok(NULL, "\n");
 		}
+		sleep(0);
     }
 }
 

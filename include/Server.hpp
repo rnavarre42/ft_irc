@@ -69,6 +69,8 @@ public:
 	void	quit(std::string msg);
 	int		count(void);
 
+	void	setPollout(User &user);
+
 	struct ServerFullException : public std::exception
 	{
 		virtual const char	*what(void) const throw();
