@@ -213,6 +213,11 @@ bool	User::isAway(void)
 
 ssize_t	User::send(std::string msg)
 {
+	ssize_t	len;
+
 	msg.append("\r\n");
-	return (::send(this->fd, msg.c_str(), msg.size(), 0));
+	len = ::send(this->fd, msg.c_str(), msg.size(), 0);
+	if ((size_t)len != msg.size())
+		std::cout << "Usuario empachado" << std::endl;
+	return len;
 }

@@ -241,7 +241,7 @@ User	*Server::_accept(void)
 	user->setPollIndex(findFreePollIndex());
 //	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
 	this->pollfds[user->getPollIndex()].fd = newFd;
-	this->pollfds[user->getPollIndex()].events = POLLIN;
+	this->pollfds[user->getPollIndex()].events = POLLIN | POLLOUT;
 	return user;
 }
 
@@ -381,6 +381,10 @@ void	Server::checkUserInput(void)
 				this->_delUser(*user);
 		//	else
 		//		this->send(user->getName() + "> " + buffer);
+		}
+		if (this->pollfds[i].revents & POLLOUT)
+		{
+			std::cout << "El usuario acepta mensajes" << std::endl;
 		}
 	}
 }

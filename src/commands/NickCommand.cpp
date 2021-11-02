@@ -40,11 +40,11 @@ bool NickCommand::_execUser(Message &message)
 		}
 		if (!oldName.empty())
 		{
-			userMap.erase(oldName);
+			userMap.erase(strToUpper(oldName));
 			user.send(":" + user.getMask() + " NICK :" + newName);
 		}
 		user.setName(newName);
-		userMap[newName] = &user;
+		userMap[strToUpper(newName)] = &user;
 	}
 	else
 		user.send(Numeric::builder(this->server, user, ERR_NICKNAMEINUSE, (std::string[]){*message.getParam(0)}, 1));
