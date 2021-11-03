@@ -15,7 +15,7 @@ bool PrivmsgCommand::_execUser(Message &message)
 
 	if (message.size() < 2)
 		user.send(Numeric::builder(this->server, user, ERR_NOTEXTTOSEND));
-	if (this->server.getUserMap().find(strToUpper(message[0])) == this->server.getUserMap().end())
+	else if (this->server.getUserMap().find(strToUpper(message[0])) == this->server.getUserMap().end())
 	{
 		Numeric::insertField(message[0]);
 		user.send(Numeric::builder(this->server, user, ERR_NOSUCHNICK));

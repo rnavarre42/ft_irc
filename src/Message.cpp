@@ -72,17 +72,18 @@ Message::Message(ISender &sender, std::string data) : sender(sender)
 
 std::string	Message::toString(ISender &receiver)
 {
-	std::stringstream	ss;
+	std::ostringstream	ss;
 
 	ss << ':' << sender.getMask() << ' ' << receiver.getName() << ' ' << cmd;
 	for (size_t i = 0; i < paramVector.size(); i++)
 	{
-		if (paramVector[i].find(' ') == std::vector::npos)
+		if (paramVector[i].find(' ') == std::string::npos)
 			ss << ' ';
 		else
 			ss << " :";
 		ss <<  paramVector[i];
 	}
+	return ss.str();
 }
 
 Message::~Message(void)
@@ -105,7 +106,7 @@ std::string const &Message::getCmd(void) const
 	return this->cmd;
 }
 
-void	Message:setSender(ISender &value)
+void	Message::setSender(ISender &value)
 {
 	this->sender = value;
 }
