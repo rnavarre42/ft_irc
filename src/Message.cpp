@@ -1,7 +1,9 @@
 #include "Message.hpp"
 #include "utils.hpp"
 #include <string>
+#include <sstream>
 #include <iostream>
+#include <vector>
 #include <stdio.h>
 
 void	leftTrim(std::string &data)
@@ -44,10 +46,8 @@ std::string extractPhrase(std::string &data)
 		return extractWord(data);
 }
 
-Message::Message(ISender &sender, std::string data) : sender(sender), _size(0)
+Message::Message(ISender &sender, std::string data) : sender(sender)
 {
-	size_t i = 0;
-
 	leftTrim(data);
 	if (data.empty())
 		return;
@@ -59,16 +59,30 @@ Message::Message(ISender &sender, std::string data) : sender(sender), _size(0)
 	}
 	this->cmd = strToUpper(extractPhrase(data));
 	leftTrim(data);
-	for (; i < 15 && data.size() > 1; i++)
+
+	while (data.size())
 	{
-		this->param[i] = extractPhrase(data);
+		paramVector.push_back(extractPhrase(data));
 		leftTrim(data);
 	}
-	if (i > 0)
-		this->_size = i + 1;
 //	std::cout << "prefix = '" << this->prefix << "' cmd = '" << this->cmd << "' fd = " << this->sender.getFd() << std::endl;
 //	for (int i = 0; i < 15 && !this->param[i].empty(); i++)
 //		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;
+}
+
+std::string	Message::toString(ISender &receiver)
+{
+	std::stringstream	ss;
+
+	ss << ':' << sender.getMask() << ' ' << receiver.getName() << ' ' << cmd;
+	for (size_t i = 0; i < paramVector.size(); i++)
+	{
+		if (paramVector[i].find(' ') == std::vector::npos)
+			ss << ' ';
+		else
+			ss << " :";
+		ss <<  paramVector[i];
+	}
 }
 
 Message::~Message(void)
@@ -76,14 +90,24 @@ Message::~Message(void)
 //	std::cout << "Message destroyed" << std::endl;
 }
 
+std::string	&Message::operator[](size_t index)
+{
+	return this->paramVector[index];
+}
+
 bool Message::empty(void)
 {
-	return (this->prefix.empty() && this->cmd.empty() && !this->_size);
+	return (this->prefix.empty() && this->cmd.empty() && !this->paramVector.size());
 }
 
 std::string const &Message::getCmd(void) const
 {
 	return this->cmd;
+}
+
+void	Message:setSender(ISender &value)
+{
+	this->sender = value;
 }
 
 ISender &Message::getSender(void)
@@ -93,17 +117,10 @@ ISender &Message::getSender(void)
 
 size_t	Message::size(void)
 {
-	return this->_size;
+	return this->paramVector.size();
 }
 
 Message &Message::messageBuilder(ISender &sender, std::string data)
 {
 	return *new Message(sender, data);
-}
-
-std::string	const *Message::getParam(size_t index) const
-{
-	if (index <= this->_size)
-		return this->param + index;
-	return NULL;
 }

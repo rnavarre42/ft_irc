@@ -19,7 +19,10 @@ void ACommand::exec(Message &message)
 	if (this->level == LEVEL_ALL || message.getSender().isRegistered() == level || message.getSender().isOper())
 	{
 		if (message.size() < this->count)
-			message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NEEDMOREPARAMS, (std::string[]){message.getCmd()}, 1));
+		{
+			Numeric::insertField(message.getCmd());
+			message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NEEDMOREPARAMS));
+		}
 		else
 		{
 			if (message.getSender().isUser())
@@ -33,7 +36,10 @@ void ACommand::exec(Message &message)
 				ret = this->_execServer(message);
 			}
 			if (!ret)
-				message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NOTIMPLEMENTED, (std::string[]){message.getCmd()}, 1));
+			{
+				Numeric::insertField(message.getCmd());
+				message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NOTIMPLEMENTED));
+			}
 		}
 	}
 	else if (this->level == LEVEL_REGISTERED)

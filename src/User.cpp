@@ -272,7 +272,10 @@ size_t	User::checkInput(int fd)
 			msgBuffer.erase(pos, 1);
 		msg = this->buildMessage(msgBuffer);
 		if (!msg->empty() && !this->server.findCommand(*msg))
-			this->send(Numeric::builder(this->server, *this, ERR_UNKNOWNCOMMAND, (std::string[]){msg->getCmd()}, 1));
+		{
+			Numeric::insertField(msg->getCmd());
+			this->send(Numeric::builder(this->server, *this, ERR_UNKNOWNCOMMAND));
+		}
 		delete msg;
 	}
 	return size;
@@ -284,7 +287,10 @@ bool	User::checkOutput(int fd)
 
 	size = ::send(fd, this->outputBuffer.c_str(), this->outputBuffer.size(), 0);
 	if (size == this->outputBuffer.size())
+	{
+		this->outputBuffer.clear();
 		return false;
+	}
 	this->outputBuffer.erase(0, size);
 	return true;
 }

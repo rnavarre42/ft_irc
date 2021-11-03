@@ -4,17 +4,23 @@
 # include "Server.hpp"
 # include "ACommand.hpp"
 # include <string>
+# include <vector>
 
 class Message
 {
 public:
 	~Message(void);
 
-	std::string const	*getParam(size_t index) const;
+	std::string			&operator[](size_t index);
 	std::string const	&getCmd(void) const;
+
+	void				setSender(ISender &value);
 	ISender				&getSender(void);
+
 	size_t				size(void);
 	bool				empty(void);
+
+	std::string			toString(ISender &receiver);
 	static Message		&messageBuilder(ISender &sender, std::string data);
 
 private:
@@ -26,8 +32,7 @@ private:
 //	std::string	host;
 	std::string prefix;
 	std::string cmd;
-	size_t		_size;
-	std::string	param[15];
+	std::vector<std::string>	paramVector;
 };
 
 #endif

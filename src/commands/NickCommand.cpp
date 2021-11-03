@@ -14,7 +14,7 @@ bool NickCommand::_execUser(Message &message)
 {
 	User &user = *this->userSender;
 	std::string								oldName = user.getName();
-	std::string								newName = *message.getParam(0);
+	std::string								newName = message[0];
 	std::map<std::string, User *>::iterator	it;
 	std::map<std::string, User *>			&userMap = this->server.getUserMap();
 
@@ -47,7 +47,10 @@ bool NickCommand::_execUser(Message &message)
 		userMap[strToUpper(newName)] = &user;
 	}
 	else
-		user.send(Numeric::builder(this->server, user, ERR_NICKNAMEINUSE, (std::string[]){*message.getParam(0)}, 1));
+	{
+		Numeric::insertField(message[0]);
+		user.send(Numeric::builder(this->server, user, ERR_NICKNAMEINUSE));
+	}
 	return true;	
 }
 

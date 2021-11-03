@@ -1,5 +1,4 @@
 #include "Numeric.hpp"
-#include "numerics.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -19,8 +18,8 @@ std::string	Numeric::_toString()
 	 *	implementada en user o server para esto
 	*/
 
-	if (!_instance->server.getName().empty())
-		ss << ":" << _instance->server.getName();
+	if (!_instance->server->getName().empty())
+		ss << ":" << _instance->server->getName();
 	ss << " " << num;
 	if (_instance->sender->getName().empty())
 		ss << " * ";
@@ -33,27 +32,34 @@ std::string	Numeric::_toString()
 	return ss.str();
 }
 
-std::string	Numeric::builder(Server &server, ISender &sender, int num, std::string p[], size_t size)
+void	Numeric::insertField(std::string data)
 {
-	size_t		i = 0;
+	if (!Numeric::_instance)
+		_instance = new Numeric();
+	_instance->fieldVector.push_back(data);
+}
+
+std::string	Numeric::builder(Server &server, ISender &sender, int num)
+{
 	size_t		replacePos, offset = 0;
 
 	if (!Numeric::_instance)
-		_instance = new Numeric(server);
+		_instance = new Numeric();
+	_instance->server = &server;
 	_instance->sender = &sender;
 	_instance->num = num;
 	_instance->numericStr = Numeric::_numericMap[num];
-	while (i < size)
+	for (size_t i = 0; i < _instance->fieldVector.size(); i++)
 	{
 		replacePos = _instance->numericStr.find('$', offset);
-		_instance->numericStr.replace(replacePos, 1, p[i]);
-		offset += replacePos + p[i].size();
-		i++;
+		_instance->numericStr.replace(replacePos, 1, _instance->fieldVector[i]);
+		offset += replacePos + _instance->fieldVector[i].size();
 	}
+	_instance->fieldVector.clear();
 	return _instance->_toString();
 }
 
-Numeric::Numeric(Server &server) : server(server)
+Numeric::Numeric(void)
 {
 	Numeric::_numericMap[ERR_NOTIMPLEMENTED] = "$ :Command not implemented yet";
 	Numeric::_numericMap[ERR_UNKNOWNCOMMAND] = "$ :Unknown command";

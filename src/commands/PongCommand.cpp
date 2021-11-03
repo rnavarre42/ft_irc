@@ -11,7 +11,7 @@ bool PongCommand::_execUser(Message &message)
 	User	&user = *this->userSender;
 
 
-	if (*message.getParam(0) == user.getPingChallenge())
+	if (message[0] == user.getPingChallenge())
 	{
 		if (!user.isRegistered())
 			user.setRegistered(true);

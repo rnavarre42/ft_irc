@@ -15,8 +15,8 @@ bool UserCommand::_execUser(Message &message)
 
 	if (user.getIdent().empty())
 	{
-		user.setIdent(*message.getParam(0));
-		user.setReal(*message.getParam(3));
+		user.setIdent(message[0]);
+		user.setReal(message[3]);
 		if (!user.getName().empty())
 		{
 			user.setPingChallenge("challenge-string");

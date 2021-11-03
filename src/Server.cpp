@@ -55,7 +55,7 @@ Server::~Server(void)
 void	Server::_loadCommands(void)
 {
 	this->commandMap["NICK"]	= new NickCommand	(*this, LEVEL_ALL, 1);
-	this->commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 1);
+	this->commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
 	this->commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
 	this->commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
 	this->commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
@@ -73,7 +73,7 @@ void	Server::_loadCommands(void)
 	this->commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
 	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["WHOWAS"]	= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 0);
 }
 
 Server	&Server::getInstance(void)
@@ -383,6 +383,7 @@ bool	Server::findCommand(Message &msg)
 	return false;
 }
 
+/*
 void	Server::checkUserInput(void)
 {
 	size_t	size;
@@ -392,12 +393,12 @@ void	Server::checkUserInput(void)
 	User	*user;
 
 
-	/*	leemos entrada, hasta 512, procesamos mensajes independientes hasta el final.
+	 *	leemos entrada, hasta 512, procesamos mensajes independientes hasta el final.
 	 *  solo los que están con fin de linea.
 	 *  procesmos 2 mensajes, quedan 480bytes
 	 *	--> fd pendiente de leer.
 	 *	vuelvo y leo el siguiente paquete. descarto hasta el \r\n y mando los 480 a procesar.
-	*/
+	 *
 
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
@@ -442,6 +443,7 @@ void	Server::checkUserInput(void)
 		}
 	}
 }
+*/
 
 void	Server::checkConsoleInput(void)
 {

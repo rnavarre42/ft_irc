@@ -10,7 +10,7 @@ bool PassCommand::_execUser(Message &message)
 {
 	User	&user = *this->userSender;
 
-	user.setPass(*message.getParam(0));
+	user.setPass(message[0]);
 	return true;
 }
 

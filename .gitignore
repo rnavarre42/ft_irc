@@ -1,4 +1,6 @@
 ircserv
 *.swp
+*.o
+.vscode/
 tags
 obj/
