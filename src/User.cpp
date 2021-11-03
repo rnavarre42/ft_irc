@@ -271,7 +271,7 @@ size_t	User::checkInput(int fd)
 		while ((pos = msgBuffer.find('\r')) != std::string::npos)
 			msgBuffer.erase(pos, 1);
 		msg = this->buildMessage(msgBuffer);
-		if (!this->server.findCommand(*msg))
+		if (!msg->empty() && !this->server.findCommand(*msg))
 			this->send(Numeric::builder(this->server, *this, ERR_UNKNOWNCOMMAND, (std::string[]){msg->getCmd()}, 1));
 		delete msg;
 	}
