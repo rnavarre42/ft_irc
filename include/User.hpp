@@ -6,7 +6,9 @@
 # include "Channel.hpp"
 # include "Server.hpp"
 # include "ISender.hpp"
+# include "Message.hpp"
 
+class Message;
 class ISender;
 class Server;
 
@@ -76,6 +78,12 @@ public:
 
 	void		sendPing(void);
 	ssize_t		send(std::string msg);
+
+	size_t	recv(int fd);
+
+	Message	*buildMessage(std::string &buff);
+	size_t	checkInput(int fd);
+	bool	checkOutput(int fd);
 
 private:
 	User(void);

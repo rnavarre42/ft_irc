@@ -4,6 +4,7 @@
 
 # include "ISender.hpp"
 # include "ACommand.hpp"
+# include "Message.hpp"
 # include "log.hpp"
 # include <string>
 # include <map>
@@ -69,6 +70,7 @@ public:
 	void	quit(std::string msg);
 	int		count(void);
 
+	bool	findCommand(Message &msg);
 	void	setPollout(User &user);
 
 	struct ServerFullException : public std::exception
@@ -114,7 +116,10 @@ private:
 
 	void	_loadCommands(void);
 	void	checkConsoleInput(void);
+//	void	checkUserOutput(int fd);
+//	void	checkUserInput(int fd);
 	void	checkUserInput(void);
+	void	checkUserIO(void);
 	void	checkTimeout(void);
 	void	closeClients(std::string msg);
 	void	loop(void);

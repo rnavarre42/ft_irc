@@ -349,6 +349,40 @@ int	Server::checkUserConnection(void)
  */
 }
 
+void	Server::checkUserIO(void)
+{
+	User	*user;
+	size_t	size;
+
+	for (int pos = 2; pos < MAXUSERS + 2; pos++)
+	{
+		if (this->pollfds[pos].revents & POLLIN)
+		{
+			user = this->fdMap[pollfds[pos].fd];
+			size = user->checkInput(pollfds[pos].fd);
+			if (size <= 0)
+				this->_delUser(*user);
+		}
+		if (this->pollfds[pos].revents & POLLOUT)
+		{
+			std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
+			user = this->fdMap[pollfds[pos].fd];
+			if (!user->checkOutput(pollfds[pos].fd))
+				this->pollfds[pos].events ^= POLLOUT;
+		}
+	}
+}
+
+bool	Server::findCommand(Message &msg)
+{
+	if (this->commandMap.find(msg.getCmd()) != commandMap.end())
+	{
+		commandMap[msg.getCmd()]->exec(msg);
+		return true;
+	}
+	return false;
+}
+
 void	Server::checkUserInput(void)
 {
 	size_t	size;
@@ -472,7 +506,7 @@ void	Server::loop(void)
 		else
 		{
 			if (!this->checkUserConnection())
-				this->checkUserInput();
+				this->checkUserIO();
 			this->checkConsoleInput();
 		}
 	}

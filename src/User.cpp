@@ -6,6 +6,9 @@
 #include "User.hpp"
 #include "Server.hpp"
 #include "Console.hpp"
+#include "Message.hpp"
+#include "Numeric.hpp"
+#include "numerics.hpp"
 
 User::User(int fd, Server &server) :
 	server(server), 
@@ -235,4 +238,56 @@ ssize_t	User::send(std::string msg)
 	else
 		outputBuffer += msg;
 	return len;
+}
+
+size_t	User::recv(int fd)
+{
+	size_t	size;
+	char	buffer[BUFFERSIZE + 1];
+
+	size = ::recv(fd, buffer, BUFFERSIZE, 0);
+	buffer[size] = '\0';
+	this->inputBuffer += buffer;
+	return size;
+}
+
+Message	*User::buildMessage(std::string &buff)
+{
+	return &Message::messageBuilder(*this, buff);
+}
+
+size_t	User::checkInput(int fd)
+{
+	std::string	msgBuffer;
+	size_t		size;
+	size_t		pos;
+	Message		*msg;
+
+	size = this->recv(fd);
+	while ((pos = this->inputBuffer.find('\n')) != std::string::npos)
+	{
+		msgBuffer = this->inputBuffer.substr(0, pos);
+		this->inputBuffer.erase(0, pos + 1);
+		while ((pos = msgBuffer.find('\r')) != std::string::npos)
+			msgBuffer.erase(pos, 1);
+		msg = this->buildMessage(msgBuffer);
+		if (!this->server.findCommand(*msg))
+			this->send(Numeric::builder(this->server, *this, ERR_UNKNOWNCOMMAND, (std::string[]){msg->getCmd()}, 1));
+		delete msg;
+	}
+	return size;
+}
+
+bool	User::checkOutput(int fd)
+{
+	size_t	size;
+
+	size = ::send(fd, this->inputBuffer.c_str(), this->inputBuffer.size(), 0);
+	if (size != this->inputBuffer.size())
+	{
+		this->inputBuffer.erase(0, size);
+		return true;
+	}
+	else
+		return false;
 }
