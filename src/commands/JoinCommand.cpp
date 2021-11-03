@@ -12,10 +12,9 @@ JoinCommand::JoinCommand(Server &server, int accessLevel, int paramCount) : ACom
 bool JoinCommand::_execUser(Message &message)
 {
 	User	&user = *this->userSender;
-	Channel	*channel;
 
-	if (message[0][0] == "#")
-		server.join(message[0], user);	
+	if (message[0][0] == '#')
+		;
 	else
 	{
 		Numeric::insertField(message[0]);
@@ -31,13 +30,4 @@ bool JoinCommand::_execServer(Message &message)
 	(void)message;
 	(void)server;
 	return false;
-}
-
-void	JoinCommand::_sendUser(Message &message)
-{
-	
-}
-
-void	JoinCommand::_sendServer(Message &message)
-{
 }
