@@ -18,7 +18,7 @@ void	Console::log(int logLevel, std::string msg)
 		bits++;	
 	if (LOG_LEVEL & logLevel)
 	{
-		std::cerr << std::setfill('0') << "[" << 
+		std::cout << std::setfill('0') << "[" <<
 			std::setw(2) << ltm->tm_hour << "." <<
 			std::setw(2) << ltm->tm_min << "." <<
 			std::setw(2) << ltm->tm_sec << " " <<

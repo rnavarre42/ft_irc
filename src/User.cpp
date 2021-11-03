@@ -262,21 +262,29 @@ Message	*User::buildMessage(std::string &buff)
 	return &Message::messageBuilder(*this, buff);
 }
 
+std::string	User::_getLine(size_t pos)
+{
+	std::string	line;
+
+	line = this->inputBuffer.substr(0, pos);
+	this->inputBuffer.erase(0, pos + 1);
+	while ((pos = line.find('\r')) != std::string::npos)
+		line.erase(pos, 1);
+	return line;
+}
+
 size_t	User::checkInput(int fd)
 {
-	std::string	msgBuffer;
 	size_t		size;
 	size_t		pos;
+	std::string	lineBuffer;
 	Message		*msg;
 
 	size = this->recv(fd);
 	while ((pos = this->inputBuffer.find('\n')) != std::string::npos)
 	{
-		msgBuffer = this->inputBuffer.substr(0, pos);
-		this->inputBuffer.erase(0, pos + 1);
-		while ((pos = msgBuffer.find('\r')) != std::string::npos)
-			msgBuffer.erase(pos, 1);
-		msg = this->buildMessage(msgBuffer);
+		lineBuffer = this->_getLine(pos);
+		msg = this->buildMessage(lineBuffer);
 		if (!msg->empty() && !this->server.findCommand(*msg))
 		{
 			Numeric::insertField(msg->getCmd());
@@ -295,8 +303,8 @@ bool	User::checkOutput(int fd)
 	if (size == this->outputBuffer.size())
 	{
 		this->outputBuffer.clear();
-		return false;
+		return true;
 	}
 	this->outputBuffer.erase(0, size);
-	return true;
+	return false;
 }

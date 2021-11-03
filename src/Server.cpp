@@ -381,8 +381,8 @@ void	Server::checkUserIO(void)
 		if (this->pollfds[pos].revents & POLLOUT)
 		{
 			user = this->fdMap[pollfds[pos].fd];
-			std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
-			if (!user->checkOutput(pollfds[pos].fd))
+		//	std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
+			if (user->checkOutput(pollfds[pos].fd))
 				this->pollfds[pos].events ^= POLLOUT;
 		}
 	}

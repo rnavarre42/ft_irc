@@ -109,6 +109,8 @@ private:
 	int									pollIndex;
 	int									fd;
 	int									type;
+
+	std::string		_getLine(size_t pos);
 };
 
 #endif
