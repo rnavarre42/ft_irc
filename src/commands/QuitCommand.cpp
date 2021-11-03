@@ -10,9 +10,11 @@ bool QuitCommand::_execUser(Message &message)
 {
 	User	&user = *this->userSender;
 
-	(void)message;
-	(void)user;
-	return false;
+	if (!message.size())
+		server.killUser(user, "");
+	else
+		server.killUser(user, message[0]);
+	return true;
 }
 
 bool QuitCommand::_execServer(Message &message)

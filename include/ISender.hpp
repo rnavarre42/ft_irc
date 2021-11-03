@@ -1,11 +1,14 @@
 #ifndef ISENDER_HPP
 # define ISENDER_HPP
 
+//# include "Message.hpp"
 # include <string>
 # include <sys/types.h>
 
-# define TYPE_SERVER		0x0
-# define TYPE_USER		0x1
+# define TYPE_SERVER		0x00
+# define TYPE_USER			0x01
+
+class Message;
 
 class ISender
 {
@@ -17,6 +20,7 @@ public:
 	virtual std::string const	&getPass(void) const = 0;
 	virtual void				setPass(std::string value) = 0;
 	virtual ssize_t				send(std::string msg) = 0;
+	virtual ssize_t				send(Message &message) = 0;
 	virtual bool const			&isRegistered(void) const = 0;
 	virtual bool				isServer(void) = 0;
 	virtual bool				isUser(void) = 0;

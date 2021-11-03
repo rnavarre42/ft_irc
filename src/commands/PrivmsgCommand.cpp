@@ -12,13 +12,21 @@ PrivmsgCommand::PrivmsgCommand(Server &server, int accessLevel, int paramCount) 
 bool PrivmsgCommand::_execUser(Message &message)
 {
 	User	&user = *this->userSender;
+	std::map<std::string, User *>::iterator	it;
 
 	if (message.size() < 2)
 		user.send(Numeric::builder(this->server, user, ERR_NOTEXTTOSEND));
-	else if (this->server.getUserMap().find(strToUpper(message[0])) == this->server.getUserMap().end())
+	else if ((it = this->server.getUserMap().find(strToUpper(message[0]))) == this->server.getUserMap().end())
 	{
 		Numeric::insertField(message[0]);
 		user.send(Numeric::builder(this->server, user, ERR_NOSUCHNICK));
+	}
+	else
+	{
+		message.eraseAt(0);
+		message.setSender(user);
+		message.setReceiver(it->second);
+		it->second->send(message);
 	}
 	return true;
 }

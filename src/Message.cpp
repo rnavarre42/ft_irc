@@ -46,7 +46,7 @@ std::string extractPhrase(std::string &data)
 		return extractWord(data);
 }
 
-Message::Message(ISender &sender, std::string data) : sender(sender)
+Message::Message(ISender &sender, std::string data) : sender(&sender)
 {
 	leftTrim(data);
 	if (data.empty())
@@ -70,17 +70,25 @@ Message::Message(ISender &sender, std::string data) : sender(sender)
 //		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;
 }
 
-std::string	Message::toString(ISender &receiver)
+void		Message::setReceiver(ISender *value)
+{
+	this->receiver = value;
+}
+
+std::string		Message::toString(void)
 {
 	std::ostringstream	ss;
 
-	ss << ':' << sender.getMask() << ' ' << receiver.getName() << ' ' << cmd;
+	ss << ':' << sender->getMask();
+	ss << ' ' << cmd;
+	if (this->receiver)
+		ss << ' ' << this->receiver->getName();
 	for (size_t i = 0; i < paramVector.size(); i++)
 	{
-		if (paramVector[i].find(' ') == std::string::npos)
-			ss << ' ';
-		else
+		if (i == paramVector.size() - 1)
 			ss << " :";
+		else
+			ss << ' ';
 		ss <<  paramVector[i];
 	}
 	return ss.str();
@@ -101,19 +109,56 @@ bool Message::empty(void)
 	return (this->prefix.empty() && this->cmd.empty() && !this->paramVector.size());
 }
 
+void	Message::limitMaxParam(size_t limit)
+{
+	if (limit > this->paramVector.size())
+		return;
+	for (std::vector<std::string>::iterator it = this->paramVector.begin() + limit; it != this->paramVector.end();)
+		paramVector.erase(it);
+}
+
+void	Message::setCmd(std::string value)
+{
+	this->cmd = value;
+}
+
 std::string const &Message::getCmd(void) const
 {
 	return this->cmd;
 }
 
+void	Message::eraseAt(size_t index)
+{
+	std::vector<std::string>::iterator it;
+
+	if (index > this->paramVector.size())
+		return;
+	it = this->paramVector.begin() + index;
+	paramVector.erase(it);
+	
+}
+void	Message::insertField(std::string field)
+{
+	this->paramVector.push_back(field);
+}
+
+void	Message::swapField(size_t first, size_t second)
+{
+	std::string field;
+
+	field = this->paramVector[first];
+	this->paramVector[first] = this->paramVector[second];
+	this->paramVector[second] = field;
+}
+
 void	Message::setSender(ISender &value)
 {
-	this->sender = value;
+	this->sender = &value;
 }
 
 ISender &Message::getSender(void)
 {
-	return this->sender;
+	return *this->sender;
 }
 
 size_t	Message::size(void)

@@ -10,8 +10,8 @@ public:
 	${CLASS}Command(Server &server, int accessLevel, int paramCount);
 
 private:
-	virtual bool	_execUser(Message &message);
-	virtual bool	_execServer(Message &message);
+	virtual bool	_execUser(Message message);
+	virtual bool	_execServer(Message message);
 };
 
 #endif

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include "User.hpp"
+#include "ISender.hpp"
 #include "Server.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
@@ -238,6 +239,11 @@ ssize_t	User::send(std::string msg)
 	else
 		outputBuffer += msg;
 	return len;
+}
+
+ssize_t	User::send(Message &message)
+{
+	return this->send(message.toString());
 }
 
 size_t	User::recv(int fd)

@@ -6,7 +6,7 @@
 ${CLASS}Command::${CLASS}Command(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-bool ${CLASS}Command::_execUser(Message &message)
+bool ${CLASS}Command::_execUser(Message message)
 {
 	User	&user = *this->userSender;
 
@@ -15,7 +15,7 @@ bool ${CLASS}Command::_execUser(Message &message)
 	return false;
 }
 
-bool ${CLASS}Command::_execServer(Message &message)
+bool ${CLASS}Command::_execServer(Message message)
 {
 	Server	&server = *this->serverSender;
 

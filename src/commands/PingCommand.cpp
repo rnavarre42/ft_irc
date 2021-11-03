@@ -8,11 +8,23 @@ PingCommand::PingCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 bool PingCommand::_execUser(Message &message)
 {
-	User	&user = *this->userSender;
+	User			&user = *this->userSender;
+	std::string		param;
 
-	(void)message;
-	(void)user;
-	return false;
+	message.setSender(this->server);
+	message.setReceiver(NULL);
+	message.setCmd("PONG");
+
+	if (message.size() == 1)
+	{
+		message.insertField(message[0]);
+		message[0] = this->server.getName();
+	}
+	else if (message.size() >= 2)
+		message.swapField(0, 1);
+	message.limitMaxParam(2);
+	user.send(message);
+	return true;
 }
 
 bool PingCommand::_execServer(Message &message)

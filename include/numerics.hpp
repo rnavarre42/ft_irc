@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NUMERICS_HPP
+# define NUMERICS_HPP
 
 enum
 {
@@ -136,3 +137,5 @@ enum
 	ERR_USERSDONTMATCH		= 502,	// ":Cannot change mode for other users"
 
 };
+
+#endif

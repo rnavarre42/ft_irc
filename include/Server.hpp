@@ -1,10 +1,12 @@
 // Clase encargada de manejar todas las conexiones
-#ifndef IRCSERVER_HPP
-# define IRCSERVER_HPP
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
 # include "ISender.hpp"
+# include "User.hpp"
+# include "Channel.hpp"
 # include "ACommand.hpp"
-# include "Message.hpp"
+//# include "Message.hpp"
 # include "log.hpp"
 # include <string>
 # include <map>
@@ -25,7 +27,7 @@
 # define MAXKICK		255
 # define MAXREAL		100
 
-# define IDLETIMEOUT	30
+# define IDLETIMEOUT	120
 # define REGTIMEOUT		15
 # define NEXTTIMEOUT	120
 # define BUFFERSIZE		512
@@ -41,6 +43,7 @@
 class User;
 class Channel;
 class ACommand;
+class ISender;
 
 class Server : public ISender
 {
@@ -67,7 +70,9 @@ public:
 
 	void	start(void);
 	ssize_t	send(std::string msg);
+	ssize_t	send(Message &message);
 	void	quit(std::string msg);
+	void	killUser(User &user, std::string reason);
 	int		count(void);
 
 	bool	findCommand(Message &msg);

@@ -1,16 +1,17 @@
 #ifndef USER_HPP
 # define USER_HPP
 
+# include "ISender.hpp"
+//# include "Message.hpp"
+# include "Channel.hpp"
+//# include "Server.hpp"
 # include <string>
 # include <map>
-# include "Channel.hpp"
-# include "Server.hpp"
-# include "ISender.hpp"
-# include "Message.hpp"
 
 class Message;
-class ISender;
 class Server;
+class ISender;
+class Channel;
 
 class User : public ISender
 {
@@ -78,6 +79,7 @@ public:
 
 	void		sendPing(void);
 	ssize_t		send(std::string msg);
+	ssize_t		send(Message &message);
 
 	size_t	recv(int fd);
 

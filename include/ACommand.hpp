@@ -24,8 +24,8 @@ public:
 	void exec(Message &msg);
 
 private:
-	virtual bool	_execUser(Message &msg) = 0;
-	virtual bool	_execServer(Message &msg) = 0;
+	virtual bool	_execUser(Message &message) = 0;
+	virtual bool	_execServer(Message &message) = 0;
 
 protected:
 	Server		&server;

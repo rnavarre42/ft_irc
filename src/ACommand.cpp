@@ -30,7 +30,7 @@ void ACommand::exec(Message &message)
 				this->userSender = dynamic_cast<User *>(&message.getSender());
 				ret = this->_execUser(message);
 			}
-			if (message.getSender().isServer())
+			else if (message.getSender().isServer())
 			{
 				this->serverSender = dynamic_cast<Server *>(&message.getSender());
 				ret = this->_execServer(message);

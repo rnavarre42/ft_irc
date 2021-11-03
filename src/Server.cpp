@@ -71,7 +71,7 @@ void	Server::_loadCommands(void)
 	this->commandMap["WHOIS"]	= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["INVITE"]	= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 	this->commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
-	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["WHOWAS"]	= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 0);
 }
@@ -136,6 +136,11 @@ ssize_t	Server::send(std::string msg)
 	return 0;
 }
 
+ssize_t	Server::send(Message &message)
+{
+	return this->send(message.toString());
+}
+
 void	Server::quit(std::string msg)
 {
 //	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
@@ -156,6 +161,16 @@ void	Server::quit(std::string msg)
 		}
 	}
 	this->stop = true;
+}
+
+void	Server::killUser(User &user, std::string reason)
+{
+	if (reason.empty())
+		reason = "Client exited";
+	else
+		reason.insert(0, "Quit: ");
+	user.send("ERROR :Closing link: (" + user.getMask() + ") [" + reason + "]");
+	this->_delUser(user);
 }
 
 void	Server::start(void)
@@ -476,6 +491,7 @@ void	Server::checkTimeout(void)
 		}
 		else if (!user->getNextTimeout() && (user->getIdleTime() + IDLETIMEOUT < time(NULL)))
 		{
+			std::cout << "getIdletime = " << user->getIdleTime() << " : time = " << time(NULL) << std::endl;
 			if (user->isRegistered())
 			{
 				user->setNextTimeout(time(NULL) + NEXTTIMEOUT);
