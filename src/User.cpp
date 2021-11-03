@@ -282,12 +282,9 @@ bool	User::checkOutput(int fd)
 {
 	size_t	size;
 
-	size = ::send(fd, this->inputBuffer.c_str(), this->inputBuffer.size(), 0);
-	if (size != this->inputBuffer.size())
-	{
-		this->inputBuffer.erase(0, size);
-		return true;
-	}
-	else
+	size = ::send(fd, this->outputBuffer.c_str(), this->outputBuffer.size(), 0);
+	if (size == this->outputBuffer.size())
 		return false;
+	this->outputBuffer.erase(0, size);
+	return true;
 }
