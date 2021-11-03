@@ -15,7 +15,6 @@ void ACommand::exec(Message &message)
 {
 	bool	ret = true;
 
-	message.getSender().setIdleTime(time(NULL));
 	if (this->level == LEVEL_ALL || message.getSender().isRegistered() == level || message.getSender().isOper())
 	{
 		if (message.size() < this->count)

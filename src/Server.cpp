@@ -378,18 +378,21 @@ void	Server::checkUserIO(void)
 			if (size <= 0)
 				this->_delUser(*user);
 		}
-		if (this->pollfds[pos].revents & POLLOUT)
+		else if (this->pollfds[pos].revents & POLLOUT)
 		{
 			user = this->fdMap[pollfds[pos].fd];
 			std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
 			if (!user->checkOutput(pollfds[pos].fd))
 				this->pollfds[pos].events ^= POLLOUT;
 		}
+		else
+			this->checkUserTimeout(*user);
 	}
 }
 
 bool	Server::findCommand(Message &msg)
 {
+	msg.getSender().setIdleTime(time(NULL));
 	if (this->commandMap.find(msg.getCmd()) != commandMap.end())
 	{
 		commandMap[msg.getCmd()]->exec(msg);
@@ -475,31 +478,35 @@ void	Server::checkConsoleInput(void)
 	}
 }
 
+void	Server::checkUserTimeout(User &user)
+{
+	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
+	{
+		user.send("ERROR :Ping timeout");
+		this->_delUser(user);
+	}
+	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < time(NULL)))
+	{
+//		std::cout << "getIdletime = " << user.getIdleTime() << " : time = " << time(NULL) << std::endl;
+		if (user.isRegistered())
+		{
+			user.setNextTimeout(time(NULL) + NEXTTIMEOUT);
+			user.setPingChallenge(this->name);
+		}
+		user.send("PING :" + user.getPingChallenge());
+	}
+}
+
 void	Server::checkTimeout(void)
 {
 	std::map<int, User *>::iterator	it;
-	User							*user;
 
 	for (it = this->fdMap.begin(); it != this->fdMap.end();)
-	{
-		user = it->second;
-		it++;
-		if (user->getNextTimeout() && user->getNextTimeout() < time(NULL))
-		{
-			user->send("ERROR :Ping timeout");
-			this->_delUser(*user);
-		}
-		else if (!user->getNextTimeout() && (user->getIdleTime() + IDLETIMEOUT < time(NULL)))
-		{
-			std::cout << "getIdletime = " << user->getIdleTime() << " : time = " << time(NULL) << std::endl;
-			if (user->isRegistered())
-			{
-				user->setNextTimeout(time(NULL) + NEXTTIMEOUT);
-				user->setPingChallenge(this->name);
-			}
-			user->send("PING :" + user->getPingChallenge());
-		}
-	}
+//	{
+		checkUserTimeout(*(it++)->second);
+//		user = it->second;
+//		it++;
+//	}
 }
 
 void	Server::loop(void)
