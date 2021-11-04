@@ -6,7 +6,7 @@
 PingCommand::PingCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-bool PingCommand::_execUser(Message &message)
+bool PingCommand::_recvUser(Message &message)
 {
 	User			&user = *this->userSender;
 	std::string		param;
@@ -27,9 +27,27 @@ bool PingCommand::_execUser(Message &message)
 	return true;
 }
 
-bool PingCommand::_execServer(Message &message)
+bool PingCommand::_recvServer(Message &message)
 {
 	Server	&server = *this->serverSender;
+
+	(void)message;
+	(void)server;
+	return false;
+}
+
+bool PingCommand::_sendUser(Message &message)
+{
+	User	&user = *this->userReceiver;
+	
+	(void)message;
+	(void)user;
+	return false;
+}
+
+bool PingCommand::_sendServer(Message &message)
+{
+	Server	&server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

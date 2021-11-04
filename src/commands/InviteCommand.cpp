@@ -6,7 +6,7 @@
 InviteCommand::InviteCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-bool InviteCommand::_execUser(Message &message)
+bool InviteCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 
@@ -15,11 +15,29 @@ bool InviteCommand::_execUser(Message &message)
 	return false;
 }
 
-bool InviteCommand::_execServer(Message &message)
+bool InviteCommand::_recvServer(Message &message)
 {
 	Server	&server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
+}
+
+bool InviteCommand::_sendUser(Message &message)
+{
+	User	&user = *this->userReceiver;
+	
+	(void)message;
+	(void)user;
+	return false;
+}
+
+bool InviteCommand::_sendServer(Message &message)
+{
+	Server	&server = *this->serverReceiver;
+
+	(void)message;
+	(void)server;
+	retur false;
 }

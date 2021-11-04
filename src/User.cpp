@@ -285,7 +285,7 @@ size_t	User::checkInput(int fd)
 	{
 		lineBuffer = this->_getLine(pos);
 		msg = this->buildMessage(lineBuffer);
-		if (!msg->empty() && !this->server.findCommand(*msg))
+		if (!msg->empty() && !this->server.recvCommand(*msg))
 		{
 			Numeric::insertField(msg->getCmd());
 			this->send(Numeric::builder(this->server, *this, ERR_UNKNOWNCOMMAND));

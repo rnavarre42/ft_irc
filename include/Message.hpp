@@ -22,6 +22,8 @@ public:
 	std::string const	&getCmd(void) const;
 
 	void				setReceiver(ISender *value);
+	ISender				&getReceiver(void);
+
 	void				setSender(ISender &value);
 	ISender				&getSender(void);
 

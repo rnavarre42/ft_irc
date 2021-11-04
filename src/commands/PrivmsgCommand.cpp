@@ -9,7 +9,7 @@
 PrivmsgCommand::PrivmsgCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-bool PrivmsgCommand::_execUser(Message &message)
+bool PrivmsgCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 	std::map<std::string, User *>::iterator	it;
@@ -32,9 +32,26 @@ bool PrivmsgCommand::_execUser(Message &message)
 	return true;
 }
 
-bool PrivmsgCommand::_execServer(Message &message)
+bool PrivmsgCommand::_recvServer(Message &message)
 {
 	Server	&server = *this->serverSender;
+
+	(void)message;
+	(void)server;
+	return false;
+}
+bool PrivmsgCommand::_sendUser(Message &message)
+{
+	User	&user = *this->userReceiver;
+	
+	(void)message;
+	(void)user;
+	return false;
+}
+
+bool PrivmsgCommand::_sendServer(Message &message)
+{
+	Server	&server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

@@ -11,7 +11,6 @@
 #include <exception>
 #include <csignal>
 #include <cstdlib>
-#include "Server.hpp"
 #include "User.hpp"
 #include "commands.hpp"
 #include "Message.hpp"
@@ -61,21 +60,22 @@ void	Server::_loadCommands(void)
 	this->commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
 	this->commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
 	this->commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
-	this->commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
-	this->commandMap["KILL"]	= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
-	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 2);
-	this->commandMap["LIST"]	= new ListCommand	(*this, LEVEL_REGISTERED, 0);
+//	this->commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
+//	this->commandMap["KILL"]	= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
+//	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 2);
+//	this->commandMap["LIST"]	= new ListCommand	(*this, LEVEL_REGISTERED, 0);
 	this->commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["MODE"]	= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["WHOIS"]	= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["INVITE"]	= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
-	this->commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
+//	this->commandMap["MODE"]	= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["MOTD"]	= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
+//	this->commandMap["WHOIS"]	= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->commandMap["INVITE"]	= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
+//	this->commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
 	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["WHOWAS"]	= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 0);
+//	this->commandMap["WHOWAS"]	= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 0);
 }
 
 Server	&Server::getInstance(void)
@@ -395,79 +395,37 @@ void	Server::checkUserIO(void)
 	}
 }
 
-bool	Server::findCommand(Message &msg)
+ACommand	*Server::findCommand(std::string cmd)
 {
+	if (this->commandMap.find(cmd) != commandMap.end())
+		return commandMap[cmd];
+	return NULL;
+}
+
+bool	Server::recvCommand(Message &msg)
+{
+	ACommand	*command;
+
 	msg.getSender().setIdleTime(time(NULL));
-	if (this->commandMap.find(msg.getCmd()) != commandMap.end())
+	if ((command = this->findCommand(msg.getCmd())))
 	{
-		commandMap[msg.getCmd()]->exec(msg);
+		command->recv(msg);
 		return true;
 	}
 	return false;
 }
 
-/*
-void	Server::checkUserInput(void)
+bool	Server::sendCommand(Message &msg)
 {
-	size_t	size;
-	size_t	pos;
-	char	buffer[BUFFERSIZE + 1];
-	std::string	msg;
-	User	*user;
+	ACommand	*command;
 
-
-	 *	leemos entrada, hasta 512, procesamos mensajes independientes hasta el final.
-	 *  solo los que están con fin de linea.
-	 *  procesmos 2 mensajes, quedan 480bytes
-	 *	--> fd pendiente de leer.
-	 *	vuelvo y leo el siguiente paquete. descarto hasta el \r\n y mando los 480 a procesar.
-	 *
-
-	for (int i = 2; i < MAXUSERS + 2; i++)
+	if ((command = this->findCommand(msg.getCmd())))
 	{
-		if (this->pollfds[i].revents & POLLIN)
-		{
-			user = this->fdMap[pollfds[i].fd];
-			size = recv(pollfds[i].fd, buffer, BUFFERSIZE, 0);
-			buffer[size] = '\0';
-			user->getInputBuffer() += buffer;
-			while ((pos = user->getInputBuffer().find('\n')) != std::string::npos)
-			{
-				msg = user->getInputBuffer().substr(0, pos);
-				user->getInputBuffer().erase(0, pos + 1);
-				while ((pos = msg.find('\r')) != std::string::npos)
-				{
-					msg.erase(pos, 1);
-				}
-				Message &message = Message::messageBuilder(*user, msg);
-				if (!message.empty())
-				{
-					if (this->commandMap.find(message.getCmd()) != commandMap.end())
-						commandMap[message.getCmd()]->exec(message);
-					else
-						user->send(Numeric::builder(*this, *user, ERR_UNKNOWNCOMMAND, (std::string[]){message.getCmd()}, 1));
-				}
-				delete &message;
-			}
-			if (size <= 0)
-				this->_delUser(*user);
-		//	else
-		//		this->send(user->getName() + "> " + buffer);
-		}
-		if (this->pollfds[i].revents & POLLOUT)
-		{
-			std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
-			user = this->fdMap[pollfds[i].fd];
-			size = ::send(pollfds[i].fd, user->getOutputBuffer().c_str(), user->getOutputBuffer().size(), 0);
-			if (size == user->getOutputBuffer().size())
-				this->pollfds[i].events ^= POLLOUT;
-			else
-				user->getOutputBuffer().erase(0, size);
-		}
+		command->send(msg);
+		return true;
 	}
+	return false;
 }
-*/
-
 void	Server::checkConsoleInput(void)
 {
 	int		size;

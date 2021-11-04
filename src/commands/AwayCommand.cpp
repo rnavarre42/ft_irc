@@ -6,7 +6,7 @@
 AwayCommand::AwayCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-bool AwayCommand::_execUser(Message &message)
+bool AwayCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 
@@ -15,11 +15,29 @@ bool AwayCommand::_execUser(Message &message)
 	return false;
 }
 
-bool AwayCommand::_execServer(Message &message)
+bool AwayCommand::_recvServer(Message &message)
 {
 	Server	&server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
+}
+
+bool AwayCommand::_sendUser(Message &message)
+{
+	User	&user = *this->userReceiver;
+	
+	(void)message;
+	(void)user;
+	return false;
+}
+
+bool AwayCommand::_sendServer(Message &message)
+{
+	Server	&server = *this->serverReceiver;
+
+	(void)message;
+	(void)server;
+	retur false;
 }

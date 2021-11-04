@@ -9,7 +9,7 @@
 UserCommand::UserCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-bool UserCommand::_execUser(Message &message)
+bool UserCommand::_recvUser(Message &message)
 {
 	User &user = *this->userSender;
 
@@ -28,11 +28,29 @@ bool UserCommand::_execUser(Message &message)
 	return true;
 }
 
-bool UserCommand::_execServer(Message &message)
+bool UserCommand::_recvServer(Message &message)
 {
 	Server &server = *this->serverSender;
 
 	(void)server;
 	(void)message;
+	return false;
+}
+
+bool UserCommand::_sendUser(Message &message)
+{
+	User	&user = *this->userReceiver;
+	
+	(void)message;
+	(void)user;
+	return false;
+}
+
+bool UserCommand::_sendServer(Message &message)
+{
+	Server	&server = *this->serverReceiver;
+
+	(void)message;
+	(void)server;
 	return false;
 }

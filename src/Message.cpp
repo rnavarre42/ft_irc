@@ -75,6 +75,11 @@ void		Message::setReceiver(ISender *value)
 	this->receiver = value;
 }
 
+ISender		&Message::getReceiver(void)
+{
+	return *this->receiver;
+}
+
 std::string		Message::toString(void)
 {
 	std::ostringstream	ss;

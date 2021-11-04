@@ -5,19 +5,19 @@
 #include <string>
 #include <iostream>
 
-ACommand::ACommand(Server &server, int accessLevel, int paramCount) : server(server), level(accessLevel), count(paramCount)
+ACommand::ACommand(Server &server, int accessLevel, int minParam) : server(server), accessLevel(accessLevel), minParam(minParam)
 {}
 
 ACommand::~ACommand(void)
 {}
 
-void ACommand::exec(Message &message)
+void ACommand::recv(Message &message)
 {
 	bool	ret = true;
 
-	if (this->level == LEVEL_ALL || message.getSender().isRegistered() == level || message.getSender().isOper())
+	if (this->accessLevel == LEVEL_ALL || message.getSender().isRegistered() == accessLevel || message.getSender().isOper())
 	{
-		if (message.size() < this->count)
+		if (message.size() < this->minParam)
 		{
 			Numeric::insertField(message.getCmd());
 			message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NEEDMOREPARAMS));
@@ -27,12 +27,12 @@ void ACommand::exec(Message &message)
 			if (message.getSender().isUser())
 			{
 				this->userSender = dynamic_cast<User *>(&message.getSender());
-				ret = this->_execUser(message);
+				ret = this->_recvUser(message);
 			}
 			else if (message.getSender().isServer())
 			{
 				this->serverSender = dynamic_cast<Server *>(&message.getSender());
-				ret = this->_execServer(message);
+				ret = this->_recvServer(message);
 			}
 			if (!ret)
 			{
@@ -41,10 +41,24 @@ void ACommand::exec(Message &message)
 			}
 		}
 	}
-	else if (this->level == LEVEL_REGISTERED)
+	else if (this->accessLevel == LEVEL_REGISTERED)
 		message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NOTREGISTERED));
-	else if (this->level == LEVEL_UNREGISTERED)
+	else if (this->accessLevel == LEVEL_UNREGISTERED)
 		message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_ALREADYREGISTERED));
-	else if (this->level == LEVEL_IRCOPERATOR)
+	else if (this->accessLevel == LEVEL_IRCOPERATOR)
 		message.getSender().send(Numeric::builder(this->server, message.getSender(), ERR_NOPRIVILEGES));
+}
+
+void ACommand::send(Message &message)
+{
+	if (message.getReceiver().isUser())
+	{
+		this->userReceiver = dynamic_cast<User *>(&message.getReceiver());
+		this->_sendUser(message);
+	}
+	else if (message.getReceiver().isServer())
+	{
+		this->serverReceiver = dynamic_cast<Server *>(&message.getReceiver());
+		this->_sendServer(message);
+	}
 }

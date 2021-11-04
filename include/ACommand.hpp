@@ -18,21 +18,26 @@ class User;
 class ACommand
 {
 public:
-	ACommand(Server &server, int accessLevel, int paramCount);
+	ACommand(Server &server, int accessLevel, int minParam);
 	~ACommand(void);
 
-	void exec(Message &msg);
+	void	recv(Message &msg);
+	void	send(Message &msg);
 
 private:
-	virtual bool	_execUser(Message &message) = 0;
-	virtual bool	_execServer(Message &message) = 0;
+	virtual bool	_recvUser(Message &message) = 0;
+	virtual bool	_recvServer(Message &message) = 0;
+	virtual bool	_sendUser(Message &message) = 0;
+	virtual bool	_sendServer(Message &message) = 0;
 
 protected:
 	Server		&server;
-	int			level;
-	size_t		count;
+	int			accessLevel;
+	size_t		minParam;
 	Server		*serverSender;
 	User		*userSender;
+	Server		*serverReceiver;
+	User		*userReceiver;
 };
 
 #endif

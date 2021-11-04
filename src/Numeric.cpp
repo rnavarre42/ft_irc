@@ -71,4 +71,9 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_NOTEXTTOSEND] = ":No text to send";
 	Numeric::_numericMap[ERR_NOSUCHNICK] = "$ :No such nick/channel";
 	Numeric::_numericMap[ERR_BADCHANMASK] = "$ :Bad channel Mask";
+	Numeric::_numericMap[RPL_MOTDSTART] = ":- $ Message of the day - ";
+	Numeric::_numericMap[RPL_MOTD] = ":- $";
+	Numeric::_numericMap[RPL_ENDOFMOTD] = ":End of MOTD command";
+	Numeric::_numericMap[ERR_NOMOTD] = ":MOTD File is missing";
+
 }

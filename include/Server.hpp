@@ -47,7 +47,7 @@ class ISender;
 
 class Server : public ISender
 {
-public:
+	public:
 	~Server(void);
 
 	static void						signalHandler(int sig);
@@ -75,7 +75,11 @@ public:
 	void	killUser(User &user, std::string reason);
 	int		count(void);
 
-	bool	findCommand(Message &msg);
+	ACommand	*findCommand(std::string cmd);
+
+	bool		recvCommand(Message &msg);
+	bool		sendCommand(Message &msg);
+
 	void	setPollout(User &user);
 
 	struct ServerFullException : public std::exception
@@ -121,9 +125,6 @@ private:
 
 	void	_loadCommands(void);
 	void	checkConsoleInput(void);
-//	void	checkUserOutput(int fd);
-//	void	checkUserInput(int fd);
-	void	checkUserInput(void);
 	void	checkUserIO(void);
 	void	checkTimeout(void);
 	void	checkUserTimeout(User &user);

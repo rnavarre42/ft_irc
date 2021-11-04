@@ -6,7 +6,7 @@
 QuitCommand::QuitCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-bool QuitCommand::_execUser(Message &message)
+bool QuitCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 
@@ -17,7 +17,7 @@ bool QuitCommand::_execUser(Message &message)
 	return true;
 }
 
-bool QuitCommand::_execServer(Message &message)
+bool QuitCommand::_recvServer(Message &message)
 {
 	Server	&server = *this->serverSender;
 
@@ -36,3 +36,21 @@ void	QuitCommand::_send(Message &message)
 		reason = "Quit: " + message[0];
 }
 */
+
+bool QuitCommand::_sendUser(Message &message)
+{
+	User	&user = *this->userReceiver;
+	
+	(void)message;
+	(void)user;
+	return false;
+}
+
+bool QuitCommand::_sendServer(Message &message)
+{
+	Server	&server = *this->serverReceiver;
+
+	(void)message;
+	(void)server;
+	return false;
+}
