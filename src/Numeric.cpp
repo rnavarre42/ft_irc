@@ -70,4 +70,5 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_NOPRIVILEGES] = ":Permision Denied- You're not an IRC operator";
 	Numeric::_numericMap[ERR_NOTEXTTOSEND] = ":No text to send";
 	Numeric::_numericMap[ERR_NOSUCHNICK] = "$ :No such nick/channel";
+	Numeric::_numericMap[ERR_BADCHANMASK] = "$ :Bad channel Mask";
 }

@@ -27,7 +27,7 @@
 # define MAXKICK		255
 # define MAXREAL		100
 
-# define IDLETIMEOUT	120
+# define IDLETIMEOUT	30
 # define REGTIMEOUT		15
 # define NEXTTIMEOUT	120
 # define BUFFERSIZE		512
@@ -126,6 +126,7 @@ private:
 	void	checkUserInput(void);
 	void	checkUserIO(void);
 	void	checkTimeout(void);
+	void	checkUserTimeout(User &user);
 	void	closeClients(std::string msg);
 	void	loop(void);
 	void	initSocket(void);
