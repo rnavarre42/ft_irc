@@ -26,6 +26,7 @@ bool PrivmsgCommand::_execUser(Message &message)
 		message.eraseAt(0);
 		message.setSender(user);
 		message.setReceiver(it->second);
+		message.limitMaxParam(1);
 		it->second->send(message);
 	}
 	return true;

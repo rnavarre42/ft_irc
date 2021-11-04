@@ -50,7 +50,9 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 }
 
 Server::~Server(void)
-{}
+{
+	Console::log(LOG_INFO, "Server destroyed");
+}
 
 void	Server::_loadCommands(void)
 {
@@ -369,24 +371,27 @@ void	Server::checkUserIO(void)
 	User	*user;
 	size_t	size;
 
-	for (int pos = 2; pos < MAXUSERS + 2; pos++)
+	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
-		if (this->pollfds[pos].revents & POLLIN)
+		if (this->pollfds[i].revents & POLLIN)
 		{
-			user = this->fdMap[pollfds[pos].fd];
-			size = user->checkInput(pollfds[pos].fd);
+			user = this->fdMap[this->pollfds[i].fd];
+			size = user->checkInput(this->pollfds[i].fd);
 			if (size <= 0)
 				this->_delUser(*user);
 		}
-		else if (this->pollfds[pos].revents & POLLOUT)
+		else if (this->pollfds[i].revents & POLLOUT)
 		{
-			user = this->fdMap[pollfds[pos].fd];
+			user = this->fdMap[this->pollfds[i].fd];
 		//	std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
-			if (user->checkOutput(pollfds[pos].fd))
-				this->pollfds[pos].events ^= POLLOUT;
+			if (user->checkOutput(this->pollfds[i].fd))
+				this->pollfds[i].events ^= POLLOUT;
 		}
-		else
+		else if (this->pollfds[i].fd > 0)
+		{
+			user = this->fdMap[this->pollfds[i].fd];
 			this->checkUserTimeout(*user);
+		}
 	}
 }
 
@@ -474,7 +479,10 @@ void	Server::checkConsoleInput(void)
 		size = read(0, buffer, BUFFERSIZE);
 		buffer[size] = '\0';
 		if (size > 0)
-			this->send(buffer);
+		{
+			if (!strcmp(buffer, "quit\n"))
+				this->stop = true;
+		}
 	}
 }
 

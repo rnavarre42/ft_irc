@@ -25,3 +25,14 @@ bool QuitCommand::_execServer(Message &message)
 	(void)server;
 	return false;
 }
+/*
+void	QuitCommand::_send(Message &message)
+{
+	std::string	reason;
+
+	if (!message.size())
+		reason = "Client exited";
+	else
+		reason = "Quit: " + message[0];
+}
+*/
