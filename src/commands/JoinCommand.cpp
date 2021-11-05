@@ -13,13 +13,7 @@ bool JoinCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 
-	if (message[0][0] == '#')
-		;
-	else
-	{
-		Numeric::insertField(message[0]);
-		user.send(Numeric::builder(this->server, user, ERR_BADCHANMASK));
-	}
+	this->server.addToChannel(message[0], user);
 	return true;
 }
 
@@ -47,5 +41,5 @@ bool JoinCommand::_sendServer(Message &message)
 
 	(void)message;
 	(void)server;
-	retur false;
+	return false;
 }

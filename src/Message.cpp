@@ -46,7 +46,7 @@ std::string extractPhrase(std::string &data)
 		return extractWord(data);
 }
 
-Message::Message(ISender &sender, std::string data) : sender(&sender)
+Message::Message(ISender &sender, std::string data) : sender(&sender), receiver(NULL)
 {
 	leftTrim(data);
 	if (data.empty())
@@ -70,14 +70,17 @@ Message::Message(ISender &sender, std::string data) : sender(&sender)
 //		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;
 }
 
+Message::Message(ISender &sender) : sender(&sender), receiver(NULL)
+{}
+
 void		Message::setReceiver(ISender *value)
 {
 	this->receiver = value;
 }
 
-ISender		&Message::getReceiver(void)
+ISender		*Message::getReceiver(void)
 {
-	return *this->receiver;
+	return this->receiver;
 }
 
 std::string		Message::toString(void)
@@ -174,4 +177,9 @@ size_t	Message::size(void)
 Message &Message::messageBuilder(ISender &sender, std::string data)
 {
 	return *new Message(sender, data);
+}
+
+Message &Message::messageBuilder(ISender &sender)
+{
+	return *new Message(sender);
 }

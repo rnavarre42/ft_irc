@@ -22,7 +22,7 @@ public:
 	std::string const	&getCmd(void) const;
 
 	void				setReceiver(ISender *value);
-	ISender				&getReceiver(void);
+	ISender				*getReceiver(void);
 
 	void				setSender(ISender &value);
 	ISender				&getSender(void);
@@ -37,9 +37,11 @@ public:
 	void				insertField(std::string field);
 	std::string			toString(void);
 	static Message		&messageBuilder(ISender &sender, std::string data);
+	static Message		&messageBuilder(ISender &sender);
 
 private:
 	Message(ISender &sender, std::string data);
+	Message(ISender &sender);
 
 	ISender		*sender;
 	ISender		*receiver;

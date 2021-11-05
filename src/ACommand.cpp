@@ -51,14 +51,14 @@ void ACommand::recv(Message &message)
 
 void ACommand::send(Message &message)
 {
-	if (message.getReceiver().isUser())
+	if (message.getReceiver()->isUser())
 	{
-		this->userReceiver = dynamic_cast<User *>(&message.getReceiver());
+		this->userReceiver = dynamic_cast<User *>(message.getReceiver());
 		this->_sendUser(message);
 	}
-	else if (message.getReceiver().isServer())
+	else if (message.getReceiver()->isServer())
 	{
-		this->serverReceiver = dynamic_cast<Server *>(&message.getReceiver());
+		this->serverReceiver = dynamic_cast<Server *>(message.getReceiver());
 		this->_sendServer(message);
 	}
 }

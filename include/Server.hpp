@@ -53,6 +53,7 @@ class Server : public ISender
 	static void						signalHandler(int sig);
 	static Server					&getInstance(void);
 	static Server					&getInstance(std::string listenIp, int listenPort, std::string name);
+	static void						deleteInstance(void);
 	std::string const				&getName(void) const;
 	std::map<std::string, User *>	&getUserMap(void);
 	std::string						getMask(void);
@@ -69,10 +70,18 @@ class Server : public ISender
 	void							setIdleTime(time_t value);
 
 	void	start(void);
-	ssize_t	send(std::string msg);
+	ssize_t	send(std::string msg = "");
 	ssize_t	send(Message &message);
+
+	bool	addToChannel(std::string name, User &user);
+	bool	delFromChannel(std::string name, User &user);
+
 	void	quit(std::string msg);
-	void	killUser(User &user, std::string reason);
+	
+	void	addUser(User &user);
+	void	delUser(User &user);
+	
+//	void	killUser(User &user, std::string reason);
 	int		count(void);
 
 	ACommand	*findCommand(std::string cmd);
@@ -124,6 +133,7 @@ private:
 	int		checkUserConnection(void);
 
 	void	_loadCommands(void);
+	void	_unloadCommands(void);
 	void	checkConsoleInput(void);
 	void	checkUserIO(void);
 	void	checkTimeout(void);
@@ -133,8 +143,6 @@ private:
 	void	initSocket(void);
 	void	_bind(void);
 	void	_listen(void);
-	void	_addUser(User &user);
-	void	_delUser(User &user);
 	User	*_accept();
 };
 

@@ -78,8 +78,10 @@ public:
 	bool	isAway(void);
 
 	void		sendPing(void);
-	ssize_t		send(std::string msg);
+	ssize_t		send(std::string msg = "");
 	ssize_t		send(Message &message);
+	void		sendToBuffer(std::string msg);
+	void		sendToBuffer(Message &message);
 
 	size_t	recv(int fd);
 

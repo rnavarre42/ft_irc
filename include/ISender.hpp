@@ -19,7 +19,7 @@ public:
 	virtual int const			&getFd(void) const = 0;
 	virtual std::string const	&getPass(void) const = 0;
 	virtual void				setPass(std::string value) = 0;
-	virtual ssize_t				send(std::string msg) = 0;
+	virtual ssize_t				send(std::string msg = "") = 0;
 	virtual ssize_t				send(Message &message) = 0;
 	virtual bool const			&isRegistered(void) const = 0;
 	virtual bool				isServer(void) = 0;

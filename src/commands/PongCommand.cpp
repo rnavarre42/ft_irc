@@ -25,7 +25,14 @@ bool PongCommand::_recvUser(Message &message)
 		user.setNextTimeout(0);
 	}
 	else if (!user.isRegistered())
-		server.killUser(user, "You should be dead now!");
+	{
+		message.limitMaxParam(1);
+		message.setCmd("QUIT");
+		message[0] = "Incorrect ping reply for registration";
+		this->server.sendCommand(message);
+//		this->server.delUser(user);
+	}
+//		server.killUser(user, "You should be dead now!");
 	return true;
 }
 

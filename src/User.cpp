@@ -220,30 +220,39 @@ bool	User::isAway(void)
 	return (!this->awayMsg.empty());
 }
 
+void	User::sendToBuffer(Message &message)
+{
+	this->sendToBuffer(message.toString());
+}
+
+void	User::sendToBuffer(std::string msg)
+{
+	if (msg.size() > (MAXLINE - 2))
+		msg.erase((MAXLINE - 2), std::string::npos);
+	this->outputBuffer += msg + "\r\n";
+}
+
 ssize_t	User::send(std::string msg)
 {
 	ssize_t	len;
 
-	len = 0;
-	msg.append("\r\n");
-	if (this->outputBuffer.empty())
+	if (!msg.empty())
+		this->sendToBuffer(msg);
+	len = ::send(this->fd, this->outputBuffer.c_str(), this->outputBuffer.size(), 0);
+	if ((size_t)len != msg.size())
 	{
-		len = ::send(this->fd, msg.c_str(), msg.size(), 0);
-		if ((size_t)len != msg.size())
-		{
-			std::cout << "El usuario " << this->getName() << " se ha llenado" << std::endl;
-			this->outputBuffer = msg.substr(len);
-			this->server.setPollout(*this);
-		}
+		this->outputBuffer.erase(0, len);
+		this->server.setPollout(*this);
 	}
 	else
-		outputBuffer += msg;
+		this->outputBuffer.clear();
 	return len;
 }
 
 ssize_t	User::send(Message &message)
 {
-	return this->send(message.toString());
+	this->sendToBuffer(message.toString());
+	return this->send();
 }
 
 size_t	User::recv(int fd)

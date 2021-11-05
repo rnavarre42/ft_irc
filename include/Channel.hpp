@@ -12,11 +12,11 @@ class User;
 class Channel
 {
 public:
-	Channel(std::string name);
+	Channel(std::string name, User &user);
 	~Channel(void);
 
 	std::string const					&getName(void) const;
-	std::map<std::string, User *> const	&getUserMap(void) const;
+	std::map<std::string, User *>		&getUserMap(void);
 
 	void							setOwner(std::string value);
 	std::string const				&getOwner(void) const;

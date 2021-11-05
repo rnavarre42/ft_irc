@@ -10,10 +10,11 @@ bool QuitCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 
-	if (!message.size())
-		server.killUser(user, "");
-	else
-		server.killUser(user, message[0]);
+	if (message.size())
+		message[0].insert(0, "Quit: ");
+	message.setCmd("QUIT");
+	message.setReceiver(&user);
+	server.sendCommand(message);
 	return true;
 }
 
@@ -25,24 +26,15 @@ bool QuitCommand::_recvServer(Message &message)
 	(void)server;
 	return false;
 }
-/*
-void	QuitCommand::_send(Message &message)
-{
-	std::string	reason;
-
-	if (!message.size())
-		reason = "Client exited";
-	else
-		reason = "Quit: " + message[0];
-}
-*/
 
 bool QuitCommand::_sendUser(Message &message)
 {
 	User	&user = *this->userReceiver;
 	
-	(void)message;
-	(void)user;
+	if (!message.size())
+		message.insertField("Client exited");
+	user.send("ERROR :Closing link: (" + user.getMask() + ") [" + message[0] + "]");
+	this->server.delUser(user);
 	return false;
 }
 

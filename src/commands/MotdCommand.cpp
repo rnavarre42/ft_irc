@@ -41,11 +41,11 @@ bool MotdCommand::_sendUser(Message &message)
 		return true;
 	}
 	Numeric::insertField(this->server.getMask());
-	user.send(Numeric::builder(this->server, user, RPL_MOTDSTART));
+	user.sendToBuffer(Numeric::builder(this->server, user, RPL_MOTDSTART));
 	while (std::getline(ifs, line))
 	{
 		Numeric::insertField(line);
-		user.send(Numeric::builder(this->server, user, RPL_MOTD));
+		user.sendToBuffer(Numeric::builder(this->server, user, RPL_MOTD));
 	}
 	user.send(Numeric::builder(this->server, user, RPL_ENDOFMOTD));
 	ifs.close();

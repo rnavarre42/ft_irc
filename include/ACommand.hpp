@@ -19,7 +19,7 @@ class ACommand
 {
 public:
 	ACommand(Server &server, int accessLevel, int minParam);
-	~ACommand(void);
+	virtual ~ACommand(void);
 
 	void	recv(Message &msg);
 	void	send(Message &msg);

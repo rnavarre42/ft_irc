@@ -50,6 +50,7 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 
 Server::~Server(void)
 {
+	this->_unloadCommands();
 	Console::log(LOG_INFO, "Server destroyed");
 }
 
@@ -61,9 +62,9 @@ void	Server::_loadCommands(void)
 	this->commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
 	this->commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
 //	this->commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->commandMap["KILL"]	= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
 //	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->commandMap["LIST"]	= new ListCommand	(*this, LEVEL_REGISTERED, 0);
@@ -78,6 +79,15 @@ void	Server::_loadCommands(void)
 //	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 0);
 }
 
+void	Server::_unloadCommands(void)
+{
+	std::map<std::string, ACommand *>::iterator	it;
+
+	for (it = commandMap.begin(); it != commandMap.end(); it++)
+		delete it->second;
+}
+
+
 Server	&Server::getInstance(void)
 {
 	return *Server::instance;
@@ -87,6 +97,11 @@ Server	&Server::getInstance(std::string listenIp, int listenPort, std::string na
 	if (Server::instance == NULL)
 		Server::instance = new Server(listenIp, listenPort, name);
 	return *Server::instance;
+}
+
+void	Server::deleteInstance(void)
+{
+	delete Server::instance;
 }
 
 std::map<std::string, User *>	&Server::getUserMap(void)
@@ -158,13 +173,14 @@ void	Server::quit(std::string msg)
 		if (this->pollfds[i].fd)
 		{
 			this->fdMap[this->pollfds[i].fd]->send(msg);
-			this->_delUser(*this->fdMap[this->pollfds[i].fd]);
+			this->delUser(*this->fdMap[this->pollfds[i].fd]);
 			usersLeft--;
 		}
 	}
 	this->stop = true;
 }
 
+/*
 void	Server::killUser(User &user, std::string reason)
 {
 	if (reason.empty())
@@ -172,9 +188,9 @@ void	Server::killUser(User &user, std::string reason)
 	else
 		reason.insert(0, "Quit: ");
 	user.send("ERROR :Closing link: (" + user.getMask() + ") [" + reason + "]");
-	this->_delUser(user);
+	this->delUser(user);
 }
-
+*/
 void	Server::start(void)
 {
 	this->_listen();
@@ -303,14 +319,15 @@ int		Server::_poll(void)
 	return poll(this->pollfds, MAXUSERS + 2, this->pollTimeout);
 }
 
-void	Server::_addUser(User &user)
+void	Server::addUser(User &user)
 {
 //	this->userVector.push_back(&user);
 	this->fdMap[user.getFd()] = &user;
 }
 
-void	Server::_delUser(User &user)
+void	Server::delUser(User &user)
 {
+	// Se elimina de userMap si tiene nick
 	if (user.getName().empty())
 		;
 //		this->send("User <anonymous> disconnect\n");
@@ -324,6 +341,50 @@ void	Server::_delUser(User &user)
 	this->pollfds[user.getPollIndex()].events = 0;
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
 	delete &user;
+}
+
+bool	Server::addToChannel(std::string name, User &user)
+{
+	Channel															*channel;
+	std::map<std::string, Channel *>::iterator						it;
+	std::pair<std::map<std::string, User *>::iterator, bool>		retUser;
+
+	if (name[0] == '#')
+	{
+		if ((it = this->channelMap.find(strToUpper(name))) == this->channelMap.end())
+		{
+			channel = new Channel(name, user);
+			this->channelMap[strToUpper(name)] = channel;
+			channel->getUserMap()[strToUpper(user.getName())] = &user;
+			user.getChannelMap()[strToUpper(name)] = channel;
+			//TODO dar +o e informar al usuario de que ha entrado al canal
+		}
+		else
+		{
+			retUser = it->second->getUserMap().insert(std::pair<std::string, User *>(strToUpper(user.getName()), &user));
+			if (retUser.second == true)  //El nick ha entrado al canal
+;				//TODO informar al usuario de que ha entrado y al resto.
+			else
+			{
+				Numeric::insertField(it->second->getName());
+				user.send(Numeric::builder(*this, user, ERR_USERONCHANNEL));
+			}
+		}
+	}
+	else
+	{
+		Numeric::insertField(name);
+		user.send(Numeric::builder(*this, user, ERR_BADCHANMASK));
+		return false;
+	}
+	return true;
+}
+
+bool	Server::delFromChannel(std::string name, User &user)
+{
+	(void)name;
+	(void)user;
+	return false;
 }
 
 bool const	&Server::isRegistered(void) const
@@ -350,7 +411,7 @@ int	Server::checkUserConnection(void)
 			exit(EXIT_FAILURE);
 		}
 */
-		this->_addUser(*user);
+		this->addUser(*user);
 //		this->send("New user is connected.\r\n");
 		Console::log(LOG_INFO, "User <anonymous> connected");
 		return 1;
@@ -378,7 +439,7 @@ void	Server::checkUserIO(void)
 			user = this->fdMap[this->pollfds[i].fd];
 			size = user->checkInput(this->pollfds[i].fd);
 			if (size <= 0)
-				this->_delUser(*user);
+				this->delUser(*user);
 		}
 		else if (this->pollfds[i].revents & POLLOUT)
 		{
@@ -421,6 +482,8 @@ bool	Server::sendCommand(Message &msg)
 
 	if ((command = this->findCommand(msg.getCmd())))
 	{
+		if (msg.getReceiver() == NULL)
+			msg.setReceiver(&msg.getSender());
 		command->send(msg);
 		return true;
 	}
@@ -446,10 +509,16 @@ void	Server::checkConsoleInput(void)
 
 void	Server::checkUserTimeout(User &user)
 {
+	Message	*msg;
+
 	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
 	{
-		user.send("ERROR :Ping timeout");
-		this->_delUser(user);
+		msg = &Message::messageBuilder(*this);
+		msg->setCmd("QUIT");
+		msg->setReceiver(&user);
+		msg->insertField("Ping timeout");
+		this->sendCommand(*msg);
+		delete msg;
 	}
 	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < time(NULL)))
 	{

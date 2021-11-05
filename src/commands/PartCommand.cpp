@@ -6,7 +6,7 @@
 PartCommand::PartCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-bool PartCommand::_execUser(Message &message)
+bool PartCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 
@@ -15,7 +15,7 @@ bool PartCommand::_execUser(Message &message)
 	return false;
 }
 
-bool PartCommand::_execServer(Message &message)
+bool PartCommand::_recvServer(Message &message)
 {
 	Server	&server = *this->serverSender;
 
@@ -23,3 +23,22 @@ bool PartCommand::_execServer(Message &message)
 	(void)server;
 	return false;
 }
+
+bool PartCommand::_sendUser(Message &message)
+{
+	User	&user = *this->userReceiver;
+
+	(void)message;
+	(void)user;
+	return false;
+}
+
+bool PartCommand::_sendServer(Message &message)
+{
+	Server	&server = *this->serverReceiver;
+
+	(void)message;
+	(void)server;
+	return false;
+}
+

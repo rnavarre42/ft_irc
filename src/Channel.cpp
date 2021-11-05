@@ -4,7 +4,7 @@
 #include "Channel.hpp"
 #include "Server.hpp"
 
-Channel::Channel(std::string name) : name(name)
+Channel::Channel(std::string name, User &user) : name(name), owner(user.getName())
 {}
 
 Channel::Channel(void)
@@ -15,7 +15,7 @@ std::string	const &Channel::getName(void) const
 	return (this->name);
 }
 
-std::map<std::string, User *> const	&Channel::getUserMap(void) const
+std::map<std::string, User *>	&Channel::getUserMap(void)
 {
 	return (this->userMap);
 }

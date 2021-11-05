@@ -46,5 +46,5 @@ bool KickCommand::_sendServer(Message &message)
 
 	(void)message;
 	(void)server;
-	retur false;
+	return false;
 }
