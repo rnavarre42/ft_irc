@@ -58,7 +58,7 @@ weroiweoriweoriwe 123456 234567 345678 456789 567890 678901 789012 890123 901234
 		{
 			g_read = 0;
 			for (int i = 0; i < 100; i++)
-				send(sock, "KILL\r\n", 6, 0);
+				send(sock, "JOIN \r#canal \r\n", 6, 0);
 		}
 		else if (!strcmp(line, "END"))
 			g_read = 1;

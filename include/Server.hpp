@@ -27,8 +27,8 @@
 # define MAXKICK		255
 # define MAXREAL		100
 
-# define IDLETIMEOUT	30
-# define REGTIMEOUT		15
+# define IDLETIMEOUT	120
+# define REGTIMEOUT		120
 # define NEXTTIMEOUT	120
 # define BUFFERSIZE		512
 # define MAXUSERS		3
