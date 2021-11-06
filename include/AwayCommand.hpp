@@ -10,8 +10,10 @@ public:
 	AwayCommand(Server &server, int accessLevel, int paramCount);
 
 private:
-	virtual bool	_execUser(Message &message);
-	virtual bool	_execServer(Message &message);
+	virtual bool	_recvUser(Message &message);
+	virtual bool	_recvServer(Message &message);
+	virtual bool	_sendUser(Message &message);
+	virtual bool	_sendServer(Message &message);
 };
 
 #endif

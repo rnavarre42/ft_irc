@@ -73,8 +73,8 @@ class Server : public ISender
 	ssize_t	send(std::string msg = "");
 	ssize_t	send(Message &message);
 
-	bool	addToChannel(std::string name, User &user);
-	bool	delFromChannel(std::string name, User &user);
+	Channel	*addToChannel(std::string name, User &user, int &flags);
+	int		delFromChannel(std::string name, User &user);
 
 	void	quit(std::string msg);
 	

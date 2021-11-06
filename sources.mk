@@ -14,20 +14,20 @@ BASE_SRCS		=	\
 
 COMMAND_PATH	=	commands/
 COMMAND_SRCS	=	\
+					AwayCommand.cpp				\
 					JoinCommand.cpp				\
 					KickCommand.cpp				\
 					KillCommand.cpp				\
 					MotdCommand.cpp				\
+					NickCommand.cpp				\
 					PartCommand.cpp				\
 					PassCommand.cpp				\
 					PingCommand.cpp				\
 					PongCommand.cpp				\
 					PrivmsgCommand.cpp			\
-					NickCommand.cpp				\
-					UserCommand.cpp				\
 					QuitCommand.cpp				\
+					UserCommand.cpp				\
 
-#					AwayCommand.cpp				\
 #					InviteCommand.cpp			\
 #					ListCommand.cpp				\
 #					ModeCommand.cpp				\

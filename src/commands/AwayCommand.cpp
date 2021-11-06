@@ -1,4 +1,5 @@
 #include "AwayCommand.hpp"
+#include "Numeric.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
 #include <iostream>
@@ -10,9 +11,17 @@ bool AwayCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 
-	(void)message;
-	(void)user;
-	return false;
+	if (!message.size() || message[0].empty())
+	{
+		user.getAwayMsg().empty();
+		user.send(Numeric::builder(this->server, user, RPL_UNAWAY));
+	}
+	else
+	{
+		user.setAwayMsg(message[0]);
+		user.send(Numeric::builder(this->server, user, RPL_NOAWAY));
+	}	
+	return true;
 }
 
 bool AwayCommand::_recvServer(Message &message)
@@ -39,5 +48,5 @@ bool AwayCommand::_sendServer(Message &message)
 
 	(void)message;
 	(void)server;
-	retur false;
+	return false;
 }

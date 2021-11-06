@@ -70,10 +70,16 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_NOPRIVILEGES] = ":Permision Denied- You're not an IRC operator";
 	Numeric::_numericMap[ERR_NOTEXTTOSEND] = ":No text to send";
 	Numeric::_numericMap[ERR_NOSUCHNICK] = "$ :No such nick/channel";
-	Numeric::_numericMap[ERR_BADCHANMASK] = "$ :Bad channel Mask";
 	Numeric::_numericMap[RPL_MOTDSTART] = ":- $ Message of the day - ";
 	Numeric::_numericMap[RPL_MOTD] = ":- $";
 	Numeric::_numericMap[RPL_ENDOFMOTD] = ":End of MOTD command";
 	Numeric::_numericMap[ERR_NOMOTD] = ":MOTD File is missing";
-
+	Numeric::_numericMap[RPL_UNAWAY] = ":You are no longer marked as being away";
+	Numeric::_numericMap[RPL_NOAWAY] = ":You have been marked as being away";
+	Numeric::_numericMap[ERR_USERONCHANNEL] = "$ $ :is already on channel";
+	Numeric::_numericMap[ERR_CHANNELISFULL] = "$ :Cannot join channel (+l)";
+	Numeric::_numericMap[ERR_INVITEONLYCHAN] = "$ :Cannot join channel (+i)";
+	Numeric::_numericMap[ERR_BANNEDFROMCHAN] = "$ :Cannot join channel (+b)";
+	Numeric::_numericMap[ERR_BADCHANNELKEY] = "$ :Cannot join channel (+k)";
+	Numeric::_numericMap[ERR_BADCHANMASK] = "$ :Bad channel Mask";
 }

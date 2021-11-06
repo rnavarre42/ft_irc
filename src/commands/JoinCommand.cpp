@@ -4,6 +4,7 @@
 #include "User.hpp"
 #include "Numeric.hpp"
 #include "Channel.hpp"
+#include "Console.hpp"
 #include <iostream>
 
 JoinCommand::JoinCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
@@ -12,8 +13,38 @@ JoinCommand::JoinCommand(Server &server, int accessLevel, int paramCount) : ACom
 bool JoinCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
+	Channel	*channel;
+	int		flags;
 
-	this->server.addToChannel(message[0], user);
+	channel = this->server.addToChannel(message[0], user, flags);
+	if (flags & CHANNEL_JOIN)
+	{
+		if (flags & CHANNEL_CREATE)
+			Console::log(LOG_INFO, "<" + user.getName() + "> ha creado " + channel->getName());
+		else
+			Console::log(LOG_INFO, "<" + user.getName() + "> ha entrado en " + channel->getName());
+	}
+	else if (flags & CHANNEL_CANTJOIN)
+	{
+		if (flags & CHANNEL_ISALREADY)
+		{
+			Numeric::insertField(user.getName());
+			Numeric::insertField(channel->getName());
+			user.send(Numeric::builder(this->server, user, ERR_USERONCHANNEL));
+		}
+		else
+		{
+			Numeric::insertField(channel->getName());
+			if (flags & CHANNEL_ISFULL)
+				user.send(Numeric::builder(this->server, user, ERR_CHANNELISFULL));
+			else if (flags & CHANNEL_PRIVATE)
+				user.send(Numeric::builder(this->server, user, ERR_INVITEONLYCHAN));
+			else if (flags & CHANNEL_PASSWORD)
+				user.send(Numeric::builder(this->server, user, ERR_BADCHANNELKEY));
+			else if (flags & CHANNEL_BANNED)
+				user.send(Numeric::builder(this->server, user, ERR_BANNEDFROMCHAN));
+		}
+	}
 	return true;
 }
 

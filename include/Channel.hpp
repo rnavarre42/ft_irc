@@ -7,6 +7,21 @@
 # include "User.hpp"
 # include "Server.hpp"
 
+# define CHANNEL_CREATE		0x0001
+# define CHANNEL_JOIN		0x0002
+# define CHANNEL_BADPREFIX	0x0004
+# define CHANNEL_ISALREADY	0x0008
+# define CHANNEL_BADNAME	0x0010
+# define CHANNEL_PART		0x0020
+# define CHANNEL_DESTROY	0x0040
+# define CHANNEL_NOTPRESENT	0x0080
+# define CHANNEL_CANTJOIN	0x0100
+# define CHANNEL_CANTPART	0x0200
+# define CHANNEL_ISFULL		0x0400
+# define CHANNEL_PRIVATE	0x0800
+# define CHANNEL_PASSWORD	0x1000
+# define CHANNEL_BANNED		0x2000
+
 class User;
 
 class Channel

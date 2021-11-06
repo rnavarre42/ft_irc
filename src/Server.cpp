@@ -56,25 +56,25 @@ Server::~Server(void)
 
 void	Server::_loadCommands(void)
 {
+	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
+	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
+	this->commandMap["MOTD"]	= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
 	this->commandMap["NICK"]	= new NickCommand	(*this, LEVEL_ALL, 1);
-	this->commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
-	this->commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
+	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
+	this->commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
+	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
+	this->commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
 	this->commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
 //	this->commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->commandMap["KILL"]	= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
-//	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->commandMap["LIST"]	= new ListCommand	(*this, LEVEL_REGISTERED, 0);
-	this->commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->commandMap["MODE"]	= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["MOTD"]	= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
 //	this->commandMap["WHOIS"]	= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->commandMap["INVITE"]	= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
-	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 //	this->commandMap["WHOWAS"]	= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 0);
 }
@@ -343,12 +343,13 @@ void	Server::delUser(User &user)
 	delete &user;
 }
 
-bool	Server::addToChannel(std::string name, User &user)
+Channel *Server::addToChannel(std::string name, User &user, int &flags)
 {
-	Channel															*channel;
+	Channel															*channel = NULL;
 	std::map<std::string, Channel *>::iterator						it;
 	std::pair<std::map<std::string, User *>::iterator, bool>		retUser;
 
+	flags = 0;
 	if (name[0] == '#')
 	{
 		if ((it = this->channelMap.find(strToUpper(name))) == this->channelMap.end())
@@ -357,30 +358,35 @@ bool	Server::addToChannel(std::string name, User &user)
 			this->channelMap[strToUpper(name)] = channel;
 			channel->getUserMap()[strToUpper(user.getName())] = &user;
 			user.getChannelMap()[strToUpper(name)] = channel;
+			flags |= CHANNEL_CREATE | CHANNEL_JOIN;
 			//TODO dar +o e informar al usuario de que ha entrado al canal
 		}
 		else
 		{
-			retUser = it->second->getUserMap().insert(std::pair<std::string, User *>(strToUpper(user.getName()), &user));
+			channel = it->second;
+			retUser = channel->getUserMap().insert(std::pair<std::string, User *>(strToUpper(user.getName()), &user));
 			if (retUser.second == true)  //El nick ha entrado al canal
-;				//TODO informar al usuario de que ha entrado y al resto.
+				flags |= CHANNEL_JOIN;
+				//TODO informar al usuario de que ha entrado y al resto.
 			else
 			{
-				Numeric::insertField(it->second->getName());
-				user.send(Numeric::builder(*this, user, ERR_USERONCHANNEL));
+				flags |= CHANNEL_CANTJOIN | CHANNEL_ISALREADY;
+//				Numeric::insertField(it->second->getName());
+//				Numeric::insertField(user.getName());
+//				user.send(Numeric::builder(*this, user, ERR_USERONCHANNEL));
 			}
 		}
 	}
 	else
 	{
-		Numeric::insertField(name);
-		user.send(Numeric::builder(*this, user, ERR_BADCHANMASK));
-		return false;
+		flags |= CHANNEL_CANTJOIN | CHANNEL_BADPREFIX;
+//		Numeric::insertField(name);
+//		user.send(Numeric::builder(*this, user, ERR_BADCHANMASK));
 	}
-	return true;
+	return channel;
 }
 
-bool	Server::delFromChannel(std::string name, User &user)
+int		Server::delFromChannel(std::string name, User &user)
 {
 	(void)name;
 	(void)user;
