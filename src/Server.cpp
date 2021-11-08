@@ -1,7 +1,7 @@
 #include <string>
 #include <cstring>
 #include <iostream>
-#include <algorithm>
+//#include <algorithm>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -86,7 +86,6 @@ void	Server::_unloadCommands(void)
 	for (it = commandMap.begin(); it != commandMap.end(); it++)
 		delete it->second;
 }
-
 
 Server	&Server::getInstance(void)
 {
