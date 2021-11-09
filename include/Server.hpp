@@ -2,11 +2,11 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+# include "EventHandler.hpp"
 # include "ISender.hpp"
 # include "User.hpp"
 # include "Channel.hpp"
-# include "ACommand.hpp"
-# include "EventHandler.hpp"
+//# include "ACommand.hpp"
 //# include "Message.hpp"
 # include "log.hpp"
 # include <string>
@@ -129,7 +129,7 @@ private:
 	std::map<std::string, Channel *>		channelMap;
 	std::map<std::string, ACommand *>		commandMap;
 
-	EventHandler		eventHandler;
+	EventHandler<Server>					eventHandler;
 
 	int		findFreePollIndex(void);
 	int		_poll(void);

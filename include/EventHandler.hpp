@@ -1,22 +1,28 @@
-#ifndef EVENT_HANDLER_HPP
-# define EVENT_HANDLER_HPP
+#ifndef EVENTHANDLER_HPP
+# define EVENTHANDLER_HPP
 
-# include "Server.hpp"
+# include "ACommand.hpp"
+# include "Delegate.hpp"
 # include <map>
 
+class	ACommand;
+
+template<class T>
 class	EventHandler
 {
 public:
-	typedef std::multimap<int, Delegate<ACommand, Server &> *>::iterator	iterator_type;
+	typedef Delegate<ACommand, T &>								delegate_type;
+	typename std::multimap<int, Delegate<ACommand, T &> *>::iterator			iterator_type;
 
 	EventHandler(void);
 	~EventHandler(void);
 
-	void	hook(int type, Delegate<ACommand, Server &> &dele);
-	void	doHook(int type);
+	void	hook(int type, delegate_type *dele);
+	void	doHook(int type, T source);
 
 private:
-	std::multimap<int, Delegate<ACommand, Server &> *>	_delegateMMap;
+	std::multimap<int, delegate_type *>	_delegateMMap;
 };
 
 #endif
+

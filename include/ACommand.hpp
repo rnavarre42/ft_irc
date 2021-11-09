@@ -1,9 +1,9 @@
 #ifndef ACOMMAND_HPP
 # define ACOMMAND_HPP
 
-# include "Server.hpp"
-# include "User.hpp"
-# include "Message.hpp"
+//# include "Server.hpp"
+//# include "User.hpp"
+//# include "Message.hpp"
 # include <string>
 
 # define LEVEL_UNREGISTERED	0x00
