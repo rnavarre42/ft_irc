@@ -10,7 +10,7 @@ int main(void)
 	JoinCommand 		join;
 	PartCommand 		part;
 	QuitCommand			quit;
-	Server				server("irc.cojones.es");
+	Server				server("irc.42born2code.com");
 
 	Delegate<CommandBase, Server &>	joinDelegate(join, &CommandBase::exec);
 	Delegate<CommandBase, Server &>	partDelegate(part, &CommandBase::exec);
