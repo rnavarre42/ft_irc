@@ -17,14 +17,14 @@ void	Server::hook(int type, Delegate<CommandBase, Server &> &dele)
 
 void	Server::doHook(int type)
 {
-	std::string	str = "Server invoke";
-	std::pair<std::multimap<int, Delegate<CommandBase, Server &>*>::iterator, std::multimap<int, Delegate<CommandBase, Server &>*>::iterator> ret;
+	//std::string	str = "Server invoke";
+	std::pair<iterator_type, iterator_type> ret;
 
 	//std::multimap<int, Delegate<CommandBase, std::string &>*>::iterator	it;
 	//it = delegateMMap.find(type);
 	
 	ret = _delegateMMap.equal_range(type);
-	for (std::multimap<int, Delegate<CommandBase, Server &>*>::iterator it=ret.first; it != ret.second; ++it)
+	for (iterator_type it=ret.first; it != ret.second; ++it)
 	{
 		it->second->invoke(*this);
 	}

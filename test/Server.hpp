@@ -11,6 +11,8 @@ class	CommandBase;
 class	Server
 {
 public:
+	typedef	std::multimap<int, Delegate<CommandBase, Server &> *>::iterator	iterator_type;
+
 	Server(const std::string &name) : _name(name)
 	{}
 

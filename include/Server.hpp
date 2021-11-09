@@ -6,6 +6,7 @@
 # include "User.hpp"
 # include "Channel.hpp"
 # include "ACommand.hpp"
+# include "EventHandler.hpp"
 //# include "Message.hpp"
 # include "log.hpp"
 # include <string>
@@ -127,6 +128,8 @@ private:
 	std::map<std::string, User *>			userMap;
 	std::map<std::string, Channel *>		channelMap;
 	std::map<std::string, ACommand *>		commandMap;
+
+	EventHandler		eventHandler;
 
 	int		findFreePollIndex(void);
 	int		_poll(void);

@@ -16,6 +16,7 @@
 #include "Message.hpp"
 #include "Console.hpp"
 #include "Numeric.hpp"
+#include "EventHandler.hpp"
 #include "numerics.hpp"
 #include "utils.hpp"
 
@@ -56,6 +57,7 @@ Server::~Server(void)
 
 void	Server::_loadCommands(void)
 {
+/*
 	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
 	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
@@ -68,6 +70,7 @@ void	Server::_loadCommands(void)
 	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 	this->commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
 	this->commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
+*/
 //	this->commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->commandMap["KILL"]	= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
 //	this->commandMap["LIST"]	= new ListCommand	(*this, LEVEL_REGISTERED, 0);
