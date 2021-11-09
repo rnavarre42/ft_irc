@@ -2,27 +2,30 @@
 # define SERVER_HPP
 
 # include "Delegate.hpp"
-# include "ACommand.hpp"
+# include "CommandBase.hpp"
+# include <string>
 # include <map>
 
-class	ACommand;
-class	Server;
+class	CommandBase;
 
 class	Server
 {
 public:
-	Server(void);
+	Server(const std::string &name) : _name(name)
+	{}
 
 	void	start(void);
-	bool	hook(int type, Delegate<ACommand> &dele);
-	bool	unHook(int type, Delegate<ACommand> &dele);
+	void	hook(int type, Delegate<CommandBase, Server &> &dele);
+	void	unHook(int type, Delegate<CommandBase, Server &> &dele);
+	void	doHook(int type);
 
+	std::string	const &getName(void) const;
 private:
 	void	_loadCommands(void);
 	void	_raiseEvent(int type);
 
-	std::multimap<int, Delegate>	_hookMultiMap;
-//	std::map<std::string, Delegate<ACommand>>	_commandMap;
+	const std::string		&_name;
+	std::multimap<int, Delegate<CommandBase, Server &>*>	_delegateMMap;
 
 };
 

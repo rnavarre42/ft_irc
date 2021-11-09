@@ -1,17 +1,13 @@
 #ifndef QUITCOMMAND_HPP
 # define QUITCOMMAND_HPP
 
-# include "ACommand.hpp"
+# include "CommandBase.hpp"
 
-class	QuitCommand : public ACommand
+class	QuitCommand : public CommandBase
 {
 public:
-	friend class Server;
+	void exec(Server &server);
 
-	void	exec(Server &server);
-
-private:
-	void	_load(Server &server);
 };
 
 #endif

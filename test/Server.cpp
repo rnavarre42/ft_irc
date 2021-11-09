@@ -1,27 +1,34 @@
 #include "Server.hpp"
-#include "JoinCommand.hpp"
 
-Server::Server(void)
-{}
-
-void	Server::start(void)
+std::string const	&Server::getName(void) const
 {
+	return this->_name;
 }
 
-bool	Server::hook(int type, Delegate<ACommand> &dele)
+void	Server::hook(int type, Delegate<CommandBase, Server &> &dele)
 {
-	(void)type;
-//	(void)dele;
-	//(&JoinCommand::exec, *this)(type);
+	//std::string	str = "pofale";
 
-	this->_hookMultiMap[type] = dele;
-//	this->_hookMultiMap.insert(std::pair<int, Delegate(dele)>(type));
-	return true;
+	_delegateMMap.insert(std::pair<int, Delegate<CommandBase, Server &>*>(type, &dele));
+	//delegateMMap[type] = &dele;
+	//std::cout << "type = " << type << ": dele.invoke --";
+	//dele.invoke(str);
 }
 
-bool	Server::unHook(int type, Delegate<ACommand> &dele)
+void	Server::doHook(int type)
 {
-	(void)type;
-	(void)dele;
-	return true;
+	std::string	str = "Server invoke";
+	std::pair<std::multimap<int, Delegate<CommandBase, Server &>*>::iterator, std::multimap<int, Delegate<CommandBase, Server &>*>::iterator> ret;
+
+	//std::multimap<int, Delegate<CommandBase, std::string &>*>::iterator	it;
+	//it = delegateMMap.find(type);
+	
+	ret = _delegateMMap.equal_range(type);
+	for (std::multimap<int, Delegate<CommandBase, Server &>*>::iterator it=ret.first; it != ret.second; ++it)
+	{
+		it->second->invoke(*this);
+	}
+
+	//if (it != delegateMap.end())
+	//	it->second->invoke(str);
 }

@@ -1,17 +1,13 @@
 #ifndef PARTCOMMAND_HPP
 # define PARTCOMMAND_HPP
 
-# include "ACommand.hpp"
+# include "CommandBase.hpp"
 
-class	PartCommand : public ACommand
+class	PartCommand : public CommandBase
 {
 public:
-	friend class Server;
+	void exec(Server &server);
 
-	void	exec(Server &server);
-
-private:
-	void	_load(Server &server);
 };
 
 #endif

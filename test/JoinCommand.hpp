@@ -1,17 +1,13 @@
 #ifndef JOINCOMMAND_HPP
 # define JOINCOMMAND_HPP
 
-# include "ACommand.hpp"
+# include "CommandBase.hpp"
 
-class	JoinCommand : public ACommand
+class	JoinCommand : public CommandBase
 {
 public:
-	friend class Server;
+	void exec(Server &server);
 
-	void	exec(Server &server);
-
-private:
-	void	_load(Server &server);
 };
 
 #endif
