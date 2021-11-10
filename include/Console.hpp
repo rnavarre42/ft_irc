@@ -1,8 +1,9 @@
 #ifndef CONSOLE_HPP
 # define CONSOLE_HPP
 
-# include <string>
+# include "log.hpp"
 # include "Server.hpp"
+# include <string>
 
 class Console
 {

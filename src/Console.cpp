@@ -1,6 +1,4 @@
 #include "Console.hpp"
-#include "log.hpp"
-#include "Server.hpp"
 #include <iostream>
 #include <iomanip>
 #include <string>

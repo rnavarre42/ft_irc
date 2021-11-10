@@ -1,7 +1,11 @@
+#include <Server.hpp>
+#include <Console.hpp>
+#include <Message.hpp>
+#include <utils.hpp>
+
 #include <string>
 #include <cstring>
 #include <iostream>
-//#include <algorithm>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -11,14 +15,12 @@
 #include <exception>
 #include <csignal>
 #include <cstdlib>
-#include "User.hpp"
-#include "commands.hpp"
-#include "Message.hpp"
-#include "Console.hpp"
-#include "Numeric.hpp"
-#include "EventHandler.hpp"
-#include "numerics.hpp"
-#include "utils.hpp"
+
+#define	ADDUSER		0x0001
+#define DELUSER		0x0002
+
+//template <typename T>
+//class EventHandler;
 
 Server	*Server::instance = NULL;
 
@@ -39,6 +41,7 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 	: ip(listenIp), port(listenPort), name(name), type(TYPE_SERVER)
 {
 	this->_loadCommands();
+	this->_logger();
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, Server::signalHandler);
 	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
@@ -158,6 +161,12 @@ ssize_t	Server::send(std::string msg)
 ssize_t	Server::send(Message &message)
 {
 	return this->send(message.toString());
+}
+
+void	Server::registerUser(Message &message)
+{
+	message.getSender().setRegister(true);
+	this->eventHandler.raise(REGISTERUSER, message);
 }
 
 void	Server::quit(std::string msg)
@@ -323,12 +332,18 @@ int		Server::_poll(void)
 
 void	Server::addUser(User &user)
 {
+	Message message = Message::builder(*this);
+	message.setReceiver(&user);
 //	this->userVector.push_back(&user);
 	this->fdMap[user.getFd()] = &user;
+	this->eventHandler.raise(ADDUSER, message);
 }
 
 void	Server::delUser(User &user)
 {
+	Message message = Message::builder(*this);
+	message.setReceiver(&user);
+	this->eventHandler.raise(DELUSER, message);
 	// Se elimina de userMap si tiene nick
 	if (user.getName().empty())
 		;
@@ -521,7 +536,7 @@ void	Server::checkUserTimeout(User &user)
 
 	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
 	{
-		msg = &Message::messageBuilder(*this);
+		msg = &Message::builder(*this);
 		msg->setCmd("QUIT");
 		msg->setReceiver(&user);
 		msg->insertField("Ping timeout");

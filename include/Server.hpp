@@ -77,6 +77,7 @@ class Server : public ISender
 	Channel	*addToChannel(std::string name, User &user, int &flags);
 	int		delFromChannel(std::string name, User &user);
 
+	void	registerUser(User &user);
 	void	quit(std::string msg);
 	
 	void	addUser(User &user);
@@ -129,7 +130,7 @@ private:
 	std::map<std::string, Channel *>		channelMap;
 	std::map<std::string, ACommand *>		commandMap;
 
-	EventHandler<Server>					eventHandler;
+	EventHandler<Message &>					eventHandler;
 
 	int		findFreePollIndex(void);
 	int		_poll(void);

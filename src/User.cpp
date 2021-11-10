@@ -1,15 +1,13 @@
+#include "User.hpp"
+#include "Server.hpp"
+#include "Console.hpp"
+#include "Message.hpp"
+#include "Numeric.hpp"
 #include <map>
 #include <iostream>
 #include <string>
 #include <unistd.h>
 #include <sys/socket.h>
-#include "User.hpp"
-#include "ISender.hpp"
-#include "Server.hpp"
-#include "Console.hpp"
-#include "Message.hpp"
-#include "Numeric.hpp"
-#include "numerics.hpp"
 
 User::User(int fd, Server &server) :
 	server(server), 
@@ -268,7 +266,7 @@ size_t	User::recv(int fd)
 
 Message	*User::buildMessage(std::string &buff)
 {
-	return &Message::messageBuilder(*this, buff);
+	return &Message::builder(*this, buff);
 }
 
 std::string	User::_getLine(size_t pos)

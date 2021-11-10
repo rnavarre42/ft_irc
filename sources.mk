@@ -5,7 +5,6 @@ BASE_SRCS		=	\
 					ACommand.cpp				\
 					Channel.cpp					\
 					Console.cpp					\
-					EventHandler.cpp			\
 					ISender.cpp					\
 					Message.cpp					\
 					Numeric.cpp					\

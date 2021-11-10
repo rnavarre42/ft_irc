@@ -1,8 +1,7 @@
+#include "Channel.hpp"
 #include <string>
 #include <map>
 #include <ctime>
-#include "Channel.hpp"
-#include "Server.hpp"
 
 Channel::Channel(std::string name, User &user) : name(name), owner(user.getName())
 {}

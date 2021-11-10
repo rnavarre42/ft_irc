@@ -36,8 +36,8 @@ public:
 	void				swapField(size_t first, size_t second);
 	void				insertField(std::string field);
 	std::string			toString(void);
-	static Message		&messageBuilder(ISender &sender, std::string data);
-	static Message		&messageBuilder(ISender &sender);
+	static Message		&builder(ISender &sender, std::string data);
+	static Message		&builder(ISender &sender);
 
 private:
 	Message(ISender &sender, std::string data);

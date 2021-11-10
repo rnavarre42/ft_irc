@@ -1,5 +1,6 @@
 #include "Message.hpp"
 #include "utils.hpp"
+#include "ISender.hpp"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -174,12 +175,12 @@ size_t	Message::size(void)
 	return this->paramVector.size();
 }
 
-Message &Message::messageBuilder(ISender &sender, std::string data)
+Message &Message::builder(ISender &sender, std::string data)
 {
 	return *new Message(sender, data);
 }
 
-Message &Message::messageBuilder(ISender &sender)
+Message &Message::builder(ISender &sender)
 {
 	return *new Message(sender);
 }

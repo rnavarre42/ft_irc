@@ -3,6 +3,7 @@
 
 # include "numerics.hpp"
 # include "Message.hpp"
+# include "Server.hpp"
 # include <map>
 # include <vector>
 # include <string>
