@@ -7,7 +7,7 @@ class DelegateBase
 };
 
 template <class T, class EventT> //, class I>
-class Delegate// : public DelegateBase
+class Delegate : public DelegateBase
 {
 public:
 	typedef void (T::*fn)(EventT);
@@ -15,9 +15,9 @@ public:
 	Delegate(T& target, fn operation) : _target(target), _operation(operation)
 	{}
 
-	void invoke(EventT arg)
+	void invoke(void *arg)
 	{
-		(_target.*_operation)(arg);
+		(_target.*_operation)(static_cast<EventT>(arg));
 	}
 
 private:
