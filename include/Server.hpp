@@ -68,7 +68,10 @@ class Server : public ISender
 	int								getType(void);
 	int const						&getFd(void) const;
 	bool const						&isRegistered(void) const;
+	void							setRegistered(bool value);
 	void							setIdleTime(time_t value);
+
+	void							registerUser(Message &message);
 
 	void	start(void);
 	ssize_t	send(std::string msg = "");

@@ -6,7 +6,7 @@ class DelegateBase
 	virtual void invoke(void *arg) = 0;
 };
 
-template <class T, class EventT> //, class I>
+template <class T, class EventT>
 class Delegate : public DelegateBase
 {
 public:
@@ -17,7 +17,7 @@ public:
 
 	void invoke(void *arg)
 	{
-		(_target.*_operation)(static_cast<EventT>(arg));
+		(_target.*_operation)(reinterpret_cast<EventT>(arg));
 	}
 
 private:

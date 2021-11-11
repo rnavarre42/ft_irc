@@ -16,8 +16,9 @@
 #include <csignal>
 #include <cstdlib>
 
-#define	ADDUSER		0x0001
-#define DELUSER		0x0002
+#define	ADDUSER			0x0001
+#define DELUSER			0x0002
+#define REGUSER			0x0004
 
 //template <typename T>
 //class EventHandler;
@@ -41,7 +42,7 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 	: ip(listenIp), port(listenPort), name(name), type(TYPE_SERVER)
 {
 	this->_loadCommands();
-	this->_logger();
+//	this->_logger();
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, Server::signalHandler);
 	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
@@ -165,8 +166,8 @@ ssize_t	Server::send(Message &message)
 
 void	Server::registerUser(Message &message)
 {
-	message.getSender().setRegister(true);
-	this->eventHandler.raise(REGISTERUSER, message);
+	message.getSender().setRegistered(true);
+	this->eventHandler.raise(REGUSER, message);
 }
 
 void	Server::quit(std::string msg)
@@ -413,6 +414,11 @@ int		Server::delFromChannel(std::string name, User &user)
 bool const	&Server::isRegistered(void) const
 {
 	return this->registered;
+}
+
+void	Server::setRegistered(bool value)
+{
+	this->registered = value;
 }
 
 int	Server::checkUserConnection(void)

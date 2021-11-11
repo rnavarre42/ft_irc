@@ -3,6 +3,7 @@
 #include <map>
 
 class Server;
+class ACommand;
 
 template <class T>
 class EventHandler
@@ -42,6 +43,6 @@ void	EventHandler<T>::raise(int type, T source)
 
 	ret = this->_delegateMMap.equal_range(type);
 	for (EventHandler::iterator_type it = ret.first; it != ret.second; ++it)
-		it->second->invoke(source);
+		it->second->invoke(&source);
 }
 

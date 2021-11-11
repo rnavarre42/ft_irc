@@ -14,7 +14,7 @@ bool PongCommand::_recvUser(Message &message)
 	{
 		if (!user.isRegistered())
 		{
-			this->server.registerUser(user);
+			this->server.registerUser(message);
 			//user.setRegistered(true);
 			message.limitMaxParam(0);
 			message.setReceiver(&user);
