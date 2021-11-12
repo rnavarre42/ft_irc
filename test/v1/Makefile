@@ -4,7 +4,7 @@ CXXFLAGS	=	-Werror -Wextra -Wall $(COMMONFLAGS)
 MDFLAGS		=	$(COMMONFLAGS)
 COMMONFLAGS	=
 RM			=	rm -rf
-SRCS		=	main.cpp Server.cpp JoinCommand.cpp PartCommand.cpp QuitCommand.cpp
+SRCS		=	main.cpp
 OBJS		=	$(SRCS:.cpp=.o)
 
 all:	$(NAME)

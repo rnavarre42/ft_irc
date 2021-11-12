@@ -3,6 +3,7 @@
 
 class DelegateBase
 {
+public:
 	virtual void invoke(void *arg) = 0;
 };
 

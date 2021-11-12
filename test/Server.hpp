@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+# include "EventHandler.hpp"
 # include "DelegateBase.hpp"
 # include "CommandBase.hpp"
 # include <string>
@@ -15,11 +16,7 @@ public:
 
 	Server(const std::string &name);
 
-	void	start(void);
 	void	doEvents(void);
-	void	hook(int type, DelegateBase &dele);
-	void	unHook(int type, DelegateBase &dele);
-	void	doHook(int type);
 
 	std::string	const &getName(void) const;
 private:
@@ -27,8 +24,7 @@ private:
 	void	_raiseEvent(int type);
 
 	const std::string		&_name;
-	std::multimap<int, DelegateBase	*> _delegateMMap;
-
+	EventHandler<Server &>			_eventHandler;
 };
 
 #endif

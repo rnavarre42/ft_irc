@@ -14,16 +14,16 @@ Server::Server(const std::string &name) : _name(name)
 	Delegate<CommandBase, Server &>	partDelegate(part, &CommandBase::exec);
 	Delegate<CommandBase, Server &>	quitDelegate(quit, &CommandBase::exec);
 
-	this->hook(30, joinDelegate);
-	this->hook(30, partDelegate);
-	this->hook(40, quitDelegate);
-	this->hook(30, partDelegate);
+	this->_eventHandler.hook(30, &joinDelegate);
+	this->_eventHandler.hook(30, &partDelegate);
+	this->_eventHandler.hook(40, &quitDelegate);
+	this->_eventHandler.hook(30, &partDelegate);
 }
 
 void	Server::doEvents(void)
 {
-	this->doHook(30);
-	this->doHook(40);
+	this->_eventHandler.raise(30, *this);
+	this->_eventHandler.raise(40, *this);
 }
 
 
