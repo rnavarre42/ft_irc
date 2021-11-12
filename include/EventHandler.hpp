@@ -1,48 +1,53 @@
-#include "ACommand.hpp"
-#include "Delegate.hpp"
-#include <map>
+#ifndef EVENTHANDLER_HPP
+# define EVENTHANDLER_HPP
+
+# include "ACommand.hpp"
+# include "Delegate.hpp"
+# include <map>
+# include <iostream>
 
 class Server;
 class ACommand;
 
-template <class T>
+template <class KeyT, class ValueT>
 class EventHandler
 {
 public:
-	typedef Delegate<ACommand, T>								delegate_type;
-	typedef typename std::multimap<int, delegate_type *>::iterator			iterator_type;
+	typedef typename std::multimap<KeyT, IDelegate &>	multimap_type;
+	typedef typename multimap_type::iterator			iterator_type;
 
-	EventHandler(void);
-	~EventHandler(void);
+	EventHandler(void) {}
+	~EventHandler(void) {}
+/*
+	iterator_type	begin(void)
+	{
+		return this->_delegateMMap.begin();
+	}
 
-	void	hook(int type, delegate_type *dele);
-	void	raise(int type, T source);
+	iterator_type	end(void)
+	{
+		return this>_delegateMMap.end();
+	}
+*/
+	void	add(KeyT key, IDelegate &delegate)
+	{
+		this->_delegateMMap.insert(typename std::pair<KeyT, IDelegate &>(key, delegate));
+	}
+
+	void	raise(KeyT key, ValueT &value)
+	{
+		std::pair<iterator_type, iterator_type> ret;
+
+		ret = this->_delegateMMap.equal_range(key);
+		for (iterator_type it = ret.first; it != ret.second; ++it)
+		{
+			std::cout << "delegate.invoke " << key << " ";
+			it->second.invoke(&value);
+		}	
+	}
 
 private:
-	std::multimap<int, delegate_type *>	_delegateMMap;
+	multimap_type	_delegateMMap;
 };
 
-template <class T>
-EventHandler<T>::EventHandler(void)
-{}
-
-template <class T>
-EventHandler<T>::~EventHandler(void)
-{}
-
-template <class T>
-void	EventHandler<T>::hook(int type, delegate_type *dele)
-{
-	this->_delegateMMap.insert(std::pair<int, delegate_type *>(type, dele));
-}
-
-template <class T>
-void	EventHandler<T>::raise(int type, T source)
-{
-	std::pair<EventHandler::iterator_type, EventHandler::iterator_type>	ret;
-
-	ret = this->_delegateMMap.equal_range(type);
-	for (EventHandler::iterator_type it = ret.first; it != ret.second; ++it)
-		it->second->invoke(&source);
-}
-
+#endif

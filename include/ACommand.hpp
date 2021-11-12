@@ -3,6 +3,7 @@
 
 # include "Server.hpp"
 # include "User.hpp"
+# include "EventHandler.hpp"
 //# include "Message.hpp"
 # include <string>
 
@@ -15,11 +16,15 @@ class Server;
 class Message;
 class User;
 
+template <class EvenT, class ValueT> 
+class EventHandler;
+
 class ACommand
 {
 public:
 	ACommand(Server &server, int accessLevel, int minParam);
 	virtual ~ACommand(void);
+	virtual void loadEvents(EventHandler<int, Message> &eventHandler) = 0;
 
 	void	recv(Message &msg);
 	void	send(Message &msg);

@@ -36,6 +36,8 @@
 # define MAXLISTEN		5
 
 
+# define NICKUSER		0x001
+
 //hispano:
 //	registerTimeout	 30s
 //	idleTimeout		120s
@@ -133,7 +135,7 @@ private:
 	std::map<std::string, Channel *>		channelMap;
 	std::map<std::string, ACommand *>		commandMap;
 
-	EventHandler<Message &>					eventHandler;
+	EventHandler<int, Message>				_eventHandler;
 
 	int		findFreePollIndex(void);
 	int		_poll(void);

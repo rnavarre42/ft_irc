@@ -1,31 +1,33 @@
 #ifndef DELEGATE_HPP
 # define DELEGATE_HPP
 
-class DelegateBase
-{
-	virtual void invoke(void *arg) = 0;
-};
-
-template <class T, class EventT>
-class Delegate : public DelegateBase
+class IDelegate
 {
 public:
-	typedef void (T::*fn)(EventT);
+	virtual ~IDelegate(void) {}
+	virtual void invoke(void *data) = 0;
+};
 
-	Delegate(T& target, fn operation) : _target(target), _operation(operation)
-	{}
+template <class KeyT, class ValueT>
+class Delegate : public IDelegate
+{
+public:
+	typedef void (KeyT::*fn)(ValueT &);
 
-	void invoke(void *arg)
+	Delegate(KeyT& target, fn prototype) : _target(target), _prototype(prototype) {}
+	~Delegate(void) {}
+
+	void invoke(void *data)
 	{
-		(_target.*_operation)(reinterpret_cast<EventT>(arg));
+		(_target.*_prototype)(*(static_cast<ValueT *>(data)));
 	}
 
 private:
 //	Delegate(void);
 //	Delegate(const Delegate &);
 
-	T	&_target;
-	fn	_operation;
+	KeyT	&_target;
+	fn		_prototype;
 };
 
 #endif

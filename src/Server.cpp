@@ -2,6 +2,7 @@
 #include <Console.hpp>
 #include <Message.hpp>
 #include <utils.hpp>
+#include <commands.hpp>
 
 #include <string>
 #include <cstring>
@@ -61,20 +62,20 @@ Server::~Server(void)
 
 void	Server::_loadCommands(void)
 {
-/*
-	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
-	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
-	this->commandMap["MOTD"]	= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
+
+//	this->commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
+//	this->commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
+//	this->commandMap["MOTD"]	= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
 	this->commandMap["NICK"]	= new NickCommand	(*this, LEVEL_ALL, 1);
-	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
-	this->commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
-	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
-	this->commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
-	this->commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
-*/
+//	this->commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
+//	this->commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
+//	this->commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
+//	this->commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
+//	this->commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
+
 //	this->commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->commandMap["KILL"]	= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
 //	this->commandMap["LIST"]	= new ListCommand	(*this, LEVEL_REGISTERED, 0);
@@ -83,7 +84,15 @@ void	Server::_loadCommands(void)
 //	this->commandMap["INVITE"]	= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->commandMap["WHOWAS"]	= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 0);
+//	this->commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 0)
+
+	std::map<std::string, ACommand *>::iterator	it;
+
+	for (it = commandMap.begin(); it != commandMap.end(); it++)
+		it->second->loadEvents(this->_eventHandler);
+		
+
+//	iterar load(this->_eventHandler);
 }
 
 void	Server::_unloadCommands(void)
@@ -167,7 +176,7 @@ ssize_t	Server::send(Message &message)
 void	Server::registerUser(Message &message)
 {
 	message.getSender().setRegistered(true);
-	this->eventHandler.raise(REGUSER, message);
+	this->_eventHandler.raise(REGUSER, message);
 }
 
 void	Server::quit(std::string msg)
@@ -337,14 +346,14 @@ void	Server::addUser(User &user)
 	message.setReceiver(&user);
 //	this->userVector.push_back(&user);
 	this->fdMap[user.getFd()] = &user;
-	this->eventHandler.raise(ADDUSER, message);
+	this->_eventHandler.raise(ADDUSER, message);
 }
 
 void	Server::delUser(User &user)
 {
 	Message message = Message::builder(*this);
 	message.setReceiver(&user);
-	this->eventHandler.raise(DELUSER, message);
+	this->_eventHandler.raise(DELUSER, message);
 	// Se elimina de userMap si tiene nick
 	if (user.getName().empty())
 		;
