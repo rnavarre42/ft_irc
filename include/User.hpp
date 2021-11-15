@@ -2,16 +2,13 @@
 # define USER_HPP
 
 # include "ISender.hpp"
+# include "Server.hpp"
 //# include "Message.hpp"
-# include "Channel.hpp"
-//# include "Server.hpp"
 # include <string>
 # include <map>
 
 class Message;
-class Server;
 class ISender;
-class Channel;
 
 class User : public ISender
 {
@@ -53,8 +50,8 @@ public:
 	void				setAwayMsg(std::string value);
 	std::string const	&getAwayMsg(void) const;
 
-	std::map<std::string, Channel *> &getChannelMap(void);
-	Server const	&getServer(void) const;
+	Server::channelMap_type		&getChannelMap(void);
+	Server const				&getServer(void) const;
 
 	void 			setAwayTime(time_t value);
 	time_t const	&getAwayTime(void) const;
@@ -92,27 +89,27 @@ public:
 private:
 	User(void);
 
-	std::string							name;
-	std::string							host;
-	std::string							ident;
-	std::string							real;
-	std::string							pass;
-	std::string							inputBuffer;
-	std::string							outputBuffer;
-	std::string 						awayMsg;
-	std::string							pingChallenge;
-	Server								&server;
-	std::map<std::string, Channel *>	channelMap;
-	bool								registered;
-	time_t								signTime;
-	time_t								awayTime;
-	time_t								nextTimeout;
-	time_t								idleTime;
-	int									pollIndex;
-	int									fd;
-	int									type;
+	std::string					name;
+	std::string					host;
+	std::string					ident;
+	std::string					real;
+	std::string					pass;
+	std::string					inputBuffer;
+	std::string					outputBuffer;
+	std::string 				awayMsg;
+	std::string					pingChallenge;
+	Server						&server;
+	Server::channelMap_type		channelMap;
+	bool						registered;
+	time_t						signTime;
+	time_t						awayTime;
+	time_t						nextTimeout;
+	time_t						idleTime;
+	int							pollIndex;
+	int							fd;
+	int							type;
 
-	std::string		_getLine(size_t pos);
+	std::string					_getLine(size_t pos);
 };
 
 #endif

@@ -6,6 +6,11 @@
 PongCommand::PongCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void PongCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool PongCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;

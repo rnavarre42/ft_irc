@@ -9,6 +9,11 @@
 UserCommand::UserCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void	UserCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool UserCommand::_recvUser(Message &message)
 {
 	User &user = *this->userSender;

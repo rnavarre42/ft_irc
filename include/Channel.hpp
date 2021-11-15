@@ -1,11 +1,11 @@
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
+# include "Server.hpp"
+# include "User.hpp"
 # include <string>
 # include <map>
 # include <ctime>
-# include "User.hpp"
-# include "Server.hpp"
 
 # define CHANNEL_CREATE		0x0001
 # define CHANNEL_JOIN		0x0002
@@ -22,16 +22,14 @@
 # define CHANNEL_PASSWORD	0x1000
 # define CHANNEL_BANNED		0x2000
 
-class User;
-
 class Channel
 {
 public:
 	Channel(std::string name, User &user);
 	~Channel(void);
 
-	std::string const					&getName(void) const;
-	std::map<std::string, User *>		&getUserMap(void);
+	std::string const				&getName(void) const;
+	Server::userMap_type			&getUserMap(void);
 
 	void							setOwner(std::string value);
 	std::string const				&getOwner(void) const;

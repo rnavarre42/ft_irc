@@ -1,13 +1,14 @@
 #ifndef EVENTHANDLER_HPP
 # define EVENTHANDLER_HPP
 
-# include "ACommand.hpp"
+//# include "ACommand.hpp"
 # include "Delegate.hpp"
 # include <map>
 # include <iostream>
 
 class Server;
 class ACommand;
+class IDelegate;
 
 template <class KeyT, class ValueT>
 class EventHandler

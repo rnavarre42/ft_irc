@@ -6,6 +6,11 @@
 PingCommand::PingCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void PingCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool PingCommand::_recvUser(Message &message)
 {
 	User			&user = *this->userSender;

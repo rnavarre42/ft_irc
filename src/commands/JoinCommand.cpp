@@ -10,13 +10,25 @@
 JoinCommand::JoinCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void JoinCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool JoinCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 	Channel	*channel;
-	int		flags;
 
-	channel = this->server.addToChannel(message[0], user, flags);
+	channel = this->server.addToChannel(message);
+	if (!channel)
+	{
+		Numeric::insertField(message[0]);
+		user.send(Numeric::builder(this->server, user, ERR_BADCHANMASK));
+	}
+	return true;
+}
+/*
 	if (flags & CHANNEL_JOIN)
 	{
 		if (flags & CHANNEL_CREATE)
@@ -47,7 +59,7 @@ bool JoinCommand::_recvUser(Message &message)
 	}
 	return true;
 }
-
+*/
 bool JoinCommand::_recvServer(Message &message)
 {
 	Server	&server = *this->serverSender;

@@ -6,6 +6,11 @@
 PartCommand::PartCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void PartCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool PartCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;

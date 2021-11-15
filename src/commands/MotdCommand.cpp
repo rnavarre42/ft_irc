@@ -8,6 +8,11 @@
 MotdCommand::MotdCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void MotdCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool MotdCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;

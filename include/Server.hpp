@@ -2,10 +2,9 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include "EventHandler.hpp"
 # include "ISender.hpp"
-# include "User.hpp"
-# include "Channel.hpp"
+# include "EventHandler.hpp"
+//# include "Channel.hpp"
 //# include "ACommand.hpp"
 //# include "Message.hpp"
 # include "log.hpp"
@@ -35,23 +34,46 @@
 # define MAXUSERS		3
 # define MAXLISTEN		5
 
-
-# define NICKUSER		0x001
+# define NEWUSEREVENT		0x00001
+# define DELUSEREVENT		0x00002
+# define REGEVENT			0x00004
+# define NICKEVENT			0x00008
+# define QUITEVENT			0x00010
+# define JOINEVENT			0x00020
+# define PARTEVENT			0x00040
+# define KICKEVENT			0x00080
+# define CHANMODEEVENT		0x00100
+# define NICKMODEEVENT		0x00200
+# define CHANTOPICEVENT		0x00400
+# define CHANFULLEVENT		0x00800
+# define CHANBANEVENT		0x01000
+# define CHANKEYEVENT		0x02000
+# define AWAYEVENT			0x04000
+# define INVITEEVENT		0x08000
+# define NEWCHANEVENT		0x10000
+# define DELCHANEVENT		0x20000
+# define ALREADYEVENT		0x40000
 
 //hispano:
 //	registerTimeout	 30s
 //	idleTimeout		120s
 //	pingTimeout		120s
 
-class User;
 class Channel;
 class ACommand;
-class ISender;
+class User;
+class Channel;
 
 class Server : public ISender
 {
 	public:
 	~Server(void);
+
+	typedef EventHandler<int, Message>			eventHandler_type;
+	typedef std::map<std::string, Channel *>	channelMap_type;
+	typedef channelMap_type::iterator			channelMap_iterator;
+	typedef std::map<std::string, User *>		userMap_type;
+	typedef userMap_type::iterator				userMap_iterator;
 
 	static void						signalHandler(int sig);
 	static Server					&getInstance(void);
@@ -79,8 +101,8 @@ class Server : public ISender
 	ssize_t	send(std::string msg = "");
 	ssize_t	send(Message &message);
 
-	Channel	*addToChannel(std::string name, User &user, int &flags);
-	int		delFromChannel(std::string name, User &user);
+	Channel	*addToChannel(Message &message);
+	int		delFromChannel(Message &message);
 
 	void	registerUser(User &user);
 	void	quit(std::string msg);
@@ -104,6 +126,10 @@ class Server : public ISender
 	};
 
 private:
+	typedef std::map<int, User *>				_fdMap_type;
+	typedef _fdMap_type::iterator				_fdMap_iterator;
+	typedef std::map<std::string, ACommand *>	_commandMap_type;
+
 	Server(std::string listenIp, int listenPort, std::string name);
 	Server(void);
 
@@ -129,13 +155,13 @@ private:
 	struct pollfd		pollfds[MAXUSERS + 2];
 	static Server		*instance;
 
-//	std::vector<User *>						userVector;
-	std::map<int, User *>					fdMap;
-	std::map<std::string, User *>			userMap;
-	std::map<std::string, Channel *>		channelMap;
-	std::map<std::string, ACommand *>		commandMap;
+//	std::vector<User *>						_userVector;
+	Server::_fdMap_type			_fdMap;
+	Server::userMap_type		_userMap;
+	Server::channelMap_type		_channelMap;
+	Server::_commandMap_type	_commandMap;
 
-	EventHandler<int, Message>				_eventHandler;
+	Server::eventHandler_type	_eventHandler;
 
 	int		findFreePollIndex(void);
 	int		_poll(void);

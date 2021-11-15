@@ -11,17 +11,16 @@
 NickCommand::NickCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-void NickCommand::loadEvents(EventHandler<int, Message> &eventHandler)
+void NickCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
 	Delegate<NickCommand, Message> *nickDelegate = new Delegate<NickCommand, Message>(*this, &NickCommand::nickEvent);
 
-	eventHandler.add(NICKUSER, *nickDelegate);
+	eventHandler.add(NICKEVENT, *nickDelegate);
 }
 
 void NickCommand::nickEvent(Message &message)
 {
-	(void)message;
-	std::cout << "me duele el culo ya" << std::endl;
+	std::cout << "<" << message.getSender().getName() << "> papa" << std::endl; 
 }
 
 bool NickCommand::_recvUser(Message &message)

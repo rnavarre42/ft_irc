@@ -12,7 +12,7 @@
 # define LEVEL_IRCOPERATOR	0x02
 # define LEVEL_ALL			0x03
 
-class Server;
+//class Server;
 class Message;
 class User;
 
@@ -24,7 +24,7 @@ class ACommand
 public:
 	ACommand(Server &server, int accessLevel, int minParam);
 	virtual ~ACommand(void);
-	virtual void loadEvents(EventHandler<int, Message> &eventHandler) = 0;
+	virtual void loadEvents(Server::eventHandler_type &eventHandler) = 0;
 
 	void	recv(Message &msg);
 	void	send(Message &msg);

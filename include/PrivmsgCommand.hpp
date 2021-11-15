@@ -8,6 +8,7 @@ class PrivmsgCommand : public ACommand
 {
 public:
 	PrivmsgCommand(Server &server, int accessLevel, int paramCount);
+	void loadEvents(Server::eventHandler_type &eventHandler);
 
 private:
 	virtual bool	_recvUser(Message &message);

@@ -6,6 +6,11 @@
 PassCommand::PassCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void PassCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool PassCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;

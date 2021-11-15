@@ -1,13 +1,13 @@
 #ifndef ISENDER_HPP
 # define ISENDER_HPP
 
-//# include "Message.hpp"
 # include <string>
 # include <sys/types.h>
 
 # define TYPE_SERVER		0x00
 # define TYPE_USER			0x01
 
+class Server;
 class Message;
 
 class ISender

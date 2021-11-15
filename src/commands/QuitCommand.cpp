@@ -6,6 +6,11 @@
 QuitCommand::QuitCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void QuitCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool QuitCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
