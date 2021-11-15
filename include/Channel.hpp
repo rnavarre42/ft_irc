@@ -48,12 +48,12 @@ public:
 	void part(User user);
 
 private:
-	std::string						name;
-	std::string						topic;
-	std::string						owner;
-	std::string						topicOwn;
-	time_t							topicTime;
-	std::map<std::string, User *>	userMap;
+	std::string						_name;
+	std::string						_topic;
+	std::string						_owner;
+	std::string						_topicOwn;
+	time_t							_topicTime;
+	std::map<std::string, User *>	_userMap;
 
 	Channel(void);
 };

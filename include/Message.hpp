@@ -27,6 +27,8 @@ public:
 	void				setSender(ISender &value);
 	ISender				&getSender(void);
 
+	void				send(void);
+
 	size_t				size(void);
 	bool				empty(void);
 	void				eraseAt(size_t index);
@@ -43,14 +45,14 @@ private:
 	Message(ISender &sender, std::string data);
 	Message(ISender &sender);
 
-	ISender		*sender;
-	ISender		*receiver;
-//	std::string	name;
-//	std::string	ident;
-//	std::string	host;
-	std::string prefix;
-	std::string cmd;
-	std::vector<std::string>	paramVector;
+	ISender						*_sender;
+	ISender						*_receiver;
+//	std::string					_name;
+//	std::string					_ident;
+//	std::string					_host;
+	std::string 				_prefix;
+	std::string 				_cmd;
+	std::vector<std::string>	_paramVector;
 };
 
 #endif

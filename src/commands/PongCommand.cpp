@@ -8,7 +8,24 @@ PongCommand::PongCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void PongCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
+	eventHandler.add(REGEVENT, *new Delegate<PongCommand, Message>(*this, &PongCommand::registerUserEvent));
 	(void)eventHandler;
+}
+
+void PongCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
+void PongCommand::registerUserEvent(Message &message)
+{
+	message.limitMaxParam(0);
+	message.setReceiver(this->userSender);
+	message.setSender(this->server);
+	message.setCmd("MOTD");
+	message.send();
+//	
+//	this->server.sendCommand(message);
 }
 
 bool PongCommand::_recvUser(Message &message)
@@ -18,15 +35,7 @@ bool PongCommand::_recvUser(Message &message)
 	if (message[0] == user.getPingChallenge())
 	{
 		if (!user.isRegistered())
-		{
 			this->server.registerUser(message);
-			//user.setRegistered(true);
-			message.limitMaxParam(0);
-			message.setReceiver(&user);
-			message.setSender(this->server);
-			message.setCmd("MOTD");
-			this->server.sendCommand(message);
-		}
 		user.clearPingChallenge();
 		user.setNextTimeout(0);
 	}

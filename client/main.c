@@ -56,9 +56,15 @@ weroiweoriweoriwe 123456 234567 345678 456789 567890 678901 789012 890123 901234
 		}
 		else if (!strcmp(line, "GO"))
 		{
+			char *data = NULL;
+
 			g_read = 0;
 			for (int i = 0; i < 100; i++)
-				send(sock, "JOIN \r#canal \r\n", 6, 0);
+			{
+				asprintf(&data, "JOIN #canal%i\r\n", i);
+				send(sock, data, strlen(data), 0);
+				free(data);
+			}
 		}
 		else if (!strcmp(line, "END"))
 			g_read = 1;
@@ -150,5 +156,5 @@ int main(int argc, char **argv)
     send_ident(server_fd, nick, username);
     pthread_create(&console_thread, NULL, console, &server_fd);
 	loop_client(server_fd);
-	return (0);
+	return 0;
 }

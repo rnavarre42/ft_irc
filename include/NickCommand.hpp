@@ -9,6 +9,7 @@ class NickCommand : public ACommand
 public:
 	NickCommand(Server &server, int accessLevel, int paramCount);
 	void loadEvents(Server::eventHandler_type &eventHandler);
+	void unloadEvents(Server::eventHandler_type &eventHandler);
 
 	void nickEvent(Message &message);
 

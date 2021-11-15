@@ -18,16 +18,16 @@ public:
 private:
 	Numeric(void);
 
-	static Numeric			*_instance;
+	static Numeric						*_instance;
 	static std::map<int, std::string>	_numericMap;
 	
-	int							num;
-	Server						*server;
-	ISender						*sender;
-	std::string					numericStr;	
-	std::vector<std::string>	fieldVector;
+	int									_num;
+	Server								*_server;
+	ISender								*_sender;
+	std::string							_numericStr;	
+	std::vector<std::string>			_fieldVector;
 
-	std::string					_toString(void);
+	std::string							_toString(void);
 };
 
 #endif

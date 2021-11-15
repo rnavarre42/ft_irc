@@ -11,6 +11,11 @@ void QuitCommand::loadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
+void QuitCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool QuitCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;

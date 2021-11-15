@@ -11,6 +11,11 @@ void PingCommand::loadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
+void PingCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool PingCommand::_recvUser(Message &message)
 {
 	User			&user = *this->userSender;

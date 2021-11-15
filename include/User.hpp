@@ -34,6 +34,7 @@ public:
 		
 	void				setName(std::string value);
 	std::string const	&getName(void) const;
+	std::string const	&getUpperName(void) const;
 
 	std::string &getInputBuffer(void);
 	std::string &getOutputBuffer(void);
@@ -89,25 +90,25 @@ public:
 private:
 	User(void);
 
-	std::string					name;
-	std::string					host;
-	std::string					ident;
-	std::string					real;
-	std::string					pass;
-	std::string					inputBuffer;
-	std::string					outputBuffer;
-	std::string 				awayMsg;
-	std::string					pingChallenge;
-	Server						&server;
-	Server::channelMap_type		channelMap;
-	bool						registered;
-	time_t						signTime;
-	time_t						awayTime;
-	time_t						nextTimeout;
-	time_t						idleTime;
-	int							pollIndex;
-	int							fd;
-	int							type;
+	std::string					_name;
+	std::string					_host;
+	std::string					_ident;
+	std::string					_real;
+	std::string					_pass;
+	std::string					_inputBuffer;
+	std::string					_outputBuffer;
+	std::string 				_awayMsg;
+	std::string					_pingChallenge;
+	Server						&_server;
+	Server::channelMap_type		_channelMap;
+	bool						_registered;
+	time_t						_signTime;
+	time_t						_awayTime;
+	time_t						_nextTimeout;
+	time_t						_idleTime;
+	int							_pollIndex;
+	int							_fd;
+	int							_type;
 
 	std::string					_getLine(size_t pos);
 };

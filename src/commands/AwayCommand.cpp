@@ -7,6 +7,16 @@
 AwayCommand::AwayCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void AwayCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
+void AwayCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool AwayCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;

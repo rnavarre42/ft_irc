@@ -11,6 +11,11 @@ void PassCommand::loadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
+void PassCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool PassCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;

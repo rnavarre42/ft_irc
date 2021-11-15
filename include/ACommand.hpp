@@ -25,6 +25,7 @@ public:
 	ACommand(Server &server, int accessLevel, int minParam);
 	virtual ~ACommand(void);
 	virtual void loadEvents(Server::eventHandler_type &eventHandler) = 0;
+	virtual void unloadEvents(Server::eventHandler_type &eventHandler) = 0;
 
 	void	recv(Message &msg);
 	void	send(Message &msg);

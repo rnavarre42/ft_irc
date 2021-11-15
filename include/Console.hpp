@@ -13,7 +13,7 @@ public:
 	static void	log(int logLevel, std::string cmd);
 
 private:
-	Server	server;
+	Server	_server;
 };
 
 #endif

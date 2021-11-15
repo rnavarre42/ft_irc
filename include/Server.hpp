@@ -163,6 +163,9 @@ private:
 
 	Server::eventHandler_type	_eventHandler;
 
+	channelMap_iterator				_channelFind(std::string &channelName);
+	userMap_iterator				_userFind(std::string &userName);
+	
 	int		findFreePollIndex(void);
 	int		_poll(void);
 	int		checkUserConnection(void);

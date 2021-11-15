@@ -41,7 +41,7 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 {
 	this->_loadCommands();
 //	this->_logger();
-	signal(SIGPIPE, SIG_IGN);
+//	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, Server::signalHandler);
 	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
 	this->stop = false;
@@ -63,7 +63,7 @@ void	Server::_loadCommands(void)
 //	this->_commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
 //	this->_commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
-//	this->_commandMap["MOTD"]	= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
+	this->_commandMap["MOTD"]	= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
 	this->_commandMap["NICK"]	= new NickCommand	(*this, LEVEL_ALL, 1);
 //	this->_commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
@@ -244,12 +244,12 @@ std::string			Server::getMask(void)
 
 bool	Server::isUser(void)
 {
-	return (this->type == TYPE_USER);
+	return this->type == TYPE_USER;
 }
 
 bool	Server::isServer(void)
 {
-	return (this->type == TYPE_SERVER);
+	return this->type == TYPE_SERVER;
 }
 
 bool	Server::isOper(void)
@@ -352,23 +352,33 @@ void	Server::delUser(User &user)
 	delete &user;
 }
 
+Server::userMap_iterator	Server::_userFind(std::string &userName)
+{
+	return this->_userMap.find(strToUpper(userName));
+}
+
+Server::channelMap_iterator	Server::_channelFind(std::string &channelName)
+{
+	return this->_channelMap.find(strToUpper(channelName));
+}
+
 // :masksource JOIN #CHAN :Pass
 Channel *Server::addToChannel(Message &message)
 {
 	Channel											*channel = NULL;
-	std::string										&name = message[0];
+	std::string										&channelName = message[0];
 	User											&user = static_cast<User &>(message.getSender());
 	Server::channelMap_iterator						it;
 	std::pair<Server::userMap_iterator, bool>		retUser;
 
-	if (name[0] == '#')
+	if (channelName[0] == '#')
 	{
-		if ((it = this->_channelMap.find(strToUpper(name))) == this->_channelMap.end())
+		if ((it = this->_channelFind(channelName)) == this->_channelMap.end())
 		{
-			channel = new Channel(name, user);
-			this->_channelMap[strToUpper(name)] = channel;
+			channel = new Channel(channelName, user);
+			this->_channelMap[strToUpper(channelName)] = channel;
 			channel->getUserMap()[strToUpper(user.getName())] = &user;
-			user.getChannelMap()[strToUpper(name)] = channel;
+			user.getChannelMap()[strToUpper(channelName)] = channel;
 			this->_eventHandler.raise(NEWCHANEVENT, message);
 			this->_eventHandler.raise(JOINEVENT, message);
 			//TODO dar +o e informar al usuario de que ha entrado al canal
@@ -382,6 +392,7 @@ Channel *Server::addToChannel(Message &message)
 				//TODO informar al usuario de que ha entrado y al resto.
 			else
 				this->_eventHandler.raise(ALREADYEVENT, message);
+			//TODO falta por gestionar +l +i +k
 		}
 	}
 	return channel;

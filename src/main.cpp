@@ -8,7 +8,7 @@ _Bool	telnet_ctrlc(char *buffer)
 {
 	char exit[] = {255, 244, 255, 253, 6};
 
-	return (!strncmp(buffer, exit, 5));
+	return !strncmp(buffer, exit, 5);
 }
 */
 

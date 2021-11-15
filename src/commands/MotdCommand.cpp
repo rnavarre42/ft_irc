@@ -13,6 +13,11 @@ void MotdCommand::loadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
+void MotdCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool MotdCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;

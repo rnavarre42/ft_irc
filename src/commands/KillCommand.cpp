@@ -6,6 +6,16 @@
 KillCommand::KillCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void KillCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
+void KillCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool KillCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;

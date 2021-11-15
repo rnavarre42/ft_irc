@@ -1,9 +1,10 @@
 #include "Channel.hpp"
+#include "utils.hpp"
 #include <string>
 #include <map>
 #include <ctime>
 
-Channel::Channel(std::string name, User &user) : name(name), owner(user.getName())
+Channel::Channel(std::string name, User &user) : _name(name), _owner(user.getName())
 {}
 
 Channel::Channel(void)
@@ -11,57 +12,57 @@ Channel::Channel(void)
 
 std::string	const &Channel::getName(void) const
 {
-	return (this->name);
+	return this->_name;
 }
 
 std::map<std::string, User *>	&Channel::getUserMap(void)
 {
-	return (this->userMap);
+	return this->_userMap;
 }
 
 void Channel::setOwner(std::string value)
 {
-	this->owner = value;
+	this->_owner = value;
 }
 
 std::string const	&Channel::getOwner(void) const
 {
-	return (this->owner);
+	return this->_owner;
 }
 
 void Channel::setTopic(std::string value)
 {
-	this->topic = value;
+	this->_topic = value;
 }
 
 std::string const	&Channel::getTopic(void) const
 {
-	return (this->topic);
+	return this->_topic;
 }
 
 void Channel::setTopicOwn(std::string value)
 {
-	this->topicOwn = value;
+	this->_topicOwn = value;
 }
 
 std::string const	&Channel::getTopicOwn(void) const
 {
-	return (this->topicOwn);
+	return this->_topicOwn;
 }
 
 void Channel::setTopicTime(time_t value)
 {
-	this->topicTime = value;
+	this->_topicTime = value;
 }
 
 time_t const	&Channel::getTopicTime(void) const
 {
-	return (this->topicTime);
+	return this->_topicTime;
 }
 
 void Channel::send(std::string msg)
 {
-	for (std::map<std::string, User *>::iterator it = this->userMap.begin(); it != this->userMap.end(); it++)
+	for (std::map<std::string, User *>::iterator it = this->_userMap.begin(); it != this->_userMap.end(); it++)
 		it->second->send(msg);
 }
 
@@ -69,30 +70,30 @@ void Channel::join(User user)
 {
 	std::map<std::string, User *>::iterator it;
 
-	it = this->userMap.find(user.getName());
-	if (it == this->userMap.end())
+	it = this->_userMap.find(user.getName());
+	if (it == this->_userMap.end())
 	{
-		this->send(user.getName() + " ha entrado al canal " + this->name + "\r\n");
-		this->userMap[user.getName()] = &user;
-		user.getChannelMap()[this->name] = this;
-		user.send("Has entrado al canal " + this->name + "\r\n");
+		this->send(user.getName() + " ha entrado al canal " + this->_name + "\r\n");
+		this->_userMap[user.getName()] = &user;
+		user.getChannelMap()[this->_name] = this;
+		user.send("Has entrado al canal " + this->_name + "\r\n");
 	}
 	else
-		user.send("Ya estas dentro de " + this->name + "\r\n");
+		user.send("Ya estas dentro de " + this->_name + "\r\n");
 }
 
 void Channel::part(User user)
 {
 	std::map<std::string, User *>::iterator it;
 
-	it = this->userMap.find(user.getName());
-	if (it == this->userMap.end())
-		user.send("No estas dentro de " + this->name + "\r\n");
+	it = this->_userMap.find(user.getName());
+	if (it == this->_userMap.end())
+		user.send("No estas dentro de " + this->_name + "\r\n");
 	else
 	{
-		user.send("Has salido de " + this->name + "\r\n");
-		this->userMap.erase(it);
-		user.getChannelMap().erase(this->name);
-		this->send(user.getName() + " ha salido de " + this->name + "\r\n");
+		user.send("Has salido de " + this->_name + "\r\n");
+		this->_userMap.erase(it);
+		user.getChannelMap().erase(this->_name);
+		this->send(user.getName() + " ha salido de " + this->_name + "\r\n");
 	}
 }

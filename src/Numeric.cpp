@@ -18,15 +18,15 @@ std::string	Numeric::_toString()
 	 *	implementada en user o server para esto
 	*/
 
-	if (!_instance->server->getName().empty())
-		ss << ":" << _instance->server->getName();
-	ss << " " << num;
-	if (_instance->sender->getName().empty())
+	if (!Numeric::_instance->_server->getName().empty())
+		ss << ":" << Numeric::_instance->_server->getName();
+	ss << " " << this->_num;
+	if (Numeric::_instance->_sender->getName().empty())
 		ss << " * ";
 	else
-		ss << " " << _instance->sender->getName() << " ";
+		ss << " " << Numeric::_instance->_sender->getName() << " ";
 //	ss << _instance->message->getCmd() << _instance->numericStr;
-	ss << _instance->numericStr;
+	ss << Numeric::_instance->_numericStr;
 //	std::cout << msg.getSender().getName() << " " << num << " * " << msg.getCmd() << " " << str << std::endl;
 
 	return ss.str();
@@ -35,8 +35,8 @@ std::string	Numeric::_toString()
 void	Numeric::insertField(std::string data)
 {
 	if (!Numeric::_instance)
-		_instance = new Numeric();
-	_instance->fieldVector.push_back(data);
+		Numeric::_instance = new Numeric();
+	Numeric::_instance->_fieldVector.push_back(data);
 }
 
 std::string	Numeric::builder(Server &server, ISender &sender, int num)
@@ -45,18 +45,18 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 
 	if (!Numeric::_instance)
 		_instance = new Numeric();
-	_instance->server = &server;
-	_instance->sender = &sender;
-	_instance->num = num;
-	_instance->numericStr = Numeric::_numericMap[num];
-	for (size_t i = 0; i < _instance->fieldVector.size(); i++)
+	Numeric::_instance->_server = &server;
+	Numeric::_instance->_sender = &sender;
+	Numeric::_instance->_num = num;
+	Numeric::_instance->_numericStr = Numeric::_numericMap[num];
+	for (size_t i = 0; i < _instance->_fieldVector.size(); i++)
 	{
-		replacePos = _instance->numericStr.find('$', offset);
-		_instance->numericStr.replace(replacePos, 1, _instance->fieldVector[i]);
-		offset += replacePos + _instance->fieldVector[i].size();
+		replacePos = Numeric::_instance->_numericStr.find('$', offset);
+		Numeric::_instance->_numericStr.replace(replacePos, 1, Numeric::_instance->_fieldVector[i]);
+		offset += replacePos + Numeric::_instance->_fieldVector[i].size();
 	}
-	_instance->fieldVector.clear();
-	return _instance->_toString();
+	Numeric::_instance->_fieldVector.clear();
+	return Numeric::_instance->_toString();
 }
 
 Numeric::Numeric(void)

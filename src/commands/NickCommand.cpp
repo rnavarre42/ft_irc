@@ -18,6 +18,11 @@ void NickCommand::loadEvents(Server::eventHandler_type &eventHandler)
 	eventHandler.add(NICKEVENT, *nickDelegate);
 }
 
+void NickCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 void NickCommand::nickEvent(Message &message)
 {
 	std::cout << "<" << message.getSender().getName() << "> papa" << std::endl; 

@@ -7,6 +7,16 @@
 KickCommand::KickCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
+void KickCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
+void KickCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool KickCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
