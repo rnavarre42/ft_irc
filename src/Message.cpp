@@ -177,7 +177,8 @@ size_t	Message::size(void)
 
 void	Message::send(void)
 {
-	this->_sender->sendCommand(this);
+	if (this->_sender->getType() == TYPE_SERVER)
+		static_cast<Server *>(this->_sender)->sendCommand(*this);
 }
 
 Message &Message::builder(ISender &sender, std::string data)

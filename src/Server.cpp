@@ -61,11 +61,11 @@ void	Server::_loadCommands(void)
 {
 
 //	this->_commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
-//	this->_commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
 	this->_commandMap["MOTD"]	= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
 	this->_commandMap["NICK"]	= new NickCommand	(*this, LEVEL_ALL, 1);
-//	this->_commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
 	this->_commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
@@ -177,7 +177,7 @@ ssize_t	Server::send(Message &message)
 void	Server::registerUser(Message &message)
 {
 	message.getSender().setRegistered(true);
-	this->_eventHandler.raise(REGEVENT, message);
+	this->_eventHandler.raise(REGUSEREVENT, message);
 }
 
 void	Server::quit(std::string msg)
@@ -380,8 +380,7 @@ Channel *Server::addToChannel(Message &message)
 			channel->getUserMap()[strToUpper(user.getName())] = &user;
 			user.getChannelMap()[strToUpper(channelName)] = channel;
 			this->_eventHandler.raise(NEWCHANEVENT, message);
-			this->_eventHandler.raise(JOINEVENT, message);
-			//TODO dar +o e informar al usuario de que ha entrado al canal
+			//this->_eventHandler.raise(JOINEVENT, message);
 		}
 		else
 		{

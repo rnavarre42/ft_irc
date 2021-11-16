@@ -8,8 +8,7 @@ PongCommand::PongCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void PongCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	eventHandler.add(REGEVENT, *new Delegate<PongCommand, Message>(*this, &PongCommand::registerUserEvent));
-	(void)eventHandler;
+	eventHandler.add(REGUSEREVENT, *new Delegate<PongCommand, Message>(*this, &PongCommand::registerUserEvent));
 }
 
 void PongCommand::unloadEvents(Server::eventHandler_type &eventHandler)

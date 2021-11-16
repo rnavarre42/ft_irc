@@ -12,12 +12,17 @@ JoinCommand::JoinCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void JoinCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	(void)eventHandler;
+	eventHandler.add(JOINEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::joinChannelEvent));
 }
 
 void JoinCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 {
 	(void)eventHandler;
+}
+
+void JoinCommand::joinChannelEvent(Message &message)
+{
+
 }
 
 bool JoinCommand::_recvUser(Message &message)
