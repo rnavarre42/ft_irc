@@ -69,7 +69,7 @@ void	Server::_loadCommands(void)
 //	this->_commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
 	this->_commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
-//	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
 	this->_commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
 
@@ -176,7 +176,7 @@ ssize_t	Server::send(Message &message)
 
 void	Server::registerUser(Message &message)
 {
-	message.getSender().setRegistered(true);
+	message.getSender()->setRegistered(true);
 	this->_eventHandler.raise(REGUSEREVENT, message);
 }
 
@@ -268,8 +268,10 @@ void	Server::setIdleTime(time_t value)
 
 User	*Server::_accept(void)
 {
-	User	*user;
-	int		newFd;
+	User				*user;
+	int					newFd;
+	struct sockaddr_in	user_addr;
+	socklen_t			len;
 
 	newFd = accept(this->fd, (struct sockaddr *)&this->address, (socklen_t *)&this->addrlen);
 	if (newFd < 0)
@@ -285,6 +287,9 @@ User	*Server::_accept(void)
 //		throw Server::ServerFullException();
 	}
 	user = new User(newFd, *this);
+	len = sizeof(user_addr);
+	getsockname(newFd, (struct sockaddr *) &user_addr, &len);
+	user->setHost(inet_ntoa(user_addr.sin_addr));
 	user->setPollIndex(findFreePollIndex());
 //	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
 	this->pollfds[user->getPollIndex()].fd = newFd;
@@ -324,7 +329,7 @@ int		Server::_poll(void)
 
 void	Server::addUser(User &user)
 {
-	Message message = Message::builder(*this);
+	Message message = Message::builder(*this, *this);
 	message.setReceiver(&user);
 //	this->userVector.push_back(&user);
 	this->_fdMap[user.getFd()] = &user;
@@ -333,7 +338,7 @@ void	Server::addUser(User &user)
 
 void	Server::delUser(User &user)
 {
-	Message message = Message::builder(*this);
+	Message message = Message::builder(*this, *this);
 	message.setReceiver(&user);
 	this->_eventHandler.raise(DELUSEREVENT, message);
 	// Se elimina de userMap si tiene nick
@@ -367,13 +372,15 @@ Channel *Server::addToChannel(Message &message)
 {
 	Channel											*channel = NULL;
 	std::string										&channelName = message[0];
-	User											&user = static_cast<User &>(message.getSender());
+	User											&user = *static_cast<User *>(message.getSender());
 	Server::channelMap_iterator						it;
 	std::pair<Server::userMap_iterator, bool>		retUser;
 
 	if (channelName[0] == '#')
 	{
-		if ((it = this->_channelFind(channelName)) == this->_channelMap.end())
+		if (user.getChannelMap().size() == MAXCHANNEL)
+			this->_eventHandler.raise(MAXCHANEVENT, message);
+		else if ((it = this->_channelFind(channelName)) == this->_channelMap.end())
 		{
 			channel = new Channel(channelName, user);
 			this->_channelMap[strToUpper(channelName)] = channel;
@@ -394,6 +401,8 @@ Channel *Server::addToChannel(Message &message)
 			//TODO falta por gestionar +l +i +k
 		}
 	}
+	else
+		this->_eventHandler.raise(ERRCHANEVENT, message);
 	return channel;
 }
 
@@ -488,7 +497,7 @@ bool	Server::recvCommand(Message &msg)
 {
 	ACommand	*command;
 
-	msg.getSender().setIdleTime(time(NULL));
+	msg.getSender()->setIdleTime(time(NULL));
 	if ((command = this->findCommand(msg.getCmd())))
 	{
 		command->recv(msg);
@@ -504,7 +513,7 @@ bool	Server::sendCommand(Message &msg)
 	if ((command = this->findCommand(msg.getCmd())))
 	{
 		if (msg.getReceiver() == NULL)
-			msg.setReceiver(&msg.getSender());
+			msg.setReceiver(msg.getSender());
 		command->send(msg);
 		return true;
 	}
@@ -534,7 +543,7 @@ void	Server::checkUserTimeout(User &user)
 
 	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
 	{
-		msg = &Message::builder(*this);
+		msg = &Message::builder(*this, *this);
 		msg->setCmd("QUIT");
 		msg->setReceiver(&user);
 		msg->insertField("Ping timeout");

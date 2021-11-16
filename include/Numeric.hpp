@@ -13,6 +13,7 @@ class Numeric
 public:
 	~Numeric(void);
 	static std::string	builder(Server &server, ISender &sender, int num);
+	static std::string	builder(Message &message, int num);
 	static void			insertField(std::string data);
 	
 private:

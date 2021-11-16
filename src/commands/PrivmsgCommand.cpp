@@ -34,7 +34,7 @@ bool PrivmsgCommand::_recvUser(Message &message)
 	else
 	{
 		message.eraseAt(0);
-		message.setSender(user);
+		message.setSender(&user);
 		message.setReceiver(it->second);
 		message.limitMaxParam(1);
 		it->second->send(message);

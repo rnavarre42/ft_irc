@@ -17,7 +17,7 @@
 # define LOG_LEVEL LOG_INFO | LOG_WARNING | LOG_ERROR | LOG_FATAL
 
 # define MAXNICK		9
-# define MAXCHANNEL		50
+# define MAXCHANNEL		3
 # define MAXSERVER		63
 # define MAXTOPIC		307
 # define MAXLINE		512
@@ -34,25 +34,27 @@
 # define MAXUSERS		3
 # define MAXLISTEN		5
 
-# define NEWUSEREVENT		0x00001
-# define DELUSEREVENT		0x00002
-# define REGUSEREVENT		0x00004
-# define NICKEVENT			0x00008
-# define QUITEVENT			0x00010
-# define JOINEVENT			0x00020
-# define PARTEVENT			0x00040
-# define KICKEVENT			0x00080
-# define CHANMODEEVENT		0x00100
-# define NICKMODEEVENT		0x00200
-# define CHANTOPICEVENT		0x00400
-# define CHANFULLEVENT		0x00800
-# define CHANBANEVENT		0x01000
-# define CHANKEYEVENT		0x02000
-# define AWAYEVENT			0x04000
-# define INVITEEVENT		0x08000
-# define NEWCHANEVENT		0x10000
-# define DELCHANEVENT		0x20000
-# define ALREADYEVENT		0x40000
+# define NEWUSEREVENT		0x000001
+# define DELUSEREVENT		0x000002
+# define REGUSEREVENT		0x000004
+# define NICKEVENT			0x000008
+# define QUITEVENT			0x000010
+# define JOINEVENT			0x000020
+# define PARTEVENT			0x000040
+# define KICKEVENT			0x000080
+# define CHANMODEEVENT		0x000100
+# define NICKMODEEVENT		0x000200
+# define CHANTOPICEVENT		0x000400
+# define CHANFULLEVENT		0x000800
+# define CHANBANEVENT		0x001000
+# define CHANKEYEVENT		0x002000
+# define AWAYEVENT			0x004000
+# define INVITEEVENT		0x008000
+# define NEWCHANEVENT		0x010000
+# define DELCHANEVENT		0x020000
+# define ALREADYEVENT		0x040000
+# define MAXCHANEVENT		0x080000
+# define ERRCHANEVENT		0x100000
 
 //hispano:
 //	registerTimeout	 30s
@@ -74,6 +76,8 @@ class Server : public ISender
 	typedef channelMap_type::iterator			channelMap_iterator;
 	typedef std::map<std::string, User *>		userMap_type;
 	typedef userMap_type::iterator				userMap_iterator;
+	typedef std::map<std::string, Server *>		serverMap_type;
+	typedef userMap_type::iterator				serverMap_iterator;
 
 	static void						signalHandler(int sig);
 	static Server					&getInstance(void);

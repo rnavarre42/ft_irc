@@ -8,6 +8,12 @@ class JoinCommand : public ACommand
 {
 public:
 	JoinCommand(Server &server, int accessLevel, int paramCount);
+
+	void joinChannelEvent(Message &message);
+	void alreadyChannelEvent(Message &message);
+	void createChannelEvent(Message &message);
+	void errChannelEvent(Message &message);
+	void limitChannelEvent(Message &message);
 	void loadEvents(Server::eventHandler_type &eventHandler);
 	void unloadEvents(Server::eventHandler_type &eventHandler);
 

@@ -20,7 +20,7 @@ void PongCommand::registerUserEvent(Message &message)
 {
 	message.limitMaxParam(0);
 	message.setReceiver(this->userSender);
-	message.setSender(this->server);
+	message.setSender(&this->server);
 	message.setCmd("MOTD");
 	message.send();
 //	

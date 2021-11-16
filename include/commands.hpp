@@ -16,7 +16,7 @@
 //# include "PassCommand.hpp"
 # include "PingCommand.hpp"
 # include "PongCommand.hpp"
-//# include "PrivmsgCommand.hpp"
+# include "PrivmsgCommand.hpp"
 # include "QuitCommand.hpp"
 # include "UserCommand.hpp"
 //# include "WhoCommand.hpp"

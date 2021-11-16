@@ -266,7 +266,7 @@ size_t	User::recv(int fd)
 
 Message	*User::buildMessage(std::string &buff)
 {
-	return &Message::builder(*this, buff);
+	return &Message::builder(this->_server, *this, buff);
 }
 
 std::string	User::_getLine(size_t pos)

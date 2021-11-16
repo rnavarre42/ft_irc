@@ -21,7 +21,7 @@ bool PingCommand::_recvUser(Message &message)
 	User			&user = *this->userSender;
 	std::string		param;
 
-	message.setSender(this->server);
+	message.setSender(&this->server);
 	message.setReceiver(NULL);
 	message.setCmd("PONG");
 

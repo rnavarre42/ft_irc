@@ -59,6 +59,11 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 	return Numeric::_instance->_toString();
 }
 
+std::string Numeric::builder(Message &message, int num)
+{
+	return Numeric::builder(message.getServer(), *message.getSender(), num);
+}
+
 Numeric::Numeric(void)
 {
 	Numeric::_numericMap[ERR_NOTIMPLEMENTED] = "$ :Command not implemented yet";
@@ -82,4 +87,5 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_BANNEDFROMCHAN] = "$ :Cannot join channel (+b)";
 	Numeric::_numericMap[ERR_BADCHANNELKEY] = "$ :Cannot join channel (+k)";
 	Numeric::_numericMap[ERR_BADCHANMASK] = "$ :Bad channel Mask";
+	Numeric::_numericMap[ERR_TOOMANYCHANNELS] = "$ :You have joined too many channels";
 }

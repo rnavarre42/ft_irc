@@ -42,7 +42,7 @@ public:
 		ret = this->_delegateMMap.equal_range(key);
 		for (iterator_type it = ret.first; it != ret.second; ++it)
 		{
-			std::cout << "delegate.invoke " << key << " ";
+//			std::cout << "delegate.invoke " << key << " ";
 			it->second.invoke(&value);
 		}	
 	}

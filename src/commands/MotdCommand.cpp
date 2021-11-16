@@ -47,7 +47,7 @@ bool MotdCommand::_sendUser(Message &message)
 	ifs.open("motd.txt", std::fstream::in);
 	if (ifs.fail())
 	{
-		message.getSender().send(Numeric::builder(this->server, user, ERR_NOMOTD));
+		message.getSender()->send(Numeric::builder(this->server, user, ERR_NOMOTD));
 		return true;
 	}
 	Numeric::insertField(this->server.getMask());

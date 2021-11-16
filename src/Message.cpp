@@ -47,7 +47,7 @@ std::string extractPhrase(std::string &data)
 		return extractWord(data);
 }
 
-Message::Message(ISender &sender, std::string data) : _sender(&sender), _receiver(NULL)
+Message::Message(Server &server, ISender &sender, std::string data) : _server(server), _sender(&sender), _broadcast(false)
 {
 	leftTrim(data);
 	if (data.empty())
@@ -71,17 +71,24 @@ Message::Message(ISender &sender, std::string data) : _sender(&sender), _receive
 //		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;
 }
 
-Message::Message(ISender &sender) : _sender(&sender), _receiver(NULL)
+Message::Message(Server &server, ISender &sender) : _server(server), _sender(&sender), _broadcast(false)
 {}
+
+void		Message::setReceiver(Server::userMap_iterator first, Server::userMap_iterator last)
+{
+	for (Server::userMap_iterator it = first; it != last; first++)
+		this->_receiverVector.push_back(it->second);
+}
 
 void		Message::setReceiver(ISender *value)
 {
-	this->_receiver = value;
+	this->_receiverVector.clear();
+	this->_receiverVector.push_back(value);
 }
 
 ISender		*Message::getReceiver(void)
 {
-	return this->_receiver;
+	return this->_receiverVector[0];
 }
 
 std::string		Message::toString(void)
@@ -90,8 +97,8 @@ std::string		Message::toString(void)
 
 	ss << ':' << this->_sender->getMask();
 	ss << ' ' << this->_cmd;
-	if (this->_receiver)
-		ss << ' ' << this->_receiver->getName();
+	if (!this->_receiverVector.empty() && !this->_broadcast)
+		ss << ' ' << this->_receiverVector[0]->getName();
 	for (size_t i = 0; i < this->_paramVector.size(); i++)
 	{
 		if (i == this->_paramVector.size() - 1)
@@ -116,6 +123,11 @@ std::string	&Message::operator[](size_t index)
 bool Message::empty(void)
 {
 	return this->_prefix.empty() && this->_cmd.empty() && !this->_paramVector.size();
+}
+
+void	Message::setBroadcast(bool value)
+{
+	this->_broadcast = value;
 }
 
 void	Message::limitMaxParam(size_t limit)
@@ -160,14 +172,19 @@ void	Message::swapField(size_t first, size_t second)
 	this->_paramVector[second] = field;
 }
 
-void	Message::setSender(ISender &value)
+void	Message::setSender(ISender *value)
 {
-	this->_sender = &value;
+	this->_sender = value;
 }
 
-ISender &Message::getSender(void)
+ISender *Message::getSender(void)
 {
-	return *this->_sender;
+	return this->_sender;
+}
+
+Server	&Message::getServer(void)
+{
+	return this->_server;
 }
 
 size_t	Message::size(void)
@@ -177,16 +194,27 @@ size_t	Message::size(void)
 
 void	Message::send(void)
 {
-	if (this->_sender->getType() == TYPE_SERVER)
-		static_cast<Server *>(this->_sender)->sendCommand(*this);
+	for (std::vector<ISender *>::iterator it = this->_receiverVector.begin(); it != this->_receiverVector.end(); it++)
+	{
+		(*it)->send(this->toString());
+	}
+//	if (this->_sender->getType() == TYPE_SERVER)
+//		static_cast<Server *>(this->_sender)->sendCommand(*this);
+//	else if (this->_receiverVector[0]->getType() == TYPE_USER)
+//		static_cast<User *>(this->_receiverVector[0])->send(*this);
 }
 
-Message &Message::builder(ISender &sender, std::string data)
+void	Message::send(std::string msg)
 {
-	return *new Message(sender, data);
+	this->_receiverVector[0]->send(msg);
 }
 
-Message &Message::builder(ISender &sender)
+Message &Message::builder(Server &server, ISender &sender, std::string data)
 {
-	return *new Message(sender);
+	return *new Message(server, sender, data);
+}
+
+Message &Message::builder(Server &server, ISender &sender)
+{
+	return *new Message(server, sender);
 }

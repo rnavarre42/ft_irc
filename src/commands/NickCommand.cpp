@@ -25,7 +25,7 @@ void NickCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 
 void NickCommand::nickEvent(Message &message)
 {
-	std::cout << "<" << message.getSender().getName() << "> papa" << std::endl; 
+	std::cout << "<" << message.getSender()->getName() << "> papa" << std::endl; 
 }
 
 bool NickCommand::_recvUser(Message &message)
