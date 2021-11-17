@@ -47,7 +47,7 @@ std::string extractPhrase(std::string &data)
 		return extractWord(data);
 }
 
-Message::Message(Server &server, ISender &sender, std::string data) : _server(server), _sender(&sender), _broadcast(false)
+Message::Message(Server &server, ISender &sender, std::string data) : _server(server), _sender(&sender), _channel(NULL), _broadcast(false)
 {
 	leftTrim(data);
 	if (data.empty())
@@ -71,18 +71,18 @@ Message::Message(Server &server, ISender &sender, std::string data) : _server(se
 //		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;
 }
 
-Message::Message(Server &server, ISender &sender) : _server(server), _sender(&sender), _broadcast(false)
+Message::Message(Server &server, ISender &sender) : _server(server), _sender(&sender), _channel(NULL), _broadcast(false)
 {}
 
-void		Message::setReceiver(Server::userMap_iterator first, Server::userMap_iterator last)
+void		Message::setReceiver(Server::userMap_type &userMap)
 {
-	for (Server::userMap_iterator it = first; it != last; first++)
+	for (Server::userMap_iterator it = userMap.begin(); it != userMap.end(); it++)
 		this->_receiverVector.push_back(it->second);
 }
 
 void		Message::setReceiver(ISender *value)
 {
-	this->_receiverVector.clear();
+//	this->_receiverVector.clear();
 	this->_receiverVector.push_back(value);
 }
 
@@ -187,6 +187,16 @@ Server	&Message::getServer(void)
 	return this->_server;
 }
 
+void	Message::setChannel(Channel &value)
+{
+	this->_channel = &value;
+}
+
+Channel	&Message::getChannel(void)
+{
+	return *this->_channel;
+}
+
 size_t	Message::size(void)
 {
 	return this->_paramVector.size();
@@ -195,9 +205,7 @@ size_t	Message::size(void)
 void	Message::send(void)
 {
 	for (std::vector<ISender *>::iterator it = this->_receiverVector.begin(); it != this->_receiverVector.end(); it++)
-	{
 		(*it)->send(this->toString());
-	}
 //	if (this->_sender->getType() == TYPE_SERVER)
 //		static_cast<Server *>(this->_sender)->sendCommand(*this);
 //	else if (this->_receiverVector[0]->getType() == TYPE_USER)
@@ -207,6 +215,11 @@ void	Message::send(void)
 void	Message::send(std::string msg)
 {
 	this->_receiverVector[0]->send(msg);
+}
+
+void	Message::process(void)
+{
+	static_cast<Server *>(this->_sender)->sendCommand(*this);
 }
 
 Message &Message::builder(Server &server, ISender &sender, std::string data)

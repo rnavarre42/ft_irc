@@ -10,6 +10,9 @@ Channel::Channel(std::string name, User &user) : _name(name), _owner(user.getNam
 Channel::Channel(void)
 {}
 
+Channel::~Channel(void)
+{}
+
 std::string	const &Channel::getName(void) const
 {
 	return this->_name;
@@ -18,6 +21,16 @@ std::string	const &Channel::getName(void) const
 std::map<std::string, User *>	&Channel::getUserMap(void)
 {
 	return this->_userMap;
+}
+
+void Channel::delUser(std::string value)
+{
+	this->_userMap.erase(strToUpper(value));
+}
+
+bool	Channel::empty(void)
+{
+	return this->_userMap.empty();
 }
 
 void Channel::setOwner(std::string value)

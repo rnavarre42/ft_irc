@@ -21,7 +21,7 @@ public:
 	void				setCmd(std::string value);
 	std::string const	&getCmd(void) const;
 
-	void				setReceiver(Server::userMap_iterator first, Server::userMap_iterator last);
+	void				setReceiver(Server::userMap_type &userMap);
 //	void				setReceiver(Server::serverMap_iterator first, Server::serverMap_iterator last);
 	void				setReceiver(ISender *value);
 	void				setBroadcast(bool value);
@@ -31,8 +31,12 @@ public:
 	ISender				*getSender(void);
 	Server				&getServer(void);
 
+	void				setChannel(Channel &value);
+	Channel				&getChannel(void);
+
 	void				send(void);
 	void				send(std::string data);
+	void				process(void);
 
 	size_t				size(void);
 	bool				empty(void);
@@ -52,6 +56,7 @@ private:
 
 	Server						&_server;
 	ISender						*_sender;
+	Channel						*_channel;
 	std::vector<ISender *>		_receiverVector;
 	std::string 				_prefix;
 	std::string 				_cmd;

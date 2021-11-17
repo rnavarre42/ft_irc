@@ -87,6 +87,8 @@ class Server : public ISender
 	std::map<std::string, User *>	&getUserMap(void);
 	std::string						getMask(void);
 
+	void							delChannel(Channel &channel);
+
 	void							setPass(std::string value);
 	std::string const				&getPass(void) const;
 

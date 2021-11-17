@@ -17,6 +17,7 @@ void JoinCommand::loadEvents(Server::eventHandler_type &eventHandler)
 	eventHandler.add(ALREADYEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::alreadyChannelEvent));
 	eventHandler.add(ERRCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::errChannelEvent));
 	eventHandler.add(MAXCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::limitChannelEvent));
+	eventHandler.add(DELCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::errChannelEvent));
 }
 
 void JoinCommand::unloadEvents(Server::eventHandler_type &eventHandler)
@@ -35,7 +36,7 @@ void JoinCommand::createChannelEvent(Message &message)
 void JoinCommand::joinChannelEvent(Message &message)
 {
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha entrado al canal " + message[0]);
-	message.setReceiver(message.getSender());
+	message.setReceiver(message.getChannel().getUserMap());
 	message.setBroadcast(true);
 	message.send();
 }
@@ -52,15 +53,15 @@ void JoinCommand::limitChannelEvent(Message &message)
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
 	message.send(Numeric::builder(message, ERR_TOOMANYCHANNELS));
-//	static_cast<User *>(message.getSender())->send(Numeric::builder(this->server, user, ERR_TOOMANYCHANNELS));
-
-	(void)message;
 }
 
 void JoinCommand::errChannelEvent(Message &message)
 {
-	Numeric::insertField(message[0]);
-//	static_cast<User *>(message.getSender())->send(Numeric::builder(this->server, user, ERR_BADCHANMASK));
+	Console::log(LOG_INFO, message.getChannel().getName() + " el canal se ha eliminado");
+//	message.setReceiver(message.getSender());
+//	message.send();
+//	Numeric::insertField(message[0]);
+//	message.send(Numeric::builder(message. ERR_BADCHANMASK));
 }
 
 

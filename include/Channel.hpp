@@ -30,6 +30,8 @@ public:
 
 	std::string const				&getName(void) const;
 	Server::userMap_type			&getUserMap(void);
+	void							delUser(std::string value);
+	bool							empty(void);
 
 	void							setOwner(std::string value);
 	std::string const				&getOwner(void) const;

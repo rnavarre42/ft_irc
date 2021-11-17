@@ -1,8 +1,10 @@
 #include "User.hpp"
 #include "Server.hpp"
+#include "Channel.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
+#include "utils.hpp"
 #include <map>
 #include <iostream>
 #include <string>
@@ -25,6 +27,8 @@ User::~User(void)
 	else
 		Console::log(LOG_INFO, "User <anonymous> disconnected");
 	close(this->_fd);
+//	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
+//		it->second->getUserMap().erase(strToUpper(this->_name));
 	this->_channelMap.clear();
 	//this->setRegistered(false);
 	this->_fd = 0;

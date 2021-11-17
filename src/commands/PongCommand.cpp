@@ -22,7 +22,7 @@ void PongCommand::registerUserEvent(Message &message)
 	message.setReceiver(this->userSender);
 	message.setSender(&this->server);
 	message.setCmd("MOTD");
-	message.send();
+	message.process();
 //	
 //	this->server.sendCommand(message);
 }
