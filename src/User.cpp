@@ -222,6 +222,16 @@ bool	User::isAway(void)
 	return !this->_awayMsg.empty();
 }
 
+Server::channelMap_iterator	User::channelFind(std::string &value)
+{
+	return this->_channelMap.find(strToUpper(value));
+}
+
+void	User::delChannel(std::string value)
+{
+	this->_channelMap.erase(strToUpper(value));
+}
+
 void	User::sendToBuffer(Message &message)
 {
 	this->sendToBuffer(message.toString());

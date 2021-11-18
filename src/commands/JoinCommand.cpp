@@ -1,5 +1,5 @@
 #include "JoinCommand.hpp"
-#include "Message.hpp"
+#include "Source.hpp"
 #include "Server.hpp"
 #include "User.hpp"
 #include "Numeric.hpp"
@@ -12,12 +12,12 @@ JoinCommand::JoinCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void JoinCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	eventHandler.add(NEWCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::createChannelEvent));
-	eventHandler.add(JOINEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::joinChannelEvent));
-	eventHandler.add(ALREADYEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::alreadyChannelEvent));
-	eventHandler.add(ERRCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::errChannelEvent));
-	eventHandler.add(MAXCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::limitChannelEvent));
-	eventHandler.add(DELCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::errChannelEvent));
+	eventHandler.add(NEWCHANEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::createChannelEvent));
+	eventHandler.add(JOINEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::joinChannelEvent));
+	eventHandler.add(ALREADYEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::alreadyChannelEvent));
+	eventHandler.add(ERRCHANEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::errChannelEvent));
+	eventHandler.add(MAXCHANEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::limitChannelEvent));
+	eventHandler.add(DELCHANEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::delChannelEvent));
 }
 
 void JoinCommand::unloadEvents(Server::eventHandler_type &eventHandler)
@@ -25,43 +25,58 @@ void JoinCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
-void JoinCommand::createChannelEvent(Message &message)
+void JoinCommand::createChannelEvent(Source &source)
 {
+	Message &message = *source.message;
+
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha creado el canal " + message[0]);
 	message.setReceiver(message.getSender());
 	message.setBroadcast(true);
 	message.send();
 }
 
-void JoinCommand::joinChannelEvent(Message &message)
+void JoinCommand::joinChannelEvent(Source &source)
 {
-	Console::log(LOG_INFO, message.getSender()->getName() + " ha entrado al canal " + message[0]);
-	message.setReceiver(message.getChannel().getUserMap());
+	Message &message = *source.message;
+	Console::log(LOG_INFO, source.message->getSender()->getName() + " ha entrado al canal " + message[0]);
+	message.setReceiver(message.getChannel()->getUserMap());
 	message.setBroadcast(true);
 	message.send();
 }
 
-void JoinCommand::alreadyChannelEvent(Message &message)
+void JoinCommand::alreadyChannelEvent(Source &source)
 {
+	Message &message = *source.message;
+
 	Console::log(LOG_INFO, message.getSender()->getName() + " ya está en " + message[0]);
 	(void)message;	
 }
 
-void JoinCommand::limitChannelEvent(Message &message)
+void JoinCommand::limitChannelEvent(Source &source)
 {
+	Message &message = *source.message;
+
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha alcanzado el limite de canales");
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
 	message.send(Numeric::builder(message, ERR_TOOMANYCHANNELS));
 }
 
-void JoinCommand::errChannelEvent(Message &message)
+void JoinCommand::delChannelEvent(Source &source)
 {
-	Console::log(LOG_INFO, message.getChannel().getName() + " el canal se ha eliminado");
-//	message.setReceiver(message.getSender());
+	Message &message = *source.message;
+
+	Console::log(LOG_INFO, message.getChannel()->getName() + " el canal se ha eliminado");
+}
+
+void JoinCommand::errChannelEvent(Source &source)
+{
+	Message &message = *source.message;
+
+	message.setReceiver(message.getSender());
 //	message.send();
-//	Numeric::insertField(message[0]);
-//	message.send(Numeric::builder(message. ERR_BADCHANMASK));
+	Numeric::insertField(message[0]);
+	message.send(Numeric::builder(message, ERR_BADCHANMASK));
 }
 
 

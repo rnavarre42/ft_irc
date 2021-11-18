@@ -49,6 +49,7 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 	this->pollTimeout = 1000;
 	this->registered = 0;
 	this->_bind();
+	this->_source.server = this;
 }
 
 Server::~Server(void)
@@ -177,7 +178,8 @@ ssize_t	Server::send(Message &message)
 void	Server::registerUser(Message &message)
 {
 	message.getSender()->setRegistered(true);
-	this->_eventHandler.raise(REGUSEREVENT, message);
+	this->_source.message = &message;
+	this->_eventHandler.raise(REGUSEREVENT, this->_source);
 }
 
 void	Server::quit(std::string msg)
@@ -337,9 +339,22 @@ void	Server::addUser(User &user)
 {
 	Message message = Message::builder(*this, *this);
 	message.setReceiver(&user);
+	this->_source.message = &message;
 //	this->userVector.push_back(&user);
 	this->_fdMap[user.getFd()] = &user;
-	this->_eventHandler.raise(NEWUSEREVENT, message);
+	this->_eventHandler.raise(NEWUSEREVENT, this->_source);
+}
+
+void	Server::_removeUserFromChannel(Channel &channel, User &user)
+{
+	user.delChannel(channel.getName());	// se elimina al canal del usuario
+	channel.delUser(user.getName());	// se elimina al usuario del canal
+	if (channel.empty())	// si no quedan usuarios en el canal
+	{
+		this->_source.message->setChannel(&channel);
+		this->_eventHandler.raise(DELCHANEVENT, this->_source);
+		this->delChannel(channel);	// se elimina
+	}
 }
 
 void	Server::delUser(User &user)
@@ -347,7 +362,8 @@ void	Server::delUser(User &user)
 	Server::channelMap_iterator currentIt;
 	Message message = Message::builder(*this, *this);
 	message.setReceiver(&user);
-	this->_eventHandler.raise(DELUSEREVENT, message);
+	this->_source.message = &message;
+	this->_eventHandler.raise(DELUSEREVENT, this->_source);
 	// Se elimina de userMap si tiene nick
 	if (user.getName().empty())
 		;
@@ -355,17 +371,13 @@ void	Server::delUser(User &user)
 	else
 	{
 //		this->send("User <" + user.getName() + "> disconnect\n");
+		//TODO hay que informar a los demas usuarios que se ha ido (QUIT), falta el listado de los usuarios por
+		//canal sin repetir.
 		for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end();)
 		{
 			currentIt = it;
 			it++;
-			currentIt->second->delUser(user.getName());	// se elimina al usuario del canal
-			if (currentIt->second->empty())	// si no quedan usuarios en el canal
-			{
-				message.setChannel(*currentIt->second);
-				this->_eventHandler.raise(DELCHANEVENT, message);
-				this->delChannel(*currentIt->second);	// se elimina
-			}
+			this->_removeUserFromChannel(*currentIt->second, user);
 		}
 		this->_userMap.erase(strToUpper(user.getName()));
 	}
@@ -395,11 +407,12 @@ Channel *Server::addToChannel(Message &message)
 	Server::channelMap_iterator						it;
 	std::pair<Server::userMap_iterator, bool>		retUser;
 
+	this->_source.message = &message;
 	if (channelName[0] == '#')
 	{
 //		std::cout << "user " << user.getName() << " " << user.getChannelMap().size() << std::end;
 		if (user.getChannelMap().size() == MAXCHANNEL)
-			this->_eventHandler.raise(MAXCHANEVENT, message);
+			this->_eventHandler.raise(MAXCHANEVENT, this->_source);
 		else if ((it = this->_channelFind(channelName)) == this->_channelMap.end())
 		{
 			channel = new Channel(channelName, user);
@@ -408,14 +421,14 @@ Channel *Server::addToChannel(Message &message)
 			channel->getUserMap()[strToUpper(user.getName())] = &user;
 			user.getChannelMap()[strToUpper(channelName)] = channel;
 			//
-			message.setChannel(*channel);
-			this->_eventHandler.raise(NEWCHANEVENT, message);
-			//this->_eventHandler.raise(JOINEVENT, message);
+			message.setChannel(channel);
+			this->_eventHandler.raise(NEWCHANEVENT, this->_source);
+			//this->_eventHandler.raise(JOINEVENT, this->_source);
 		}
 		else
 		{
 			channel = it->second;
-			message.setChannel(*channel);
+			message.setChannel(channel);
 			retUser = channel->getUserMap().insert(std::pair<std::string, User *>(strToUpper(user.getName()), &user));
 			if (retUser.second == true)  //El nick ha entrado al canal
 			{
@@ -423,21 +436,45 @@ Channel *Server::addToChannel(Message &message)
 				channel->getUserMap()[strToUpper(user.getName())] = &user;
 				user.getChannelMap()[strToUpper(channelName)] = channel;
 				//
-				this->_eventHandler.raise(JOINEVENT, message);
+				this->_eventHandler.raise(JOINEVENT, this->_source);
 			}
 			else
-				this->_eventHandler.raise(ALREADYEVENT, message);
+				this->_eventHandler.raise(ALREADYEVENT, this->_source);
 			//TODO falta por gestionar +l +i +k
 		}
 	}
 	else
-		this->_eventHandler.raise(ERRCHANEVENT, message);
-	return channel;
+		this->_eventHandler.raise(ERRCHANEVENT, this->_source);
+	return channel; //TODO revisar si este valor se utiliza o se debe utilizar.
 }
 
 int		Server::delFromChannel(Message &message)
 {
-	(void)message;
+	Channel							*channel = NULL;
+	User							&user = *static_cast<User* >(message.getSender());
+	std::string						&channelName = message[0];
+	Server::channelMap_iterator		it;	
+	
+	this->_source.message = &message;
+	if (channelName[0] == '#')
+	{
+		if ((it = this->_channelFind(channelName)) == this->_channelMap.end())
+			this->_eventHandler.raise(NOTCHANEVENT, this->_source);
+		else
+		{
+			channel = it->second;
+			message.setChannel(channel);
+			if ((it = user.channelFind(channelName)) == user.getChannelMap().end())
+				this->_eventHandler.raise(NOTINCHANEVENT, this->_source);
+			else
+			{
+				this->_eventHandler.raise(PARTEVENT, this->_source);
+				this->_removeUserFromChannel(*channel, user);
+			}
+		}
+	}
+	else
+		this->_eventHandler.raise(ERRCHANEVENT, this->_source);
 	return false;
 }
 

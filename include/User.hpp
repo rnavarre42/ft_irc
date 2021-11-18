@@ -36,6 +36,10 @@ public:
 	std::string const	&getName(void) const;
 	std::string const	&getUpperName(void) const;
 
+	void			delChannel(std::string value);	
+
+	Server::channelMap_iterator	channelFind(std::string &value);
+
 	std::string &getInputBuffer(void);
 	std::string &getOutputBuffer(void);
 

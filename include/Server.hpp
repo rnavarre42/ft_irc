@@ -4,6 +4,7 @@
 
 # include "ISender.hpp"
 # include "EventHandler.hpp"
+# include "Source.hpp"
 //# include "Channel.hpp"
 //# include "ACommand.hpp"
 //# include "Message.hpp"
@@ -55,6 +56,8 @@
 # define ALREADYEVENT		0x040000
 # define MAXCHANEVENT		0x080000
 # define ERRCHANEVENT		0x100000
+# define NOTINCHANEVENT		0x200000
+# define NOTCHANEVENT		0x400000
 
 //hispano:
 //	registerTimeout	 30s
@@ -65,13 +68,14 @@ class Channel;
 class ACommand;
 class User;
 class Channel;
+struct Source;
 
 class Server : public ISender
 {
 	public:
 	~Server(void);
 
-	typedef EventHandler<int, Message>			eventHandler_type;
+	typedef EventHandler<int, Source>			eventHandler_type;
 	typedef std::map<std::string, Channel *>	channelMap_type;
 	typedef channelMap_type::iterator			channelMap_iterator;
 	typedef std::map<std::string, User *>		userMap_type;
@@ -169,13 +173,15 @@ private:
 
 	Server::eventHandler_type	_eventHandler;
 
-	channelMap_iterator				_channelFind(std::string &channelName);
-	userMap_iterator				_userFind(std::string &userName);
+	channelMap_iterator			_channelFind(std::string &channelName);
+	userMap_iterator			_userFind(std::string &userName);
+	Source						_source;
 	
 	int		findFreePollIndex(void);
 	int		_poll(void);
 	int		checkUserConnection(void);
 
+	void	_removeUserFromChannel(Channel &channel, User &user);
 	void	_loadCommands(void);
 	void	_unloadCommands(void);
 	void	checkConsoleInput(void);

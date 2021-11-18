@@ -88,4 +88,7 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_BADCHANNELKEY] = "$ :Cannot join channel (+k)";
 	Numeric::_numericMap[ERR_BADCHANMASK] = "$ :Bad channel Mask";
 	Numeric::_numericMap[ERR_TOOMANYCHANNELS] = "$ :You have joined too many channels";
+	Numeric::_numericMap[ERR_NOSUCHCHANNEL]	= "$ :No such channel";
+	Numeric::_numericMap[ERR_USERNOTINCHANNEL]	= "$ :They aren't on that channel";
+	Numeric::_numericMap[ERR_NOTONCHANNEL]	= "$ :You're not on that channel";
 }

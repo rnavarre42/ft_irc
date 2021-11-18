@@ -187,14 +187,14 @@ Server	&Message::getServer(void)
 	return this->_server;
 }
 
-void	Message::setChannel(Channel &value)
+void	Message::setChannel(Channel *value)
 {
-	this->_channel = &value;
+	this->_channel = value;
 }
 
-Channel	&Message::getChannel(void)
+Channel	*Message::getChannel(void)
 {
-	return *this->_channel;
+	return this->_channel;
 }
 
 size_t	Message::size(void)

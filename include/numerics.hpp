@@ -70,7 +70,7 @@ enum
 
 	ERR_NOSUCHNICK			= 401,	// "<nickname> :No such nick/channel"
 	ERR_NOSUCHSERVER		= 402,	// "<server name> :No such server"
-	ERR_NNOSUCHCHANNEL		= 403,	// "<channel> :No such channel"
+	ERR_NOSUCHCHANNEL		= 403,	// "<channel> :No such channel"
 	ERR_CANNOTSENDTOCHAN	= 404,	// "<channel name> :Cannot send to channel"
 	ERR_TOOMANYCHANNELS		= 405,	// "<channel name> :You have joined too many channels"
 	ERR_WASNOSUCHNICK		= 406,	// "<nickname> :There was no such nickname"

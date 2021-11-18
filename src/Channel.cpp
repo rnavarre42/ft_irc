@@ -13,7 +13,7 @@ Channel::Channel(void)
 Channel::~Channel(void)
 {}
 
-std::string	const &Channel::getName(void) const
+std::string const	&Channel::getName(void) const
 {
 	return this->_name;
 }

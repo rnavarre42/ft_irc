@@ -1,0 +1,33 @@
+message:
+	(el servidor marca el último parametro con ":")
+
+	JOIN	#canal
+		:mascara JOIN :#canal
+
+	PART	#canal
+		:mascara JOIN :#canal
+
+	PRIVMSG #canal,usuario :texto
+		:mascara PRIVMSG #canal :texto
+		:mascara PRIVMSG usuario :texto
+
+	QUIT	:texto
+		:origen QUIT :texto
+	KILL	nick :texto
+??		:origen KILL :texto
+	
+	KICK	#canal nick :mensaje
+		:mascara KICK #canal nick :mensaje
+
+	MODE	#canal/nick mode var
+		:mascara MODE #canal/nick mode :var
+
+	TOPIC	#canal :texto
+		:origen TOPIC #canal :texto
+
+	INVITE	nick #canal
+		:servidor 341 nick canal :origen
+		:origen INVITE nick :#canal
+
+//	NAMES	#canal
+

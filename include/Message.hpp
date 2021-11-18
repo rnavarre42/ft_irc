@@ -31,8 +31,8 @@ public:
 	ISender				*getSender(void);
 	Server				&getServer(void);
 
-	void				setChannel(Channel &value);
-	Channel				&getChannel(void);
+	void				setChannel(Channel *value);
+	Channel				*getChannel(void);
 
 	void				send(void);
 	void				send(std::string data);

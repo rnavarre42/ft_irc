@@ -1,5 +1,7 @@
 #include "PongCommand.hpp"
+#include "Console.hpp"
 #include "Message.hpp"
+#include "Source.hpp"
 #include "Server.hpp"
 #include <iostream>
 
@@ -8,7 +10,7 @@ PongCommand::PongCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void PongCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	eventHandler.add(REGUSEREVENT, *new Delegate<PongCommand, Message>(*this, &PongCommand::registerUserEvent));
+	eventHandler.add(REGUSEREVENT, *new Delegate<PongCommand, Source>(*this, &PongCommand::registerUserEvent));
 }
 
 void PongCommand::unloadEvents(Server::eventHandler_type &eventHandler)
@@ -16,8 +18,11 @@ void PongCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
-void PongCommand::registerUserEvent(Message &message)
+void PongCommand::registerUserEvent(Source &source)
 {
+	Message &message = *source.message;
+
+	Console::log(LOG_INFO, "El usuario " + message.getSender()->getName() + " se ha registrado");	
 	message.limitMaxParam(0);
 	message.setReceiver(this->userSender);
 	message.setSender(&this->server);
