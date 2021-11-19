@@ -111,8 +111,8 @@ class Server : public ISender
 	ssize_t	send(std::string msg = "");
 	ssize_t	send(Message &message);
 
-	Channel	*addToChannel(Message &message);
-	int		delFromChannel(Message &message);
+	void	addToChannel(Message &message);
+	void	delFromChannel(Message &message);
 
 	void	registerUser(User &user);
 	void	quit(std::string msg);
@@ -181,6 +181,7 @@ private:
 	int		_poll(void);
 	int		checkUserConnection(void);
 
+	bool	_validChannelPrefix(std::string &channelName);
 	void	_removeUserFromChannel(Channel &channel, User &user);
 	void	_loadCommands(void);
 	void	_unloadCommands(void);

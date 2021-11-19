@@ -13,7 +13,8 @@ RM			=	rm -Rf
 
 -include	sources.mk
 
-all:	$(NAME)
+all:	debug 
+#$(NAME)
 
 -include	$(DEPS)
 

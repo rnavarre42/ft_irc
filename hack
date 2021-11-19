@@ -11,7 +11,7 @@ en la carga del kernel se añade al final init=/bin/sh para obtener privilegios 
 
 para volver a montar el raid como lectura y escritura
 
-mount -r -o remount.rw /
+mount -r -o remount, rw /
 
 
 grub-mkpasswd-pbkdf2  genera una clave para grub

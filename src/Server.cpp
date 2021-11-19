@@ -399,7 +399,7 @@ Server::channelMap_iterator	Server::_channelFind(std::string &channelName)
 }
 
 // :masksource JOIN #CHAN :Pass
-Channel *Server::addToChannel(Message &message)
+void	Server::addToChannel(Message &message)
 {
 	Channel											*channel = NULL;
 	std::string										&channelName = message[0];
@@ -408,7 +408,7 @@ Channel *Server::addToChannel(Message &message)
 	std::pair<Server::userMap_iterator, bool>		retUser;
 
 	this->_source.message = &message;
-	if (channelName[0] == '#')
+	if (_validChannelPrefix(channelName))
 	{
 //		std::cout << "user " << user.getName() << " " << user.getChannelMap().size() << std::end;
 		if (user.getChannelMap().size() == MAXCHANNEL)
@@ -445,10 +445,14 @@ Channel *Server::addToChannel(Message &message)
 	}
 	else
 		this->_eventHandler.raise(ERRCHANEVENT, this->_source);
-	return channel; //TODO revisar si este valor se utiliza o se debe utilizar.
 }
 
-int		Server::delFromChannel(Message &message)
+bool	Server::_validChannelPrefix(std::string &channelName)
+{
+	return channelName[0] == '#';
+}
+
+void	Server::delFromChannel(Message &message)
 {
 	Channel							*channel = NULL;
 	User							&user = *static_cast<User* >(message.getSender());
@@ -456,14 +460,14 @@ int		Server::delFromChannel(Message &message)
 	Server::channelMap_iterator		it;	
 	
 	this->_source.message = &message;
-	if (channelName[0] == '#')
+	if (this->_validChannelPrefix(channelName))
 	{
 		if ((it = this->_channelFind(channelName)) == this->_channelMap.end())
 			this->_eventHandler.raise(NOTCHANEVENT, this->_source);
 		else
 		{
 			channel = it->second;
-			message.setChannel(channel);
+			this->_source.channel = channel;
 			if ((it = user.channelFind(channelName)) == user.getChannelMap().end())
 				this->_eventHandler.raise(NOTINCHANEVENT, this->_source);
 			else
@@ -475,7 +479,6 @@ int		Server::delFromChannel(Message &message)
 	}
 	else
 		this->_eventHandler.raise(ERRCHANEVENT, this->_source);
-	return false;
 }
 
 bool const	&Server::isRegistered(void) const

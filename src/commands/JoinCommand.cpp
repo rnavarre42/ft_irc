@@ -83,7 +83,6 @@ void JoinCommand::errChannelEvent(Source &source)
 bool JoinCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
-	//Channel	*channel;
 
 	(void)user;
 	this->server.addToChannel(message);

@@ -1,4 +1,5 @@
 #include "PartCommand.hpp"
+#include "Console.hpp"
 #include "Channel.hpp"
 #include "Numeric.hpp"
 #include "Message.hpp"
@@ -24,7 +25,9 @@ void PartCommand::partChannelEvent(Source &source)
 {
 	Message &message = *source.message;
 
-	message.setReceiver(message.getChannel()->getUserMap());
+	Console::log(LOG_INFO, message.getSender()->getName() + " ha salido de " + source.channel->getName());
+	message.setReceiver(source.channel->getUserMap());
+	message.limitMaxParam(2);
 	message.setBroadcast(true);
 	message.send();
 }
