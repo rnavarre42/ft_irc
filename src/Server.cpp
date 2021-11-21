@@ -5,6 +5,7 @@
 #include "utils.hpp"
 #include "commands.hpp"
 
+#include <set>
 #include <string>
 #include <cstring>
 #include <iostream>
@@ -357,10 +358,66 @@ void	Server::_removeUserFromChannel(Channel &channel, User &user)
 	}
 }
 
+void	displayUserName(User *user)
+{
+	std::cout << "User name = " << user->getName() << std::endl;
+}
+
+Channel	*findFullestChannel(User &user)
+{
+	Server::channelMap_iterator	currentIt = user.getChannelMap().begin();
+	Server::channelMap_iterator	nextIt = currentIt;
+
+	for (; nextIt != user.getChannelMap().end(); nextIt++)
+	{
+		if (nextIt->second->getUserMap().size() > currentIt->second->getUserMap().size())
+			currentIt = nextIt;
+	}
+	return	currentIt->second;
+}
+
+std::vector<User *>	*getUserVector(User	&user)
+{
+	//aloca memoria para el nuevo vector
+	std::vector<User *>		*userVector = new std::vector<User *>;
+	std::set<Channel *>		channelSet;
+	Channel					*currentChannel;
+	std::pair<std::set<Channel *>::iterator, bool>	ret;
+	std::vector<User *>::iterator					vectorIt;
+
+	//buscar el canal que tiene mas usuarios
+	currentChannel = findFullestChannel(user);
+	//std::cout << "channel name = " << currentChannel->getName() << std::endl;
+
+	//añadir los usuarios del canal mas grande al vector
+	channelSet.insert(currentChannel);
+	for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+		userVector->push_back(it->second);
+	//añadir los usuarios de los canales restantes sin repetir usuario en el vector
+	for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end(); it++)
+	{
+		currentChannel = it->second;
+		ret = channelSet.insert(currentChannel);
+		if (ret.second == true)
+		{
+			for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+			{
+				vectorIt = std::find(userVector->begin(), userVector->end(), it->second);
+				if (vectorIt == userVector->end())
+					userVector->push_back(it->second);
+			}
+		}
+	}
+//	for_each(userVector->begin(), userVector->end(), displayUserName);
+	return userVector;
+}
+
 void	Server::delUser(User &user)
 {
-	Server::channelMap_iterator currentIt;
-	Message message = Message::builder(*this, *this);
+	Server::channelMap_iterator	currentIt;
+	Message						message = Message::builder(*this, *this);
+	std::vector<User *>			*userVector;
+
 	message.setReceiver(&user);
 	this->_source.message = &message;
 	this->_eventHandler.raise(DELUSEREVENT, this->_source);
@@ -373,6 +430,8 @@ void	Server::delUser(User &user)
 //		this->send("User <" + user.getName() + "> disconnect\n");
 		//TODO hay que informar a los demas usuarios que se ha ido (QUIT), falta el listado de los usuarios por
 		//canal sin repetir.
+		userVector = getUserVector(user);
+		delete userVector;
 		for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end();)
 		{
 			currentIt = it;
