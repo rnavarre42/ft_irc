@@ -4,6 +4,7 @@
 #include "Message.hpp"
 #include "commands.hpp"
 
+#include <set>
 #include <string>
 #include <cstring>
 #include <iostream>
@@ -40,7 +41,7 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 {
 	this->_loadCommands();
 //	this->_logger();
-//	signal(SIGPIPE, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, Server::signalHandler);
 	std::memset(this->_pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
 	this->_stop = false;
@@ -70,7 +71,7 @@ void	Server::_loadCommands(void)
 	this->_commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
 	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
+	this->_commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
 	this->_commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
 
 //	this->_commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
@@ -192,8 +193,7 @@ void	Server::quit(std::string msg)
 	{
 		currentIt = it;
 		it++;
-		currentIt->second->send(msg);
-		this->delUser(*currentIt->second);
+		this->delUser(*currentIt->second, msg);
 	}
 	this->_stop = true;
 }
@@ -360,10 +360,72 @@ void	Server::_removeUserFromChannel(Channel &channel, User &user)
 	}
 }
 
-void	Server::delUser(User &user)
+void	displayUserName(User *user)
 {
-	Server::channelMap_iterator currentIt;
-	Message &message = Message::builder(*this);
+//<<<<<<< HEAD
+//	Server::channelMap_iterator currentIt;
+//	Message &message = Message::builder(*this);
+//=======
+	std::cout << "User name = " << user->getName() << std::endl;
+}
+
+Channel	*findFullestChannel(User &user)
+{
+	Server::channelMap_iterator	currentIt = user.getChannelMap().begin();
+	Server::channelMap_iterator	nextIt = currentIt;
+
+	for (; nextIt != user.getChannelMap().end(); nextIt++)
+	{
+		if (nextIt->second->getUserMap().size() > currentIt->second->getUserMap().size())
+			currentIt = nextIt;
+	}
+	return	currentIt->second;
+}
+
+Server::userVector_type	*getUserVector(User	&user)
+{
+	//aloca memoria para el nuevo vector
+	Server::userVector_type							*userVector = new Server::userVector_type;
+	std::set<Channel *>								channelSet;
+	Channel											*currentChannel;
+	std::pair<std::set<Channel *>::iterator, bool>	ret;
+	Server::userVector_iterator						vectorIt;
+
+	if (!user.getChannelMap().size())
+		return NULL;
+	//buscar el canal que tiene mas usuarios
+	currentChannel = findFullestChannel(user);
+	//std::cout << "channel name = " << currentChannel->getName() << std::endl;
+
+	//añadir los usuarios del canal mas grande al vector
+	channelSet.insert(currentChannel);
+	for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+		userVector->push_back(it->second);
+	//añadir los usuarios de los canales restantes sin repetir usuario en el vector
+	for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end(); it++)
+	{
+		currentChannel = it->second;
+		ret = channelSet.insert(currentChannel);
+		if (ret.second == true)
+		{
+			for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+			{
+				vectorIt = std::find(userVector->begin(), userVector->end(), it->second);
+				if (vectorIt == userVector->end())
+					userVector->push_back(it->second);
+			}
+		}
+	}
+//	for_each(userVector->begin(), userVector->end(), displayUserName);
+	return userVector;
+}
+
+void	Server::delUser(User &user, std::string text)
+{
+	Server::channelMap_iterator	currentIt;
+	Message						message = Message::builder(user);
+	Server::userVector_type		*userVector = getUserVector(user);
+
 	message.setReceiver(&user);
 	this->_source.message = &message;
 	this->_eventHandler.raise(DELUSEREVENT, this->_source);
@@ -376,6 +438,14 @@ void	Server::delUser(User &user)
 //		this->send("User <" + user.getName() + "> disconnect\n");
 		//TODO hay que informar a los demas usuarios que se ha ido (QUIT), falta el listado de los usuarios por
 		//canal sin repetir.
+		message.setCmd("QUIT");
+		if (userVector)
+			message.setReceiver(*userVector);
+		else
+			message.setReceiver(&user);
+		message.setBroadcast(true);
+		message.insertField(text);
+		this->_eventHandler.raise(QUITEVENT, this->_source);
 		for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end();)
 		{
 			currentIt = it;
@@ -389,7 +459,17 @@ void	Server::delUser(User &user)
 	this->_pollfds[user.getPollIndex()].events = 0;
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
 	delete &user;
-	delete &message;
+	delete userVector;
+}
+
+Server::userMap_iterator	Server::_userFind(std::string &userName)
+{
+	return this->_userMap.find(strToUpper(userName));
+}
+
+Server::channelMap_iterator	Server::_channelFind(std::string &channelName)
+{
+	return this->_channelMap.find(strToUpper(channelName));
 }
 
 // :masksource JOIN #CHAN :Pass
@@ -531,8 +611,8 @@ void	Server::_checkUserIO(void)
 		{
 			user = this->_fdMap[this->_pollfds[i].fd];
 			size = user->checkInput(this->_pollfds[i].fd);
-			if (size <= 0)
-				this->delUser(*user);
+			if (size <= 0) // ctrl+c
+				this->delUser(*user, "");
 		}
 		else if (this->_pollfds[i].revents & POLLOUT)
 		{

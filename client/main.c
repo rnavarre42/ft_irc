@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 #include <netinet/in.h>
 #include <string.h>
 #include <arpa/inet.h>
@@ -12,6 +13,11 @@
 #define BUFFERSIZE  4092
 
 int g_read = 1;
+
+void signal_handler(int sig)
+{
+	exit(0);
+}
 
 void irc_send(int sock, char *data)
 {
@@ -121,6 +127,8 @@ int main(int argc, char **argv)
 
     char *nick, *username, *server_host;
     int server_port;
+
+	signal(SIGINT, signal_handler);
 
     if (argc != 5)
     {

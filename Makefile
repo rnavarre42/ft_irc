@@ -52,6 +52,7 @@ run:		all
 
 cli:
 	make -C client run non NoSoyNadie 127.0.0.1 6667
+	reset
 
 hispano:
 	make -C client run non NoSoyNadie 195.234.61.209 6667

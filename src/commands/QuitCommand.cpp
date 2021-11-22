@@ -8,12 +8,19 @@ QuitCommand::QuitCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void QuitCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	(void)eventHandler;
+	eventHandler.add(QUITEVENT, *new Delegate<QuitCommand, Source>(*this, &QuitCommand::QuitEvent));
 }
 
 void QuitCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 {
 	(void)eventHandler;
+}
+
+void QuitCommand::QuitEvent(Source &source)
+{
+	Message	&message = *source.message;
+
+	message.send();
 }
 
 bool QuitCommand::_recvUser(Message &message)
@@ -44,8 +51,8 @@ bool QuitCommand::_sendUser(Message &message)
 	if (!message.size())
 		message.insertField("Client exited");
 	user.send("ERROR :Closing link: (" + user.getMask() + ") [" + message[0] + "]");
-	this->server.delUser(user);
-	return false;
+	this->server.delUser(user, message[0]);
+	return true;
 }
 
 bool QuitCommand::_sendServer(Message &message)
