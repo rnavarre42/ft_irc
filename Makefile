@@ -47,7 +47,7 @@ release:	$(NAME)
 tag:
 	ctags	$(SRCS)
 
-run:		$(NAME)
+run:		all
 	./$(NAME)
 
 cli:

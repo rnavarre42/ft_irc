@@ -12,6 +12,7 @@
 # include <string>
 # include <map>
 # include <ctime>
+# include <vector>
 # include <netinet/in.h>
 # include <poll.h>
 
@@ -82,6 +83,8 @@ class Server : public ISender
 	typedef userMap_type::iterator				userMap_iterator;
 	typedef std::map<std::string, Server *>		serverMap_type;
 	typedef userMap_type::iterator				serverMap_iterator;
+	typedef std::vector<ISender *>				userVector_type;
+	typedef userVector_type::iterator			userVector_iterator;
 
 	static void						signalHandler(int sig);
 	static Server					&getInstance(void);
@@ -118,7 +121,7 @@ class Server : public ISender
 	void	quit(std::string msg);
 	
 	void	addUser(User &user);
-	void	delUser(User &user);
+	void	delUser(User &user, std::string text);
 	
 //	void	killUser(User &user, std::string reason);
 	int		count(void);
@@ -165,7 +168,6 @@ private:
 	struct pollfd		pollfds[MAXUSERS + 2];
 	static Server		*instance;
 
-//	std::vector<User *>						_userVector;
 	Server::_fdMap_type			_fdMap;
 	Server::userMap_type		_userMap;
 	Server::channelMap_type		_channelMap;

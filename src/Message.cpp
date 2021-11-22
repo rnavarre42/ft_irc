@@ -80,6 +80,12 @@ void		Message::setReceiver(Server::userMap_type &userMap)
 		this->_receiverVector.push_back(it->second);
 }
 
+void		Message::setReceiver(Server::userVector_type &userVector)
+{
+	for (Server::userVector_iterator it = userVector.begin(); it != userVector.end(); it++)
+		this->_receiverVector.push_back(*it);
+}
+
 void		Message::setReceiver(ISender *value)
 {
 //	this->_receiverVector.clear();
