@@ -5,6 +5,7 @@
 # include "ISender.hpp"
 # include "EventHandler.hpp"
 # include "Source.hpp"
+# include "utils.hpp"
 //# include "Channel.hpp"
 //# include "ACommand.hpp"
 //# include "Message.hpp"
@@ -82,6 +83,9 @@ class Server : public ISender
 	typedef userMap_type::iterator				userMap_iterator;
 	typedef std::map<std::string, Server *>		serverMap_type;
 	typedef userMap_type::iterator				serverMap_iterator;
+	typedef std::map<int, User *>				fdMap_type;
+	typedef fdMap_type::iterator				fdMap_iterator;
+	typedef std::map<std::string, ACommand *>	commandMap_type;
 
 	static void						signalHandler(int sig);
 	static Server					&getInstance(void);
@@ -123,7 +127,22 @@ class Server : public ISender
 //	void	killUser(User &user, std::string reason);
 	int		count(void);
 
-	ACommand	*findCommand(std::string cmd);
+	inline ACommand	*findCommand(std::string cmd)
+	{
+		if (this->_commandMap.find(cmd) != this->_commandMap.end())
+			return this->_commandMap[cmd];
+		return NULL;
+	}
+
+	inline userMap_iterator userFind(std::string &userName)
+	{
+		return this->_userMap.find(strToUpper(userName));
+	}
+
+	inline channelMap_iterator channelFind(std::string &channelName)
+	{
+		return this->_channelMap.find(strToUpper(channelName));
+	}
 
 	bool		recvCommand(Message &msg);
 	bool		sendCommand(Message &msg);
@@ -136,62 +155,54 @@ class Server : public ISender
 	};
 
 private:
-	typedef std::map<int, User *>				_fdMap_type;
-	typedef _fdMap_type::iterator				_fdMap_iterator;
-	typedef std::map<std::string, ACommand *>	_commandMap_type;
-
 	Server(std::string listenIp, int listenPort, std::string name);
 	Server(void);
 
-	std::string	ip;
-	int			fd;
-	int			port;
-	int			opt;
-	int			addrlen;
-	int			pollTimeout;
+	std::string	_ip;
+	int			_fd;
+	int			_port;
+	int			_opt;
+	int			_addrlen;
+	int			_pollTimeout;
 
-	bool		registered;
-	bool		stop;
+	bool		_registered;
+	bool		_stop;
 
-	std::string	pass;
-	std::string	name;
-	int			type;
-	time_t		idleTime;
+	std::string	_pass;
+	std::string	_name;
+	int			_type;
+	time_t		_idleTime;
 
-	struct sockaddr_in	address;
+	struct sockaddr_in	_address;
 	// El motivo de usar una estructura de tamaño fijo es porque en user almacenamos el indice donde se encuentra registrado el fd en pollfds
 	// Si usamos un vector y eliminamos cualquier posición, nos obligaría a hacer un cambio a todos los usuarios que tengan un indice superior
 	// en pollIndex. Dado que la estructura pollfds consta de tres campos, creo que no es necesario hacer ningun cambio.
-	struct pollfd		pollfds[MAXUSERS + 2];
-	static Server		*instance;
+	struct pollfd		_pollfds[MAXUSERS + 2];
+	static Server		*_instance;
 
 //	std::vector<User *>						_userVector;
-	Server::_fdMap_type			_fdMap;
-	Server::userMap_type		_userMap;
-	Server::channelMap_type		_channelMap;
-	Server::_commandMap_type	_commandMap;
-
-	Server::eventHandler_type	_eventHandler;
-
-	channelMap_iterator			_channelFind(std::string &channelName);
-	userMap_iterator			_userFind(std::string &userName);
+	fdMap_type			_fdMap;
+	userMap_type		_userMap;
+	channelMap_type		_channelMap;
+	commandMap_type		_commandMap;
+	eventHandler_type	_eventHandler;
 	Source						_source;
 	
-	int		findFreePollIndex(void);
+	int		_findFreePollIndex(void);
 	int		_poll(void);
-	int		checkUserConnection(void);
+	int		_checkUserConnection(void);
 
 	bool	_validChannelPrefix(std::string &channelName);
 	void	_removeUserFromChannel(Channel &channel, User &user);
 	void	_loadCommands(void);
 	void	_unloadCommands(void);
-	void	checkConsoleInput(void);
-	void	checkUserIO(void);
-	void	checkTimeout(void);
-	void	checkUserTimeout(User &user);
-	void	closeClients(std::string msg);
-	void	loop(void);
-	void	initSocket(void);
+	void	_checkConsoleInput(void);
+	void	_checkUserIO(void);
+	void	_checkTimeout(void);
+	void	_checkUserTimeout(User &user);
+	void	_closeClients(std::string msg);
+	void	_loop(void);
+	void	_initSocket(void);
 	void	_bind(void);
 	void	_listen(void);
 	User	*_accept();

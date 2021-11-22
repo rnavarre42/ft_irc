@@ -3,6 +3,7 @@
 
 # include "numerics.hpp"
 # include "Message.hpp"
+# include "Source.hpp"
 # include "Server.hpp"
 # include <map>
 # include <vector>
@@ -12,10 +13,14 @@ class Numeric
 {
 public:
 	~Numeric(void);
-	static std::string	builder(Server &server, ISender &sender, int num);
-	static std::string	builder(Message &message, int num);
-	static void			insertField(std::string data);
+	static std::string			builder(Server &server, ISender &sender, int num);
+	static void					insertField(std::string data);
 	
+	inline static std::string	builder(Source &source, int num)
+	{
+		return Numeric::builder(*source.server, *source.message->getSender(), num);
+	}
+
 private:
 	Numeric(void);
 

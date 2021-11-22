@@ -1,4 +1,5 @@
 #include "JoinCommand.hpp"
+#include "Message.hpp"
 #include "Source.hpp"
 #include "Server.hpp"
 #include "User.hpp"
@@ -59,7 +60,7 @@ void JoinCommand::limitChannelEvent(Source &source)
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha alcanzado el limite de canales");
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
-	message.send(Numeric::builder(message, ERR_TOOMANYCHANNELS));
+	message.send(Numeric::builder(source, ERR_TOOMANYCHANNELS));
 }
 
 void JoinCommand::delChannelEvent(Source &source)
@@ -76,7 +77,7 @@ void JoinCommand::errChannelEvent(Source &source)
 	message.setReceiver(message.getSender());
 //	message.send();
 	Numeric::insertField(message[0]);
-	message.send(Numeric::builder(message, ERR_BADCHANMASK));
+	message.send(Numeric::builder(source, ERR_BADCHANMASK));
 }
 
 

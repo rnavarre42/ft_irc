@@ -4,7 +4,6 @@
 #include "Console.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
-#include "utils.hpp"
 #include <map>
 #include <iostream>
 #include <string>
@@ -222,11 +221,6 @@ bool	User::isAway(void)
 	return !this->_awayMsg.empty();
 }
 
-Server::channelMap_iterator	User::channelFind(std::string &value)
-{
-	return this->_channelMap.find(strToUpper(value));
-}
-
 void	User::delChannel(std::string value)
 {
 	this->_channelMap.erase(strToUpper(value));
@@ -280,7 +274,7 @@ size_t	User::recv(int fd)
 
 Message	*User::buildMessage(std::string &buff)
 {
-	return &Message::builder(this->_server, *this, buff);
+	return &Message::builder(*this, buff);
 }
 
 std::string	User::_getLine(size_t pos)

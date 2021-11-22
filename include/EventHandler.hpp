@@ -19,20 +19,26 @@ public:
 
 	EventHandler(void) {}
 	~EventHandler(void) {}
-/*
-	iterator_type	begin(void)
-	{
-		return this->_delegateMMap.begin();
-	}
 
-	iterator_type	end(void)
-	{
-		return this>_delegateMMap.end();
-	}
-*/
 	void	add(KeyT key, IDelegate &delegate)
 	{
 		this->_delegateMMap.insert(typename std::pair<KeyT, IDelegate &>(key, delegate));
+	}
+
+	void	removeByValue(IDelegate &delegate)
+	{
+		iterator_type	currentIt;
+
+		for (iterator_type it = this->_delegateMMap.begin(); it != this->_delegateMMap.end();)
+		{
+			currentIt = it;
+			it++;
+			if (currentIt->second == delegate)
+			{
+				this->_delegateMMap.remove(currentIt);
+				break;
+			}
+		}
 	}
 
 	void	raise(KeyT key, ValueT &value)
@@ -41,10 +47,7 @@ public:
 
 		ret = this->_delegateMMap.equal_range(key);
 		for (iterator_type it = ret.first; it != ret.second; ++it)
-		{
-//			std::cout << "delegate.invoke " << key << " ";
 			it->second.invoke(&value);
-		}	
 	}
 
 private:

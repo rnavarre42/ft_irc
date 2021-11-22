@@ -3,6 +3,7 @@
 
 # include "ISender.hpp"
 # include "Server.hpp"
+# include "utils.hpp"
 //# include "Message.hpp"
 # include <string>
 # include <map>
@@ -38,7 +39,10 @@ public:
 
 	void			delChannel(std::string value);	
 
-	Server::channelMap_iterator	channelFind(std::string &value);
+	inline Server::channelMap_iterator channelFind(std::string &value)
+	{
+		return this->_channelMap.find(strToUpper(value));
+	}
 
 	std::string &getInputBuffer(void);
 	std::string &getOutputBuffer(void);

@@ -38,7 +38,7 @@ void PartCommand::notChannelEvent(Source &source)
 
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
-	message.send(Numeric::builder(message, ERR_NOSUCHCHANNEL));
+	message.send(Numeric::builder(source, ERR_NOSUCHCHANNEL));
 }
 
 void PartCommand::notInChannelEvent(Source &source)
@@ -47,7 +47,7 @@ void PartCommand::notInChannelEvent(Source &source)
 
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
-	message.send(Numeric::builder(message, ERR_NOTONCHANNEL));
+	message.send(Numeric::builder(source, ERR_NOTONCHANNEL));
 }
 
 bool PartCommand::_recvUser(Message &message)

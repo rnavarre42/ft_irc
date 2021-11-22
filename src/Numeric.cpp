@@ -59,11 +59,6 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 	return Numeric::_instance->_toString();
 }
 
-std::string Numeric::builder(Message &message, int num)
-{
-	return Numeric::builder(message.getServer(), *message.getSender(), num);
-}
-
 Numeric::Numeric(void)
 {
 	Numeric::_numericMap[ERR_NOTIMPLEMENTED] = "$ :Command not implemented yet";

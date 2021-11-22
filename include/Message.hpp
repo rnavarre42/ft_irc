@@ -29,7 +29,6 @@ public:
 
 	void				setSender(ISender *value);
 	ISender				*getSender(void);
-	Server				&getServer(void);
 
 	void				setChannel(Channel *value);
 	Channel				*getChannel(void);
@@ -47,14 +46,13 @@ public:
 	void				swapField(size_t first, size_t second);
 	void				insertField(std::string field);
 	std::string			toString(void);
-	static Message		&builder(Server &server, ISender &sender, std::string data);
-	static Message		&builder(Server &server, ISender &sender);
+	static Message		&builder(ISender &sender, std::string data);
+	static Message		&builder(ISender &sender);
 
 private:
-	Message(Server &server, ISender &sender, std::string data);
-	Message(Server &server, ISender &sender);
+	Message(ISender &sender, std::string data);
+	Message(ISender &sender);
 
-	Server						&_server;
 	ISender						*_sender;
 	Channel						*_channel;
 	std::vector<ISender *>		_receiverVector;

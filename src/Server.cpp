@@ -2,7 +2,6 @@
 #include "Channel.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
-#include "utils.hpp"
 #include "commands.hpp"
 
 #include <string>
@@ -21,7 +20,7 @@
 //template <typename T>
 //class EventHandler;
 
-Server	*Server::instance = NULL;
+Server	*Server::_instance = NULL;
 
 void	Server::signalHandler(int sig)
 {
@@ -37,17 +36,17 @@ const char	*Server::ServerFullException::what(void) const throw()
 }
 
 Server::Server(std::string listenIp, int listenPort, std::string name)
-	: ip(listenIp), port(listenPort), name(name), type(TYPE_SERVER)
+	: _ip(listenIp), _port(listenPort), _name(name), _type(TYPE_SERVER)
 {
 	this->_loadCommands();
 //	this->_logger();
 //	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, Server::signalHandler);
-	std::memset(this->pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
-	this->stop = false;
-	this->initSocket();
-	this->pollTimeout = 1000;
-	this->registered = 0;
+	std::memset(this->_pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
+	this->_stop = false;
+	this->_initSocket();
+	this->_pollTimeout = 1000;
+	this->_registered = 0;
 	this->_bind();
 	this->_source.server = this;
 }
@@ -98,23 +97,26 @@ void	Server::_unloadCommands(void)
 	std::map<std::string, ACommand *>::iterator	it;
 
 	for (it = this->_commandMap.begin(); it != this->_commandMap.end(); it++)
+	{
+		it->second->unloadEvents(this->_eventHandler);
 		delete it->second;
+	}
 }
 
 Server	&Server::getInstance(void)
 {
-	return *Server::instance;
+	return *Server::_instance;
 }
 Server	&Server::getInstance(std::string listenIp, int listenPort, std::string name)
 {
-	if (Server::instance == NULL)
-		Server::instance = new Server(listenIp, listenPort, name);
-	return *Server::instance;
+	if (Server::_instance == NULL)
+		Server::_instance = new Server(listenIp, listenPort, name);
+	return *Server::_instance;
 }
 
 void	Server::deleteInstance(void)
 {
-	delete Server::instance;
+	delete Server::_instance;
 }
 
 std::map<std::string, User *>	&Server::getUserMap(void)
@@ -129,28 +131,28 @@ int		Server::count(void)
 
 int	const	&Server::getFd(void) const
 {
-	return this->fd;
+	return this->_fd;
 }
 
 void	Server::setPass(std::string value)
 {
-	this->pass = value;
+	this->_pass = value;
 }
 
 std::string	const	&Server::getPass(void) const
 {
-	return this->pass;
+	return this->_pass;
 }
 
 void	Server::setPollout(User &user)
 {
-	this->pollfds[user.getPollIndex()].events |= POLLOUT;
+	this->_pollfds[user.getPollIndex()].events |= POLLOUT;
 }
 
 ssize_t	Server::send(std::string msg)
 {
 	//int usersLeft;
-	Server::_fdMap_iterator	it;
+	Server::fdMap_iterator	it;
 
 	//usersLeft = this->fdMap.size();
 	for (it = this->_fdMap.begin(); it != this->_fdMap.end(); it++)
@@ -184,51 +186,51 @@ void	Server::registerUser(Message &message)
 
 void	Server::quit(std::string msg)
 {
-	Server::_fdMap_iterator	currentIt;
+	Server::fdMap_iterator	currentIt;
 
-	for (Server::_fdMap_iterator it = this->_fdMap.begin(); it != this->_fdMap.end();)
+	for (Server::fdMap_iterator it = this->_fdMap.begin(); it != this->_fdMap.end();)
 	{
 		currentIt = it;
 		it++;
 		currentIt->second->send(msg);
 		this->delUser(*currentIt->second);
 	}
-	this->stop = true;
+	this->_stop = true;
 }
 
 void	Server::start(void)
 {
 	this->_listen();
-	this->loop();
+	this->_loop();
 }
 
-void	Server::initSocket(void)
+void	Server::_initSocket(void)
 {
-	this->fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (!this->fd)
+	this->_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (!this->_fd)
 	{
 		Console::log(LOG_ERROR, "Server::initSocket function socket() failed");
 		exit(EXIT_FAILURE);
 	}
-	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) == -1)
+	if (fcntl(this->_fd, F_SETFL, O_NONBLOCK) == -1)
 	{
 		Console::log(LOG_ERROR, "Server::initSocket function fcntl() failed");
 		exit(EXIT_FAILURE);
 	}
-	this->opt = 1;
-	this->addrlen = sizeof(this->address);
-	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &this->opt, sizeof(this->opt)))
+	this->_opt = 1;
+	this->_addrlen = sizeof(this->_address);
+	if (setsockopt(this->_fd, SOL_SOCKET, SO_REUSEADDR, &this->_opt, sizeof(this->_opt)))
 	{
 		Console::log(LOG_ERROR, "Server::initSocket function setsockopt() failed");
 		exit(EXIT_FAILURE);
 	}
 }
 
-int		Server::findFreePollIndex(void)
+inline int Server::_findFreePollIndex(void)
 {
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
-		if (this->pollfds[i].fd == 0)
+		if (this->_pollfds[i].fd == 0)
 			return i;
 	}
 	return 0;
@@ -236,22 +238,22 @@ int		Server::findFreePollIndex(void)
 
 std::string const	&Server::getName(void) const
 {
-	return this->name;
+	return this->_name;
 }
 
 std::string			Server::getMask(void)
 {
-	return this->name;
+	return this->_name;
 }
 
 bool	Server::isUser(void)
 {
-	return this->type == TYPE_USER;
+	return this->_type == TYPE_USER;
 }
 
 bool	Server::isServer(void)
 {
-	return this->type == TYPE_SERVER;
+	return this->_type == TYPE_SERVER;
 }
 
 bool	Server::isOper(void)
@@ -261,11 +263,11 @@ bool	Server::isOper(void)
 
 int	Server::getType(void)
 {
-	return this->type;
+	return this->_type;
 }
 void	Server::setIdleTime(time_t value)
 {
-	this->idleTime = value;
+	this->_idleTime = value;
 }
 
 User	*Server::_accept(void)
@@ -275,7 +277,7 @@ User	*Server::_accept(void)
 	struct sockaddr_in	user_addr;
 	socklen_t			len;
 
-	newFd = accept(this->fd, (struct sockaddr *)&this->address, (socklen_t *)&this->addrlen);
+	newFd = accept(this->_fd, (struct sockaddr *)&this->_address, (socklen_t *)&this->_addrlen);
 	if (newFd < 0)
 	{
 		Console::log(LOG_ERROR, "Server::accept function accept() failed");
@@ -292,19 +294,19 @@ User	*Server::_accept(void)
 	len = sizeof(user_addr);
 	getsockname(newFd, (struct sockaddr *) &user_addr, &len);
 	user->setHost(inet_ntoa(user_addr.sin_addr));
-	user->setPollIndex(findFreePollIndex());
+	user->setPollIndex(this->_findFreePollIndex());
 //	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
-	this->pollfds[user->getPollIndex()].fd = newFd;
-	this->pollfds[user->getPollIndex()].events = POLLIN;
+	this->_pollfds[user->getPollIndex()].fd = newFd;
+	this->_pollfds[user->getPollIndex()].events = POLLIN;
 	return user;
 }
 
 void	Server::_bind(void)
 {
-	this->address.sin_family = AF_INET;
-	this->address.sin_addr.s_addr = INADDR_ANY;
-	this->address.sin_port = htons(this->port);
-	if (bind(this->fd, (struct sockaddr *)&this->address, sizeof(this->address)) < 0)
+	this->_address.sin_family = AF_INET;
+	this->_address.sin_addr.s_addr = INADDR_ANY;
+	this->_address.sin_port = htons(this->_port);
+	if (bind(this->_fd, (struct sockaddr *)&this->_address, sizeof(this->_address)) < 0)
 	{
 		Console::log(LOG_ERROR, "Server::bind function bind() failed");
 		exit(EXIT_FAILURE);
@@ -313,20 +315,20 @@ void	Server::_bind(void)
 
 void	Server::_listen(void)
 {
-	if (listen(this->fd, MAXLISTEN) < 0)
+	if (listen(this->_fd, MAXLISTEN) < 0)
 	{
 		Console::log(LOG_ERROR, "Server::listen function listen() failed");
 		exit(EXIT_FAILURE);
 	}
-	this->pollfds[0].fd = this->fd;
-	this->pollfds[0].events = POLLIN;
-	this->pollfds[1].fd = 0;
-	this->pollfds[1].events = POLLIN;
+	this->_pollfds[0].fd = this->_fd;
+	this->_pollfds[0].events = POLLIN;
+	this->_pollfds[1].fd = 0;
+	this->_pollfds[1].events = POLLIN;
 }
 
 int		Server::_poll(void)
 {
-	return poll(this->pollfds, MAXUSERS + 2, this->pollTimeout);
+	return poll(this->_pollfds, MAXUSERS + 2, this->_pollTimeout);
 }
 
 void	Server::delChannel(Channel &channel)
@@ -337,12 +339,13 @@ void	Server::delChannel(Channel &channel)
 
 void	Server::addUser(User &user)
 {
-	Message message = Message::builder(*this, *this);
+	Message &message = Message::builder(*this);
 	message.setReceiver(&user);
 	this->_source.message = &message;
 //	this->userVector.push_back(&user);
 	this->_fdMap[user.getFd()] = &user;
 	this->_eventHandler.raise(NEWUSEREVENT, this->_source);
+	delete &message;
 }
 
 void	Server::_removeUserFromChannel(Channel &channel, User &user)
@@ -360,7 +363,7 @@ void	Server::_removeUserFromChannel(Channel &channel, User &user)
 void	Server::delUser(User &user)
 {
 	Server::channelMap_iterator currentIt;
-	Message message = Message::builder(*this, *this);
+	Message &message = Message::builder(*this);
 	message.setReceiver(&user);
 	this->_source.message = &message;
 	this->_eventHandler.raise(DELUSEREVENT, this->_source);
@@ -382,20 +385,11 @@ void	Server::delUser(User &user)
 		this->_userMap.erase(strToUpper(user.getName()));
 	}
 	this->_fdMap.erase(user.getFd());
-	this->pollfds[user.getPollIndex()].fd = 0;
-	this->pollfds[user.getPollIndex()].events = 0;
+	this->_pollfds[user.getPollIndex()].fd = 0;
+	this->_pollfds[user.getPollIndex()].events = 0;
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
 	delete &user;
-}
-
-Server::userMap_iterator	Server::_userFind(std::string &userName)
-{
-	return this->_userMap.find(strToUpper(userName));
-}
-
-Server::channelMap_iterator	Server::_channelFind(std::string &channelName)
-{
-	return this->_channelMap.find(strToUpper(channelName));
+	delete &message;
 }
 
 // :masksource JOIN #CHAN :Pass
@@ -413,7 +407,7 @@ void	Server::addToChannel(Message &message)
 //		std::cout << "user " << user.getName() << " " << user.getChannelMap().size() << std::end;
 		if (user.getChannelMap().size() == MAXCHANNEL)
 			this->_eventHandler.raise(MAXCHANEVENT, this->_source);
-		else if ((it = this->_channelFind(channelName)) == this->_channelMap.end())
+		else if ((it = this->channelFind(channelName)) == this->_channelMap.end())
 		{
 			channel = new Channel(channelName, user);
 			this->_channelMap[strToUpper(channelName)] = channel;
@@ -447,7 +441,7 @@ void	Server::addToChannel(Message &message)
 		this->_eventHandler.raise(ERRCHANEVENT, this->_source);
 }
 
-bool	Server::_validChannelPrefix(std::string &channelName)
+inline bool	Server::_validChannelPrefix(std::string &channelName)
 {
 	return channelName[0] == '#';
 }
@@ -462,7 +456,7 @@ void	Server::delFromChannel(Message &message)
 	this->_source.message = &message;
 	if (this->_validChannelPrefix(channelName))
 	{
-		if ((it = this->_channelFind(channelName)) == this->_channelMap.end())
+		if ((it = this->channelFind(channelName)) == this->_channelMap.end())
 			this->_eventHandler.raise(NOTCHANEVENT, this->_source);
 		else
 		{
@@ -483,19 +477,19 @@ void	Server::delFromChannel(Message &message)
 
 bool const	&Server::isRegistered(void) const
 {
-	return this->registered;
+	return this->_registered;
 }
 
 void	Server::setRegistered(bool value)
 {
-	this->registered = value;
+	this->_registered = value;
 }
 
-int	Server::checkUserConnection(void)
+int	Server::_checkUserConnection(void)
 {
 	User	*user;
 
-	if (this->pollfds[0].revents & POLLIN)
+	if (this->_pollfds[0].revents & POLLIN)
 	{
 		user = this->_accept();
 		if (!user)
@@ -526,40 +520,33 @@ int	Server::checkUserConnection(void)
  */
 }
 
-void	Server::checkUserIO(void)
+void	Server::_checkUserIO(void)
 {
 	User	*user;
 	size_t	size;
 
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
-		if (this->pollfds[i].revents & POLLIN)
+		if (this->_pollfds[i].revents & POLLIN)
 		{
-			user = this->_fdMap[this->pollfds[i].fd];
-			size = user->checkInput(this->pollfds[i].fd);
+			user = this->_fdMap[this->_pollfds[i].fd];
+			size = user->checkInput(this->_pollfds[i].fd);
 			if (size <= 0)
 				this->delUser(*user);
 		}
-		else if (this->pollfds[i].revents & POLLOUT)
+		else if (this->_pollfds[i].revents & POLLOUT)
 		{
-			user = this->_fdMap[this->pollfds[i].fd];
+			user = this->_fdMap[this->_pollfds[i].fd];
 		//	std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
-			if (user->checkOutput(this->pollfds[i].fd))
-				this->pollfds[i].events ^= POLLOUT;
+			if (user->checkOutput(this->_pollfds[i].fd))
+				this->_pollfds[i].events ^= POLLOUT;
 		}
-		else if (this->pollfds[i].fd > 0)
+		else if (this->_pollfds[i].fd > 0)
 		{
-			user = this->_fdMap[this->pollfds[i].fd];
-			this->checkUserTimeout(*user);
+			user = this->_fdMap[this->_pollfds[i].fd];
+			this->_checkUserTimeout(*user);
 		}
 	}
-}
-
-ACommand	*Server::findCommand(std::string cmd)
-{
-	if (this->_commandMap.find(cmd) != this->_commandMap.end())
-		return this->_commandMap[cmd];
-	return NULL;
 }
 
 bool	Server::recvCommand(Message &msg)
@@ -588,31 +575,31 @@ bool	Server::sendCommand(Message &msg)
 	}
 	return false;
 }
-void	Server::checkConsoleInput(void)
+void	Server::_checkConsoleInput(void)
 {
 	int		size;
 	char	buffer[BUFFERSIZE + 1];
 	std::string	str = "console> ";
 
-	if (this->pollfds[1].revents & POLLIN)
+	if (this->_pollfds[1].revents & POLLIN)
 	{
 		size = read(0, buffer, BUFFERSIZE);
 		buffer[size] = '\0';
 		if (size > 0)
 		{
 			if (!strcmp(buffer, "quit\n"))
-				this->stop = true;
+				this->_stop = true;
 		}
 	}
 }
 
-void	Server::checkUserTimeout(User &user)
+void	Server::_checkUserTimeout(User &user)
 {
 	Message	*msg;
 
 	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
 	{
-		msg = &Message::builder(*this, *this);
+		msg = &Message::builder(*this);
 		msg->setCmd("QUIT");
 		msg->setReceiver(&user);
 		msg->insertField("Ping timeout");
@@ -625,34 +612,34 @@ void	Server::checkUserTimeout(User &user)
 		if (user.isRegistered())
 		{
 			user.setNextTimeout(time(NULL) + NEXTTIMEOUT);
-			user.setPingChallenge(this->name);
+			user.setPingChallenge(this->_name);
 		}
 		user.send("PING :" + user.getPingChallenge());
 	}
 }
 
-void	Server::checkTimeout(void)
+void	Server::_checkTimeout(void)
 {
-	Server::_fdMap_iterator	it;
+	Server::fdMap_iterator	it;
 
 	for (it = this->_fdMap.begin(); it != this->_fdMap.end();)
 //	{
-		checkUserTimeout(*(it++)->second);
+		this->_checkUserTimeout(*(it++)->second);
 //		user = it->second;
 //		it++;
 //	}
 }
 
-void	Server::loop(void)
+void	Server::_loop(void)
 {
 	int	rv;
 
-	while (!this->stop)
+	while (!this->_stop)
 	{
 		rv = this->_poll();
 		if (rv == -1)
 		{
-			if (this->stop)
+			if (this->_stop)
 			{
 				Console::log(LOG_ERROR, "Server stopped by user");
 				exit(0);
@@ -661,12 +648,12 @@ void	Server::loop(void)
 			exit(EXIT_FAILURE);
 		}
 		else if (rv == 0)
-			this->checkTimeout();
+			this->_checkTimeout();
 		else
 		{
-			if (!this->checkUserConnection())
-				this->checkUserIO();
-			this->checkConsoleInput();
+			if (!this->_checkUserConnection())
+				this->_checkUserIO();
+			this->_checkConsoleInput();
 		}
 	}
 }

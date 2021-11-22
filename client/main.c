@@ -48,7 +48,8 @@ weroiweoriweoriwe 123456 234567 345678 456789 567890 678901 789012 890123 901234
     while (1)
     {
         line = readline("");
-        add_history(line);
+		if (*line)
+       		add_history(line);
 		if (!strcmp(line, "FCK"))
 		{
 			send(sock, fck, strlen(fck), 0);
