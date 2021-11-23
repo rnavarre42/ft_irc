@@ -120,9 +120,14 @@ void	Server::deleteInstance(void)
 	delete Server::_instance;
 }
 
-std::map<std::string, User *>	&Server::getUserMap(void)
+Server::userMap_type	&Server::getUserMap(void)
 {
 	return this->_userMap;
+}
+
+Server::channelMap_type	&Server::getChannelMap(void)
+{
+	return this->_channelMap;
 }
 
 int		Server::count(void)
@@ -464,12 +469,12 @@ void	Server::delUser(User &user, std::string text)
 	delete userVector;
 }
 
-Server::userMap_iterator	Server::_userFind(std::string &userName)
+Server::userMap_iterator	Server::findUser(std::string &userName)
 {
 	return this->_userMap.find(strToUpper(userName));
 }
 
-Server::channelMap_iterator	Server::_channelFind(std::string &channelName)
+Server::channelMap_iterator	Server::findChannel(std::string &channelName)
 {
 	return this->_channelMap.find(strToUpper(channelName));
 }
@@ -484,7 +489,7 @@ void	Server::addToChannel(Message &message)
 	std::pair<Server::userMap_iterator, bool>		retUser;
 
 	this->_source.message = &message;
-	if (_validChannelPrefix(channelName))
+	if (this->validChannelPrefix(channelName))
 	{
 //		std::cout << "user " << user.getName() << " " << user.getChannelMap().size() << std::end;
 		if (user.getChannelMap().size() == MAXCHANNEL)
@@ -523,7 +528,7 @@ void	Server::addToChannel(Message &message)
 		this->_eventHandler.raise(ERRCHANEVENT, this->_source);
 }
 
-inline bool	Server::_validChannelPrefix(std::string &channelName)
+inline bool	Server::validChannelPrefix(std::string &channelName)
 {
 	return channelName[0] == '#';
 }
@@ -536,7 +541,7 @@ void	Server::delFromChannel(Message &message)
 	Server::channelMap_iterator		it;	
 	
 	this->_source.message = &message;
-	if (this->_validChannelPrefix(channelName))
+	if (this->validChannelPrefix(channelName))
 	{
 		if ((it = this->channelFind(channelName)) == this->_channelMap.end())
 			this->_eventHandler.raise(NOTCHANEVENT, this->_source);

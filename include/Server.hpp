@@ -98,10 +98,15 @@ class Server : public ISender
 	static Server					&getInstance(std::string listenIp, int listenPort, std::string name);
 	static void						deleteInstance(void);
 	std::string const				&getName(void) const;
-	std::map<std::string, User *>	&getUserMap(void);
+	Server::userMap_type			&getUserMap(void);
+	Server::channelMap_type			&getChannelMap(void);
 	std::string						getMask(void);
 
+	channelMap_iterator				findChannel(std::string &channelName);
+	userMap_iterator				findUser(std::string &userName);
+	
 	void							delChannel(Channel &channel);
+	bool							validChannelPrefix(std::string &channelName);
 
 	void							setPass(std::string value);
 	std::string const				&getPass(void) const;
@@ -192,15 +197,12 @@ private:
 	commandMap_type		_commandMap;
 	eventHandler_type	_eventHandler;
 
-	channelMap_iterator			_channelFind(std::string &channelName);
-	userMap_iterator			_userFind(std::string &userName);
 	Source						_source;
 	
 	int		_findFreePollIndex(void);
 	int		_poll(void);
 	int		_checkUserConnection(void);
 
-	bool	_validChannelPrefix(std::string &channelName);
 	void	_removeUserFromChannel(Channel &channel, User &user);
 	void	_loadCommands(void);
 	void	_unloadCommands(void);

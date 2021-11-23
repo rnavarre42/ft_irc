@@ -77,13 +77,15 @@ Message::Message(ISender &sender) : _sender(&sender), _channel(NULL), _broadcast
 void		Message::setReceiver(Server::userMap_type &userMap)
 {
 	for (Server::userMap_iterator it = userMap.begin(); it != userMap.end(); it++)
-		this->_receiverVector.push_back(it->second);
+		if (it->second != this->_sender)
+			this->_receiverVector.push_back(it->second);
 }
 
 void		Message::setReceiver(Server::userVector_type &userVector)
 {
 	for (Server::userVector_iterator it = userVector.begin(); it != userVector.end(); it++)
-		this->_receiverVector.push_back(*it);
+		if (*it != this->_sender)
+			this->_receiverVector.push_back(*it);
 }
 
 void		Message::setReceiver(ISender *value)
@@ -205,8 +207,15 @@ size_t	Message::size(void)
 
 void	Message::send(void)
 {
+	std::string msg;
+
+	if (this->_receiverVector.size() > 1)
+		this->_broadcast = true;
+
+   	msg = this->toString();
+
 	for (std::vector<ISender *>::iterator it = this->_receiverVector.begin(); it != this->_receiverVector.end(); it++)
-		(*it)->send(this->toString());
+		(*it)->send(msg);
 //	if (this->_sender->getType() == TYPE_SERVER)
 //		static_cast<Server *>(this->_sender)->sendCommand(*this);
 //	else if (this->_receiverVector[0]->getType() == TYPE_USER)

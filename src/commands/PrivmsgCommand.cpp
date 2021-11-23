@@ -1,4 +1,5 @@
 #include "PrivmsgCommand.hpp"
+#include "Channel.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
 #include "numerics.hpp"
@@ -22,23 +23,38 @@ void PrivmsgCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 bool PrivmsgCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
-	std::map<std::string, User *>::iterator	it;
+	Server::userMap_iterator 	userIt;
+	Server::channelMap_iterator	chanIt;
 
 	if (message.size() < 2)
-		user.send(Numeric::builder(this->server, user, ERR_NOTEXTTOSEND));
-	else if ((it = this->server.getUserMap().find(strToUpper(message[0]))) == this->server.getUserMap().end())
 	{
-		Numeric::insertField(message[0]);
-		user.send(Numeric::builder(this->server, user, ERR_NOSUCHNICK));
+		user.send(Numeric::builder(this->server, user, ERR_NOTEXTTOSEND));
+		return true;
+	}
+	if (this->server.validChannelPrefix(message[0]))
+	{
+		if ((chanIt = this->server.findChannel(message[0])) == this->server.getChannelMap().end())
+		{	
+			Numeric::insertField(message[0]);
+			user.send(Numeric::builder(this->server, user, ERR_NOSUCHCHANNEL));
+			return true;
+		}
+		message.setReceiver(chanIt->second->getUserMap());
 	}
 	else
 	{
+		if ((userIt = this->server.findUser(message[0])) == this->server.getUserMap().end())
+		{
+			Numeric::insertField(message[0]);
+			user.send(Numeric::builder(this->server, user, ERR_NOSUCHNICK));
+			return true;
+		}
 		message.eraseAt(0);
-		message.setSender(&user);
-		message.setReceiver(it->second);
+		message.setReceiver(userIt->second);
 		message.limitMaxParam(1);
-		it->second->send(message);
 	}
+	message.setSender(&user);
+	message.send();
 	return true;
 }
 

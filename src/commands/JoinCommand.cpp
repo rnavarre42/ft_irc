@@ -43,8 +43,10 @@ void JoinCommand::joinChannelEvent(Source &source)
 	message.setReceiver(message.getChannel()->getUserMap());
 	message.setBroadcast(true);
 	message.send();
-	message.setCmd("NAMES");
-	message.process();
+	message.setReceiver(message.getSender());
+	message.send();
+//	message.setCmd("NAMES");
+//	message.process();
 }
 
 void JoinCommand::alreadyChannelEvent(Source &source)
