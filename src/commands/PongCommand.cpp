@@ -41,9 +41,12 @@ void PongCommand::registerUserEvent(Source &source)
 	
 	Numeric::insertField(this->server.getName());
 	Numeric::insertField("i");
-//	Numeric::insertField("iknst");
+	Numeric::insertField("iknst");
 	message.send(Numeric::builder(source, RPL_MYINFO));
-	
+
+	Numeric::insertField("AWAYLEN=200 CASEMAPPING=ascii CHANLIMIT=#:3 CHANMODES=be,k,inst CHANNELLEN=64 CHANTYPES=# EXCEPTS=e HOSTLEN=64 KEYLEN=32");
+	message.send(Numeric::builder(source, RPL_ISUPPORT));
+
 	message.setCmd("MOTD");
 	message.process();
 //	

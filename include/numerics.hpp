@@ -7,7 +7,7 @@ enum
 	RPL_YOURHOST			=   2,	// "Your host is <servername>, running version <ver"
 	RPL_CREATED				=   3,	// "This server was created <date>"
 	RPL_MYINFO				=   4,	// "<servername> <version> <available user modes> <available channel modes>"
-	RPL_BOUNCE				=   5,	// "Try server <server name>, port <port number>"
+	RPL_ISUPPORT			=   5,	// "$ :are supported by this server"
 
 	RPL_USERHOST			= 302,	// ":*1<reply> *( ' ' <reply> )"
 	RPL_ISON				= 303,	// ":*1<nick> *( ' ' <nick> )"

@@ -16,6 +16,7 @@ int g_read = 1;
 
 void signal_handler(int sig)
 {
+	(void)sig;
 	exit(0);
 }
 

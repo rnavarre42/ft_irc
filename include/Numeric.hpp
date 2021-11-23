@@ -18,7 +18,7 @@ public:
 	
 	inline static std::string	builder(Source &source, int num)
 	{
-		return Numeric::builder(*source.server, *source.message->getSender(), num);
+		return Numeric::builder(*source.server, *source.message->getReceiver(), num);
 	}
 
 private:

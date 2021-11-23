@@ -54,7 +54,7 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 	{
 		replacePos = Numeric::_instance->_numericStr.find('$', offset);
 		Numeric::_instance->_numericStr.replace(replacePos, 1, Numeric::_instance->_fieldVector[i]);
-		offset += replacePos + Numeric::_instance->_fieldVector[i].size();
+		offset = replacePos + Numeric::_instance->_fieldVector[i].size();
 	}
 	Numeric::_instance->_fieldVector.clear();
 	return Numeric::_instance->_toString();
@@ -91,4 +91,5 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_YOURHOST] = "Your host is $, running version " VERSION;
 	Numeric::_numericMap[RPL_CREATED] = "This server was created " __TIME__ " " __DATE__;
 	Numeric::_numericMap[RPL_MYINFO] = "$ " VERSION " $ $";
+	Numeric::_numericMap[RPL_ISUPPORT] = "$ :are supported by this server";
 }

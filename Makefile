@@ -3,7 +3,7 @@ SRCSPATH	=	src/
 OBJSPATH	=	obj/
 OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
 DEPS		=	$(OBJS:.o=.d)
-CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -DBUILDDATE=$(BUILDDATE) -std=c++98
+CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
 COMMONFLAGS	=	
 LDFLAGS		=	$(COMMONFLAGS)
 INCLUDEPATH	=	./include/
@@ -34,7 +34,6 @@ fclean:		clean
 print:
 	echo $(SRCS)
 	echo $(OBJS)
-	echo $(BUILDDATE)
 
 re:			fclean all
 
