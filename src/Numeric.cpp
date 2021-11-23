@@ -1,4 +1,5 @@
 #include "Numeric.hpp"
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -20,7 +21,7 @@ std::string	Numeric::_toString()
 
 	if (!Numeric::_instance->_server->getName().empty())
 		ss << ":" << Numeric::_instance->_server->getName();
-	ss << " " << this->_num;
+	ss << " " << std::setfill('0') << std::setw(3) << this->_num;
 	if (Numeric::_instance->_sender->getName().empty())
 		ss << " * ";
 	else
@@ -86,4 +87,8 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_NOSUCHCHANNEL]	= "$ :No such channel";
 	Numeric::_numericMap[ERR_USERNOTINCHANNEL]	= "$ :They aren't on that channel";
 	Numeric::_numericMap[ERR_NOTONCHANNEL]	= "$ :You're not on that channel";
+	Numeric::_numericMap[RPL_WELCOME] =  "Welcome to the Internet Relay Network $";
+	Numeric::_numericMap[RPL_YOURHOST] = "Your host is $, running version " VERSION;
+	Numeric::_numericMap[RPL_CREATED] = "This server was created " __TIME__ " " __DATE__;
+	Numeric::_numericMap[RPL_MYINFO] = "$ " VERSION " $ $";
 }

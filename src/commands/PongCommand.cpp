@@ -1,6 +1,7 @@
 #include "PongCommand.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
+#include "Numeric.hpp"
 #include "Source.hpp"
 #include "Server.hpp"
 #include <iostream>
@@ -26,6 +27,23 @@ void PongCommand::registerUserEvent(Source &source)
 	message.limitMaxParam(0);
 	message.setReceiver(this->userSender);
 	message.setSender(&this->server);
+	message.insertField("");
+	message.setCmd("MODE");
+	message.send();
+
+	Numeric::insertField(this->userSender->getMask());
+	message.send(Numeric::builder(source, RPL_WELCOME));
+	
+	Numeric::insertField(message.getSender()->getMask());
+	message.send(Numeric::builder(source, RPL_YOURHOST));
+	
+	message.send(Numeric::builder(source, RPL_CREATED));
+	
+	Numeric::insertField(this->server.getName());
+	Numeric::insertField("i");
+//	Numeric::insertField("iknst");
+	message.send(Numeric::builder(source, RPL_MYINFO));
+	
 	message.setCmd("MOTD");
 	message.process();
 //	

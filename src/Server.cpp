@@ -382,10 +382,10 @@ Channel	*findFullestChannel(User &user)
 	return	currentIt->second;
 }
 
-Server::userVector_type	*getUserVector(User	&user)
+Server::userVector_type	*getUserVector(User &user)
 {
 	//aloca memoria para el nuevo vector
-	Server::userVector_type							*userVector = new Server::userVector_type;
+	Server::userVector_type							*userVector;
 	std::set<Channel *>								channelSet;
 	Channel											*currentChannel;
 	std::pair<std::set<Channel *>::iterator, bool>	ret;
@@ -399,6 +399,7 @@ Server::userVector_type	*getUserVector(User	&user)
 
 	//añadir los usuarios del canal mas grande al vector
 	channelSet.insert(currentChannel);
+	userVector = new Server::userVector_type;
 	for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
 		userVector->push_back(it->second);
 	//añadir los usuarios de los canales restantes sin repetir usuario en el vector
@@ -423,7 +424,7 @@ Server::userVector_type	*getUserVector(User	&user)
 void	Server::delUser(User &user, std::string text)
 {
 	Server::channelMap_iterator	currentIt;
-	Message						message = Message::builder(user);
+	Message						&message = Message::builder(user);
 	Server::userVector_type		*userVector = getUserVector(user);
 
 	message.setReceiver(&user);
@@ -459,6 +460,7 @@ void	Server::delUser(User &user, std::string text)
 	this->_pollfds[user.getPollIndex()].events = 0;
 //	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
 	delete &user;
+	delete &message;
 	delete userVector;
 }
 

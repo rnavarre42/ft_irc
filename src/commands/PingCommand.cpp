@@ -21,16 +21,17 @@ bool PingCommand::_recvUser(Message &message)
 	User			&user = *this->userSender;
 	std::string		param;
 
+	message.setReceiver(message.getSender());
 	message.setSender(&this->server);
-	message.setReceiver(NULL);
 	message.setCmd("PONG");
+	message.setBroadcast(true);
 
 	if (message.size() == 1)
 	{
 		message.insertField(message[0]);
 		message[0] = this->server.getName();
 	}
-	else if (message.size() >= 2)
+	else
 		message.swapField(0, 1);
 	message.limitMaxParam(2);
 	user.send(message);

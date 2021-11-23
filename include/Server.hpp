@@ -20,6 +20,8 @@
 
 # define LOG_LEVEL LOG_INFO | LOG_WARNING | LOG_ERROR | LOG_FATAL
 
+# define VERSION		"ircServ 0.1"
+
 # define MAXNICK		9
 # define MAXCHANNEL		3
 # define MAXSERVER		63
