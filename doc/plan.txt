@@ -31,3 +31,57 @@ message:
 
 //	NAMES	#canal
 
+
+Server
+	fdMap									
+	userMap									
+	channelMap								
+
+Channel
+	std::map<std::string, pair<int, User* >>	userMap
+
+User
+	std::map<std::string, Channel *>			channelMap
+
+Si se va un usuario hay que eliminarlo de
+		Server::fdMap
+		Server::userMap
+!!		Channel::userMap
+
+Si se entra a un canal, hay que añadirlo a
+!!		Channel::userMap
+		User::channelMap
+
+	y si no hay ningun usuario antes a
+		Server::channelMap
+
+		isOper(userMap["x"]);
+
+bool	isOper(std::pair<int, User *> &userData)
+{
+	return userData.first & IS_OPER;
+}
+
+bool	isVoice(std::pair<int, User *> &userData)
+{
+	return userData.first & IS_VOICE;
+}
+
+void	names(Channel &channel)
+{
+	std::map<std::string, std::pair<int, User *>>::iterator	it;
+
+	for (..
+}
+
+
+
+
+Si se sale de un canal, hay que eliminarlo de
+!!		Channel::userMap
+		User::channelMap
+
+	y si no quedan usuarios de
+		Server::channelMap
+
+

@@ -87,22 +87,29 @@ Comando posible :irc command o 3 caracteres
 		-	los operados y los servidores pueden cambiar el modo al canal
 		-	modos de canal disponibles:
 				-+	o: dar/quitar privilegios de operador
+				-+	v: dar/quitar voz en un canal moderado
+
 				-+	p: canal privado
 				-+	s: canal secreto
 				-+	i: solo invitados
 				-+	t: solo operadores pueden cambiar el topic
 				-+	n: no se permiten mensajes desde fuera del canal
 				-+	m: canal moderado
+
+				tienen parámetro: +k hola, +l 34, +b *!*@*.es
 				-+	l: establecer un límite de usuarios del canal
-				-+	b: establecer una máscara de ban de usuarios
-				-+	v: dar/quitar voz en un canal moderado
 				-+	k: poner clave al canal
+				
+				y además, son listas
+				-+	b: establecer una máscara de ban de usuarios
+				-+  e: establecer una mascara de excepción de ban de usuarios
+
 		-	opciones 'o' y 'b' tienen una restricción de 3 parametros por comando
 		-	modos de usuario disponible:
 				-+	i: marcar al usuario invisible
 				-+	s: marcar al usuario para que reciba los mensajes del servidor
 				-+	w: el usuario recibe mensajes wallops
-				-+	o: modo de operador
+				-+	o: modo de operador de IRC
 		-	el comando solo es aceptado si el nick del usuario y el que envía el
 			mensaje coinciden
 		-	si es un usuario se da el modo operador el '+o' es ignorado

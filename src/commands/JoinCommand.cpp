@@ -13,8 +13,8 @@ JoinCommand::JoinCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void JoinCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	eventHandler.add(NEWCHANEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::createChannelEvent));
 	eventHandler.add(JOINEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::joinChannelEvent));
+	eventHandler.add(NEWCHANEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::createChannelEvent));
 	eventHandler.add(ALREADYEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::alreadyChannelEvent));
 	eventHandler.add(ERRCHANEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::errChannelEvent));
 	eventHandler.add(MAXCHANEVENT, *new Delegate<JoinCommand, Source>(*this, &JoinCommand::limitChannelEvent));
