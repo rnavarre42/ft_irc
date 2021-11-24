@@ -40,6 +40,8 @@ bool PrivmsgCommand::_recvUser(Message &message)
 			return true;
 		}
 		message.setReceiver(chanIt->second->getUserMap());
+		message.limitMaxParam(2);
+		message.setBroadcast(true);
 	}
 	else
 	{
@@ -53,7 +55,6 @@ bool PrivmsgCommand::_recvUser(Message &message)
 		message.setReceiver(userIt->second);
 		message.limitMaxParam(1);
 	}
-	message.setBroadcast(true);
 	message.setSender(&user);
 	message.send();
 	return true;

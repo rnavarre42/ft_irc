@@ -18,6 +18,11 @@
 #include <csignal>
 #include <cstdlib>
 
+
+//	socket, setsockopt, getsockname, getprotobyname, gethostbyname, getaddrinfo, freeaddrinfo, bind, connect
+//	listen, accept, htons, htonl, ntohs, ntohl, inet_addr, inet_htoa, send, recv, signal, lseek, fstat, fcntl
+//	poll
+
 //template <typename T>
 //class EventHandler;
 
@@ -280,9 +285,11 @@ User	*Server::_accept(void)
 	User				*user;
 	int					newFd;
 	struct sockaddr_in	user_addr;
-	socklen_t			len;
+	int					user_addrlen;
+	char				ipAddress[INET_ADDRSTRLEN];
+//	socklen_t			len;
 
-	newFd = accept(this->_fd, (struct sockaddr *)&this->_address, (socklen_t *)&this->_addrlen);
+	newFd = accept(this->_fd, (struct sockaddr *)&user_addr, (socklen_t *)&user_addrlen);
 	if (newFd < 0)
 	{
 		Console::log(LOG_ERROR, "Server::accept function accept() failed");
@@ -296,9 +303,9 @@ User	*Server::_accept(void)
 //		throw Server::ServerFullException();
 	}
 	user = new User(newFd, *this);
-	len = sizeof(user_addr);
-	getsockname(newFd, (struct sockaddr *) &user_addr, &len);
-	user->setHost(inet_ntoa(user_addr.sin_addr));
+//	len = sizeof(user_addr);
+//	getsockname(newFd, (struct sockaddr *)&user_addr, &len);
+	user->setHost(inet_ntop(AF_INET, &user_addr.sin_addr, ipAddress, INET_ADDRSTRLEN));
 	user->setPollIndex(this->_findFreePollIndex());
 //	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
 	this->_pollfds[user->getPollIndex()].fd = newFd;
