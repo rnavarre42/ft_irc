@@ -41,9 +41,8 @@ void JoinCommand::joinChannelEvent(Source &source)
 	Message &message = *source.message;
 	Console::log(LOG_INFO, source.message->getSender()->getName() + " ha entrado al canal " + message[0]);
 	message.setReceiver(message.getChannel()->getUserMap());
-	message.setBroadcast(true);
-	message.send();
 	message.setReceiver(message.getSender());
+	message.setBroadcast(true);
 	message.send();
 //	message.setCmd("NAMES");
 //	message.process();

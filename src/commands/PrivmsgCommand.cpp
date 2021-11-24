@@ -53,6 +53,7 @@ bool PrivmsgCommand::_recvUser(Message &message)
 		message.setReceiver(userIt->second);
 		message.limitMaxParam(1);
 	}
+	message.setBroadcast(true);
 	message.setSender(&user);
 	message.send();
 	return true;

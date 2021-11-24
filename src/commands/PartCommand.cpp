@@ -27,6 +27,7 @@ void PartCommand::partChannelEvent(Source &source)
 
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha salido de " + source.channel->getName());
 	message.setReceiver(source.channel->getUserMap());
+	message.setReceiver(message.getSender());
 	message.limitMaxParam(2);
 	message.setBroadcast(true);
 	message.send();
