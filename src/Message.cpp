@@ -205,17 +205,27 @@ size_t	Message::size(void)
 	return this->_paramVector.size();
 }
 
+void	Message::clearReceiver(void)
+{
+	this->_receiverVector.clear();
+}
+
 void	Message::send(void)
 {
-	std::string msg;
+	std::string msg = this->toString();
 
 	if (this->_receiverVector.size() > 1)
+//	{
+//		std::cout << "Numero de receptores " << this->_receiverVector.size() << std::endl;
 		this->_broadcast = true;
-
-   	msg = this->toString();
-
+//	}
 	for (std::vector<ISender *>::iterator it = this->_receiverVector.begin(); it != this->_receiverVector.end(); it++)
-		(*it)->send(msg);
+	{
+//		if (this->_sender == (*it))
+//			std::cout << "Es el mismo usuario" << std::endl;
+//		else
+			(*it)->send(msg);
+	}
 //	if (this->_sender->getType() == TYPE_SERVER)
 //		static_cast<Server *>(this->_sender)->sendCommand(*this);
 //	else if (this->_receiverVector[0]->getType() == TYPE_USER)

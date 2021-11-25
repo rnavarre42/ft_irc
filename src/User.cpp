@@ -11,6 +11,7 @@
 #include <sys/socket.h>
 
 User::User(int fd, Server &server) :
+	_ident("anonymous"),
 	_server(server), 
 	_registered(false), 
 	_signTime(time(NULL)), 
@@ -206,7 +207,7 @@ bool const	&User::isRegistered(void) const
 	return(this->_registered);
 }
 
-std::map<std::string, Channel *> &User::getChannelMap(void)
+std::map<std::string, std::pair<int, Channel *> > &User::getChannelMap(void)
 {
 	return this->_channelMap;
 }

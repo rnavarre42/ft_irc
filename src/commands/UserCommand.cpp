@@ -23,7 +23,7 @@ bool UserCommand::_recvUser(Message &message)
 {
 	User &user = *this->userSender;
 
-	if (user.getIdent().empty())
+	if (user.getIdent() == "anonymous")
 	{
 		user.setIdent(message[0]);
 		user.setReal(message[3]);

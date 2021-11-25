@@ -14,8 +14,8 @@ template <class KeyT, class ValueT>
 class EventHandler
 {
 public:
-	typedef typename std::multimap<KeyT, IDelegate &>	multimap_type;
-	typedef typename multimap_type::iterator			iterator_type;
+	typedef typename std::multimap<KeyT, IDelegate &>	delegateMMap_type;
+	typedef typename delegateMMap_type::iterator		delegateMMap_iterator;
 
 	EventHandler(void) {}
 	~EventHandler(void) {}
@@ -25,11 +25,27 @@ public:
 		this->_delegateMMap.insert(typename std::pair<KeyT, IDelegate &>(key, delegate));
 	}
 
+	void	clear(void)
+	{
+		for (delegateMMap_iterator it = this->_delegateMMap.begin(); it != this->_delegateMMap.end(); it++)
+			delete it->second;
+	}
+
+	delegateMMap_iterator	begin(void)
+	{
+		return this->_delegateMMap.begin();
+	}
+
+	delegateMMap_iterator	end(void)
+	{
+		return this->_delegateMMap.end();
+	}
+
 	void	removeByValue(IDelegate &delegate)
 	{
-		iterator_type	currentIt;
+		delegateMMap_type	currentIt;
 
-		for (iterator_type it = this->_delegateMMap.begin(); it != this->_delegateMMap.end();)
+		for (delegateMMap_iterator it = this->_delegateMMap.begin(); it != this->_delegateMMap.end();)
 		{
 			currentIt = it;
 			it++;
@@ -43,15 +59,15 @@ public:
 
 	void	raise(KeyT key, ValueT &value)
 	{
-		std::pair<iterator_type, iterator_type> ret;
+		std::pair<delegateMMap_iterator, delegateMMap_iterator> ret;
 
 		ret = this->_delegateMMap.equal_range(key);
-		for (iterator_type it = ret.first; it != ret.second; ++it)
+		for (delegateMMap_iterator it = ret.first; it != ret.second; ++it)
 			it->second.invoke(&value);
 	}
 
 private:
-	multimap_type	_delegateMMap;
+	delegateMMap_type	_delegateMMap;
 };
 
 #endif

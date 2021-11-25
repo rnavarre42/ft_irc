@@ -88,7 +88,7 @@ void Channel::join(User user)
 	{
 		this->send(user.getName() + " ha entrado al canal " + this->_name + "\r\n");
 		this->_userMap[user.getName()] = &user;
-		user.getChannelMap()[this->_name] = this;
+		user.getChannelMap()[this->_name].second = this;
 		user.send("Has entrado al canal " + this->_name + "\r\n");
 	}
 	else

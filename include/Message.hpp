@@ -28,6 +28,8 @@ public:
 	void				setBroadcast(bool value);
 	ISender				*getReceiver(void);
 
+	void				clearReceiver(void);
+
 	void				setSender(ISender *value);
 	ISender				*getSender(void);
 

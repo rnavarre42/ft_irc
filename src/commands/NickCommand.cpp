@@ -51,7 +51,7 @@ bool NickCommand::_recvUser(Message &message)
 	it = userMap.find(strToUpper(newName));
 	if (it == userMap.end())
 	{
-		if (oldName.empty() && !user.getIdent().empty())
+		if (oldName.empty() && user.getIdent() != "anonymous")
 		{
 			user.setPingChallenge("challenge-string");
 			user.send("PING :" + user.getPingChallenge());

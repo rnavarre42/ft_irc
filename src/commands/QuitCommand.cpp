@@ -9,11 +9,20 @@ QuitCommand::QuitCommand(Server &server, int accessLevel, int paramCount) : ACom
 void QuitCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
 	eventHandler.add(QUITEVENT, *new Delegate<QuitCommand, Source>(*this, &QuitCommand::QuitEvent));
+	eventHandler.add(DELUSEREVENT, *new Delegate<QuitCommand, Source>(*this, &QuitCommand::DelUserEvent));
 }
 
 void QuitCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 {
 	(void)eventHandler;
+}
+
+void QuitCommand::DelUserEvent(Source &source)
+{
+	Message &message = *source.message;
+	User	&user	= static_cast<User &>(*message.getSender());
+
+	message.send("ERROR :Closing link: (" + user.getIdent() + "@" + user.getHost() + ") [" + message[0] + "]");
 }
 
 void QuitCommand::QuitEvent(Source &source)
@@ -30,8 +39,10 @@ bool QuitCommand::_recvUser(Message &message)
 	if (message.size())
 		message[0].insert(0, "Quit: ");
 	message.setCmd("QUIT");
+	message.setSender(&this->server);
 	message.setReceiver(&user);
-	server.sendCommand(message);
+//	this->server.sendCommand(message);
+	message.process();
 	return true;
 }
 
@@ -50,7 +61,6 @@ bool QuitCommand::_sendUser(Message &message)
 	
 	if (!message.size())
 		message.insertField("Client exited");
-	user.send("ERROR :Closing link: (" + user.getIdent() + "@" + user.getHost() + ") [" + message[0] + "]");
 	this->server.delUser(user, message[0]);
 	return true;
 }

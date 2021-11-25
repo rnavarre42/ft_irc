@@ -11,6 +11,7 @@ public:
 	void loadEvents(Server::eventHandler_type &eventHandler);
 	void unloadEvents(Server::eventHandler_type &eventHandler);
 	void QuitEvent(Source &source);
+	void DelUserEvent(Source &source);
 
 private:
 	virtual bool	_recvUser(Message &message);
