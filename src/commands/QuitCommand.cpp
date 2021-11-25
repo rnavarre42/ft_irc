@@ -50,7 +50,7 @@ bool QuitCommand::_sendUser(Message &message)
 	
 	if (!message.size())
 		message.insertField("Client exited");
-	user.send("ERROR :Closing link: (" + user.getMask() + ") [" + message[0] + "]");
+	user.send("ERROR :Closing link: (" + user.getIdent() + "@" + user.getHost() + ") [" + message[0] + "]");
 	this->server.delUser(user, message[0]);
 	return true;
 }
