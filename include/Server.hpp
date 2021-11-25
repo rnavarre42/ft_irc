@@ -83,7 +83,7 @@ class Server : public ISender
 	typedef std::map<std::string, ACommand *>					aCommandMap_type;
 	typedef aCommandMap_type::iterator							aCommandMap_iterator;
 	typedef EventHandler<int, Source>							eventHandler_type;
-	typedef std::map<std::string, std::pair<int, Channel *> >	channelMap_type;
+	typedef std::map<std::string, Channel *>					channelMap_type;
 	typedef channelMap_type::iterator							channelMap_iterator;
 	typedef std::map<std::string, User *>						userMap_type;
 	typedef userMap_type::iterator								userMap_iterator;

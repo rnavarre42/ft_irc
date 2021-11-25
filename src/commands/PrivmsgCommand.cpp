@@ -39,7 +39,7 @@ bool PrivmsgCommand::_recvUser(Message &message)
 			user.send(Numeric::builder(this->server, user, ERR_NOSUCHCHANNEL));
 			return true;
 		}
-		message.setReceiver(chanIt->second.second->getUserMap());
+		message.setReceiver(chanIt->second->getUserMap());
 		message.limitMaxParam(2);
 		message.setBroadcast(true);
 	}

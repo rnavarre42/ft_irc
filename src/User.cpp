@@ -207,7 +207,7 @@ bool const	&User::isRegistered(void) const
 	return(this->_registered);
 }
 
-std::map<std::string, std::pair<int, Channel *> > &User::getChannelMap(void)
+std::map<std::string, Channel *> &User::getChannelMap(void)
 {
 	return this->_channelMap;
 }
