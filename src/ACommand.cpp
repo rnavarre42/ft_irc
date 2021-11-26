@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-ACommand::ACommand(Server &server, int accessLevel, int minParam) : server(server), accessLevel(accessLevel), minParam(minParam)
+ACommand::ACommand(Server &server, int levelAccess, int minParam) : server(server), levelAccess(levelAccess), minParam(minParam)
 {}
 
 ACommand::~ACommand(void)
@@ -14,7 +14,7 @@ void ACommand::recv(Message &message)
 {
 	bool	ret = true;
 
-	if (this->accessLevel == LEVEL_ALL || message.getSender()->isRegistered() == accessLevel || message.getSender()->isOper())
+	if (message.getSender()->getStatus() & this->levelAccess || message.getSender()->isOper())
 	{
 		if (message.size() < this->minParam)
 		{
@@ -40,12 +40,21 @@ void ACommand::recv(Message &message)
 			}
 		}
 	}
-	else if (this->accessLevel == LEVEL_REGISTERED)
+	else if (this->levelAccess & (LEVEL_REGISTERED | LEVEL_NEGOTIATING))
+	{
+		Numeric::insertField(message.getCmd());
 		message.getSender()->send(Numeric::builder(this->server, *message.getSender(), ERR_NOTREGISTERED));
-	else if (this->accessLevel == LEVEL_UNREGISTERED)
+	}
+	else if (this->levelAccess == LEVEL_UNREGISTERED)
+	{
+		Numeric::insertField(message.getCmd());
 		message.getSender()->send(Numeric::builder(this->server, *message.getSender(), ERR_ALREADYREGISTERED));
-	else if (this->accessLevel == LEVEL_IRCOPERATOR)
+	}
+	else if (this->levelAccess == LEVEL_IRCOPERATOR)
+	{
+		Numeric::insertField(message.getCmd());
 		message.getSender()->send(Numeric::builder(this->server, *message.getSender(), ERR_NOPRIVILEGES));
+	}
 }
 
 void ACommand::send(Message &message)

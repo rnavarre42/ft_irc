@@ -8,8 +8,8 @@ QuitCommand::QuitCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void QuitCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	eventHandler.add(QUITEVENT, *new Delegate<QuitCommand, Source>(*this, &QuitCommand::QuitEvent));
-	eventHandler.add(DELUSEREVENT, *new Delegate<QuitCommand, Source>(*this, &QuitCommand::DelUserEvent));
+	eventHandler.add(QUITEVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::QuitEvent));
+	eventHandler.add(DELUSEREVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::DelUserEvent));
 }
 
 void QuitCommand::unloadEvents(Server::eventHandler_type &eventHandler)
@@ -17,17 +17,16 @@ void QuitCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
-void QuitCommand::DelUserEvent(Source &source)
+void QuitCommand::DelUserEvent(Message &message)
 {
-	Message &message = *source.message;
 	User	&user	= static_cast<User &>(*message.getSender());
-
+	
 	message.send("ERROR :Closing link: (" + user.getIdent() + "@" + user.getHost() + ") [" + message[0] + "]");
 }
 
-void QuitCommand::QuitEvent(Source &source)
+void QuitCommand::QuitEvent(Message &message)
 {
-	Message	&message = *source.message;
+//	Message	&message = *source.message;
 
 	message.send();
 }

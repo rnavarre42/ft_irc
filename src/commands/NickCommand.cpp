@@ -53,6 +53,7 @@ bool NickCommand::_recvUser(Message &message)
 	{
 		if (oldName.empty() && user.getIdent() != "anonymous")
 		{
+			user.setStatus(LEVEL_NEGOTIATING);
 			user.setPingChallenge("challenge-string");
 			user.send("PING :" + user.getPingChallenge());
 		}

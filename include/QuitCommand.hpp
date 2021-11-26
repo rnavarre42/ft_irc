@@ -10,8 +10,8 @@ public:
 	QuitCommand(Server &server, int accessLevel, int paramCount);
 	void loadEvents(Server::eventHandler_type &eventHandler);
 	void unloadEvents(Server::eventHandler_type &eventHandler);
-	void QuitEvent(Source &source);
-	void DelUserEvent(Source &source);
+	void QuitEvent(Message &message);
+	void DelUserEvent(Message &message);
 
 private:
 	virtual bool	_recvUser(Message &message);

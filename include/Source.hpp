@@ -5,7 +5,7 @@ class Server;
 class Channel;
 class Message;
 
-struct Source
+struct Source1
 {
 	Server	*server;
 	Channel	*channel;

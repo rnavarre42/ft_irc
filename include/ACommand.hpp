@@ -7,10 +7,11 @@
 //# include "Message.hpp"
 # include <string>
 
-# define LEVEL_UNREGISTERED	0x00
-# define LEVEL_REGISTERED	0x01
-# define LEVEL_IRCOPERATOR	0x02
-# define LEVEL_ALL			0x03
+# define LEVEL_UNREGISTERED	0x01
+# define LEVEL_NEGOTIATING	0x02
+# define LEVEL_REGISTERED	0x04
+# define LEVEL_IRCOPERATOR	0x08
+# define LEVEL_ALL			LEVEL_UNREGISTERED | LEVEL_NEGOTIATING | LEVEL_REGISTERED | LEVEL_IRCOPERATOR
 
 //class Server;
 class Message;
@@ -22,7 +23,7 @@ class EventHandler;
 class ACommand
 {
 public:
-	ACommand(Server &server, int accessLevel, int minParam);
+	ACommand(Server &server, int levelAccess, int minParam);
 	virtual ~ACommand(void);
 	virtual void loadEvents(Server::eventHandler_type &eventHandler) = 0;
 	virtual void unloadEvents(Server::eventHandler_type &eventHandler) = 0;
@@ -38,7 +39,7 @@ private:
 
 protected:
 	Server		&server;
-	int			accessLevel;
+	int			levelAccess;
 	size_t		minParam;
 	Server		*serverSender;
 	User		*userSender;

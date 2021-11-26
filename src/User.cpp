@@ -13,7 +13,7 @@
 User::User(int fd, Server &server) :
 	_ident("anonymous"),
 	_server(server), 
-	_registered(false), 
+	_status(1), 
 	_signTime(time(NULL)), 
 	_nextTimeout(this->_signTime + REGTIMEOUT), 
 	_fd(fd), 
@@ -22,7 +22,7 @@ User::User(int fd, Server &server) :
 
 User::~User(void)
 {
-	if (this->isRegistered())
+	if (this->getStatus() & LEVEL_REGISTERED)
 		Console::log(LOG_INFO, "User <" + this->_name + "> disconnected");
 	else
 		Console::log(LOG_INFO, "User <anonymous> disconnected");
@@ -196,15 +196,15 @@ std::string const	&User::getPingChallenge(void) const
 	return this->_pingChallenge;
 }
 
-void	User::setRegistered(bool value)
+void	User::setStatus(int value)
 {
 //	std::cout << "User::setRegisterd used" << std::endl;
-	this->_registered = value;
+	this->_status = value;
 }
 
-bool const	&User::isRegistered(void) const
+int	User::getStatus(void)
 {
-	return(this->_registered);
+	return this->_status;
 }
 
 std::map<std::string, Channel *> &User::getChannelMap(void)
@@ -275,7 +275,10 @@ size_t	User::recv(int fd)
 
 Message	*User::buildMessage(std::string &buff)
 {
-	return &Message::builder(*this, buff);
+	(void)buff;
+	std::cout << "huh";
+	exit(0);
+//	return &Message::builder(*this, buff);
 }
 
 std::string	User::_getLine(size_t pos)
@@ -289,24 +292,24 @@ std::string	User::_getLine(size_t pos)
 	return line;
 }
 
-size_t	User::checkInput(int fd)
+size_t	User::checkInput(int fd, Message &message)
 {
 	size_t		size;
 	size_t		pos;
 	std::string	lineBuffer;
-	Message		*msg;
 
 	size = this->recv(fd);
 	while ((pos = this->_inputBuffer.find('\n')) != std::string::npos)
 	{
 		lineBuffer = this->_getLine(pos);
-		msg = this->buildMessage(lineBuffer);
-		if (!msg->empty() && !this->_server.recvCommand(*msg))
+		message.set(*this, lineBuffer);
+		if (!message.empty() && !this->_server.recvCommand(message))
 		{
-			Numeric::insertField(msg->getCmd());
+			Numeric::insertField(message.getCmd());
 			this->send(Numeric::builder(this->_server, *this, ERR_UNKNOWNCOMMAND));
 		}
-		delete msg;
+		message.clear();
+//		delete msg;
 	}
 	return size;
 }

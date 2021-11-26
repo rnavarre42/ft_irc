@@ -73,7 +73,7 @@ class Channel;
 class ACommand;
 class User;
 class Channel;
-struct Source;
+//struct Source;
 
 class Server : public ISender
 {
@@ -82,7 +82,7 @@ class Server : public ISender
 
 	typedef std::map<std::string, ACommand *>					aCommandMap_type;
 	typedef aCommandMap_type::iterator							aCommandMap_iterator;
-	typedef EventHandler<int, Source>							eventHandler_type;
+	typedef EventHandler<int, Message>							eventHandler_type;
 	typedef std::map<std::string, Channel *>					channelMap_type;
 	typedef channelMap_type::iterator							channelMap_iterator;
 	typedef std::map<std::string, User *>						userMap_type;
@@ -118,11 +118,10 @@ class Server : public ISender
 	bool							isOper(void);
 	int								getType(void);
 	int const						&getFd(void) const;
-	bool const						&isRegistered(void) const;
-	void							setRegistered(bool value);
+	int								getStatus(void);
+	void							setStatus(int value);
+	void							setSenderStatus(ISender &sender, int value);
 	void							setIdleTime(time_t value);
-
-	void							registerUser(Message &message);
 
 	void	start(void);
 	ssize_t	send(std::string msg = "");
@@ -177,8 +176,9 @@ private:
 	int			_opt;
 	int			_addrlen;
 	int			_pollTimeout;
+	Message		&_message;
 
-	bool		_registered;
+	int			_status;
 	bool		_stop;
 
 	std::string	_pass;
@@ -199,7 +199,7 @@ private:
 	commandMap_type		_commandMap;
 	eventHandler_type	_eventHandler;
 
-	Source						_source;
+//	Source						_source;
 	
 	int		_findFreePollIndex(void);
 	int		_poll(void);

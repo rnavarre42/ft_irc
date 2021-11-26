@@ -53,6 +53,11 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 	for (size_t i = 0; i < _instance->_fieldVector.size(); i++)
 	{
 		replacePos = Numeric::_instance->_numericStr.find('$', offset);
+		if (replacePos == std::string::npos)
+		{
+			std::cout << "Muerte por exceso de argumentos" << std::endl;
+			throw std::exception();
+		}
 		Numeric::_instance->_numericStr.replace(replacePos, 1, Numeric::_instance->_fieldVector[i]);
 		offset = replacePos + Numeric::_instance->_fieldVector[i].size();
 	}
@@ -65,7 +70,7 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_NOTIMPLEMENTED] = "$ :Command not implemented yet";
 	Numeric::_numericMap[ERR_UNKNOWNCOMMAND] = "$ :Unknown command";
 	Numeric::_numericMap[ERR_NICKNAMEINUSE] = "$ :Is already in use";
-	Numeric::_numericMap[ERR_NOTREGISTERED] = ":You have not registered";
+	Numeric::_numericMap[ERR_NOTREGISTERED] = "$ :You have not registered";
 	Numeric::_numericMap[ERR_NEEDMOREPARAMS] = "$ :Not enough parameters";
 	Numeric::_numericMap[ERR_ALREADYREGISTERED] = ":Unauthorized command (already registered)";
 	Numeric::_numericMap[ERR_NOPRIVILEGES] = ":Permision Denied- You're not an IRC operator";

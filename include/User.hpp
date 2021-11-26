@@ -71,8 +71,8 @@ public:
 	void			setIdleTime(time_t value);
 	time_t const	&getIdleTime(void) const;
 
-	void		setRegistered(bool value);
-	bool const	&isRegistered(void) const;
+	void		setStatus(int value);
+	int			getStatus(void);
 
 	void		setPollIndex(int value);
 	int const	&getPollIndex(void) const;
@@ -92,7 +92,7 @@ public:
 	size_t	recv(int fd);
 
 	Message	*buildMessage(std::string &buff);
-	size_t	checkInput(int fd);
+	size_t	checkInput(int fd, Message &message);
 	bool	checkOutput(int fd);
 
 private:
@@ -109,7 +109,7 @@ private:
 	std::string					_pingChallenge;
 	Server						&_server;
 	Server::channelMap_type		_channelMap;
-	bool						_registered;
+	int							_status;
 	time_t						_signTime;
 	time_t						_awayTime;
 	time_t						_nextTimeout;

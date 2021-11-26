@@ -11,7 +11,7 @@ PongCommand::PongCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void PongCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	eventHandler.add(REGUSEREVENT, *new Delegate<PongCommand, Source>(*this, &PongCommand::registerUserEvent));
+	eventHandler.add(REGUSEREVENT, *new Delegate<PongCommand, Message>(*this, &PongCommand::registerUserEvent));
 }
 
 void PongCommand::unloadEvents(Server::eventHandler_type &eventHandler)
@@ -19,9 +19,9 @@ void PongCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
-void PongCommand::registerUserEvent(Source &source)
+void PongCommand::registerUserEvent(Message &message)
 {
-	Message &message = *source.message;
+//	Message &message = *source.message;
 
 	Console::log(LOG_INFO, "El usuario " + message.getSender()->getName() + " se ha registrado");	
 	message.limitMaxParam(0);
@@ -32,20 +32,20 @@ void PongCommand::registerUserEvent(Source &source)
 	message.send();
 
 	Numeric::insertField(this->userSender->getMask());
-	message.send(Numeric::builder(source, RPL_WELCOME));
+	message.send(Numeric::builder(message, RPL_WELCOME));
 	
 	Numeric::insertField(message.getSender()->getMask());
-	message.send(Numeric::builder(source, RPL_YOURHOST));
+	message.send(Numeric::builder(message, RPL_YOURHOST));
 	
-	message.send(Numeric::builder(source, RPL_CREATED));
+	message.send(Numeric::builder(message, RPL_CREATED));
 	
 	Numeric::insertField(this->server.getName());
 	Numeric::insertField("i");
 	Numeric::insertField("iknst");
-	message.send(Numeric::builder(source, RPL_MYINFO));
+	message.send(Numeric::builder(message, RPL_MYINFO));
 
 	Numeric::insertField("AWAYLEN=200 CASEMAPPING=ascii CHANLIMIT=#:3 CHANMODES=be,k,inst CHANNELLEN=64 CHANTYPES=# EXCEPTS=e HOSTLEN=64 KEYLEN=32");
-	message.send(Numeric::builder(source, RPL_ISUPPORT));
+	message.send(Numeric::builder(message, RPL_ISUPPORT));
 
 	message.setCmd("MOTD");
 	message.process();
@@ -59,12 +59,12 @@ bool PongCommand::_recvUser(Message &message)
 
 	if (message[0] == user.getPingChallenge())
 	{
-		if (!user.isRegistered())
-			this->server.registerUser(message);
+		if (user.getStatus() & ~LEVEL_REGISTERED)
+			this->server.setSenderStatus(user, LEVEL_REGISTERED);
 		user.clearPingChallenge();
 		user.setNextTimeout(0);
 	}
-	else if (!user.isRegistered())
+	else if (user.getStatus() & ~LEVEL_REGISTERED)
 	{
 		message.limitMaxParam(1);
 		message.setCmd("QUIT");

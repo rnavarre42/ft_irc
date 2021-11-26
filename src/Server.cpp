@@ -42,7 +42,7 @@ const char	*Server::ServerFullException::what(void) const throw()
 }
 
 Server::Server(std::string listenIp, int listenPort, std::string name)
-	: _ip(listenIp), _port(listenPort), _name(name), _type(TYPE_SERVER)
+	: _ip(listenIp), _port(listenPort), _message(*new Message(*this)), _name(name), _type(TYPE_SERVER)
 {
 	this->_loadCommands();
 //	this->_logger();
@@ -52,14 +52,15 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 	this->_stop = false;
 	this->_initSocket();
 	this->_pollTimeout = 1000;
-	this->_registered = 0;
+	this->_status = 0;
 	this->_bind();
-	this->_source.server = this;
+//	this->_source.server = this;
 }
 
 Server::~Server(void)
 {
 	this->_unloadCommands();
+	delete &this->_message;
 	Console::log(LOG_INFO, "Server destroyed");
 }
 
@@ -74,7 +75,7 @@ void	Server::_loadCommands(void)
 	this->_commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
 	this->_commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["PONG"]	= new PongCommand	(*this, LEVEL_ALL, 1);
+	this->_commandMap["PONG"]	= new PongCommand	(*this, LEVEL_NEGOTIATING | LEVEL_REGISTERED, 1);
 	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
 	this->_commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
@@ -183,11 +184,20 @@ ssize_t	Server::send(Message &message)
 	return this->send(message.toString());
 }
 
-void	Server::registerUser(Message &message)
+void	Server::setStatus(int value)
 {
-	message.getSender()->setRegistered(true);
-	this->_source.message = &message;
-	this->_eventHandler.raise(REGUSEREVENT, this->_source);
+	this->_status = value;
+}
+
+int		Server::getStatus(void)
+{
+	return this->_status;
+}
+void	Server::setSenderStatus(ISender &sender, int value)
+{
+	sender.setStatus(value);
+	if (value == LEVEL_REGISTERED)
+		this->_eventHandler.raise(REGUSEREVENT, this->_message);
 }
 
 void	Server::quit(std::string msg)
@@ -281,7 +291,7 @@ User	*Server::_accept(void)
 	int					newFd;
 	struct sockaddr_in	user_addr;
 	int					user_addrlen;
-	char				ipAddress[INET_ADDRSTRLEN];
+//	char				ipAddress[INET_ADDRSTRLEN] = {0};
 //	socklen_t			len;
 
 	newFd = accept(this->_fd, (struct sockaddr *)&user_addr, (socklen_t *)&user_addrlen);
@@ -300,7 +310,9 @@ User	*Server::_accept(void)
 	user = new User(newFd, *this);
 //	len = sizeof(user_addr);
 //	getsockname(newFd, (struct sockaddr *)&user_addr, &len);
-	user->setHost(inet_ntop(AF_INET, &user_addr.sin_addr, ipAddress, INET_ADDRSTRLEN));
+//	user->setHost(inet_ntop(AF_INET, &user_addr.sin_addr, ipAddress, INET_ADDRSTRLEN));
+	user->setHost(inet_ntoa(user_addr.sin_addr));
+	std::cout << "ip " << user->getHost() << std::endl;
 	user->setPollIndex(this->_findFreePollIndex());
 //	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
 	this->_pollfds[user->getPollIndex()].fd = newFd;
@@ -346,13 +358,15 @@ void	Server::delChannel(Channel &channel)
 
 void	Server::addUser(User &user)
 {
-	Message &message = Message::builder(*this);
-	message.setReceiver(&user);
-	this->_source.message = &message;
+//	Message &message = Message::builder(*this);
+//
+	this->_message.setReceiver(&user);
+//	this->_source.message = &this->_message;
 //	this->userVector.push_back(&user);
 	this->_fdMap[user.getFd()] = &user;
-	this->_eventHandler.raise(NEWUSEREVENT, this->_source);
-	delete &message;
+	this->_eventHandler.raise(NEWUSEREVENT, this->_message);
+//	this->_message.clear();
+//	delete &message;
 }
 
 void	Server::_removeUserFromChannel(Channel &channel, User &user)
@@ -361,8 +375,8 @@ void	Server::_removeUserFromChannel(Channel &channel, User &user)
 	channel.delUser(user.getName());	// se elimina al usuario del canal
 	if (channel.empty())	// si no quedan usuarios en el canal
 	{
-		this->_source.message->setChannel(&channel);
-		this->_eventHandler.raise(DELCHANEVENT, this->_source);
+//		this->_source.message->setChannel(&channel);
+		this->_eventHandler.raise(DELCHANEVENT, this->_message);
 		this->delChannel(channel);	// se elimina
 	}
 }
@@ -431,27 +445,20 @@ Server::userVector_type	*getUserVector(User &user)
 void	Server::delUser(User &user, std::string text)
 {
 	Server::channelMap_iterator	currentIt;
-	Message						&message = Message::builder(user);
 	Server::userVector_type		*userVector = getUserVector(user);
 
-	message.setReceiver(&user);
-	message.insertField(text);
-	this->_source.message = &message;
-	this->_eventHandler.raise(DELUSEREVENT, this->_source);
-	// Se elimina de userMap si tiene nick
-	if (user.isRegistered()) //!getName().empty())
+	this->_message.setSender(&user);
+	this->_message.setReceiver(&user);	
+	this->_message.insertField(text);
+	this->_eventHandler.raise(DELUSEREVENT, this->_message);
+	if (user.getStatus() == LEVEL_REGISTERED) //Si está registrado se verifica que esté en más canales
 	{
-//		this->send("User <" + user.getName() + "> disconnect\n");
-		//TODO hay que informar a los demas usuarios que se ha ido (QUIT), falta el listado de los usuarios por
-		//canal sin repetir.
-		message.setCmd("QUIT");
-		message.clearReceiver();
+		this->_message.setCmd("QUIT");
+		this->_message.clearReceiver();
 		if (userVector)
-			message.setReceiver(*userVector);
-//		else  // y en este trozo se duplicaba el usuario a eliminar.
-//			message.setReceiver(&user);
-		message.setBroadcast(true);
-		this->_eventHandler.raise(QUITEVENT, this->_source);
+			this->_message.setReceiver(*userVector);
+		this->_message.setBroadcast(true);
+		this->_eventHandler.raise(QUITEVENT, this->_message);
 		for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end();)
 		{
 			currentIt = it;
@@ -463,9 +470,8 @@ void	Server::delUser(User &user, std::string text)
 	this->_fdMap.erase(user.getFd());
 	this->_pollfds[user.getPollIndex()].fd = 0;
 	this->_pollfds[user.getPollIndex()].events = 0;
-//	this->userVector.erase(std::remove(this->userVector.begin(), this->userVector.end(), &user), this->userVector.end());
+	this->_message.clear();
 	delete &user;
-	delete &message;
 	delete userVector;
 }
 
@@ -488,12 +494,12 @@ void	Server::addToChannel(Message &message)
 	Server::channelMap_iterator						it;
 	std::pair<Server::userMap_iterator, bool>		retUser;
 
-	this->_source.message = &message;
+//	this->_source.message = &message;
 	if (this->validChannelPrefix(channelName))
 	{
 //		std::cout << "user " << user.getName() << " " << user.getChannelMap().size() << std::end;
 		if (user.getChannelMap().size() == MAXCHANNEL)
-			this->_eventHandler.raise(MAXCHANEVENT, this->_source);
+			this->_eventHandler.raise(MAXCHANEVENT, this->_message);
 		else if ((it = this->channelFind(channelName)) == this->_channelMap.end())
 		{
 			channel = new Channel(channelName, user);
@@ -503,7 +509,7 @@ void	Server::addToChannel(Message &message)
 			user.getChannelMap()[strToUpper(channelName)] = channel;
 			//
 			message.setChannel(channel);
-			this->_eventHandler.raise(NEWCHANEVENT, this->_source);
+			this->_eventHandler.raise(NEWCHANEVENT, this->_message);
 			//this->_eventHandler.raise(JOINEVENT, this->_source);
 		}
 		else
@@ -517,15 +523,15 @@ void	Server::addToChannel(Message &message)
 				channel->getUserMap()[strToUpper(user.getName())] = &user;
 				user.getChannelMap()[strToUpper(channelName)] = channel;
 				//
-				this->_eventHandler.raise(JOINEVENT, this->_source);
+				this->_eventHandler.raise(JOINEVENT, this->_message);
 			}
 			else
-				this->_eventHandler.raise(ALREADYEVENT, this->_source);
+				this->_eventHandler.raise(ALREADYEVENT, this->_message);
 			//TODO falta por gestionar +l +i +k
 		}
 	}
 	else
-		this->_eventHandler.raise(ERRCHANEVENT, this->_source);
+		this->_eventHandler.raise(ERRCHANEVENT, this->_message);
 }
 
 inline bool	Server::validChannelPrefix(std::string &channelName)
@@ -540,36 +546,25 @@ void	Server::delFromChannel(Message &message)
 	std::string						&channelName = message[0];
 	Server::channelMap_iterator		it;	
 	
-	this->_source.message = &message;
 	if (this->validChannelPrefix(channelName))
 	{
 		if ((it = this->channelFind(channelName)) == this->_channelMap.end())
-			this->_eventHandler.raise(NOTCHANEVENT, this->_source);
+			this->_eventHandler.raise(NOTCHANEVENT, this->_message);
 		else
 		{
 			channel = it->second;
-			this->_source.channel = channel;
+//HERE			message.channel = channel;
 			if ((it = user.channelFind(channelName)) == user.getChannelMap().end())
-				this->_eventHandler.raise(NOTINCHANEVENT, this->_source);
+				this->_eventHandler.raise(NOTINCHANEVENT, this->_message);
 			else
 			{
-				this->_eventHandler.raise(PARTEVENT, this->_source);
+				this->_eventHandler.raise(PARTEVENT, this->_message);
 				this->_removeUserFromChannel(*channel, user);
 			}
 		}
 	}
 	else
-		this->_eventHandler.raise(ERRCHANEVENT, this->_source);
-}
-
-bool const	&Server::isRegistered(void) const
-{
-	return this->_registered;
-}
-
-void	Server::setRegistered(bool value)
-{
-	this->_registered = value;
+		this->_eventHandler.raise(ERRCHANEVENT, this->_message);
 }
 
 int	Server::_checkUserConnection(void)
@@ -592,7 +587,6 @@ int	Server::_checkUserConnection(void)
 		}
 */
 		this->addUser(*user);
-//		this->send("New user is connected.\r\n");
 		Console::log(LOG_INFO, "User <anonymous> connected");
 		return 1;
 	}
@@ -617,7 +611,7 @@ void	Server::_checkUserIO(void)
 		if (this->_pollfds[i].revents & POLLIN)
 		{
 			user = this->_fdMap[this->_pollfds[i].fd];
-			size = user->checkInput(this->_pollfds[i].fd);
+			size = user->checkInput(this->_pollfds[i].fd, this->_message);
 			if (size <= 0) // ctrl+c
 				this->delUser(*user, "");
 		}
@@ -687,7 +681,7 @@ void	Server::_checkUserTimeout(User &user)
 	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < time(NULL)))
 	{
 //		std::cout << "getIdletime = " << user.getIdleTime() << " : time = " << time(NULL) << std::endl;
-		if (user.isRegistered())
+		if (user.getStatus() == LEVEL_REGISTERED)
 		{
 			user.setNextTimeout(time(NULL) + NEXTTIMEOUT);
 			user.setPingChallenge(this->_name);

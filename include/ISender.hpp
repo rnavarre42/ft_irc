@@ -21,8 +21,8 @@ public:
 	virtual void				setPass(std::string value) = 0;
 	virtual ssize_t				send(std::string msg = "") = 0;
 	virtual ssize_t				send(Message &message) = 0;
-	virtual bool const			&isRegistered(void) const = 0;
-	virtual void				setRegistered(bool value) = 0;
+	virtual void				setStatus(int value) = 0;
+	virtual int					getStatus(void) = 0;
 	virtual bool				isServer(void) = 0;
 	virtual bool				isUser(void) = 0;
 	virtual bool				isOper(void) = 0;

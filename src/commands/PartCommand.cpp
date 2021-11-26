@@ -11,9 +11,9 @@ PartCommand::PartCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void PartCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	eventHandler.add(PARTEVENT, *new Delegate<PartCommand, Source>(*this, &PartCommand::partChannelEvent));
-	eventHandler.add(NOTCHANEVENT, *new Delegate<PartCommand, Source>(*this, &PartCommand::notChannelEvent));
-	eventHandler.add(NOTINCHANEVENT, *new Delegate<PartCommand, Source>(*this, &PartCommand::notInChannelEvent));
+	eventHandler.add(PARTEVENT, *new Delegate<PartCommand, Message>(*this, &PartCommand::partChannelEvent));
+	eventHandler.add(NOTCHANEVENT, *new Delegate<PartCommand, Message>(*this, &PartCommand::notChannelEvent));
+	eventHandler.add(NOTINCHANEVENT, *new Delegate<PartCommand, Message>(*this, &PartCommand::notInChannelEvent));
 }
 
 void PartCommand::unloadEvents(Server::eventHandler_type &eventHandler)
@@ -21,34 +21,34 @@ void PartCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
-void PartCommand::partChannelEvent(Source &source)
+void PartCommand::partChannelEvent(Message &message)
 {
-	Message &message = *source.message;
+//	Message &message = *source.message;
 
-	Console::log(LOG_INFO, message.getSender()->getName() + " ha salido de " + source.channel->getName());
-	message.setReceiver(source.channel->getUserMap());
+	Console::log(LOG_INFO, message.getSender()->getName() + " ha salido de " + message.getChannel()->getName());
+	message.setReceiver(message.getChannel()->getUserMap());
 	message.setReceiver(message.getSender());
 	message.limitMaxParam(2);
 	message.setBroadcast(true);
 	message.send();
 }
 
-void PartCommand::notChannelEvent(Source &source)
+void PartCommand::notChannelEvent(Message &message)
 {
-	Message &message = *source.message;
+//	Message &message = *source.message;
 
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
-	message.send(Numeric::builder(source, ERR_NOSUCHCHANNEL));
+	message.send(Numeric::builder(message, ERR_NOSUCHCHANNEL));
 }
 
-void PartCommand::notInChannelEvent(Source &source)
+void PartCommand::notInChannelEvent(Message &message)
 {
-	Message &message = *source.message;
+//	Message &message = *source.message;
 
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
-	message.send(Numeric::builder(source, ERR_NOTONCHANNEL));
+	message.send(Numeric::builder(message, ERR_NOTONCHANNEL));
 }
 
 bool PartCommand::_recvUser(Message &message)

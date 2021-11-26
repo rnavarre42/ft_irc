@@ -29,6 +29,7 @@ bool UserCommand::_recvUser(Message &message)
 		user.setReal(message[3]);
 		if (!user.getName().empty())
 		{
+			user.setStatus(LEVEL_NEGOTIATING);
 			user.setPingChallenge("challenge-string");
 			user.send("PING :" + user.getPingChallenge());
 		}

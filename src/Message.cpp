@@ -47,8 +47,13 @@ std::string extractPhrase(std::string &data)
 		return extractWord(data);
 }
 
-Message::Message(ISender &sender, std::string data) : _sender(&sender), _channel(NULL), _broadcast(false)
+Message::Message(Server &server) : _server(server), _sender(NULL), _channel(NULL), _broadcast(false)
+{}
+
+//Message::Message(ISender &sender, std::string data) : _sender(&sender), _channel(NULL), _broadcast(false)
+void Message::set(ISender &sender, std::string data)
 {
+	this->_sender = &sender;
 	leftTrim(data);
 	if (data.empty())
 		return;
@@ -71,8 +76,8 @@ Message::Message(ISender &sender, std::string data) : _sender(&sender), _channel
 //		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;
 }
 
-Message::Message(ISender &sender) : _sender(&sender), _channel(NULL), _broadcast(false)
-{}
+//Message::Message(ISender &sender) : _sender(&sender), _channel(NULL), _broadcast(false)
+//{}
 
 void		Message::setReceiver(Server::userMap_type &userMap)
 {
@@ -190,6 +195,11 @@ ISender *Message::getSender(void)
 	return this->_sender;
 }
 
+Server *Message::getServer(void)
+{
+	return &this->_server;
+}
+
 void	Message::setChannel(Channel *value)
 {
 	this->_channel = value;
@@ -203,6 +213,15 @@ Channel	*Message::getChannel(void)
 size_t	Message::size(void)
 {
 	return this->_paramVector.size();
+}
+
+void	Message::clear(void)
+{
+	this->_receiverVector.clear();
+	this->_sender = NULL;
+	this->_paramVector.clear();
+	this->_cmd.clear();
+	this->_broadcast = false;
 }
 
 void	Message::clearReceiver(void)
@@ -242,6 +261,7 @@ void	Message::process(void)
 	static_cast<Server *>(this->_sender)->sendCommand(*this);
 }
 
+/*
 Message &Message::builder(ISender &sender, std::string data)
 {
 	return *new Message(sender, data);
@@ -251,3 +271,4 @@ Message &Message::builder(ISender &sender)
 {
 	return *new Message(sender);
 }
+*/

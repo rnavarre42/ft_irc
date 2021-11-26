@@ -16,9 +16,9 @@ public:
 	static std::string			builder(Server &server, ISender &sender, int num);
 	static void					insertField(std::string data);
 	
-	inline static std::string	builder(Source &source, int num)
+	inline static std::string	builder(Message &message, int num)
 	{
-		return Numeric::builder(*source.server, *source.message->getReceiver(), num);
+		return Numeric::builder(*message.getServer(), *message.getReceiver(), num);
 	}
 
 private:

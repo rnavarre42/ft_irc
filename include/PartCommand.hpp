@@ -8,9 +8,9 @@ class PartCommand : public ACommand
 {
 public:
 	PartCommand(Server &server, int accessLevel, int paramCount);
-	void partChannelEvent(Source &source);
-	void notChannelEvent(Source &source);
-	void notInChannelEvent(Source &source);
+	void partChannelEvent(Message &message);
+	void notChannelEvent(Message &message);
+	void notInChannelEvent(Message &message);
 	void loadEvents(Server::eventHandler_type &eventHandler);
 	void unloadEvents(Server::eventHandler_type &eventHandler);
 

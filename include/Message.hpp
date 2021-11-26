@@ -14,13 +14,16 @@ class Server;
 class Message
 {
 public:
+	Message(Server &server);
 	~Message(void);
+
 
 	std::string			&operator[](size_t index);
 
 	void				setCmd(std::string value);
 	std::string const	&getCmd(void) const;
 
+	void				set(ISender &sender, std::string data);
 	void				setReceiver(Server::userMap_type &userMap);
 	void				setReceiver(Server::userVector_type &userVector);
 //	void				setReceiver(Server::serverMap_iterator first, Server::serverMap_iterator last);
@@ -28,10 +31,12 @@ public:
 	void				setBroadcast(bool value);
 	ISender				*getReceiver(void);
 
+	void				clear(void);
 	void				clearReceiver(void);
 
 	void				setSender(ISender *value);
 	ISender				*getSender(void);
+	Server				*getServer(void);
 
 	void				setChannel(Channel *value);
 	Channel				*getChannel(void);
@@ -49,13 +54,14 @@ public:
 	void				swapField(size_t first, size_t second);
 	void				insertField(std::string field);
 	std::string			toString(void);
-	static Message		&builder(ISender &sender, std::string data);
-	static Message		&builder(ISender &sender);
+//	static Message		&builder(ISender &sender, std::string data);
+//	static Message		&builder(ISender &sender);
 
 private:
 	Message(ISender &sender, std::string data);
 	Message(ISender &sender);
 
+	Server						&_server;
 	ISender						*_sender;
 	Channel						*_channel;
 	std::vector<ISender *>		_receiverVector;
