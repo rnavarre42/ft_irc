@@ -17,7 +17,7 @@
 #include <exception>
 #include <csignal>
 #include <cstdlib>
-
+#include <sstream>
 
 //	socket, setsockopt, getsockname, getprotobyname, gethostbyname, getaddrinfo, freeaddrinfo, bind, connect
 //	listen, accept, htons, htonl, ntohs, ntohl, inet_addr, inet_htoa, send, recv, signal, lseek, fstat, fcntl
@@ -208,7 +208,7 @@ void	Server::quit(std::string msg)
 	{
 		currentIt = it;
 		it++;
-		this->delUser(*currentIt->second, msg);
+		this->deleteUser(*currentIt->second, msg);
 	}
 	this->_stop = true;
 }
@@ -291,8 +291,6 @@ User	*Server::_accept(void)
 	int					newFd;
 	struct sockaddr_in	user_addr;
 	int					user_addrlen;
-//	char				ipAddress[INET_ADDRSTRLEN] = {0};
-//	socklen_t			len;
 
 	newFd = accept(this->_fd, (struct sockaddr *)&user_addr, (socklen_t *)&user_addrlen);
 	if (newFd < 0)
@@ -308,13 +306,8 @@ User	*Server::_accept(void)
 //		throw Server::ServerFullException();
 	}
 	user = new User(newFd, *this);
-//	len = sizeof(user_addr);
-//	getsockname(newFd, (struct sockaddr *)&user_addr, &len);
-//	user->setHost(inet_ntop(AF_INET, &user_addr.sin_addr, ipAddress, INET_ADDRSTRLEN));
 	user->setHost(inet_ntoa(user_addr.sin_addr));
-	std::cout << "ip " << user->getHost() << std::endl;
 	user->setPollIndex(this->_findFreePollIndex());
-//	std::cerr << "setPollIndex = " << user->getPollIndex() << std::endl;
 	this->_pollfds[user->getPollIndex()].fd = newFd;
 	this->_pollfds[user->getPollIndex()].events = POLLIN;
 	return user;
@@ -322,6 +315,7 @@ User	*Server::_accept(void)
 
 void	Server::_bind(void)
 {
+	std::ostringstream	ss;
 	this->_address.sin_family = AF_INET;
 	this->_address.sin_addr.s_addr = INADDR_ANY;
 	this->_address.sin_port = htons(this->_port);
@@ -330,6 +324,8 @@ void	Server::_bind(void)
 		Console::log(LOG_ERROR, "Server::bind function bind() failed");
 		exit(EXIT_FAILURE);
 	}
+	ss << "IP listen: " << this->_ip << ":" << this->_port;
+	Console::log(LOG_INFO, ss.str());
 }
 
 void	Server::_listen(void)
@@ -356,17 +352,11 @@ void	Server::delChannel(Channel &channel)
 	delete &channel;
 }
 
-void	Server::addUser(User &user)
+void	Server::createUser(User &user)
 {
-//	Message &message = Message::builder(*this);
-//
 	this->_message.setReceiver(&user);
-//	this->_source.message = &this->_message;
-//	this->userVector.push_back(&user);
 	this->_fdMap[user.getFd()] = &user;
 	this->_eventHandler.raise(NEWUSEREVENT, this->_message);
-//	this->_message.clear();
-//	delete &message;
 }
 
 void	Server::_removeUserFromChannel(Channel &channel, User &user)
@@ -442,7 +432,7 @@ Server::userVector_type	*getUserVector(User &user)
 	return userVector;
 }
 
-void	Server::delUser(User &user, std::string text)
+void	Server::deleteUser(User &user, std::string text)
 {
 	Server::channelMap_iterator	currentIt;
 	Server::userVector_type		*userVector = getUserVector(user);
@@ -586,7 +576,7 @@ int	Server::_checkUserConnection(void)
 			exit(EXIT_FAILURE);
 		}
 */
-		this->addUser(*user);
+		this->createUser(*user);
 		Console::log(LOG_INFO, "User <anonymous> connected");
 		return 1;
 	}
@@ -613,7 +603,7 @@ void	Server::_checkUserIO(void)
 			user = this->_fdMap[this->_pollfds[i].fd];
 			size = user->checkInput(this->_pollfds[i].fd, this->_message);
 			if (size <= 0) // ctrl+c
-				this->delUser(*user, "");
+				this->deleteUser(*user, "");
 		}
 		else if (this->_pollfds[i].revents & POLLOUT)
 		{
@@ -677,7 +667,7 @@ void	Server::_checkConsoleInput(void)
 void	Server::_checkUserTimeout(User &user)
 {
 	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
-		this->delUser(user, "Registration timeout");
+		this->deleteUser(user, "Registration timeout");
 	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < time(NULL)))
 	{
 //		std::cout << "getIdletime = " << user.getIdleTime() << " : time = " << time(NULL) << std::endl;
@@ -706,6 +696,7 @@ void	Server::_loop(void)
 {
 	int	rv;
 
+	Console::log(LOG_INFO, "Waiting connect clients...");
 	while (!this->_stop)
 	{
 		rv = this->_poll();

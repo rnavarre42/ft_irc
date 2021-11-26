@@ -60,7 +60,7 @@ bool QuitCommand::_sendUser(Message &message)
 	
 	if (!message.size())
 		message.insertField("Client exited");
-	this->server.delUser(user, message[0]);
+	this->server.deleteUser(user, message[0]);
 	return true;
 }
 

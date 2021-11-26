@@ -133,8 +133,8 @@ class Server : public ISender
 	void	registerUser(User &user);
 	void	quit(std::string msg);
 	
-	void	addUser(User &user);
-	void	delUser(User &user, std::string text);
+	void	createUser(User &user);
+	void	deleteUser(User &user, std::string text);
 	
 //	void	killUser(User &user, std::string reason);
 	int		count(void);

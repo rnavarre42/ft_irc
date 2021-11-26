@@ -22,7 +22,6 @@ int main(void)
 	Server	&server = Server::getInstance("0.0.0.0", 6667, "irc.42born2code.com");
 
 	atexit(leaks);
-	std::cout << "Waiting connect clients..." << std::endl;
 	server.start();
 	Server::deleteInstance();;
 	return 0;
