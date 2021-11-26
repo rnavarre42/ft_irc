@@ -18,7 +18,7 @@ std::string const	&Channel::getName(void) const
 	return this->_name;
 }
 
-std::map<std::string, User *>	&Channel::getUserMap(void)
+std::map<std::string, std::pair<int, User *> >	&Channel::getUserMap(void)
 {
 	return this->_userMap;
 }
@@ -75,19 +75,19 @@ time_t const	&Channel::getTopicTime(void) const
 
 void Channel::send(std::string msg)
 {
-	for (std::map<std::string, User *>::iterator it = this->_userMap.begin(); it != this->_userMap.end(); it++)
-		it->second->send(msg);
+	for (std::map<std::string, std::pair<int, User *> >::iterator it = this->_userMap.begin(); it != this->_userMap.end(); it++)
+		it->second.second->send(msg);
 }
 
 void Channel::join(User user)
 {
-	std::map<std::string, User *>::iterator it;
+	std::map<std::string, std::pair<int, User *> >::iterator it;
 
 	it = this->_userMap.find(user.getName());
 	if (it == this->_userMap.end())
 	{
 		this->send(user.getName() + " ha entrado al canal " + this->_name + "\r\n");
-		this->_userMap[user.getName()] = &user;
+		this->_userMap[user.getName()].second  = &user;
 		user.getChannelMap()[this->_name] = this;
 		user.send("Has entrado al canal " + this->_name + "\r\n");
 	}
@@ -97,7 +97,7 @@ void Channel::join(User user)
 
 void Channel::part(User user)
 {
-	std::map<std::string, User *>::iterator it;
+	std::map<std::string, std::pair<int, User *> >::iterator it;
 
 	it = this->_userMap.find(user.getName());
 	if (it == this->_userMap.end())

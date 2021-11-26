@@ -411,8 +411,8 @@ Server::userVector_type	*getUserVector(User &user)
 	//añadir los usuarios del canal mas grande al vector
 	channelSet.insert(currentChannel);
 	userVector = new Server::userVector_type;
-	for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
-		userVector->push_back(it->second);
+	for (std::map<std::string, std::pair<int, User *> >::iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+		userVector->push_back(it->second.second);
 	//añadir los usuarios de los canales restantes sin repetir usuario en el vector
 	for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end(); it++)
 	{
@@ -420,11 +420,11 @@ Server::userVector_type	*getUserVector(User &user)
 		ret = channelSet.insert(currentChannel);
 		if (ret.second == true)
 		{
-			for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+			for (std::map<std::string, std::pair<int, User *> >::iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
 			{
-				vectorIt = std::find(userVector->begin(), userVector->end(), it->second);
+				vectorIt = std::find(userVector->begin(), userVector->end(), it->second.second);
 				if (vectorIt == userVector->end())
-					userVector->push_back(it->second);
+					userVector->push_back(it->second.second);
 			}
 		}
 	}
@@ -482,7 +482,7 @@ void	Server::addToChannel(Message &message)
 	std::string										&channelName = message[0];
 	User											&user = *static_cast<User *>(message.getSender());
 	Server::channelMap_iterator						it;
-	std::pair<Server::userMap_iterator, bool>		retUser;
+	std::pair<std::map<std::string, std::pair<int, User *> >::iterator, bool>		retUser;
 
 //	this->_source.message = &message;
 	if (this->validChannelPrefix(channelName))
@@ -495,7 +495,7 @@ void	Server::addToChannel(Message &message)
 			channel = new Channel(channelName, user);
 			this->_channelMap[strToUpper(channelName)] = channel;
 			// añade el canal al usuario y el usuario al canal
-			channel->getUserMap()[strToUpper(user.getName())] = &user;
+			channel->getUserMap()[strToUpper(user.getName())].second = &user;
 			user.getChannelMap()[strToUpper(channelName)] = channel;
 			//
 			message.setChannel(channel);
@@ -504,13 +504,26 @@ void	Server::addToChannel(Message &message)
 		}
 		else
 		{
+
+			//TODO hay que limpiar este código y tratar de hacerlo más compacto
 			channel = it->second;
 			message.setChannel(channel);
-			retUser = channel->getUserMap().insert(std::pair<std::string, User *>(strToUpper(user.getName()), &user));
+			std::pair<std::string, std::pair<int, User *> >	pair1;
+			std::pair<int, User *>							pair2;
+
+			pair2 = std::make_pair(0, &user);
+			pair1 = std::make_pair(strToUpper(user.getName()), pair2);
+	//		std::pair<int, User *>						level2 = std::make_pair<int, User *>(0, &user);
+	//		std::pair<std::string, std::pair<int, User *> >	level1 = std::make_pair<std::string, std::pair<int, User *> >(strToUpper(user.getName()), level2);
+			
+			retUser = channel->getUserMap().insert(pair1);
+
+			
+//			retUser = channel->getUserMap().insert(std::pair<std::string, std::pair<int, User *>  >(strToUpper(user.getName(), par)));
 			if (retUser.second == true)  //El nick ha entrado al canal
 			{
 				// añade el canal al usuario y el usuario al canal
-				channel->getUserMap()[strToUpper(user.getName())] = &user;
+				channel->getUserMap()[strToUpper(user.getName())].second = &user;
 				user.getChannelMap()[strToUpper(channelName)] = channel;
 				//
 				this->_eventHandler.raise(JOINEVENT, this->_message);

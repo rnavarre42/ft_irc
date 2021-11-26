@@ -29,7 +29,7 @@ public:
 	~Channel(void);
 
 	std::string const				&getName(void) const;
-	Server::userMap_type			&getUserMap(void);
+	std::map<std::string, std::pair<int, User *> >			&getUserMap(void);
 	void							delUser(std::string value);
 	bool							empty(void);
 
@@ -50,12 +50,12 @@ public:
 	void part(User user);
 
 private:
-	std::string						_name;
-	std::string						_topic;
-	std::string						_owner;
-	std::string						_topicOwn;
-	time_t							_topicTime;
-	std::map<std::string, User *>	_userMap;
+	std::string										_name;
+	std::string										_topic;
+	std::string										_owner;
+	std::string										_topicOwn;
+	time_t											_topicTime;
+	std::map<std::string, std::pair<int, User *> >	_userMap;
 
 	Channel(void);
 };

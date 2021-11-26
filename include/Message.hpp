@@ -24,7 +24,7 @@ public:
 	std::string const	&getCmd(void) const;
 
 	void				set(ISender &sender, std::string data);
-	void				setReceiver(Server::userMap_type &userMap);
+	void				setReceiver(std::map<std::string, std::pair<int, User *> > &userMap);
 	void				setReceiver(Server::userVector_type &userVector);
 //	void				setReceiver(Server::serverMap_iterator first, Server::serverMap_iterator last);
 	void				setReceiver(ISender *value);
