@@ -101,7 +101,9 @@ void		Message::setReceiver(ISender *value)
 
 ISender		*Message::getReceiver(void)
 {
-	return this->_receiverVector[0];
+	if (this->_receiverVector.size())
+		return this->_receiverVector[0];
+	return NULL;
 }
 
 std::string		Message::toString(void)

@@ -1,4 +1,5 @@
 #include "NamesCommand.hpp"
+#include "Server.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
 #include <iostream>
@@ -6,16 +7,26 @@
 NamesCommand::NamesCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-bool NamesCommand::_execUser(Message &message)
+void NamesCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
+void NamesCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+bool NamesCommand::_recvUser(Message &message)
 {
 	User	&user = *this->userSender;
 
+	message.getServer()->names(*message.getChannel());
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool NamesCommand::_execServer(Message &message)
+bool NamesCommand::_recvServer(Message &message)
 {
 	Server	&server = *this->serverSender;
 

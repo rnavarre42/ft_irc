@@ -5,6 +5,7 @@
 #include "Console.hpp"
 #include "Message.hpp"
 #include "commands.hpp"
+#include "Numeric.hpp"
 
 #include <set>
 #include <string>
@@ -94,7 +95,7 @@ void	Server::_loadCommands(void)
 //	this->_commandMap["INVITE"]		= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->_commandMap["NOTICE"]		= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->_commandMap["WHOWAS"]		= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["NAMES"]		= new NamesCommand	(*this, LEVEL_REGISTERED, 0)
+	this->_commandMap["NAMES"]		= new NamesCommand	(*this, LEVEL_REGISTERED, 0);
 
 	Server::aCommandMap_iterator	it;
 
@@ -131,7 +132,7 @@ void	Server::deleteInstance(void)
 	Server::_instance = NULL;
 }
 
-void	Server::setSignals(void)
+void	Server::_setSignals(void)
 {
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, Server::signalHandler);
@@ -390,14 +391,12 @@ void	Server::_removeUserFromChannel(Channel &channel, User &user)
 	}
 }
 
+/*
 void	displayUserName(User *user)
 {
-//<<<<<<< HEAD
-//	Server::channelMap_iterator currentIt;
-//	Message &message = Message::builder(*this);
-//=======
 	std::cout << "User name = " << user->getName() << std::endl;
 }
+*/
 
 Channel	*findFullestChannel(User &user)
 {
@@ -415,11 +414,11 @@ Channel	*findFullestChannel(User &user)
 Server::userVector_type	*getUserVector(User &user)
 {
 	//aloca memoria para el nuevo vector
-	Server::userVector_type							*userVector;
-	std::set<Channel *>								channelSet;
-	Channel											*currentChannel;
-	std::pair<std::set<Channel *>::iterator, bool>	ret;
-	Server::userVector_iterator						vectorIt;
+	Server::userVector_type								*userVector;
+	Server::channelSet_type								channelSet;
+	Channel												*currentChannel;
+	std::pair<Server::channelSet_iterator, bool>		ret;
+	Server::userVector_iterator							vectorIt;
 
 	if (!user.getChannelMap().size())
 		return NULL;
@@ -438,14 +437,12 @@ Server::userVector_type	*getUserVector(User &user)
 		currentChannel = it->second;
 		ret = channelSet.insert(currentChannel);
 		if (ret.second == true)
-		{
 			for (Server::userPairMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
 			{
 				vectorIt = std::find(userVector->begin(), userVector->end(), it->second.second);
 				if (vectorIt == userVector->end())
 					userVector->push_back(it->second.second);
 			}
-		}
 	}
 //	for_each(userVector->begin(), userVector->end(), displayUserName);
 	return userVector;
@@ -609,6 +606,16 @@ int	Server::_checkUserConnection(void)
  */
 }
 
+void	Server::names(Channel &channel)
+{
+	Numeric::insertField(channel.getName());
+	for (Server::userPairMap_iterator it = channel.getUserMap().begin(); it != channel.getUserMap().end(); it++)
+	{
+//		if (it->second->first & I
+		Numeric::insertField(it->second.second->getName());
+	}
+}
+
 void	Server::_checkUserIO(void)
 {
 	User	*user;
@@ -688,7 +695,6 @@ void	Server::_checkUserTimeout(User &user)
 		this->deleteUser(user, "Registration timeout");
 	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < time(NULL)))
 	{
-//		std::cout << "getIdletime = " << user.getIdleTime() << " : time = " << time(NULL) << std::endl;
 		if (user.getStatus() == LEVEL_REGISTERED)
 		{
 			user.setNextTimeout(time(NULL) + NEXTTIMEOUT);
@@ -703,11 +709,7 @@ void	Server::_checkTimeout(void)
 	Server::fdMap_iterator	it;
 
 	for (it = this->_fdMap.begin(); it != this->_fdMap.end();)
-//	{
 		this->_checkUserTimeout(*(it++)->second);
-//		user = it->second;
-//		it++;
-//	}
 }
 
 void	Server::_loop(void)

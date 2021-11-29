@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 std::map<int, std::string>	Numeric::_numericMap;
 Numeric						*Numeric::_instance;
@@ -42,7 +43,10 @@ void	Numeric::insertField(std::string data)
 
 std::string	Numeric::builder(Server &server, ISender &sender, int num)
 {
-	size_t		replacePos, offset = 0;
+	size_t					replacePos, offset = 0;
+	stringVector_iterator	it;
+	std::string				base;
+	std::string				data;
 
 	if (!Numeric::_instance)
 		_instance = new Numeric();
@@ -50,19 +54,26 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 	Numeric::_instance->_sender = &sender;
 	Numeric::_instance->_num = num;
 	Numeric::_instance->_numericStr = Numeric::_numericMap[num];
-	for (size_t i = 0; i < _instance->_fieldVector.size(); i++)
+	for (it = _instance->_fieldVector.begin(); it != _instance->_fieldVector.end(); it++)
 	{
 		replacePos = Numeric::_instance->_numericStr.find('$', offset);
 		if (replacePos == std::string::npos)
 		{
+			break;
 			std::cout << "Muerte por exceso de argumentos" << std::endl;
 			throw std::exception();
 		}
-		Numeric::_instance->_numericStr.replace(replacePos, 1, Numeric::_instance->_fieldVector[i]);
-		offset = replacePos + Numeric::_instance->_fieldVector[i].size();
+		Numeric::_instance->_numericStr.replace(replacePos, 1, *it);
+		offset = replacePos + it->size();
 	}
+	base = Numeric::_instance->_toString();
+	for (; it != _instance->_fieldVector.end(); it++)
+	{
+		std::cout << "names = " << *it << std::endl;
+	}
+	data = base;
 	Numeric::_instance->_fieldVector.clear();
-	return Numeric::_instance->_toString();
+	return data;
 }
 
 Numeric::Numeric(void)
@@ -99,4 +110,6 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_ISUPPORT] = "$ :are supported by this server";
 	Numeric::_numericMap[ERR_NOSUCHCHANNEL] = "$ :No such channel";
 	Numeric::_numericMap[ERR_ERRONEUSNICKNAME] = "$ :Erroneus nickname";
+	Numeric::_numericMap[RPL_NAMREPLY] = "= $ :%";
+	Numeric::_numericMap[RPL_ENDOFNAMES] = "$ :End of NAMES list";
 }

@@ -41,8 +41,8 @@ void JoinCommand::joinChannelEvent(Message &message)
 	message.setReceiver(message.getSender());
 	message.hideReceiver();
 	message.send();
-//	message.setCmd("NAMES");
-//	message.process();
+	message.setCmd("NAMES");
+	message.process();
 }
 
 void JoinCommand::alreadyChannelEvent(Message &message)

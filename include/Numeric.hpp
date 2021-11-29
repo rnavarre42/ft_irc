@@ -13,6 +13,9 @@ class Server;
 class Numeric
 {
 public:
+	typedef std::vector<std::string>	stringVector_type;
+	typedef stringVector_type::iterator	stringVector_iterator;
+
 	~Numeric(void);
 	static std::string			builder(Server &server, ISender &sender, int num);
 	static void					insertField(std::string data);

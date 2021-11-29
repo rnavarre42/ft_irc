@@ -11,6 +11,7 @@
 # include <map>
 # include <ctime>
 # include <vector>
+# include <set>
 # include <algorithm>
 # include <netinet/in.h>
 # include <poll.h>
@@ -94,6 +95,8 @@ class Server : public ISender
 	typedef std::map<std::string, ACommand *>					commandMap_type;
 	typedef std::vector<ISender *>								userVector_type;
 	typedef userVector_type::iterator							userVector_iterator;
+	typedef std::set<Channel *>									channelSet_type;
+	typedef channelSet_type::iterator							channelSet_iterator;
 
 	static void						signalHandler(int sig);
 	static Server					&getInstance(void);
@@ -108,6 +111,8 @@ class Server : public ISender
 
 	void							setPass(std::string value);
 	std::string const				&getPass(void) const;
+
+	void							names(Channel &channel);
 
 	bool							isUser(void);
 	bool							isServer(void);

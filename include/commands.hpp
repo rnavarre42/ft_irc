@@ -7,7 +7,7 @@
 //# include "KickCommand.hpp"
 //# include "ListCommand.hpp"
 //# include "ModeCommand.hpp"
-//# include "NamesCommand.hpp"
+# include "NamesCommand.hpp"
 # include "MotdCommand.hpp"
 # include "NickCommand.hpp"
 //# include "KillCommand.hpp"
