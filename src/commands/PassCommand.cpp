@@ -1,4 +1,5 @@
 #include "PassCommand.hpp"
+#include "User.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
 #include <iostream>

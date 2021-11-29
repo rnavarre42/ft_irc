@@ -40,7 +40,7 @@ re:			fclean all
 debug:		COMMONFLAGS = $(FSANITIZE)
 debug:		$(NAME) tag
 
-release:	COMMONFLAGS += -O3
+release:	COMMONFLAGS = -O3
 release:	$(NAME)
 	strip $(NAME)
 

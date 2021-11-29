@@ -23,20 +23,16 @@ void PartCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 
 void PartCommand::partChannelEvent(Message &message)
 {
-//	Message &message = *source.message;
-
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha salido de " + message.getChannel()->getName());
 	message.setReceiver(message.getChannel()->getUserMap());
 	message.setReceiver(message.getSender());
 	message.limitMaxParam(2);
-	message.setBroadcast(true);
+	message.hideReceiver();
 	message.send();
 }
 
 void PartCommand::notChannelEvent(Message &message)
 {
-//	Message &message = *source.message;
-
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
 	message.send(Numeric::builder(message, ERR_NOSUCHCHANNEL));
@@ -44,8 +40,6 @@ void PartCommand::notChannelEvent(Message &message)
 
 void PartCommand::notInChannelEvent(Message &message)
 {
-//	Message &message = *source.message;
-
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
 	message.send(Numeric::builder(message, ERR_NOTONCHANNEL));

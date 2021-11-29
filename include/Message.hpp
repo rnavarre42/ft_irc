@@ -1,12 +1,12 @@
 #ifndef MESSAGE_HPP
 # define MESSAGE_HPP
 
-//# include "Server.hpp"
-# include "ACommand.hpp"
-//# include "ISender.hpp"
+# include "Server.hpp"
+
 # include <string>
 # include <vector>
 
+class ACommand;
 class ISender;
 class User;
 class Server;
@@ -16,7 +16,6 @@ class Message
 public:
 	Message(Server &server);
 	~Message(void);
-
 
 	std::string			&operator[](size_t index);
 
@@ -28,7 +27,7 @@ public:
 	void				setReceiver(Server::userVector_type &userVector);
 //	void				setReceiver(Server::serverMap_iterator first, Server::serverMap_iterator last);
 	void				setReceiver(ISender *value);
-	void				setBroadcast(bool value);
+	void				hideReceiver(void);
 	ISender				*getReceiver(void);
 
 	void				clear(void);
@@ -67,8 +66,9 @@ private:
 	std::vector<ISender *>		_receiverVector;
 	std::string 				_prefix;
 	std::string 				_cmd;
+	ACommand					*_command;
 	std::vector<std::string>	_paramVector;
-	bool						_broadcast;
+	bool						_hideReceiver;
 };
 
 #endif

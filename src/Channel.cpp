@@ -1,5 +1,7 @@
 #include "Channel.hpp"
+#include "User.hpp"
 #include "utils.hpp"
+
 #include <string>
 #include <map>
 #include <ctime>
@@ -18,7 +20,7 @@ std::string const	&Channel::getName(void) const
 	return this->_name;
 }
 
-std::map<std::string, std::pair<int, User *> >	&Channel::getUserMap(void)
+Server::userPairMap_type	&Channel::getUserMap(void)
 {
 	return this->_userMap;
 }
@@ -75,13 +77,13 @@ time_t const	&Channel::getTopicTime(void) const
 
 void Channel::send(std::string msg)
 {
-	for (std::map<std::string, std::pair<int, User *> >::iterator it = this->_userMap.begin(); it != this->_userMap.end(); it++)
+	for (Server::userPairMap_iterator it = this->_userMap.begin(); it != this->_userMap.end(); it++)
 		it->second.second->send(msg);
 }
 
 void Channel::join(User user)
 {
-	std::map<std::string, std::pair<int, User *> >::iterator it;
+	Server::userPairMap_iterator	it;
 
 	it = this->_userMap.find(user.getName());
 	if (it == this->_userMap.end())
@@ -97,7 +99,7 @@ void Channel::join(User user)
 
 void Channel::part(User user)
 {
-	std::map<std::string, std::pair<int, User *> >::iterator it;
+	Server::userPairMap_iterator	it;
 
 	it = this->_userMap.find(user.getName());
 	if (it == this->_userMap.end())

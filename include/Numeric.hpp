@@ -3,11 +3,12 @@
 
 # include "numerics.hpp"
 # include "Message.hpp"
-# include "Source.hpp"
-# include "Server.hpp"
+
 # include <map>
 # include <vector>
 # include <string>
+
+class Server;
 
 class Numeric
 {

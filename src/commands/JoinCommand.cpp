@@ -28,21 +28,18 @@ void JoinCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 
 void JoinCommand::createChannelEvent(Message &message)
 {
-//	Message &message = *source.message;
-
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha creado el canal " + message[0]);
 	message.setReceiver(message.getSender());
-	message.setBroadcast(true);
+	message.hideReceiver();
 	message.send();
 }
 
 void JoinCommand::joinChannelEvent(Message &message)
 {
-//	Message &message = *source.message;
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha entrado al canal " + message[0]);
 	message.setReceiver(message.getChannel()->getUserMap());
 	message.setReceiver(message.getSender());
-	message.setBroadcast(true);
+	message.hideReceiver();
 	message.send();
 //	message.setCmd("NAMES");
 //	message.process();
@@ -50,16 +47,11 @@ void JoinCommand::joinChannelEvent(Message &message)
 
 void JoinCommand::alreadyChannelEvent(Message &message)
 {
-//	Message &message = *source.message;
-
 	Console::log(LOG_INFO, message.getSender()->getName() + " ya está en " + message[0]);
-//	(void)message;	
 }
 
 void JoinCommand::limitChannelEvent(Message &message)
 {
-//	Message &message = *source.message;
-
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha alcanzado el limite de canales");
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
@@ -68,17 +60,12 @@ void JoinCommand::limitChannelEvent(Message &message)
 
 void JoinCommand::delChannelEvent(Message &message)
 {
-//	Message &message = *source.message;
-
 	Console::log(LOG_INFO, message.getChannel()->getName() + " el canal se ha eliminado");
 }
 
 void JoinCommand::errChannelEvent(Message &message)
 {
-//	Message &message = *source.message;
-
 	message.setReceiver(message.getSender());
-//	message.send();
 	Numeric::insertField(message[0]);
 	message.send(Numeric::builder(message, ERR_BADCHANMASK));
 }

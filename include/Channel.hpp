@@ -1,8 +1,8 @@
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
-# include "Server.hpp"
-# include "User.hpp"
+# include <Server.hpp>
+
 # include <string>
 # include <map>
 # include <ctime>
@@ -22,6 +22,8 @@
 # define CHANNEL_PASSWORD	0x1000
 # define CHANNEL_BANNED		0x2000
 
+class User;
+
 class Channel
 {
 public:
@@ -29,7 +31,7 @@ public:
 	~Channel(void);
 
 	std::string const				&getName(void) const;
-	std::map<std::string, std::pair<int, User *> >			&getUserMap(void);
+	Server::userPairMap_type		&getUserMap(void);
 	void							delUser(std::string value);
 	bool							empty(void);
 
@@ -50,12 +52,12 @@ public:
 	void part(User user);
 
 private:
-	std::string										_name;
-	std::string										_topic;
-	std::string										_owner;
-	std::string										_topicOwn;
-	time_t											_topicTime;
-	std::map<std::string, std::pair<int, User *> >	_userMap;
+	std::string						_name;
+	std::string						_topic;
+	std::string						_owner;
+	std::string						_topicOwn;
+	time_t							_topicTime;
+	Server::userPairMap_type		_userMap;
 
 	Channel(void);
 };

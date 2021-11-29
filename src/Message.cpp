@@ -1,4 +1,5 @@
 #include "Message.hpp"
+#include "User.hpp"
 #include "utils.hpp"
 #include "ISender.hpp"
 #include <string>
@@ -47,10 +48,9 @@ std::string extractPhrase(std::string &data)
 		return extractWord(data);
 }
 
-Message::Message(Server &server) : _server(server), _sender(NULL), _channel(NULL), _broadcast(false)
+Message::Message(Server &server) : _server(server), _sender(NULL), _channel(NULL), _command(NULL), _hideReceiver(false)
 {}
 
-//Message::Message(ISender &sender, std::string data) : _sender(&sender), _channel(NULL), _broadcast(false)
 void Message::set(ISender &sender, std::string data)
 {
 	this->_sender = &sender;
@@ -80,7 +80,6 @@ void Message::set(ISender &sender, std::string data)
 //{}
 
 void		Message::setReceiver(std::map<std::string, std::pair<int, User *> > &userMap)
-//void		Message::setReceiver(Server::userMap_type &userMap)
 {
 	for (std::map<std::string, std::pair<int, User *> >::iterator it = userMap.begin(); it != userMap.end(); it++)
 		if (it->second.second != this->_sender)
@@ -111,7 +110,7 @@ std::string		Message::toString(void)
 
 	ss << ':' << this->_sender->getMask();
 	ss << ' ' << this->_cmd;
-	if (!this->_receiverVector.empty() && !this->_broadcast)
+	if (!this->_receiverVector.empty() && !this->_hideReceiver)
 		ss << ' ' << this->_receiverVector[0]->getName();
 	for (size_t i = 0; i < this->_paramVector.size(); i++)
 	{
@@ -125,9 +124,7 @@ std::string		Message::toString(void)
 }
 
 Message::~Message(void)
-{
-//	std::cout << "Message destroyed" << std::endl;
-}
+{}
 
 std::string	&Message::operator[](size_t index)
 {
@@ -139,9 +136,9 @@ bool Message::empty(void)
 	return this->_prefix.empty() && this->_cmd.empty() && !this->_paramVector.size();
 }
 
-void	Message::setBroadcast(bool value)
+void	Message::hideReceiver(void)
 {
-	this->_broadcast = value;
+	this->_hideReceiver = true;
 }
 
 void	Message::limitMaxParam(size_t limit)
@@ -155,6 +152,7 @@ void	Message::limitMaxParam(size_t limit)
 void	Message::setCmd(std::string value)
 {
 	this->_cmd = value;
+//	this->_server.commandF(
 }
 
 std::string const &Message::getCmd(void) const
@@ -222,7 +220,7 @@ void	Message::clear(void)
 	this->_sender = NULL;
 	this->_paramVector.clear();
 	this->_cmd.clear();
-	this->_broadcast = false;
+	this->_hideReceiver = false;
 }
 
 void	Message::clearReceiver(void)
@@ -235,21 +233,9 @@ void	Message::send(void)
 	std::string msg = this->toString();
 
 	if (this->_receiverVector.size() > 1)
-//	{
-//		std::cout << "Numero de receptores " << this->_receiverVector.size() << std::endl;
-		this->_broadcast = true;
-//	}
+		this->_hideReceiver = true;
 	for (std::vector<ISender *>::iterator it = this->_receiverVector.begin(); it != this->_receiverVector.end(); it++)
-	{
-//		if (this->_sender == (*it))
-//			std::cout << "Es el mismo usuario" << std::endl;
-//		else
 			(*it)->send(msg);
-	}
-//	if (this->_sender->getType() == TYPE_SERVER)
-//		static_cast<Server *>(this->_sender)->sendCommand(*this);
-//	else if (this->_receiverVector[0]->getType() == TYPE_USER)
-//		static_cast<User *>(this->_receiverVector[0])->send(*this);
 }
 
 void	Message::send(std::string msg)
@@ -259,17 +245,5 @@ void	Message::send(std::string msg)
 
 void	Message::process(void)
 {
-	static_cast<Server *>(this->_sender)->sendCommand(*this);
+	this->_server.sendCommand(*this);
 }
-
-/*
-Message &Message::builder(ISender &sender, std::string data)
-{
-	return *new Message(sender, data);
-}
-
-Message &Message::builder(ISender &sender)
-{
-	return *new Message(sender);
-}
-*/

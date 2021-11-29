@@ -14,15 +14,17 @@ _Bool	telnet_ctrlc(char *buffer)
 
 void leaks(void)
 {
-//	system("leaks ircserv");
+#ifdef __MACOS__
+	system("leaks ircserv");
+#endif
 }
 
 int main(void)
 {
-	Server	&server = Server::getInstance("0.0.0.0", 6667, "irc.42born2code.com");
+	Server	&server = Server::createInstance("0.0.0.0", 6667, "irc.42born2code.com");
 
 	atexit(leaks);
-	server.start();
+	server.run();
 	Server::deleteInstance();;
 	return 0;
 }

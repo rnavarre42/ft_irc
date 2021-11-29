@@ -1,4 +1,5 @@
 #include "PingCommand.hpp"
+#include "User.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
 #include <iostream>
@@ -24,7 +25,7 @@ bool PingCommand::_recvUser(Message &message)
 	message.setReceiver(message.getSender());
 	message.setSender(&this->server);
 	message.setCmd("PONG");
-	message.setBroadcast(true);
+	message.hideReceiver();
 
 	if (message.size() == 1)
 	{

@@ -10,7 +10,7 @@ class Console
 public:
 	Console(Server server);
 		
-	static void	log(int logLevel, std::string cmd);
+	static void	log(int logLevel, std::string str);
 
 private:
 	Server	_server;

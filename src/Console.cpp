@@ -6,7 +6,7 @@
 Console::Console(Server server) : _server(server)
 {}
 
-void	Console::log(int logLevel, std::string msg)
+void	Console::log(int logLevel, std::string str)
 {
 	time_t			timestamp = time(0);
 	struct std::tm	*ltm = std::localtime(&timestamp);
@@ -20,7 +20,7 @@ void	Console::log(int logLevel, std::string msg)
 			std::setw(2) << ltm->tm_hour << "." <<
 			std::setw(2) << ltm->tm_min << "." <<
 			std::setw(2) << ltm->tm_sec << " " <<
-			logEvent[(bits)] << "] " << msg << std::endl;
+			logEvent[(bits)] << "] " << str << std::endl;
 	}
-//	return ::write(0, (msg.c_str(), msg.length());
+//	return ::write(0, (str.c_str(), str.length());
 }

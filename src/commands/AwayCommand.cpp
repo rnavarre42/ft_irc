@@ -1,4 +1,5 @@
 #include "AwayCommand.hpp"
+#include "User.hpp"
 #include "Numeric.hpp"
 #include "Message.hpp"
 #include "Server.hpp"

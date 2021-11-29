@@ -1,4 +1,5 @@
 #include "PongCommand.hpp"
+#include "User.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
@@ -26,7 +27,6 @@ void PongCommand::registerUserEvent(Message &message)
 	Console::log(LOG_INFO, "El usuario " + message.getSender()->getName() + " se ha registrado");	
 	message.limitMaxParam(0);
 	message.setReceiver(this->userSender);
-	message.setSender(&this->server);
 	message.insertField("");
 	message.setCmd("MODE");
 	message.send();
@@ -69,7 +69,8 @@ bool PongCommand::_recvUser(Message &message)
 		message.limitMaxParam(1);
 		message.setCmd("QUIT");
 		message[0] = "Incorrect ping reply for registration";
-		this->server.sendCommand(message);
+		message.process();
+//		this->server.sendCommand(message);
 //		this->server.delUser(user);
 	}
 //		server.killUser(user, "You should be dead now!");

@@ -4,12 +4,9 @@
 
 # include "ISender.hpp"
 # include "EventHandler.hpp"
-# include "Source.hpp"
 # include "utils.hpp"
-//# include "Channel.hpp"
-//# include "ACommand.hpp"
-//# include "Message.hpp"
 # include "log.hpp"
+
 # include <string>
 # include <map>
 # include <ctime>
@@ -20,7 +17,8 @@
 
 # define LOG_LEVEL LOG_INFO | LOG_WARNING | LOG_ERROR | LOG_FATAL
 
-# define VERSION		"ircServ 0.1"
+# define VERSION			"ircServ 0.1"
+# define SHUTDOWN_STRING	"Server shutting down"
 
 # define MAXNICK		9
 # define MAXCHANNEL		3
@@ -73,7 +71,6 @@ class Channel;
 class ACommand;
 class User;
 class Channel;
-//struct Source;
 
 class Server : public ISender
 {
@@ -87,6 +84,9 @@ class Server : public ISender
 	typedef channelMap_type::iterator							channelMap_iterator;
 	typedef std::map<std::string, User *>						userMap_type;
 	typedef userMap_type::iterator								userMap_iterator;
+	typedef std::pair<int, User *>								userPair_type;
+	typedef std::map<std::string, userPair_type>				userPairMap_type;
+	typedef userPairMap_type::iterator							userPairMap_iterator;
 	typedef std::map<std::string, Server *>						serverMap_type;
 	typedef userMap_type::iterator								serverMap_iterator;
 	typedef std::map<int, User *>								fdMap_type;
@@ -97,18 +97,14 @@ class Server : public ISender
 
 	static void						signalHandler(int sig);
 	static Server					&getInstance(void);
-	static Server					&getInstance(std::string listenIp, int listenPort, std::string name);
+	static Server					&createInstance(std::string listenIp, int listenPort, std::string name);
 	static void						deleteInstance(void);
 	std::string const				&getName(void) const;
 	Server::userMap_type			&getUserMap(void);
 	Server::channelMap_type			&getChannelMap(void);
 	std::string						getMask(void);
 
-	channelMap_iterator				findChannel(std::string &channelName);
-	userMap_iterator				findUser(std::string &userName);
-	
 	void							delChannel(Channel &channel);
-	bool							validChannelPrefix(std::string &channelName);
 
 	void							setPass(std::string value);
 	std::string const				&getPass(void) const;
@@ -123,23 +119,33 @@ class Server : public ISender
 	void							setSenderStatus(ISender &sender, int value);
 	void							setIdleTime(time_t value);
 
-	void	start(void);
-	ssize_t	send(std::string msg = "");
-	ssize_t	send(Message &message);
+	void							run(void);
+	ssize_t							send(std::string msg = "");
+	ssize_t							send(Message &message);
 
-	void	addToChannel(Message &message);
-	void	delFromChannel(Message &message);
+	void							addToChannel(Message &message);
+	void							delFromChannel(Message &message);
 
-	void	registerUser(User &user);
-	void	quit(std::string msg);
+	void							registerUser(User &user);
+	void							quit(std::string msg);
 	
-	void	createUser(User &user);
-	void	deleteUser(User &user, std::string text);
+	void							createUser(User &user);
+	void							deleteUser(User &user, std::string text);
 	
-//	void	killUser(User &user, std::string reason);
-	int		count(void);
+//	void							killUser(User &user, std::string reason);
+	int								count(void);
 
-	inline ACommand	*findCommand(std::string cmd)
+	bool							recvCommand(Message &msg);
+	bool							sendCommand(Message &msg);
+
+	void							setPollout(User &user);
+
+	inline bool	isChannel(std::string &channelName)
+	{
+		return channelName[0] == '#';
+	}
+
+	inline ACommand	*commandFind(std::string cmd)
 	{
 		if (this->_commandMap.find(cmd) != this->_commandMap.end())
 			return this->_commandMap[cmd];
@@ -155,11 +161,6 @@ class Server : public ISender
 	{
 		return this->_channelMap.find(strToUpper(channelName));
 	}
-
-	bool		recvCommand(Message &msg);
-	bool		sendCommand(Message &msg);
-
-	void	setPollout(User &user);
 
 	struct ServerFullException : public std::exception
 	{
@@ -201,10 +202,11 @@ private:
 
 //	Source						_source;
 	
-	int		_findFreePollIndex(void);
+	int		_freePollIndexFind(void);
 	int		_poll(void);
 	int		_checkUserConnection(void);
 
+	void	_setSignals(void);
 	void	_removeUserFromChannel(Channel &channel, User &user);
 	void	_loadCommands(void);
 	void	_unloadCommands(void);

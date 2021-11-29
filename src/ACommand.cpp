@@ -1,4 +1,6 @@
 #include "ACommand.hpp"
+#include "User.hpp"
+#include "ISender.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
 #include <string>
@@ -25,12 +27,12 @@ void ACommand::recv(Message &message)
 		{
 			if (message.getSender()->isUser())
 			{
-				this->userSender = dynamic_cast<User *>(message.getSender());
+				this->userSender = static_cast<User *>(message.getSender());
 				ret = this->_recvUser(message);
 			}
 			else if (message.getSender()->isServer())
 			{
-				this->serverSender = dynamic_cast<Server *>(message.getSender());
+				this->serverSender = static_cast<Server *>(message.getSender());
 				ret = this->_recvServer(message);
 			}
 			if (!ret)
@@ -61,12 +63,12 @@ void ACommand::send(Message &message)
 {
 	if (message.getReceiver()->isUser())
 	{
-		this->userReceiver = dynamic_cast<User *>(message.getReceiver());
+		this->userReceiver = static_cast<User *>(message.getReceiver());
 		this->_sendUser(message);
 	}
 	else if (message.getReceiver()->isServer())
 	{
-		this->serverReceiver = dynamic_cast<Server *>(message.getReceiver());
+		this->serverReceiver = static_cast<Server *>(message.getReceiver());
 		this->_sendServer(message);
 	}
 }

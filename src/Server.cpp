@@ -1,4 +1,6 @@
 #include "Server.hpp"
+#include "User.hpp"
+#include <cerrno>
 #include "Channel.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
@@ -32,8 +34,9 @@ void	Server::signalHandler(int sig)
 {
 	Server &server = Server::getInstance();
 
+	std::cout << std::endl;
 	if (sig == SIGINT)
-		server.quit("Shutdown. Please, reconnect to another server.\n");
+		server.quit(SHUTDOWN_STRING);
 }
 
 const char	*Server::ServerFullException::what(void) const throw()
@@ -42,12 +45,15 @@ const char	*Server::ServerFullException::what(void) const throw()
 }
 
 Server::Server(std::string listenIp, int listenPort, std::string name)
-	: _ip(listenIp), _port(listenPort), _message(*new Message(*this)), _name(name), _type(TYPE_SERVER)
+	: _ip(listenIp)
+	, _port(listenPort)
+	, _message(*new Message(*this))
+	, _name(name)
+	, _type(TYPE_SERVER)
 {
 	this->_loadCommands();
 //	this->_logger();
-	signal(SIGPIPE, SIG_IGN);
-	signal(SIGINT, Server::signalHandler);
+	this->_setSignals();
 	std::memset(this->_pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
 	this->_stop = false;
 	this->_initSocket();
@@ -67,28 +73,28 @@ Server::~Server(void)
 void	Server::_loadCommands(void)
 {
 
-//	this->_commandMap["AWAY"]	= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
-	this->_commandMap["JOIN"]	= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["KICK"]	= new KickCommand	(*this, LEVEL_REGISTERED, 2);
-	this->_commandMap["MOTD"]	= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
-	this->_commandMap["NICK"]	= new NickCommand	(*this, LEVEL_ALL, 1);
-	this->_commandMap["PART"]	= new PartCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["PASS"]	= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
-	this->_commandMap["PING"]	= new PingCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["PONG"]	= new PongCommand	(*this, LEVEL_NEGOTIATING | LEVEL_REGISTERED, 1);
+//	this->_commandMap["AWAY"]		= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
+	this->_commandMap["JOIN"]		= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->_commandMap["KICK"]		= new KickCommand	(*this, LEVEL_REGISTERED, 2);
+	this->_commandMap["MOTD"]		= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
+	this->_commandMap["NICK"]		= new NickCommand	(*this, LEVEL_ALL, 1);
+	this->_commandMap["PART"]		= new PartCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->_commandMap["PASS"]		= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
+	this->_commandMap["PING"]		= new PingCommand	(*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["PONG"]		= new PongCommand	(*this, LEVEL_NEGOTIATING | LEVEL_REGISTERED, 1);
 	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["QUIT"]	= new QuitCommand	(*this, LEVEL_ALL, 0);
-	this->_commandMap["USER"]	= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
+	this->_commandMap["QUIT"]		= new QuitCommand	(*this, LEVEL_ALL, 0);
+	this->_commandMap["USER"]		= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
 
 //	this->_commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["KILL"]	= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
-//	this->_commandMap["LIST"]	= new ListCommand	(*this, LEVEL_REGISTERED, 0);
-//	this->_commandMap["MODE"]	= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["WHOIS"]	= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["INVITE"]	= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
-//	this->_commandMap["NOTICE"]	= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
-//	this->_commandMap["WHOWAS"]	= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["NAMES"]	= new NamesCommand	(*this, LEVEL_REGISTERED, 0)
+//	this->_commandMap["KILL"]		= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
+//	this->_commandMap["LIST"]		= new ListCommand	(*this, LEVEL_REGISTERED, 0);
+//	this->_commandMap["MODE"]		= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->_commandMap["WHOIS"]		= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->_commandMap["INVITE"]		= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
+//	this->_commandMap["NOTICE"]		= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
+//	this->_commandMap["WHOWAS"]		= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
+//	this->_commandMap["NAMES"]		= new NamesCommand	(*this, LEVEL_REGISTERED, 0)
 
 	Server::aCommandMap_iterator	it;
 
@@ -103,13 +109,16 @@ void	Server::_unloadCommands(void)
 		it->second->unloadEvents(this->_eventHandler);
 		delete it->second;
 	}
+
+	for (Server::eventHandler_type::delegateMMap_iterator it = this->_eventHandler.begin(); it != this->_eventHandler.end(); it++)
+		delete &it->second;
 }
 
 Server	&Server::getInstance(void)
 {
 	return *Server::_instance;
 }
-Server	&Server::getInstance(std::string listenIp, int listenPort, std::string name)
+Server	&Server::createInstance(std::string listenIp, int listenPort, std::string name)
 {
 	if (Server::_instance == NULL)
 		Server::_instance = new Server(listenIp, listenPort, name);
@@ -119,6 +128,13 @@ Server	&Server::getInstance(std::string listenIp, int listenPort, std::string na
 void	Server::deleteInstance(void)
 {
 	delete Server::_instance;
+	Server::_instance = NULL;
+}
+
+void	Server::setSignals(void)
+{
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGINT, Server::signalHandler);
 }
 
 Server::userMap_type	&Server::getUserMap(void)
@@ -213,7 +229,7 @@ void	Server::quit(std::string msg)
 	this->_stop = true;
 }
 
-void	Server::start(void)
+void	Server::run(void)
 {
 	this->_listen();
 	this->_loop();
@@ -241,7 +257,7 @@ void	Server::_initSocket(void)
 	}
 }
 
-inline int Server::_findFreePollIndex(void)
+inline int Server::_freePollIndexFind(void)
 {
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
@@ -292,6 +308,7 @@ User	*Server::_accept(void)
 	struct sockaddr_in	user_addr;
 	int					user_addrlen;
 
+	user_addrlen = sizeof(struct sockaddr_in);
 	newFd = accept(this->_fd, (struct sockaddr *)&user_addr, (socklen_t *)&user_addrlen);
 	if (newFd < 0)
 	{
@@ -300,14 +317,14 @@ User	*Server::_accept(void)
 	}
 	if (this->_fdMap.size() == MAXUSERS)
 	{
-		::send(newFd, "The server is full. Please, try again more later.\r\n", 51, 0);
+		::send(newFd, "The server is full. Please, try again more later.", 49, 0);
 		close(newFd);
 		return NULL;
 //		throw Server::ServerFullException();
 	}
 	user = new User(newFd, *this);
 	user->setHost(inet_ntoa(user_addr.sin_addr));
-	user->setPollIndex(this->_findFreePollIndex());
+	user->setPollIndex(this->_freePollIndexFind());
 	this->_pollfds[user->getPollIndex()].fd = newFd;
 	this->_pollfds[user->getPollIndex()].events = POLLIN;
 	return user;
@@ -321,7 +338,9 @@ void	Server::_bind(void)
 	this->_address.sin_port = htons(this->_port);
 	if (bind(this->_fd, (struct sockaddr *)&this->_address, sizeof(this->_address)) < 0)
 	{
-		Console::log(LOG_ERROR, "Server::bind function bind() failed");
+		ss << "Server::bind function bind() failed: " << std::strerror(errno);
+		Console::log(LOG_ERROR, ss.str());
+		ss.clear();
 		exit(EXIT_FAILURE);
 	}
 	ss << "IP listen: " << this->_ip << ":" << this->_port;
@@ -411,7 +430,7 @@ Server::userVector_type	*getUserVector(User &user)
 	//añadir los usuarios del canal mas grande al vector
 	channelSet.insert(currentChannel);
 	userVector = new Server::userVector_type;
-	for (std::map<std::string, std::pair<int, User *> >::iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+	for (Server::userPairMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
 		userVector->push_back(it->second.second);
 	//añadir los usuarios de los canales restantes sin repetir usuario en el vector
 	for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end(); it++)
@@ -420,7 +439,7 @@ Server::userVector_type	*getUserVector(User &user)
 		ret = channelSet.insert(currentChannel);
 		if (ret.second == true)
 		{
-			for (std::map<std::string, std::pair<int, User *> >::iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+			for (Server::userPairMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
 			{
 				vectorIt = std::find(userVector->begin(), userVector->end(), it->second.second);
 				if (vectorIt == userVector->end())
@@ -447,7 +466,7 @@ void	Server::deleteUser(User &user, std::string text)
 		this->_message.clearReceiver();
 		if (userVector)
 			this->_message.setReceiver(*userVector);
-		this->_message.setBroadcast(true);
+		this->_message.hideReceiver();
 		this->_eventHandler.raise(QUITEVENT, this->_message);
 		for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end();)
 		{
@@ -455,24 +474,15 @@ void	Server::deleteUser(User &user, std::string text)
 			it++;
 			this->_removeUserFromChannel(*currentIt->second, user);
 		}
-		this->_userMap.erase(strToUpper(user.getName()));
 	}
+	if (!user.getName().empty())
+		this->_userMap.erase(strToUpper(user.getName()));
 	this->_fdMap.erase(user.getFd());
 	this->_pollfds[user.getPollIndex()].fd = 0;
 	this->_pollfds[user.getPollIndex()].events = 0;
 	this->_message.clear();
 	delete &user;
 	delete userVector;
-}
-
-Server::userMap_iterator	Server::findUser(std::string &userName)
-{
-	return this->_userMap.find(strToUpper(userName));
-}
-
-Server::channelMap_iterator	Server::findChannel(std::string &channelName)
-{
-	return this->_channelMap.find(strToUpper(channelName));
 }
 
 // :masksource JOIN #CHAN :Pass
@@ -482,10 +492,10 @@ void	Server::addToChannel(Message &message)
 	std::string										&channelName = message[0];
 	User											&user = *static_cast<User *>(message.getSender());
 	Server::channelMap_iterator						it;
-	std::pair<std::map<std::string, std::pair<int, User *> >::iterator, bool>		retUser;
+	std::pair<Server::userPairMap_iterator, bool>	retUser;
 
 //	this->_source.message = &message;
-	if (this->validChannelPrefix(channelName))
+	if (this->isChannel(channelName))
 	{
 //		std::cout << "user " << user.getName() << " " << user.getChannelMap().size() << std::end;
 		if (user.getChannelMap().size() == MAXCHANNEL)
@@ -508,8 +518,8 @@ void	Server::addToChannel(Message &message)
 			//TODO hay que limpiar este código y tratar de hacerlo más compacto
 			channel = it->second;
 			message.setChannel(channel);
-			std::pair<std::string, std::pair<int, User *> >	pair1;
-			std::pair<int, User *>							pair2;
+			std::pair<std::string, Server::userPair_type>	pair1;
+			Server::userPair_type							pair2;
 
 			pair2 = std::make_pair(0, &user);
 			pair1 = std::make_pair(strToUpper(user.getName()), pair2);
@@ -537,11 +547,6 @@ void	Server::addToChannel(Message &message)
 		this->_eventHandler.raise(ERRCHANEVENT, this->_message);
 }
 
-inline bool	Server::validChannelPrefix(std::string &channelName)
-{
-	return channelName[0] == '#';
-}
-
 void	Server::delFromChannel(Message &message)
 {
 	Channel							*channel = NULL;
@@ -549,7 +554,7 @@ void	Server::delFromChannel(Message &message)
 	std::string						&channelName = message[0];
 	Server::channelMap_iterator		it;	
 	
-	if (this->validChannelPrefix(channelName))
+	if (this->isChannel(channelName))
 	{
 		if ((it = this->channelFind(channelName)) == this->_channelMap.end())
 			this->_eventHandler.raise(NOTCHANEVENT, this->_message);
@@ -616,7 +621,7 @@ void	Server::_checkUserIO(void)
 			user = this->_fdMap[this->_pollfds[i].fd];
 			size = user->checkInput(this->_pollfds[i].fd, this->_message);
 			if (size <= 0) // ctrl+c
-				this->deleteUser(*user, "");
+				this->deleteUser(*user, "Client exited");
 		}
 		else if (this->_pollfds[i].revents & POLLOUT)
 		{
@@ -638,7 +643,7 @@ bool	Server::recvCommand(Message &msg)
 	ACommand	*command;
 
 	msg.getSender()->setIdleTime(time(NULL));
-	if ((command = this->findCommand(msg.getCmd())))
+	if ((command = this->commandFind(msg.getCmd())))
 	{
 		command->recv(msg);
 		return true;
@@ -646,15 +651,15 @@ bool	Server::recvCommand(Message &msg)
 	return false;
 }
 
-bool	Server::sendCommand(Message &msg)
+bool	Server::sendCommand(Message &message)
 {
 	ACommand	*command;
 
-	if ((command = this->findCommand(msg.getCmd())))
+	if ((command = this->commandFind(message.getCmd())))
 	{
-		if (msg.getReceiver() == NULL)
-			msg.setReceiver(msg.getSender());
-		command->send(msg);
+		if (message.getReceiver() == NULL)
+			message.setReceiver(message.getSender());
+		command->send(message);
 		return true;
 	}
 	return false;
@@ -672,7 +677,7 @@ void	Server::_checkConsoleInput(void)
 		if (size > 0)
 		{
 			if (!strcmp(buffer, "quit\n"))
-				this->quit("Server shutdown");
+				this->quit(SHUTDOWN_STRING);
 		}
 	}
 }

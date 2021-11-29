@@ -1,4 +1,5 @@
 #include "PrivmsgCommand.hpp"
+#include "User.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
@@ -31,9 +32,9 @@ bool PrivmsgCommand::_recvUser(Message &message)
 		user.send(Numeric::builder(this->server, user, ERR_NOTEXTTOSEND));
 		return true;
 	}
-	if (this->server.validChannelPrefix(message[0]))
+	if (this->server.isChannel(message[0]))
 	{
-		if ((chanIt = this->server.findChannel(message[0])) == this->server.getChannelMap().end())
+		if ((chanIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
 		{	
 			Numeric::insertField(message[0]);
 			user.send(Numeric::builder(this->server, user, ERR_NOSUCHCHANNEL));
@@ -41,11 +42,11 @@ bool PrivmsgCommand::_recvUser(Message &message)
 		}
 		message.setReceiver(chanIt->second->getUserMap());
 		message.limitMaxParam(2);
-		message.setBroadcast(true);
+		message.hideReceiver();
 	}
 	else
 	{
-		if ((userIt = this->server.findUser(message[0])) == this->server.getUserMap().end())
+		if ((userIt = this->server.userFind(message[0])) == this->server.getUserMap().end())
 		{
 			Numeric::insertField(message[0]);
 			user.send(Numeric::builder(this->server, user, ERR_NOSUCHNICK));

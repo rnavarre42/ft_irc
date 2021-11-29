@@ -8,6 +8,7 @@ class JoinCommand : public ACommand
 {
 public:
 	JoinCommand(Server &server, int accessLevel, int paramCount);
+	~JoinCommand(void) {}
 
 	void joinChannelEvent(Message &message);
 	void alreadyChannelEvent(Message &message);

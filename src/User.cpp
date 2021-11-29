@@ -22,10 +22,6 @@ User::User(int fd, Server &server) :
 
 User::~User(void)
 {
-	if (this->getStatus() & LEVEL_REGISTERED)
-		Console::log(LOG_INFO, "User <" + this->_name + "> disconnected");
-	else
-		Console::log(LOG_INFO, "User <anonymous> disconnected");
 	close(this->_fd);
 //	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
 //		it->second->getUserMap().erase(strToUpper(this->_name));

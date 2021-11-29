@@ -1,4 +1,5 @@
 #include "NickCommand.hpp"
+#include "User.hpp"
 #include "Delegate.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
@@ -36,6 +37,12 @@ bool NickCommand::_recvUser(Message &message)
 	std::map<std::string, User *>::iterator	it;
 	std::map<std::string, User *>			&userMap = this->server.getUserMap();
 
+	if (newName.size() > MAXNICK)
+	{
+		message.insertField(newName);
+		message.send(Numeric::builder(message, ERR_ERRONEUSNICKNAME));
+		return true;
+	}
 	// si el nick coincide respetando las mayusculas/minusculas, se ignora.
 	if (oldName == newName)
 		return true;
@@ -44,11 +51,13 @@ bool NickCommand::_recvUser(Message &message)
 	// Hay que notificar al resto de usuarios que compartan canal y a él mismo que el nick ha cambiado.
 	if (strToUpper(oldName) == strToUpper(newName))
 	{
-		user.send(":" + user.getMask() + " NICK :" + newName);
+		message.hideReceiver();
+		message.send();
+//		user.send(":" + user.getMask() + " NICK :" + newName);
 		user.setName(newName);
 		return true;
 	}
-	it = userMap.find(strToUpper(newName));
+	it = this->server.userFind(newName);
 	if (it == userMap.end())
 	{
 		if (oldName.empty() && user.getIdent() != "anonymous")
@@ -60,7 +69,8 @@ bool NickCommand::_recvUser(Message &message)
 		if (!oldName.empty())
 		{
 			userMap.erase(strToUpper(oldName));
-			user.send(":" + user.getMask() + " NICK :" + newName);
+			if (!(user.getStatus() & (LEVEL_REGISTERED | LEVEL_IRCOPERATOR)))
+				user.send(":" + user.getMask() + " NICK :" + newName);
 		}
 		user.setName(newName);
 		userMap[strToUpper(newName)] = &user;

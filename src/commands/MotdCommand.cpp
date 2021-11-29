@@ -1,4 +1,5 @@
 #include "MotdCommand.hpp"
+#include "User.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
 #include "Numeric.hpp"
@@ -23,7 +24,7 @@ bool MotdCommand::_recvUser(Message &message)
 	User	&user = *this->userSender;
 
 	message.setReceiver(&user);
-	this->server.sendCommand(message);
+	message.send();
 
 	(void)user;
 	return true;
@@ -47,7 +48,7 @@ bool MotdCommand::_sendUser(Message &message)
 	ifs.open("motd.txt", std::fstream::in);
 	if (ifs.fail())
 	{
-		message.getSender()->send(Numeric::builder(this->server, user, ERR_NOMOTD));
+		message.send(Numeric::builder(this->server, user, ERR_NOMOTD));
 		return true;
 	}
 	Numeric::insertField(this->server.getMask());
