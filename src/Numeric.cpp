@@ -44,9 +44,8 @@ void	Numeric::insertField(std::string data)
 std::string	Numeric::builder(Server &server, ISender &sender, int num)
 {
 	size_t					replacePos, offset = 0;
-	stringVector_iterator	it;
-	std::string				base;
-	std::string				data;
+	stringVector_iterator	it1, it2;
+	std::string				base, line, data;
 
 	if (!Numeric::_instance)
 		_instance = new Numeric();
@@ -54,24 +53,40 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 	Numeric::_instance->_sender = &sender;
 	Numeric::_instance->_num = num;
 	Numeric::_instance->_numericStr = Numeric::_numericMap[num];
-	for (it = _instance->_fieldVector.begin(); it != _instance->_fieldVector.end(); it++)
+	for (it1 = _instance->_fieldVector.begin(); it1 != _instance->_fieldVector.end(); it1++)
 	{
 		replacePos = Numeric::_instance->_numericStr.find('$', offset);
 		if (replacePos == std::string::npos)
-		{
 			break;
-			std::cout << "Muerte por exceso de argumentos" << std::endl;
-			throw std::exception();
-		}
-		Numeric::_instance->_numericStr.replace(replacePos, 1, *it);
-		offset = replacePos + it->size();
+		Numeric::_instance->_numericStr.replace(replacePos, 1, *it1);
+		offset = replacePos + it1->size();
 	}
 	base = Numeric::_instance->_toString();
-	for (; it != _instance->_fieldVector.end(); it++)
+	offset += base.size() - Numeric::_instance->_numericStr.size();
+	if ((replacePos = base.find('%', offset)) != std::string::npos)
 	{
-		std::cout << "names = " << *it << std::endl;
+		base.erase(replacePos, 1);
+		line = base;
+		for (it2 = it1; it2 != _instance->_fieldVector.end(); it2++)
+		{
+//			std::cout << "line =" << line << " offset = " << offset <<  std::endl;
+//			std::cout << "names = " << *it2 << std::endl;
+			if ((line.size() + it2->size()) > 52 - 2 )// si hemos llenado
+			{
+				data.append(line);
+				line = base;
+			}
+			if (line == base && it1 != it2)
+				data.append("\r\n");
+			if (it1 != it2)
+				line.insert(replacePos, " ");
+			line.insert(replacePos, *it2);
+		}
+		if (line != base)
+			data.append(line);
 	}
-	data = base;
+	else
+		data = base;
 	Numeric::_instance->_fieldVector.clear();
 	return data;
 }

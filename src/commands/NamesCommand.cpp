@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
+#include "Numeric.hpp"
 #include <iostream>
 
 NamesCommand::NamesCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
@@ -21,9 +22,11 @@ bool NamesCommand::_recvUser(Message &message)
 	User	&user = *this->userSender;
 
 	message.getServer()->names(*message.getChannel());
+	message.setReceiver(message.getSender());
+	message.send(Numeric::builder(message, RPL_NAMREPLY));
 	(void)message;
 	(void)user;
-	return false;
+	return true;
 }
 
 bool NamesCommand::_recvServer(Message &message)

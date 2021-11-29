@@ -36,7 +36,7 @@
 # define REGTIMEOUT		15
 # define NEXTTIMEOUT	120
 # define BUFFERSIZE		512
-# define MAXUSERS		3
+# define MAXUSERS		10
 # define MAXLISTEN		5
 
 # define NEWUSEREVENT		0x000001
