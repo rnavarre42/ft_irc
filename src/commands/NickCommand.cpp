@@ -37,9 +37,10 @@ bool NickCommand::_recvUser(Message &message)
 	std::map<std::string, User *>::iterator	it;
 	std::map<std::string, User *>			&userMap = this->server.getUserMap();
 
+	message.setReceiver(message.getSender());
 	if (newName.size() > MAXNICK)
 	{
-		message.insertField(newName);
+		Numeric::insertField(newName);
 		message.send(Numeric::builder(message, ERR_ERRONEUSNICKNAME));
 		return true;
 	}
@@ -69,8 +70,12 @@ bool NickCommand::_recvUser(Message &message)
 		if (!oldName.empty())
 		{
 			userMap.erase(strToUpper(oldName));
-			if (!(user.getStatus() & (LEVEL_REGISTERED | LEVEL_IRCOPERATOR)))
-				user.send(":" + user.getMask() + " NICK :" + newName);
+			if ((user.getStatus() & (LEVEL_REGISTERED | LEVEL_IRCOPERATOR)))
+			{
+				message.hideReceiver();
+				message.send();
+			}
+//				user.send(":" + user.getMask() + " NICK :" + newName);
 		}
 		user.setName(newName);
 		userMap[strToUpper(newName)] = &user;
