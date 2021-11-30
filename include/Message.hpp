@@ -49,6 +49,10 @@ public:
 	void				eraseAt(size_t index);
 
 	void				limitMaxParam(size_t limit);
+	std::vector<std::string>	*getParamVector(void)
+	{
+		return &_paramVector;
+	}
 
 	void				swapField(size_t first, size_t second);
 	void				insertField(std::string field);

@@ -95,7 +95,7 @@ void	Server::_loadCommands(void)
 //	this->_commandMap["INVITE"]		= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->_commandMap["NOTICE"]		= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->_commandMap["WHOWAS"]		= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["NAMES"]		= new NamesCommand	(*this, LEVEL_REGISTERED, 0);
+	this->_commandMap["NAMES"]		= new NamesCommand	(*this, LEVEL_REGISTERED, 1);
 
 	Server::aCommandMap_iterator	it;
 
@@ -469,6 +469,7 @@ void	Server::deleteUser(User &user, std::string text)
 		{
 			currentIt = it;
 			it++;
+			this->_message.setChannel(currentIt->second);
 			this->_removeUserFromChannel(*currentIt->second, user);
 		}
 	}
@@ -558,7 +559,7 @@ void	Server::delFromChannel(Message &message)
 		else
 		{
 			channel = it->second;
-//HERE			message.channel = channel;
+			message.setChannel(channel);
 			if ((it = user.channelFind(channelName)) == user.getChannelMap().end())
 				this->_eventHandler.raise(NOTINCHANEVENT, this->_message);
 			else
@@ -647,14 +648,14 @@ void	Server::_checkUserIO(void)
 	}
 }
 
-bool	Server::recvCommand(Message &msg)
+bool	Server::recvCommand(Message &message)
 {
 	ACommand	*command;
 
-	msg.getSender()->setIdleTime(time(NULL));
-	if ((command = this->commandFind(msg.getCmd())))
+	message.getSender()->setIdleTime(time(NULL));
+	if ((command = this->commandFind(message.getCmd())))
 	{
-		command->recv(msg);
+		command->recv(message);
 		return true;
 	}
 	return false;

@@ -19,13 +19,19 @@ void NamesCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 }
 bool NamesCommand::_recvUser(Message &message)
 {
+	Server::channelMap_iterator	it;
 	User	&user = *this->userSender;
 
-	message.getServer()->names(*message.getChannel());
-	message.setReceiver(message.getSender());
-	message.send(Numeric::builder(message, RPL_NAMREPLY));
-	(void)message;
 	(void)user;
+	message.setReceiver(message.getSender());
+	if ((it = message.getServer()->channelFind(message[0])) != message.getServer()->getChannelMap().end())
+	{
+		message.setChannel(it->second);
+		message.getServer()->names(*message.getChannel());
+		message.send(Numeric::builder(message, RPL_NAMREPLY));
+	}
+	Numeric::insertField(message[0]);
+	message.send(Numeric::builder(message, RPL_ENDOFNAMES));
 	return true;
 }
 
@@ -44,6 +50,7 @@ bool NamesCommand::_sendUser(Message &message)
 
 	(void)message;
 	(void)user;
+	this->_recvUser(message);
 	return false;
 }
 

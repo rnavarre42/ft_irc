@@ -32,6 +32,8 @@ void JoinCommand::createChannelEvent(Message &message)
 	message.setReceiver(message.getSender());
 	message.hideReceiver();
 	message.send();
+	message.setCmd("NAMES");
+	message.process();
 }
 
 void JoinCommand::joinChannelEvent(Message &message)
@@ -41,6 +43,8 @@ void JoinCommand::joinChannelEvent(Message &message)
 	message.setReceiver(message.getSender());
 	message.hideReceiver();
 	message.send();
+	message.clearReceiver();
+	message.setReceiver(message.getSender());
 	message.setCmd("NAMES");
 	message.process();
 }
@@ -73,10 +77,25 @@ void JoinCommand::errChannelEvent(Message &message)
 
 bool JoinCommand::_recvUser(Message &message)
 {
-	User	&user = *this->userSender;
+	User						&user = *this->userSender;
+	Server::channelMap_iterator	currentIt;
 
-	(void)user;
-	this->server.addToChannel(message);
+	if (message[0] == "0")
+	{
+		if (message.size() == 1)
+			message.insertField("exit from all channels");
+		message.setCmd("PART");
+		for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end();)
+		{
+			currentIt = it;
+			it++;
+			message[0] = currentIt->second->getName();
+			this->server.delFromChannel(message);
+			message.clearReceiver();
+		}
+	}
+	else
+		this->server.addToChannel(message);
 	return true;
 }
 

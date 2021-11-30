@@ -222,6 +222,7 @@ void	Message::clear(void)
 	this->_sender = NULL;
 	this->_paramVector.clear();
 	this->_cmd.clear();
+	this->_channel = NULL;
 	this->_hideReceiver = false;
 }
 
