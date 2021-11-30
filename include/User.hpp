@@ -95,6 +95,9 @@ public:
 	size_t	checkInput(int fd, Message &message);
 	bool	checkOutput(int fd);
 
+	Server::userVector_type	*getUniqueVector(void);
+	Channel					*findFullestChannel(void);
+
 private:
 	User(void);
 

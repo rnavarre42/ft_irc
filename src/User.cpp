@@ -323,3 +323,53 @@ bool	User::checkOutput(int fd)
 	this->_outputBuffer.erase(0, size);
 	return false;
 }
+
+Channel	*User::findFullestChannel(void)
+{
+	Server::channelMap_iterator		currentIt = this->_channelMap.begin();
+	Server::channelMap_iterator		nextIt = currentIt;
+
+	for (; nextIt != this->_channelMap.end(); nextIt++)
+	{
+		if (nextIt->second->getUserMap().size() > currentIt->second->getUserMap().size())
+			currentIt = nextIt;
+	}
+	return	currentIt->second;
+}
+
+Server::userVector_type	*User::getUniqueVector(void)
+{
+	//aloca memoria para el nuevo vector
+	Server::userVector_type								*userVector;
+	Server::channelSet_type								checkChannelSet;
+	Channel												*currentChannel;
+	std::pair<Server::channelSet_iterator, bool>		ret;
+	Server::userVector_iterator							vectorIt;
+
+	if (!this->getChannelMap().size())
+		return NULL;
+	//buscar el canal que tiene mas usuarios
+	currentChannel = findFullestChannel();
+	//std::cout << "channel name = " << currentChannel->getName() << std::endl;
+
+	//añadir los usuarios del canal mas grande al vector
+	checkChannelSet.insert(currentChannel);
+	userVector = new Server::userVector_type;
+	for (Server::userPairMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+		userVector->push_back(it->second.second);
+	//añadir los usuarios de los canales restantes sin repetir usuario en el vector
+	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
+	{
+		currentChannel = it->second;
+		ret = checkChannelSet.insert(currentChannel);
+		if (ret.second == true)
+			for (Server::userPairMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+			{
+				vectorIt = std::find(userVector->begin(), userVector->end(), it->second.second);
+				if (vectorIt == userVector->end())
+					userVector->push_back(it->second.second);
+			}
+	}
+//	for_each(userVector->begin(), userVector->end(), displayUserName);
+	return userVector;
+}

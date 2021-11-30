@@ -397,7 +397,7 @@ void	displayUserName(User *user)
 	std::cout << "User name = " << user->getName() << std::endl;
 }
 */
-
+/*
 Channel	*findFullestChannel(User &user)
 {
 	Server::channelMap_iterator	currentIt = user.getChannelMap().begin();
@@ -447,11 +447,11 @@ Server::userVector_type	*getUserVector(User &user)
 //	for_each(userVector->begin(), userVector->end(), displayUserName);
 	return userVector;
 }
-
+*/
 void	Server::deleteUser(User &user, std::string text)
 {
 	Server::channelMap_iterator	currentIt;
-	Server::userVector_type		*userVector = getUserVector(user);
+	Server::userVector_type		*userVector = user.getUniqueVector();
 
 	this->_message.setSender(&user);
 	this->_message.setReceiver(&user);	
