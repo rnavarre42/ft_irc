@@ -608,6 +608,8 @@ int	Server::_checkUserConnection(void)
 
 void	Server::names(Channel &channel)
 {
+	//TODO hay que determinar si el canal tiene +p, se enviará "*", +s "@" o nada "="
+	Numeric::insertField("=");
 	Numeric::insertField(channel.getName());
 	for (Server::userPairMap_iterator it = channel.getUserMap().begin(); it != channel.getUserMap().end(); it++)
 	{
