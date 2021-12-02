@@ -5,6 +5,7 @@ BASE_SRCS		=	\
 					ACommand.cpp				\
 					Channel.cpp					\
 					Console.cpp					\
+					Invite.cpp					\
 					ISender.cpp					\
 					Message.cpp					\
 					Numeric.cpp					\
@@ -15,6 +16,7 @@ BASE_SRCS		=	\
 COMMAND_PATH	=	commands/
 COMMAND_SRCS	=	\
 					AwayCommand.cpp				\
+					InviteCommand.cpp			\
 					JoinCommand.cpp				\
 					KickCommand.cpp				\
 					KillCommand.cpp				\
@@ -29,7 +31,6 @@ COMMAND_SRCS	=	\
 					QuitCommand.cpp				\
 					UserCommand.cpp				\
 
-#					InviteCommand.cpp			\
 #					ListCommand.cpp				\
 #					ModeCommand.cpp				\
 #					NoticeCommand.cpp			\

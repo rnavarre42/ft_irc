@@ -25,7 +25,12 @@ Server::userPairMap_type	&Channel::getUserMap(void)
 	return this->_userMap;
 }
 
-void Channel::delUser(std::string value)
+void	Channel::insertUser(User *user)
+{
+	this->_userMap[strToUpper(user->getName())].second = user;
+}
+
+void	Channel::eraseUser(std::string value)
 {
 	this->_userMap.erase(strToUpper(value));
 }

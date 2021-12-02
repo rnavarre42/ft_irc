@@ -37,7 +37,8 @@ public:
 	std::string const	&getName(void) const;
 	std::string const	&getUpperName(void) const;
 
-	void			delChannel(std::string value);	
+	void			eraseChannel(std::string value);	
+	void			insertChannel(Channel *channel);
 
 	inline Server::channelMap_iterator channelFind(std::string &value)
 	{
@@ -50,6 +51,9 @@ public:
 	bool		isUser(void);
 	bool		isServer(void);
 	bool		isOper(void);
+	bool		isOnChannel(Channel &channel);
+	bool		isOnChannel(std::string &channel);
+
 	int			getType(void);
 
 	void				clearPingChallenge();

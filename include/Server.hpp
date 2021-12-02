@@ -6,6 +6,7 @@
 # include "EventHandler.hpp"
 # include "utils.hpp"
 # include "log.hpp"
+# include "Invite.hpp"
 
 # include <string>
 # include <map>
@@ -103,10 +104,15 @@ class Server : public ISender
 	static Server					&createInstance(std::string listenIp, int listenPort, std::string name);
 	static void						deleteInstance(void);
 	std::string const				&getName(void) const;
-	Server::userMap_type			&getUserMap(void);
-	Server::channelMap_type			&getChannelMap(void);
+	userMap_type					&getUserMap(void);
+	channelMap_type					&getChannelMap(void);
 	std::string						getMask(void);
 
+	inline Invite					&invite(void)
+	{
+		return this->_invite;
+	}
+	
 	void							delChannel(Channel &channel);
 
 	void							setPass(std::string value);
@@ -204,6 +210,7 @@ private:
 	channelMap_type		_channelMap;
 	commandMap_type		_commandMap;
 	eventHandler_type	_eventHandler;
+	Invite				_invite;
 
 //	Source						_source;
 	

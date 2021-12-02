@@ -123,8 +123,8 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_CREATED] = "This server was created " __TIME__ " " __DATE__;
 	Numeric::_numericMap[RPL_MYINFO] = "$ " VERSION " $ $";
 	Numeric::_numericMap[RPL_ISUPPORT] = "$ :are supported by this server";
-	Numeric::_numericMap[ERR_NOSUCHCHANNEL] = "$ :No such channel";
 	Numeric::_numericMap[ERR_ERRONEUSNICKNAME] = "$ :Erroneus nickname";
 	Numeric::_numericMap[RPL_NAMREPLY] = "$ $ :%";
 	Numeric::_numericMap[RPL_ENDOFNAMES] = "$ :End of NAMES list";
+	Numeric::_numericMap[RPL_INVITING] = "$ :$";
 }

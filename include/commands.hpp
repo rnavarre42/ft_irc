@@ -2,7 +2,7 @@
 # define COMMANDS_HPP
 
 //# include "AwayCommand.hpp"
-//# include "InviteCommand.hpp"
+# include "InviteCommand.hpp"
 # include "JoinCommand.hpp"
 //# include "KickCommand.hpp"
 //# include "ListCommand.hpp"

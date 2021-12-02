@@ -65,6 +65,19 @@ std::string &User::getInputBuffer(void)
 	return this->_inputBuffer;
 }
 
+bool	User::isOnChannel(std::string &channel)
+{
+	return (this->channelFind(channel) != this->_channelMap.end());
+}
+
+bool	User::isOnChannel(Channel &channel)
+{
+	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
+		if (it->second == &channel)
+			return true;
+	return false;
+}
+
 std::string &User::getOutputBuffer(void)
 {
 	return this->_outputBuffer;
@@ -218,7 +231,12 @@ bool	User::isAway(void)
 	return !this->_awayMsg.empty();
 }
 
-void	User::delChannel(std::string value)
+void	User::insertChannel(Channel *channel)
+{
+	this->_channelMap[strToUpper(channel->getName())] = channel;
+}
+
+void	User::eraseChannel(std::string value)
 {
 	this->_channelMap.erase(strToUpper(value));
 }

@@ -75,6 +75,7 @@ void	Server::_loadCommands(void)
 {
 
 //	this->_commandMap["AWAY"]		= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
+	this->_commandMap["INVITE"]		= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 	this->_commandMap["JOIN"]		= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["KICK"]		= new KickCommand	(*this, LEVEL_REGISTERED, 2);
 	this->_commandMap["MOTD"]		= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
@@ -92,7 +93,6 @@ void	Server::_loadCommands(void)
 //	this->_commandMap["LIST"]		= new ListCommand	(*this, LEVEL_REGISTERED, 0);
 //	this->_commandMap["MODE"]		= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["WHOIS"]		= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["INVITE"]		= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->_commandMap["NOTICE"]		= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->_commandMap["WHOWAS"]		= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["NAMES"]		= new NamesCommand	(*this, LEVEL_REGISTERED, 1);
@@ -321,7 +321,6 @@ User	*Server::_accept(void)
 		::send(newFd, "The server is full. Please, try again more later.", 49, 0);
 		close(newFd);
 		return NULL;
-//		throw Server::ServerFullException();
 	}
 	user = new User(newFd, *this);
 	user->setHost(inet_ntoa(user_addr.sin_addr));
@@ -381,12 +380,13 @@ void	Server::createUser(User &user)
 
 void	Server::_removeUserFromChannel(Channel &channel, User &user)
 {
-	user.delChannel(channel.getName());	// se elimina al canal del usuario
-	channel.delUser(user.getName());	// se elimina al usuario del canal
+	user.eraseChannel(channel.getName());	// se elimina al canal del usuario
+	channel.eraseUser(user.getName());	// se elimina al usuario del canal
 	if (channel.empty())	// si no quedan usuarios en el canal
 	{
 //		this->_source.message->setChannel(&channel);
 		this->_eventHandler.raise(DELCHANEVENT, this->_message);
+		this->_invite.eraseChannel(&channel);
 		this->delChannel(channel);	// se elimina
 	}
 }
@@ -479,6 +479,7 @@ void	Server::deleteUser(User &user, std::string text)
 	this->_pollfds[user.getPollIndex()].fd = 0;
 	this->_pollfds[user.getPollIndex()].events = 0;
 	this->_message.clear();
+	this->_invite.eraseUser(&user);
 	delete &user;
 	delete userVector;
 }
@@ -488,7 +489,7 @@ void	Server::addToChannel(Message &message)
 {
 	Channel											*channel = NULL;
 	std::string										&channelName = message[0];
-	User											&user = *static_cast<User *>(message.getSender());
+	User											&user = static_cast<User &>(*message.getSender());
 	Server::channelMap_iterator						it;
 	std::pair<Server::userPairMap_iterator, bool>	retUser;
 
@@ -498,6 +499,7 @@ void	Server::addToChannel(Message &message)
 //		std::cout << "user " << user.getName() << " " << user.getChannelMap().size() << std::end;
 		if (user.getChannelMap().size() == MAXCHANNEL)
 			this->_eventHandler.raise(MAXCHANEVENT, this->_message);
+		// el canal no existe, se ha de crear
 		else if ((it = this->channelFind(channelName)) == this->_channelMap.end())
 		{
 			channel = new Channel(channelName, user);
@@ -516,6 +518,13 @@ void	Server::addToChannel(Message &message)
 			//TODO hay que limpiar este código y tratar de hacerlo más compacto
 			channel = it->second;
 			message.setChannel(channel);
+		
+			//eliminamos la invitación, si existiera
+			if (this->_invite.erase(&user, channel))
+			{
+				Console::log(LOG_INFO, user.getName() + " ha hecho efectiva su invitacion");
+			}
+
 			std::pair<std::string, Server::userPair_type>	pair1;
 			Server::userPair_type							pair2;
 
@@ -528,11 +537,13 @@ void	Server::addToChannel(Message &message)
 
 			
 //			retUser = channel->getUserMap().insert(std::pair<std::string, std::pair<int, User *>  >(strToUpper(user.getName(), par)));
-			if (retUser.second == true)  //El nick ha entrado al canal
+			if (retUser.second == true)  //El nick no está en el canal
 			{
 				// añade el canal al usuario y el usuario al canal
-				channel->getUserMap()[strToUpper(user.getName())].second = &user;
-				user.getChannelMap()[strToUpper(channelName)] = channel;
+				channel->insertUser(&user);
+				user.insertChannel(channel);
+				//channel->getUserMap()[strToUpper(user.getName())].second = &user;
+				//user.getChannelMap()[strToUpper(channelName)] = channel;
 				//
 				this->_eventHandler.raise(JOINEVENT, this->_message);
 			}
@@ -548,7 +559,7 @@ void	Server::addToChannel(Message &message)
 void	Server::delFromChannel(Message &message)
 {
 	Channel							*channel = NULL;
-	User							&user = *static_cast<User* >(message.getSender());
+	User							&user = static_cast<User &>(*message.getSender());
 	std::string						&channelName = message[0];
 	Server::channelMap_iterator		it;	
 	
@@ -614,6 +625,7 @@ void	Server::names(Channel &channel)
 	Numeric::insertField(channel.getName());
 	for (Server::userPairMap_iterator it = channel.getUserMap().begin(); it != channel.getUserMap().end(); it++)
 	{
+//		añadir @ o +
 //		if (it->second->first & I
 		Numeric::insertField(it->second.second->getName());
 	}
@@ -688,6 +700,14 @@ void	Server::_checkConsoleInput(void)
 		{
 			if (!strcmp(buffer, "quit\n"))
 				this->quit(SHUTDOWN_STRING);
+			if (!strcmp(buffer, "invite\n"))
+			{
+				std::cout << "Nick     Channel" << std::endl;
+				for (Invite::inviteVector_iterator it = _invite.begin(); it != _invite.end(); it++)
+				{
+					std::cout << it->first->getName() << "\t" << it->second->getName() << std::endl;
+				}
+			}
 		}
 	}
 }
