@@ -239,7 +239,7 @@ void	Server::run(void)
 void	Server::_initSocket(void)
 {
 	this->_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (!this->_fd)
+	if (this->_fd < 0)
 	{
 		Console::log(LOG_ERROR, "Server::initSocket function socket() failed");
 		exit(EXIT_FAILURE);
