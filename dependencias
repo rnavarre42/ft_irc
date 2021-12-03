@@ -1,0 +1,33 @@
+ISender
+	1	Message.hpp
+
+
+Message
+	2	Server.hpp
+	-	ACommand.hpp
+	-	ISender.hpp
+
+
+Server
+	3	ISender.hpp
+	ACommand.hpp
+	Message.hpp
+
+
+ACommand
+	-	Server.hpp
+	4	User.hpp
+	Message.hpp
+
+
+User
+	-	ISender.hpp
+	5	Channel.hpp
+	Server.hpp
+	Message.hpp
+
+
+Channel
+	-	User.hpp
+	-	Server.hpp
+

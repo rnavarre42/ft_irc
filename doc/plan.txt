@@ -1,0 +1,87 @@
+message:
+	(el servidor marca el último parametro con ":")
+
+	JOIN	#canal
+		:mascara JOIN :#canal
+
+	PART	#canal
+		:mascara JOIN :#canal
+
+	PRIVMSG #canal,usuario :texto
+		:mascara PRIVMSG #canal :texto
+		:mascara PRIVMSG usuario :texto
+
+	QUIT	:texto
+		:origen QUIT :texto
+	KILL	nick :texto
+??		:origen KILL :texto
+	
+	KICK	#canal nick :mensaje
+		:mascara KICK #canal nick :mensaje
+
+	MODE	#canal/nick mode var
+		:mascara MODE #canal/nick mode :var
+
+	TOPIC	#canal :texto
+		:origen TOPIC #canal :texto
+
+	INVITE	nick #canal
+		:servidor 341 nick canal :origen
+		:origen INVITE nick :#canal
+
+//	NAMES	#canal
+
+
+Server
+	fdMap									
+	userMap									
+	channelMap								
+
+Channel
+	std::map<std::string, pair<int, User* >>	userMap
+
+User
+	std::map<std::string, Channel *>			channelMap
+
+Si se va un usuario hay que eliminarlo de
+		Server::fdMap
+		Server::userMap
+!!		Channel::userMap
+
+Si se entra a un canal, hay que añadirlo a
+!!		Channel::userMap
+		User::channelMap
+
+	y si no hay ningun usuario antes a
+		Server::channelMap
+
+		isOper(userMap["x"]);
+
+bool	isOper(std::pair<int, User *> &userData)
+{
+	return userData.first & IS_OPER;
+}
+
+bool	isVoice(std::pair<int, User *> &userData)
+{
+	return userData.first & IS_VOICE;
+}
+
+void	names(Channel &channel)
+{
+	std::map<std::string, std::pair<int, User *>>::iterator	it;
+
+	for (..
+}
+
+
+
+
+Si se sale de un canal, hay que eliminarlo de
+!!		Channel::userMap
+		User::channelMap
+
+	y si no quedan usuarios de
+		Server::channelMap
+
+

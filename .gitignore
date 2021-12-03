@@ -1,3 +1,7 @@
-irc_bouncer
+ircserv
+client
+*.swp
+*.o
+.vscode/
 tags
 obj/
