@@ -519,22 +519,28 @@ void	Server::addToChannel(Message &message)
 			channel = it->second;
 			message.setChannel(channel);
 		
-			//eliminamos la invitación, si existiera
+			//eliminamos la invitación, si existiera.
 			if (this->_invite.erase(&user, channel))
 			{
 				Console::log(LOG_INFO, user.getName() + " ha hecho efectiva su invitacion");
 			}
+			else
+			{
+				Console::log(LOG_INFO, user.getName() + " no tenia invitacion");
+			}
 
-			std::pair<std::string, Server::userPair_type>	pair1;
-			Server::userPair_type							pair2;
+	//		std::pair<std::string, Server::userPair_type>	pair1;
+	//		Server::userPair_type							pair2;
 
-			pair2 = std::make_pair(0, &user);
-			pair1 = std::make_pair(strToUpper(user.getName()), pair2);
+	//		pair2 = std::make_pair(0, &user);
+	//		pair1 = std::make_pair(strToUpper(user.getName()), pair2);
+	//		pair1 = std::make_pair(strToUpper(user.getName()), std::make_pair(0, &user));
 	//		std::pair<int, User *>						level2 = std::make_pair<int, User *>(0, &user);
 	//		std::pair<std::string, std::pair<int, User *> >	level1 = std::make_pair<std::string, std::pair<int, User *> >(strToUpper(user.getName()), level2);
 			
-			retUser = channel->getUserMap().insert(pair1);
+	//		retUser = channel->getUserMap().insert(pair1);
 
+			retUser = channel->getUserMap().insert(std::make_pair(strToUpper(user.getName()), std::make_pair(0, &user)));
 			
 //			retUser = channel->getUserMap().insert(std::pair<std::string, std::pair<int, User *>  >(strToUpper(user.getName(), par)));
 			if (retUser.second == true)  //El nick no está en el canal

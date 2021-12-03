@@ -23,7 +23,7 @@ void PrivmsgCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 
 bool PrivmsgCommand::_recvUser(Message &message)
 {
-	User	&user = *this->userSender;
+	User						&user = *this->userSender;
 	Server::userMap_iterator 	userIt;
 	Server::channelMap_iterator	chanIt;
 
