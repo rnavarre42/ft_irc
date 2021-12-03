@@ -1,6 +1,6 @@
 BASE_PATH		=	src/
 BASE_SRCS		=	\
-					main.cpp					\
+					ircserv.cpp					\
 					utils.cpp					\
 					ACommand.cpp				\
 					Channel.cpp					\

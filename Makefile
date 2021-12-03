@@ -3,12 +3,13 @@ SRCSPATH	=	src/
 OBJSPATH	=	obj/
 OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
 DEPS		=	$(OBJS:.o=.d)
-CFLAGS		=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
+CXXFLAGS	=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
 COMMONFLAGS	=	
-LDFLAGS		=	$(COMMONFLAGS)
+LDFLAGS		=	$(LDLIBS) $(COMMONFLAGS)
+LDLIBS		=	
 INCLUDEPATH	=	./include/
 FSANITIZE	=	-g3 -fsanitize=address
-CC			=	clang++
+CXX			=	clang++
 RM			=	rm -Rf
 
 -include	sources.mk
@@ -20,10 +21,10 @@ all:	debug
 
 $(OBJSPATH)%.o:	$(SRCSPATH)%.cpp
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 $(NAME):	$(OBJS)
-	$(CC) -o $(NAME) $(OBJS) $(LDFLAGS)
+	$(CXX) -o $(NAME) $(OBJS) $(LDFLAGS)
 
 clean:
 	$(RM) $(OBJS) $(DEPS)
