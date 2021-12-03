@@ -1,8 +1,11 @@
 NAME		=	ircserv
+CLIENT		=	irclient
 SRCSPATH	=	src/
 OBJSPATH	=	obj/
 OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
 DEPS		=	$(OBJS:.o=.d)
+CLIENTOBJS	=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(CLIENT_SRCS:.cpp=.o))
+CLIENTDEPS	=	$(CLIENT_OBJS:.o=.d)
 CXXFLAGS	=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
 COMMONFLAGS	=	
 LDFLAGS		=	$(LDLIBS) $(COMMONFLAGS)
@@ -15,7 +18,7 @@ RM			=	rm -Rf
 -include	sources.mk
 
 all:	debug
-#$(NAME)
+#$(NAME) $(CLIENT)
 
 -include	$(DEPS)
 
@@ -28,9 +31,10 @@ $(NAME):	$(OBJS)
 
 clean:
 	$(RM) $(OBJS) $(DEPS)
+	$(RM) $(CLIENTOBJS) $(CLIENTDEPS)
 
 fclean:		clean
-	$(RM) $(NAME) tags
+	$(RM) $(NAME) tags $(CLIENT)
 
 print:
 	echo $(SRCS)
@@ -39,7 +43,7 @@ print:
 re:			fclean all
 
 debug:		COMMONFLAGS = $(FSANITIZE)
-debug:		$(NAME) tag
+debug:		$(NAME) tag $(CLIENT)
 
 release:	COMMONFLAGS = -O3
 release:	$(NAME)
@@ -50,6 +54,12 @@ tag:
 
 run:		all
 	./$(NAME)
+
+$(CLIENT):	$(CLIENTOBJS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+runcli:		all
+	./$(CLIENT) localhost 6667
 
 cli:
 	make -C client run non NoSoyNadie 127.0.0.1 6667

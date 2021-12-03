@@ -1,4 +1,5 @@
 ircserv
+irclient
 client
 *.swp
 *.o

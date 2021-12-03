@@ -42,3 +42,11 @@ COMMAND_SRCS	=	\
 SRCS			=	$(addprefix $(BASE_PATH), $(BASE_SRCS)				\
 						$(addprefix $(COMMAND_PATH), $(COMMAND_SRCS))	\
 					)													\
+
+CLIENT_PATH		=	src/
+CLIENT_SRC		=	\
+					irclient.cpp				\
+					Client.cpp					\
+
+CLIENT_SRCS		=	$(addprefix $(CLIENT_PATH), $(CLIENT_SRC)			\
+					)													\

@@ -7,14 +7,18 @@
 class	Client
 {
 public:
-	Client(std::string host, std::string port);
+	Client(std::string hostname, std::string port);
 	~Client(void);
 
 private:
-	std::string		_serverHost;
-	std::string		_serverPort;
-	int				_sockfd;
-	struct addrinfo	_hints, *_current, *_first;
+	std::string		_hostname;
+	std::string		_port;
+	int				_fd;
+
+	struct addrinfo	_hints, *_res, *_res0;
+	void			_getAddrInfoList(void);
+
+	void			_connectToSocket(void);
 
 	Client(void);
 };
