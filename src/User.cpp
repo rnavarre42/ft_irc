@@ -314,6 +314,7 @@ size_t	User::checkInput(int fd, Message &message)
 	std::string	lineBuffer;
 
 	size = this->recv(fd);
+	//TODO debe salir del  bucle cuando la instancia esté marcada para ser eliminada o seguirá procesando mensajes en el buffer
 	while ((pos = this->_inputBuffer.find('\n')) != std::string::npos)
 	{
 		lineBuffer = this->_getLine(pos);
