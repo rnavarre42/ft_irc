@@ -345,9 +345,8 @@ bool	User::checkOutput(int fd)
 Channel	*User::findFullestChannel(void)
 {
 	Server::channelMap_iterator		currentIt = this->_channelMap.begin();
-	Server::channelMap_iterator		nextIt = currentIt;
 
-	for (; nextIt != this->_channelMap.end(); nextIt++)
+	for (Server::channelMap_iterator nextIt = currentIt; nextIt != this->_channelMap.end(); nextIt++)
 	{
 		if (nextIt->second->getUserMap().size() > currentIt->second->getUserMap().size())
 			currentIt = nextIt;

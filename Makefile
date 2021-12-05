@@ -58,7 +58,7 @@ run:		all
 $(CLIENT):	$(CLIENTOBJS)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-runcli:		all
+client:		all
 	./$(CLIENT) localhost 6667
 
 cli:
@@ -72,4 +72,4 @@ dalnet:
 	make -C client run non NoSoyNadie 143.244.34.1 6667
 
 .SILENT:	clean fclean tag release print
-.PHONY:		all clean fclean re debug tag release
+.PHONY:		all clean fclean re debug tag release client
