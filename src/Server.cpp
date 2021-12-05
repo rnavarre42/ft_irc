@@ -480,7 +480,8 @@ void	Server::deleteUser(User &user, std::string text)
 	this->_pollfds[user.getPollIndex()].events = 0;
 	this->_message.clear();
 	this->_invite.eraseUser(&user);
-	delete &user;
+	user.markDelete();
+	//delete &user;
 	delete userVector;
 }
 
@@ -650,6 +651,8 @@ void	Server::_checkUserIO(void)
 			size = user->checkInput(this->_pollfds[i].fd, this->_message);
 			if (size <= 0) // ctrl+c
 				this->deleteUser(*user, "Client exited");
+			if (user->mustDeleted())
+				delete user;
 		}
 		else if (this->_pollfds[i].revents & POLLOUT)
 		{

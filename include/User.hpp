@@ -37,6 +37,9 @@ public:
 	std::string const	&getName(void) const;
 	std::string const	&getUpperName(void) const;
 
+	bool				mustDeleted(void);
+	void				markDelete(void);
+
 	void			eraseChannel(std::string value);	
 	void			insertChannel(Channel *channel);
 
@@ -100,7 +103,7 @@ public:
 	bool	checkOutput(int fd);
 
 	Server::userVector_type	*getUniqueVector(void);
-	Channel					*findFullestChannel(void);
+	Channel					*getFullestChannel(void);
 
 private:
 	User(void);
@@ -124,6 +127,7 @@ private:
 	int							_pollIndex;
 	int							_fd;
 	int							_type;
+	bool						_mustDeleted;
 
 	std::string					_getLine(size_t pos);
 };

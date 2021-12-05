@@ -17,7 +17,8 @@ User::User(int fd, Server &server) :
 	_signTime(time(NULL)), 
 	_nextTimeout(this->_signTime + REGTIMEOUT), 
 	_fd(fd), 
-	_type(TYPE_USER)
+	_type(TYPE_USER),
+	_mustDeleted(false)
 {}
 
 User::~User(void)
@@ -342,7 +343,7 @@ bool	User::checkOutput(int fd)
 	return false;
 }
 
-Channel	*User::findFullestChannel(void)
+Channel	*User::getFullestChannel(void)
 {
 	Server::channelMap_iterator		currentIt = this->_channelMap.begin();
 
@@ -352,6 +353,16 @@ Channel	*User::findFullestChannel(void)
 			currentIt = nextIt;
 	}
 	return	currentIt->second;
+}
+
+void	User::markDelete(void)
+{
+	this->_mustDeleted = true;
+}
+
+bool	User::mustDeleted(void)
+{
+	return this->_mustDeleted;
 }
 
 Server::userVector_type	*User::getUniqueVector(void)
@@ -366,7 +377,7 @@ Server::userVector_type	*User::getUniqueVector(void)
 	if (!this->getChannelMap().size())
 		return NULL;
 	//buscar el canal que tiene mas usuarios
-	currentChannel = findFullestChannel();
+	currentChannel = getFullestChannel();
 	//std::cout << "channel name = " << currentChannel->getName() << std::endl;
 
 	//añadir los usuarios del canal mas grande al vector

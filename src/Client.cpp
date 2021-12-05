@@ -5,10 +5,11 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
-#include <cstrlib>
+#include <cstdlib>
 #include <cstring>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <signal.h>
 #include <poll.h>
 
 void signal_handler(int sig)
@@ -41,7 +42,7 @@ void	Client::_getAddrInfoList(void)
 {
 	int	error;
 
-	memset(&this->_hints, 0, sizeof(this->_hints));
+	bzero(&this->_hints, sizeof(struct addrinfo));
 	this->_hints.ai_family = AF_UNSPEC;
 	this->_hints.ai_socktype = SOCK_STREAM;
 	error = getaddrinfo(this->_hostname.c_str(), this->_port.c_str(), &this->_hints, &this->_res0);
