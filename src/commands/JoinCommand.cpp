@@ -26,6 +26,12 @@ void JoinCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
+void JoinCommand::preChannelEvent(Message &message, bool &cancel)
+{
+	(void)message;
+	(void)cancel;
+}
+
 void JoinCommand::createChannelEvent(Message &message)
 {
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha creado el canal " + message[0]);

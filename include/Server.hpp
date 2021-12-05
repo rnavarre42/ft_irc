@@ -7,6 +7,7 @@
 # include "utils.hpp"
 # include "log.hpp"
 # include "Invite.hpp"
+# include "IChannelEvent.hpp"
 
 # include <string>
 # include <map>
@@ -205,12 +206,13 @@ private:
 	struct pollfd		_pollfds[MAXUSERS + 2];
 	static Server		*_instance;
 
-	fdMap_type			_fdMap;
-	userMap_type		_userMap;
-	channelMap_type		_channelMap;
-	commandMap_type		_commandMap;
-	eventHandler_type	_eventHandler;
-	Invite				_invite;
+	fdMap_type						_fdMap;
+	userMap_type					_userMap;
+	channelMap_type					_channelMap;
+	commandMap_type					_commandMap;
+	eventHandler_type				_eventHandler;
+	Invite							_invite;
+	std::vector<IChannelEvent *>	_channelEventVector;
 
 //	Source						_source;
 	

@@ -1,7 +1,7 @@
 #include "Server.hpp"
 #include <iostream>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 
 /*
 _Bool	telnet_ctrlc(char *buffer)

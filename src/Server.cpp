@@ -73,6 +73,7 @@ Server::~Server(void)
 
 void	Server::_loadCommands(void)
 {
+	IChannelEvent	*channelEvent;
 
 //	this->_commandMap["AWAY"]		= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
 	this->_commandMap["INVITE"]		= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
@@ -100,7 +101,16 @@ void	Server::_loadCommands(void)
 	Server::aCommandMap_iterator	it;
 
 	for (it = this->_commandMap.begin(); it != this->_commandMap.end(); it++)
+	{
 		it->second->loadEvents(this->_eventHandler);
+		if ((channelEvent = dynamic_cast<IChannelEvent *>(it->second)))
+		{
+			std::cout << "Adding " << it->first << " to preChannelEvent vector" << std::endl;
+			this->_channelEventVector.push_back(channelEvent);
+		}
+		else
+			std::cout << "The command " << it->first << " not implement IChannelEvent" << std::endl;
+	}
 }
 
 void	Server::_unloadCommands(void)

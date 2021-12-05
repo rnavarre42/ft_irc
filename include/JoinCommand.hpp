@@ -2,13 +2,19 @@
 # define JOINCOMMAND_HPP
 
 # include "ACommand.hpp"
+# include "IChannelEvent.hpp"
+
 # include <string>
 
-class JoinCommand : public ACommand
+class JoinCommand
+	: public ACommand
+	, public IChannelEvent
 {
 public:
 	JoinCommand(Server &server, int accessLevel, int paramCount);
 	~JoinCommand(void) {}
+
+	void preChannelEvent(Message &message, bool &cancel);
 
 	void joinChannelEvent(Message &message);
 	void alreadyChannelEvent(Message &message);

@@ -28,8 +28,8 @@ public:
 	virtual void loadEvents(Server::eventHandler_type &eventHandler) = 0;
 	virtual void unloadEvents(Server::eventHandler_type &eventHandler) = 0;
 
-	void	recv(Message &msg);
-	void	send(Message &msg);
+	void	recv(Message &message);
+	void	send(Message &message);
 
 private:
 	virtual bool	_recvUser(Message &message) = 0;
