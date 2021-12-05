@@ -1,5 +1,6 @@
 ircserv
 client
+irclient
 *.swp
 *.o
 .vscode/
