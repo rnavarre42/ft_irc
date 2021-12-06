@@ -96,10 +96,10 @@ public:
 	void		sendToBuffer(std::string msg);
 	void		sendToBuffer(Message &message);
 
-	size_t	recv(int fd);
+	ssize_t	recv(int fd);
 
 	Message	*buildMessage(std::string &buff);
-	size_t	checkInput(int fd, Message &message);
+	ssize_t	checkInput(int fd, Message &message);
 	bool	checkOutput(int fd);
 
 	Server::userVector_type	*getUniqueVector(void);

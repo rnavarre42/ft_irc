@@ -111,12 +111,12 @@ void	loop_client(int server_fd)
 			}
 			else if (!strncmp(line, "ERROR", 5))
 			{
-				close(server_fd);
-				return ;
+//				close(server_fd);
+//				return ;
 			}
 			line = strtok(NULL, "\n");
 		}
-		sleep(0);
+		sleep(1);
     }
 }
 

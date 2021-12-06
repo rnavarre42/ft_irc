@@ -106,14 +106,15 @@ void	Client::_checkConsoleInput(void)
 			exit(EXIT_FAILURE);
 		}
 		buffer[size] = '\0';
+		std::cout << "Sending buffer: " << buffer;
+		send(this->_fd, buffer, strlen(buffer) - 1, 0);
+		send(this->_fd, "\r\n", 2, 0);
 		if (!strcmp(buffer, "quit\n"))
 		{
+			send(this->_fd, "join #madrid\r\n", 14, 0);
 			std::cerr << "Goodbye" << std::endl;
 			exit(0);
 		}
-		std::cout << "Sending buffer: " << buffer;
-		send(this->_fd, buffer, strlen(buffer), 0);
-		send(this->_fd, "\r\n", 2, 0);
 	}
 }
 

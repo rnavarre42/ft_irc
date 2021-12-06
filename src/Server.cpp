@@ -481,7 +481,7 @@ void	Server::deleteUser(User &user, std::string text)
 	this->_message.clear();
 	this->_invite.eraseUser(&user);
 	user.markDelete();
-	//delete &user;
+//	delete &user;
 	delete userVector;
 }
 
@@ -641,7 +641,7 @@ void	Server::names(Channel &channel)
 void	Server::_checkUserIO(void)
 {
 	User	*user;
-	size_t	size;
+	ssize_t	size;
 
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
@@ -650,7 +650,9 @@ void	Server::_checkUserIO(void)
 			user = this->_fdMap[this->_pollfds[i].fd];
 			size = user->checkInput(this->_pollfds[i].fd, this->_message);
 			if (size <= 0) // ctrl+c
+			{
 				this->deleteUser(*user, "Client exited");
+			}
 			if (user->mustDeleted())
 				delete user;
 		}

@@ -277,12 +277,14 @@ ssize_t	User::send(Message &message)
 	return this->send();
 }
 
-size_t	User::recv(int fd)
+ssize_t	User::recv(int fd)
 {
-	size_t	size;
+	ssize_t	size;
 	char	buffer[BUFFERSIZE + 1];
 
 	size = ::recv(fd, buffer, BUFFERSIZE, 0);
+	if (size < 0 )
+		return size;
 	buffer[size] = '\0';
 	this->_inputBuffer += buffer;
 	return size;
@@ -307,15 +309,17 @@ std::string	User::_getLine(size_t pos)
 	return line;
 }
 
-size_t	User::checkInput(int fd, Message &message)
+ssize_t	User::checkInput(int fd, Message &message)
 {
-	size_t		size;
+	ssize_t		size;
 	size_t		pos;
 	std::string	lineBuffer;
 
 	size = this->recv(fd);
+	if (size < 0)
+		return size;
 	//TODO debe salir del  bucle cuando la instancia esté marcada para ser eliminada o seguirá procesando mensajes en el buffer
-	while ((pos = this->_inputBuffer.find('\n')) != std::string::npos)
+	while (!this->_mustDeleted && (pos = this->_inputBuffer.find('\n')) != std::string::npos)
 	{
 		lineBuffer = this->_getLine(pos);
 		message.set(*this, lineBuffer);
