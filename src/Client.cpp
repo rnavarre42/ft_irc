@@ -19,9 +19,11 @@ void signal_handler(int sig)
 	exit(1);
 }
 
-Client::Client(std::string hostname, std::string port)
+Client::Client(std::string hostname, std::string port, std::string nick, std::string user)
 	: _hostname(hostname)
 	, _port(port)
+	, _nickname(nick)
+	, _username(user)
 {
 	signal(SIGINT, signal_handler);
 	this->_connectToSocket();
@@ -36,7 +38,7 @@ Client::~Client(void)
 
 void	Client::_autoIdent(void)
 {
-	this->_send("NICK tomasito\r\nUSER tomas * * *");
+	this->_send("NICK " + this->_nickname + "\r\n" + "USER " + this->_username + " * * *");
 }
 
 void	Client::_getAddrInfoList(void)
@@ -103,6 +105,7 @@ void	Client::_checkConsoleInput(void)
 {
 	ssize_t	size;
 	char	buffer[BUFFERSIZE + 1];
+	size_t	pos;
 
 	if (this->_pollfds[0].revents & POLLIN)
 	{
@@ -113,8 +116,10 @@ void	Client::_checkConsoleInput(void)
 			exit(EXIT_FAILURE);
 		}
 		buffer[size] = '\0';
-		::send(this->_fd, buffer, strlen(buffer) - 1, 0);
-		::send(this->_fd, "\r\n", 2, 0);
+		this->_outputBuffer = buffer;
+		if ((pos = this->_outputBuffer.find('\n')) != std::string::npos)
+			this->_outputBuffer.erase(pos, 1);
+		this->_send(this->_outputBuffer);
 	}
 }
 

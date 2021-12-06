@@ -59,7 +59,7 @@ $(CLIENT):	$(CLIENTOBJS)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 client:		all
-	./$(CLIENT) localhost 6667
+	./$(CLIENT) localhost 6667 tomasito tomas
 
 cli:
 	make -C client run non NoSoyNadie 127.0.0.1 6667
