@@ -706,9 +706,9 @@ void	Server::_checkConsoleInput(void)
 	if (this->_pollfds[1].revents & POLLIN)
 	{
 		size = read(0, buffer, BUFFERSIZE);
-		buffer[size] = '\0';
 		if (size > 0)
 		{
+			buffer[size] = '\0';
 			if (!strcmp(buffer, "quit\n"))
 				this->quit(SHUTDOWN_STRING);
 			if (!strcmp(buffer, "invite\n"))
@@ -726,7 +726,10 @@ void	Server::_checkConsoleInput(void)
 void	Server::_checkUserTimeout(User &user)
 {
 	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
+	{
 		this->deleteUser(user, "Registration timeout");
+		delete &user;
+	}
 	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < time(NULL)))
 	{
 		if (user.getStatus() == LEVEL_REGISTERED)

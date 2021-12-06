@@ -25,17 +25,18 @@ Client::Client(std::string hostname, std::string port)
 {
 	signal(SIGINT, signal_handler);
 	this->_connectToSocket();
-	this->_pollTimeout = 1000;
-	this->_pollfds[0].fd = 0;
-	this->_pollfds[0].events = POLLIN;
-	this->_pollfds[1].fd = this->_fd;
-	this->_pollfds[1].events = POLLIN;
+	this->_autoIdent();
 	this->_loop();
 }
 
 Client::~Client(void)
 {
 	close(this->_fd);
+}
+
+void	Client::_autoIdent(void)
+{
+	this->_send("NICK tomasito\r\nUSER tomas * * *");
 }
 
 void	Client::_getAddrInfoList(void)
@@ -92,6 +93,12 @@ void	Client::_connectToSocket(void)
 	freeaddrinfo(this->_res0);
 }
 
+void	Client::_send(std::string data)
+{
+	data += "\r\n";
+	::send(this->_fd, data.c_str(), data.size(), 0);
+}
+
 void	Client::_checkConsoleInput(void)
 {
 	ssize_t	size;
@@ -106,15 +113,8 @@ void	Client::_checkConsoleInput(void)
 			exit(EXIT_FAILURE);
 		}
 		buffer[size] = '\0';
-		std::cout << "Sending buffer: " << buffer;
-		send(this->_fd, buffer, strlen(buffer) - 1, 0);
-		send(this->_fd, "\r\n", 2, 0);
-		if (!strcmp(buffer, "quit\n"))
-		{
-			send(this->_fd, "join #madrid\r\n", 14, 0);
-			std::cerr << "Goodbye" << std::endl;
-			exit(0);
-		}
+		::send(this->_fd, buffer, strlen(buffer) - 1, 0);
+		::send(this->_fd, "\r\n", 2, 0);
 	}
 }
 
@@ -125,7 +125,12 @@ void	Client::_checkNetworkInput(void)
 	std::string	line;
 	size_t		pos;
 	
-	if (this->_pollfds[1].revents & POLLIN)
+	if (this->_pollfds[1].revents & POLLHUP)
+	{
+		std::cout << "Socket has been disconnected, goodbye!" << std::endl;
+		exit(0);
+	}
+	else if (this->_pollfds[1].revents & POLLIN)
 	{
 		size = recv(this->_fd, buffer, BUFFERSIZE, 0);
 		if (size == -1)
@@ -142,14 +147,29 @@ void	Client::_checkNetworkInput(void)
 			while ((pos = line.find('\r')) != std::string::npos)
 				line.erase(pos, 1);
 			std::cout << line << std::endl;
+			if (!line.compare(0, 4, "PING"))
+			{
+				line.replace(0, 4, "PONG");
+				this->_send(line);
+			}
 		}
 	}
+}
+
+void	Client::_initPoll(void)
+{
+	this->_pollTimeout = 1000;
+	this->_pollfds[0].fd = 0;
+	this->_pollfds[0].events = POLLIN;
+	this->_pollfds[1].fd = this->_fd;
+	this->_pollfds[1].events = POLLIN | POLLHUP;
 }
 
 void	Client::_loop(void)
 {
 	int	rv;
 
+	this->_initPoll();
 	while (1)
 	{	
 		rv = poll(this->_pollfds, FDNUM, this->_pollTimeout);

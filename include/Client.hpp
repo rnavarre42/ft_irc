@@ -28,12 +28,15 @@ private:
 
 	struct pollfd	_pollfds[FDNUM];
 	int				_pollTimeout;
+	void			_initPoll(void);
 	void			_loop(void);
 
 	std::string	_inputBuffer;
 	void		_checkConsoleInput(void);
 	void		_checkNetworkInput(void);
 
+	void		_autoIdent(void);
+	void		_send(std::string data);
 
 	Client(void);
 };
