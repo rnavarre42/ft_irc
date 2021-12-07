@@ -5,9 +5,10 @@
 # include <netdb.h>
 # include <poll.h>
 
-# define FDNUM		2
-# define BUFFERSIZE	512
-
+# define FDNUM			2
+# define BUFFERSIZE		512
+# define POLLTIMEOUT	1000
+# define STDIN			0
 
 class	Client
 {
@@ -24,22 +25,23 @@ private:
 	std::string		_nickname;
 	std::string		_username;
 
-	struct addrinfo	_hints, *_res, *_res0;
 	void			_connectToSocket(void);
-	void			_getAddrInfoList(void);
-	void			_displayIpAddress(void);
+	void			_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0);
+	void			_displayIpAddress(struct addrinfo *res);
 
 	struct pollfd	_pollfds[FDNUM];
 	int				_pollTimeout;
 	void			_initPoll(void);
 	void			_loop(void);
 
+//	std::string		_outputBuffer;
 	std::string		_inputBuffer;
-	std::string		_outputBuffer;
+	std::string		_winInputBuffer;
 	void			_checkConsoleInput(void);
 	void			_checkNetworkInput(void);
 
-	void			_autoIdent(void);
+	void			_doAutoPong(std::string data);
+	void			_doAutoIdent(void);
 	void			_send(std::string data);
 
 	Client(void);

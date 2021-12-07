@@ -12,11 +12,11 @@
 #include <signal.h>
 #include <poll.h>
 
-void signal_handler(int sig)
+void signalHandler(int sig)
 {
 	if (sig == SIGINT)
 		std::cout << std::endl;
-	exit(1);
+	exit(0);
 }
 
 Client::Client(std::string hostname, std::string port, std::string nick, std::string user)
@@ -25,9 +25,9 @@ Client::Client(std::string hostname, std::string port, std::string nick, std::st
 	, _nickname(nick)
 	, _username(user)
 {
-	signal(SIGINT, signal_handler);
+	signal(SIGINT, signalHandler);
 	this->_connectToSocket();
-	this->_autoIdent();
+	this->_doAutoIdent();
 	this->_loop();
 }
 
@@ -36,19 +36,19 @@ Client::~Client(void)
 	close(this->_fd);
 }
 
-void	Client::_autoIdent(void)
+void	Client::_doAutoIdent(void)
 {
 	this->_send("NICK " + this->_nickname + "\r\n" + "USER " + this->_username + " * * *");
 }
 
-void	Client::_getAddrInfoList(void)
+void	Client::_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0)
 {
 	int	error;
 
-	bzero(&this->_hints, sizeof(struct addrinfo));
-	this->_hints.ai_family = AF_UNSPEC;
-	this->_hints.ai_socktype = SOCK_STREAM;
-	error = getaddrinfo(this->_hostname.c_str(), this->_port.c_str(), &this->_hints, &this->_res0);
+	bzero(hints, sizeof(struct addrinfo));
+	hints->ai_family = AF_UNSPEC;
+	hints->ai_socktype = SOCK_STREAM;
+	error = getaddrinfo(this->_hostname.c_str(), this->_port.c_str(), hints, res0);
 	if (error)
 	{
 		std::cerr << "client: getaddrinfo failed: " << gai_strerror(error) << std::endl;
@@ -56,29 +56,30 @@ void	Client::_getAddrInfoList(void)
 	}
 }
 
-void	Client::_displayIpAddress(void)
+void	Client::_displayIpAddress(struct addrinfo *res)
 {
 	char		dst[INET_ADDRSTRLEN];
 
-	inet_ntop(this->_res->ai_family, &((struct sockaddr_in *)this->_res->ai_addr)->sin_addr, dst, INET_ADDRSTRLEN);
+	inet_ntop(res->ai_family, &((struct sockaddr_in *)res->ai_addr)->sin_addr, dst, INET_ADDRSTRLEN);
 	this->_ip = dst;
 	std::cout << "connecting to address: " << this->_ip << std::endl;
 }
 
 void	Client::_connectToSocket(void)
 {
-	std::string	strError;
+	struct addrinfo	hints, *res, *res0;
+	std::string		strError;
 
-	this->_getAddrInfoList();
-	for (this->_res = this->_res0; this->_res != NULL; this->_res = this->_res->ai_next)
+	this->_getAddrInfoList(&hints, &res0);
+	for (res = res0; res != NULL; res = res->ai_next)
 	{
-		this->_fd = socket(this->_res->ai_family, this->_res->ai_socktype, this->_res->ai_protocol);
+		this->_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 		if (this->_fd < 0)
 		{
 			strError = "socket failed";
 			continue ;
 		}
-		if (connect(this->_fd, this->_res->ai_addr, this->_res->ai_addrlen) < 0)
+		if (connect(this->_fd, res->ai_addr, res->ai_addrlen) < 0)
 		{
 			strError = "failed to connect";
 			close(this->_fd);
@@ -86,13 +87,13 @@ void	Client::_connectToSocket(void)
 		}
 		break ;
 	}
-	if (this->_fd < 0 || !this->_res)
+	if (this->_fd < 0 || !res)
 	{
 		std::cerr << "client: " << strError << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	this->_displayIpAddress();
-	freeaddrinfo(this->_res0);
+	this->_displayIpAddress(res);
+	freeaddrinfo(res0);
 }
 
 void	Client::_send(std::string data)
@@ -106,20 +107,30 @@ void	Client::_checkConsoleInput(void)
 	ssize_t	size;
 	char	buffer[BUFFERSIZE + 1];
 	size_t	pos;
+//	std::string	buffer
 
 	if (this->_pollfds[0].revents & POLLIN)
 	{
 		size = read(0, buffer, BUFFERSIZE);
 		if (size == -1)
 		{
-			std::cout << "client: read failed" << std::endl;
+			std::cout << "client: readline failed" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 		buffer[size] = '\0';
-		this->_outputBuffer = buffer;
-		if ((pos = this->_outputBuffer.find('\n')) != std::string::npos)
-			this->_outputBuffer.erase(pos, 1);
-		this->_send(this->_outputBuffer);
+		this->_winInputBuffer = buffer;
+		if ((pos = this->_winInputBuffer.find('\n')) != std::string::npos)
+			this->_winInputBuffer.erase(pos, 1);
+		this->_send(this->_winInputBuffer);
+	}
+}
+
+void	Client::_doAutoPong(std::string str)
+{
+	if (!str.compare(0, 4, "PING"))
+	{
+		str.replace(0, 4, "PONG");
+		this->_send(str);
 	}
 }
 
@@ -152,19 +163,15 @@ void	Client::_checkNetworkInput(void)
 			while ((pos = line.find('\r')) != std::string::npos)
 				line.erase(pos, 1);
 			std::cout << line << std::endl;
-			if (!line.compare(0, 4, "PING"))
-			{
-				line.replace(0, 4, "PONG");
-				this->_send(line);
-			}
+			this->_doAutoPong(line);
 		}
 	}
 }
 
 void	Client::_initPoll(void)
 {
-	this->_pollTimeout = 1000;
-	this->_pollfds[0].fd = 0;
+	this->_pollTimeout = POLLTIMEOUT;
+	this->_pollfds[0].fd = STDIN;
 	this->_pollfds[0].events = POLLIN;
 	this->_pollfds[1].fd = this->_fd;
 	this->_pollfds[1].events = POLLIN | POLLHUP;
