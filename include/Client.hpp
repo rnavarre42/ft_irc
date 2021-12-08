@@ -34,15 +34,14 @@ private:
 	void			_initPoll(void);
 	void			_loop(void);
 
-//	std::string		_outputBuffer;
 	std::string		_inputBuffer;
-	std::string		_winInputBuffer;
 	void			_checkConsoleInput(void);
 	void			_checkNetworkInput(void);
 
 	void			_doAutoPong(std::string data);
 	void			_doAutoIdent(void);
-	void			_send(std::string data);
+	void			_sendLine(std::string data);
+	void			_displayLine(std::string &line);
 
 	Client(void);
 };

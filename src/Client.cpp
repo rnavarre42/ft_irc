@@ -9,7 +9,7 @@
 #include <cstring>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <signal.h>
+#include <csignal>
 #include <poll.h>
 
 void signalHandler(int sig)
@@ -38,14 +38,14 @@ Client::~Client(void)
 
 void	Client::_doAutoIdent(void)
 {
-	this->_send("NICK " + this->_nickname + "\r\n" + "USER " + this->_username + " * * *");
+	this->_sendLine("NICK " + this->_nickname + "\r\n" + "USER " + this->_username + " * * *");
 }
 
 void	Client::_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0)
 {
 	int	error;
 
-	bzero(hints, sizeof(struct addrinfo));
+	std::memset(hints, 0, sizeof(struct addrinfo));
 	hints->ai_family = AF_UNSPEC;
 	hints->ai_socktype = SOCK_STREAM;
 	error = getaddrinfo(this->_hostname.c_str(), this->_port.c_str(), hints, res0);
@@ -90,38 +90,34 @@ void	Client::_connectToSocket(void)
 	if (this->_fd < 0 || !res)
 	{
 		std::cerr << "client: " << strError << std::endl;
-		exit(EXIT_FAILURE);
+		exit(0);
 	}
 	this->_displayIpAddress(res);
 	freeaddrinfo(res0);
 }
 
-void	Client::_send(std::string data)
+void	Client::_sendLine(std::string data)
 {
 	data += "\r\n";
-	::send(this->_fd, data.c_str(), data.size(), 0);
+	send(this->_fd, data.c_str(), data.size(), 0);
 }
 
 void	Client::_checkConsoleInput(void)
 {
-	ssize_t	size;
-	char	buffer[BUFFERSIZE + 1];
-	size_t	pos;
-//	std::string	buffer
+	size_t		pos;
+	std::string	buffer;
 
 	if (this->_pollfds[0].revents & POLLIN)
 	{
-		size = read(0, buffer, BUFFERSIZE);
-		if (size == -1)
+		std::getline(std::cin, buffer);
+		if (!std::cin)
 		{
-			std::cout << "client: readline failed" << std::endl;
+			std::cout << "client: getline failed" << std::endl;
 			exit(EXIT_FAILURE);
 		}
-		buffer[size] = '\0';
-		this->_winInputBuffer = buffer;
-		if ((pos = this->_winInputBuffer.find('\n')) != std::string::npos)
-			this->_winInputBuffer.erase(pos, 1);
-		this->_send(this->_winInputBuffer);
+		if ((pos = buffer.find('\n')) != std::string::npos)
+			buffer.erase(pos, 1);
+		this->_sendLine(buffer);
 	}
 }
 
@@ -130,8 +126,14 @@ void	Client::_doAutoPong(std::string str)
 	if (!str.compare(0, 4, "PING"))
 	{
 		str.replace(0, 4, "PONG");
-		this->_send(str);
+		this->_sendLine(str);
+		this->_displayLine(str);
 	}
+}
+
+void	Client::_displayLine(std::string &line)
+{
+	std::cout << line << std::endl;
 }
 
 void	Client::_checkNetworkInput(void)
@@ -140,7 +142,7 @@ void	Client::_checkNetworkInput(void)
 	char		buffer[BUFFERSIZE + 1];
 	std::string	line;
 	size_t		pos;
-	
+
 	if (this->_pollfds[1].revents & POLLHUP)
 	{
 		std::cout << "Socket has been disconnected, goodbye!" << std::endl;
@@ -162,7 +164,7 @@ void	Client::_checkNetworkInput(void)
 			this->_inputBuffer.erase(0, pos + 1);
 			while ((pos = line.find('\r')) != std::string::npos)
 				line.erase(pos, 1);
-			std::cout << line << std::endl;
+			this->_displayLine(line);
 			this->_doAutoPong(line);
 		}
 	}
@@ -183,7 +185,7 @@ void	Client::_loop(void)
 
 	this->_initPoll();
 	while (1)
-	{	
+	{
 		rv = poll(this->_pollfds, FDNUM, this->_pollTimeout);
 		if (rv == -1)
 		{
