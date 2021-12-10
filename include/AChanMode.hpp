@@ -4,15 +4,24 @@
 #include <string>
 
 class Message;
+class ChanModeConfig;
+
+enum ModeAccess
+{
+	def,
+	deny,
+	allow
+};
 
 class AChannelMode
 {
 public:
-	virtual void loadChanMode(void);
-	virtual void unloadChanMode(void);
-	virtual void onChanEvent(Access &access, Message &message) = 0;
-	virtual void onEnableChanModeEvent(Access &access, std::string) = 0;
-	virtual void onDisableChanModeEvent(Access &access, std::string) = 0;
-}
+	virtual void loadChanMode(ChanModeConfig &chanModeConfig) = 0;
+//	virtual void unloadChanMode(void);
+	virtual void onChanEvent(ModeAccess &modeAccess, Message &message) = 0;
+	virtual void onEnableChanModeEvent(ModeAccess &modeAccess, std::string) = 0;
+	virtual void onDisableChanModeEvent(ModeAccess &modeAccess, std::string) = 0;
+	virtual void onShowChanModeEvent(void) = 0;
+};
 
 #endif

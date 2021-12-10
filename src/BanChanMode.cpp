@@ -1,16 +1,25 @@
 #include "BanChanMode.hpp"
+#include "ChanModeConfig.hpp"
 
-void BanChanMode::loadChanMode(void)
-{
-			
-}
-
-void BanChanMode::unloadChanMode(void)
+void BanChanMode::loadChanMode(ChanModeConfig &chanModeConfig)
 {
 	//Tenemos que suscribirnos a JOIN, PRIVMSG y NOTICE
 	//
 	//ban acepta un parámetro, por lo que tenemos que comunicarselo
 	//al servidor para que nos lo envíe.
+	//chanModeConfig.type = modeType.BothParam; // el parámetro se ha de tener en cuenta en +b y -b
+	//chanModeConfig.type = modeType.enableParam;
+	//chanModeConfig.type = modeType.disableParam;
+	//chanModeConfig.mode = 'b';
+	//chanModeConfig.events = JOIN_EVENT | PRIVMSG_EVENT | NOTICE_EVENT;
+
+	chanModeConfig.type = ModeType.bothParam;
+	chanModeConfig.mode = 'b';
+	chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE;
+}
+
+void BanChanMode::unloadChanMode(void)
+{
 }
 
 void	BanChanMode::onChanEvent(Access &access, Message &message)
@@ -48,7 +57,7 @@ void	BanChanMode::onEnableChanModeEvent(Access &access, std::string &value)
 	//Si el parámetro no cumpliese, access = deny;
 }
 
-void	BanChanMode::onDisableChanModEvent(Access &access, std::string &value)
+void	BanChanMode::onDisableChanModeEvent(Access &access, std::string &value)
 {
 	//TODO: vaulec ontendría la máscara a eliminar
 	//necesitamos comprobar si cumple con lo que sería una máscara
@@ -57,3 +66,6 @@ void	BanChanMode::onDisableChanModEvent(Access &access, std::string &value)
 
 }
 
+void	BanChanMode::onShowChanModeEvent(void)
+{
+}

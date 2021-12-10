@@ -2,8 +2,8 @@ BASE_PATH		=	src/
 BASE_SRCS		=	\
 					ircserv.cpp					\
 					utils.cpp					\
-					AChannelMode.cpp				\
-					ACommand.cpp					\
+					BanChanMode.cpp				\
+					ACommand.cpp				\
 					Channel.cpp					\
 					Console.cpp					\
 					Invite.cpp					\
