@@ -1,0 +1,18 @@
+multimap para almacenar el modo en string y el valor.
+
+al recuperar todas las b, te da un listado de todos las mascaras baneadas.
+
+en realidad deberia ser un multimap string void *
+
+
+Se necesta una clase channelMode que contenga todos los modos soportados
+por el servidor y a qué evento está suscrito cada modo. Esa clase se
+encargará de ofrecer a cada modo la lista o el valor único de su modo en
+cada evento.
+
+Si alguien añade un ban, channelMode lanzará el evento Mode al que ha
+dado de alta el modo b. El resto de modos no entrarán a participar
+en ninguna decisión, no tendrían que filtrar nada.
+
+Si el modo es correcto y tiene los pivilegios adecuados, pasaermos a
+siguiente comando sin más dilación,
