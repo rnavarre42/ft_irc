@@ -1,0 +1,113 @@
+Los modos de canal se agrupan en cuatro tipos:
+
+los que tienen argumentos:
++k
++l
+
+los que no:
++s
++p
++n
++t
++i
+
+los que contienen una lista de std::string
++b
++e
+
+y los que contienen una lista de User
++o
++v
+
+AChannelMode
+	loadChanMode(void);
+	onChanEvent(access default/deny/grant, Message &message);
+	//onChanModeEvent(bool cancel, bool operation, std::string value);
+	onEnableChanModeEvent(bool &cancel, std::string value);
+	onDisableChanModeEvent(bool &cancel, std::string value);
+
+AChannelMode será informado cuando se altere el modo que ha inscrito.
+Por ejemplo, loadChanMode informa que se dará de alta +o, especificará el tipo de modo y cada vez que alguien altere ese modo
+se llamará a onChanModeEvent. onChanModeEvent puede cancelar la ejecución del modo en caso de que no cumpla el criterio
+
+Si se acepta el modo, el bucle que llamará a onChanModeEvent las veces que sean necesarias, será el que se encargue de la ejecución final.
+Hay que verificar el funcionamiento de determinadas operaciones contra un IRC real.
+
+El objetivo de onChanEvent es capturar todos los eventos que se producen dentro de un canal, a excepción de MODE. Si un usuario entra al canal
+, antes de que se añada al usuario en el canal y se envíe los mensajes al resto de clientes conectados, se llamará a este evento para modificar el
+mensaje o decidir si se cancela la entrada de ese usuario al canal.
+
+Ejemplo, el modo +k está activo. Entra un usuario, se analiza message, si el parámetro [1] de message no corresponde con la clave almacenada, debe devolver un error e impedir que el usuario entre al canal (cancel = true);
+El canal tiene +n (no external messages) y se envia un mensaje al canal, onChanEvent debe cancelar el envio de información si el nick no se encuentra
+dentro de ese canal.
+
+onChanEvent sólo será llamado si el modo suyo está activado. AChannelMode debe inscribirse en los eventos del canal que considere. Si un modo opera sobre PRIVMSG, debe inscribirse en ese evento.
+
+Si un usuario está baneado, la clase que gestiona "b" debería impedir que entrase mandando un mensaje diciendo que está baneado
+Pero si ese mismo usuario estuviera dentro de "e" debería existir una excepción y entrar igualmente.
+Dado que el bucle recorrerá todos los modos cargados, alguno debe dar permiso o denegar.
+
+
+modo	eventos
+b		join, privmsg, notice, nick
+e		join, privmsg, notice, nick
+i		join
+k		join
+l		join
+m		privmsg, notice
+o		invite, privmsg, notice, topic, kick
+p		ninguno
+s		ninguno
+t		ninguno
+v		privmsg, notice
+
+Cada modo debe suscribirse a la pre-ejecución de los comandos que afectan a un canal. Si alguien envia un privmsg, se entrará en el bucle que ejecutará a onChanEvent a todos los que estén suscritos a ese evento.
+
+Por ejemplo, el canal tiene el modo "+i", un usuario quiere entrar, "i" está suscrito a join, por lo que cuando alguien utilice el comando join y cumpla los requisitos minimos para poder entrar (no estar ya en el canal, que el prefijo sea correcto...) el bucle lanzará onChanEvent de "i" y en él se tendrá que verificar si ese nick está en la lista de invitados, en caso contrario cambiará access a deny para suspender la entrada de ese nick al canal.
+
+Un cambio de modo debe advertir al ACommandMode de su modo para ver si puede o no establecerlo. Por tanto, todos estarían suscritos a "MODE" se quiera o no, solo que se utiliza onEnableChanModeEvent y onDisableChanModeEvent para gestionar eso.
+
+El bucle que ejecuta onChanEvent, revisará Access en cada llamada. Si se establece a grant, dejará de iterar y hará que se ejecute el comando.
+Si se establece a deny, volverá a iterar pero esta vez con access a ese valor. default y grant se comportan igual excepto que default no sale del bucle y grant si.
+
+Vamos a enumerar ejemplos de uso por ver si el sistema es coherente:
+
+Un usuario manda join #prueba hola. El canal tiene los modos +iknt hola
+Los modos se ordenan de forma automática, de tal forma que la ejecución es correlativa:
+Se itera sobre los modos que existen en el canal verificando que el modo se dió de alta en "join"
+
+i, está dado de alta en join, se lanza su onChanEvent con Message del usuario.
+   Message ya contiene cmd = "JOIN". Tan solo tiene que verficar que:
+
+		if (!server.removeInvite(message.getSender().getName(), message.getChannel()))
+
+   y establecer Access a deny advirtiendo que el canal es sólo para invitados.
+
+k, está dado de alta en join, se lanza su onChanEvent con Message del usuario.
+   Message ya contiene cmd = "JOIN". Tan solo tiene que verificar que:
+
+		message.getChannel().getpass() != message[1]
+
+   y establecer Access a deny advirtiendo al usuario que la clave no es correcta.
+
+Al no haber ningún modo que cumpla con el criterio, el bucle termina y el usuario entra al canal si cumple.
+
+Siguiendo con el mismo ejemplo, alguien envia un mensaje al canal #rprueba con los modos +iknt hola
+
+n, está dado de alta en privmsg, se lanza su onChanEvent con Message del usuario.
+   Message ya contiene cmd = "PRIVMSG". Tan solo tiene que verificar que:
+
+   		if (!message.getChannel().isOnChannel(message.getSender()))
+	
+   y establecer Access a deny advirtiendo que el canal no admite mensajes externos.
+
+b, está dado de alta en privmsg, se lanza su onChanEvent con Message del usuario
+   Message ya contiene cmd = "PRIVMSG". Tan solo tiene que verificar que:
+
+		Ningun ban tiene similitud con la del usuario que trata de enviar un mensaje, si coincide...
+
+   se establece Acces a deny advirtiendo que está baneado en el canal.
+
+
+Un usuario baneado tampoco se puede cambiar el nick mientras permanezca en ese canal, solo se comprueba si el origen está baneado, no el destino.
+
