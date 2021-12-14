@@ -13,17 +13,19 @@ void BanChanMode::loadChanMode(ChanModeConfig &chanModeConfig)
 	//chanModeConfig.mode = 'b';
 	//chanModeConfig.events = JOIN_EVENT | PRIVMSG_EVENT | NOTICE_EVENT;
 
-	chanModeConfig.type = ModeType.bothParam;
+	chanModeConfig.type = MT_bothParam;
 	chanModeConfig.mode = 'b';
 	chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE;
 }
 
-void BanChanMode::unloadChanMode(void)
-{
-}
+//void BanChanMode::unloadChanMode(void)
+//{
+//}
 
-void	BanChanMode::onChanEvent(Access &access, Message &message)
+void	BanChanMode::onChanEvent(ModeAccess &access, Message &message)
 {
+	(void)access;
+	(void)message;
 	//onChanEvent nos debe proporcionar un listado de las entradas
 	//que coinciden con el modo que gestionamos, en esta ocasión 'b'
 	//y verificar que la máscara de sender no está en el listado.
@@ -37,8 +39,10 @@ void	BanChanMode::onChanEvent(Access &access, Message &message)
 	//si se deniega, access = deny;
 }
 
-void	BanChanMode::onEnableChanModeEvent(Access &access, std::string &value)
+void	BanChanMode::onEnableChanModeEvent(ModeAccess &access, std::string &value)
 {
+	(void)access;
+	(void)value;
 	//TODO: value contendría la máscara a añadir
 	//nesitamos comprobar si cumple con lo que sería una máscara
 	//ver si no existe
@@ -57,9 +61,11 @@ void	BanChanMode::onEnableChanModeEvent(Access &access, std::string &value)
 	//Si el parámetro no cumpliese, access = deny;
 }
 
-void	BanChanMode::onDisableChanModeEvent(Access &access, std::string &value)
+void	BanChanMode::onDisableChanModeEvent(ModeAccess &access, std::string &value)
 {
-	//TODO: vaulec ontendría la máscara a eliminar
+	(void)access;
+	(void)value;
+	//TODO: value contendría la máscara a eliminar
 	//necesitamos comprobar si cumple con lo que sería una máscara
 	//ver si no existe
 	//borrarla

@@ -4,7 +4,7 @@
 #include <string>
 
 class Message;
-class ChanModeConfig;
+struct ChanModeConfig;
 
 enum ModeAccess
 {

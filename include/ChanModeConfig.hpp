@@ -13,9 +13,9 @@
 
 enum ModeType
 {
-	bothParam,
-	enableParam,
-	disableParam
+	MT_bothParam,
+	MT_enableParam,
+	MT_disableParam
 };
 
 struct ChanModeConfig

@@ -16,3 +16,24 @@ en ninguna decisión, no tendrían que filtrar nada.
 
 Si el modo es correcto y tiene los pivilegios adecuados, pasaermos a
 siguiente comando sin más dilación,
+
+
+
+
+
+Un usuario entra al canal.
+Se lanza el evento de entrada al canal a los modos que pueden ser afectados.
+Recorremos la lista del final al principio (reverse iterator)
+Si la suscripción al evento coincide, se lanza.
+
+Nuestro primer ejemplo sería +b, b está suscrito a JOIN_EVENT, PRIVMSG_EVENT, NOTICE_EVENT, NICK_EVENT
+
+Haremos una búsqueda en modeMultimap para mostrar todos los modos b que existen en el canal.
+En realidad, bastaría con un getModeByChar('b'); y aquí darnos un iterador con la informacíon solicitada.
+
+Recorreríamos el iterador en busca de si la máscar que vamos a insertar,
+
+while (mode reverse_iterator it = modeMultimap.rbegin(); it != modeMultimap.rend(); it++)
+{
+	
+}
