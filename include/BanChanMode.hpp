@@ -1,13 +1,13 @@
 #ifndef BANCHANMODE_HPP
 # define BANCHANMODE_HPP
  
-#include "AChanMode.hpp"
+#include "IChanMode.hpp"
 
 #include <string>
 
 class Message;
 
-class BanChanMode
+class BanChanMode : public IChanMode
 {
 public:
 	void loadChanMode(ChanModeConfig &chanModeConfig);

@@ -11,15 +11,33 @@
 # define CHANMODE_NICK		0x080
 # define CHANMODE_MODE		0x100
 
-enum ModeType
-{
-	MT_bothParam,
-	MT_enableParam,
-	MT_disableParam
-};
+/*
+mode #canal +ntslk 5 ii94ut
+
+mode #canal +n
+
+mode #canal +l 40
+mode #canal -i
+
+mode #canal +b nick!ident@host
+mode #canal -b nick!ident@host
+
+mode #canal +k pass
+mode #canal -k pass
+
+mode #canal +o nick
+mode #canal +v nick
+*/
 
 struct ChanModeConfig
 {
+	enum ModeType
+	{
+		noParam,
+		bothParam,
+		enableParam,
+		disableParam
+	};
 	ModeType	type;
 	char		mode;
 	int			events;

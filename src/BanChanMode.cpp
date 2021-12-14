@@ -13,11 +13,52 @@ void BanChanMode::loadChanMode(ChanModeConfig &chanModeConfig)
 	//chanModeConfig.mode = 'b';
 	//chanModeConfig.events = JOIN_EVENT | PRIVMSG_EVENT | NOTICE_EVENT;
 
-	chanModeConfig.type = MT_bothParam;
+	chanModeConfig.type = ChanModeConfig::bothParam;
 	chanModeConfig.mode = 'b';
 	chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE;
 }
 
+/*
+chanModeConfig.type = ModeType::noParam;
+chanModeConfig.mode = 'n';
+chanModeConfig.events = CHANMODE_PRIVMSG | CHANMODE_NOTICE;
+
+chanModeConfig.type = ModeType::noParam;
+chanModeConfig.mode = 't';
+chanModeConfig.events = CHANMODE_TOPIC;
+
+chanModeConfig.type = ModeType::bothParam;
+chanModeConfig.mode = 'k';
+chanModeConfig.events = CHANMODE_JOIN;
+
+chanModeConfig.type = ModeType::enableParam;
+chanModeConfig.mode = 'l';
+chanModeConfig.events = CHANMODE_JOIN;
+
+chanModeConfig.type = ModeType::noParam;
+chanModeConfig.mode = 's';
+chanModeConfig.events = 0;
+
+chanModeConfig.type = ModeType::noParam;
+chanModeConfig.mode = 'm';
+chanModeConfig.events = CHANMODE_PRIVMSG | CHANMODE_NOTICE;
+
+chanModeConfig.type = ModeType::noParam;
+chanModeConfig.mode = 'i';
+chanModeCofnig.events = CHANMODE_JOIN;
+
+chanModeConfig.type = ModeType::bothParam;
+chanModeConfig.mode = 'e';
+chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE;
+
+chanModeConfig.type = ModeType::bothParam;
+chanModeConfig.mode = 'o';
+chanModeConfig.events = CHANMODE_KICK | CHANMODE_MODE | CHANMODE_INVITE;
+
+chanModeConfig.type = ModeType::bothParam;
+chanModeConfig.mode = 'v';
+chanModeConfig.events = 0;
+*/
 //void BanChanMode::unloadChanMode(void)
 //{
 //}
