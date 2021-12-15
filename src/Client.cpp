@@ -104,7 +104,6 @@ void	Client::_sendLine(std::string data)
 
 void	Client::_checkConsoleInput(void)
 {
-	size_t		pos;
 	std::string	buffer;
 
 	if (this->_pollfds[0].revents & POLLIN)
@@ -115,8 +114,6 @@ void	Client::_checkConsoleInput(void)
 			std::cout << "client: getline failed" << std::endl;
 			exit(EXIT_FAILURE);
 		}
-		if ((pos = buffer.find('\n')) != std::string::npos)
-			buffer.erase(pos, 1);
 		this->_sendLine(buffer);
 	}
 }
