@@ -6,7 +6,10 @@
 #include <string>
 #include <iostream>
 
-ACommand::ACommand(Server &server, int levelAccess, int minParam) : server(server), levelAccess(levelAccess), minParam(minParam)
+ACommand::ACommand(Server &server, int levelAccess, int minParam)
+	: server(server)
+	, levelAccess(levelAccess)
+	, minParam(minParam)
 {}
 
 ACommand::~ACommand(void)

@@ -1,5 +1,5 @@
-#ifndef BANCHANMODE_HPP
-# define BANCHANMODE_HPP
+#ifndef KEYCHANMODE_HPP
+# define KEYCHANMODE_HPP
  
 #include "AChanMode.hpp"
 
@@ -7,11 +7,11 @@
 
 class Message;
 
-class BanChanMode : public AChanMode
+class KeyChanMode : public AChanMode
 {
 public:
-	BanChanMode(Server &server);
-	~BanChanMode(void);
+	KeyChanMode(Server &server);
+	~KeyChanMode(void);
 
 	void onChanEvent(Access &access, Message &message);
 	void onEnableChanModeEvent(Access &access, std::string &value);

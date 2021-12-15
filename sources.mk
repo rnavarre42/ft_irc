@@ -2,7 +2,6 @@ BASE_PATH		=	src/
 BASE_SRCS		=	\
 					ircserv.cpp					\
 					utils.cpp					\
-					BanChanMode.cpp				\
 					ACommand.cpp				\
 					Channel.cpp					\
 					Console.cpp					\
@@ -13,6 +12,21 @@ BASE_SRCS		=	\
 					Server.cpp					\
 					User.cpp					\
 #					Unknown.cpp					\
+
+MODES_PATH		=	modes/
+MODES_SRCS		=	\
+					BanChanMode.cpp				\
+					ExceptChanMode.cpp			\
+					InviteChanMode.cpp			\
+					KeyChanMode.cpp				\
+					LimitChanMode.cpp			\
+					ModerateChanMode.cpp		\
+					NoExternalChanMode.cpp		\
+					OperChanMode.cpp			\
+					SecretChanMode.cpp			\
+					TopicChanMode.cpp			\
+					VoiceChanMode.cpp			\
+
 
 COMMAND_PATH	=	commands/
 COMMAND_SRCS	=	\
@@ -42,4 +56,5 @@ COMMAND_SRCS	=	\
 
 SRCS			=	$(addprefix $(BASE_PATH), $(BASE_SRCS)				\
 						$(addprefix $(COMMAND_PATH), $(COMMAND_SRCS))	\
+						$(addprefix $(MODES_PATH), $(MODES_SRCS))		\
 					)													\

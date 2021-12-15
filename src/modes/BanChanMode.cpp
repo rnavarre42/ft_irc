@@ -1,7 +1,8 @@
 #include "BanChanMode.hpp"
 #include "ChanModeConfig.hpp"
 
-void BanChanMode::loadChanMode(ChanModeConfig &chanModeConfig)
+BanChanMode::BanChanMode(Server &server)
+	: AChanMode(server)
 {
 	//Tenemos que suscribirnos a JOIN, PRIVMSG y NOTICE
 	//
@@ -13,57 +14,14 @@ void BanChanMode::loadChanMode(ChanModeConfig &chanModeConfig)
 	//chanModeConfig.mode = 'b';
 	//chanModeConfig.events = JOIN_EVENT | PRIVMSG_EVENT | NOTICE_EVENT;
 
-	chanModeConfig.type = ChanModeConfig::bothParam;
-	chanModeConfig.mode = 'b';
-	chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE;
+	this->_chanModeConfig.type = ChanModeConfig::bothParam;
+	this->_chanModeConfig.mode = 'b';
+	this->_chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE | CHANMODE_NICK;
 }
 
-/*
-chanModeConfig.type = ModeType::noParam;
-chanModeConfig.mode = 'n';
-chanModeConfig.events = CHANMODE_PRIVMSG | CHANMODE_NOTICE;
+BanChanMode::~BanChanMode(void) {}
 
-chanModeConfig.type = ModeType::noParam;
-chanModeConfig.mode = 't';
-chanModeConfig.events = CHANMODE_TOPIC;
-
-chanModeConfig.type = ModeType::bothParam;
-chanModeConfig.mode = 'k';
-chanModeConfig.events = CHANMODE_JOIN;
-
-chanModeConfig.type = ModeType::enableParam;
-chanModeConfig.mode = 'l';
-chanModeConfig.events = CHANMODE_JOIN;
-
-chanModeConfig.type = ModeType::noParam;
-chanModeConfig.mode = 's';
-chanModeConfig.events = 0;
-
-chanModeConfig.type = ModeType::noParam;
-chanModeConfig.mode = 'm';
-chanModeConfig.events = CHANMODE_PRIVMSG | CHANMODE_NOTICE;
-
-chanModeConfig.type = ModeType::noParam;
-chanModeConfig.mode = 'i';
-chanModeCofnig.events = CHANMODE_JOIN;
-
-chanModeConfig.type = ModeType::bothParam;
-chanModeConfig.mode = 'e';
-chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE;
-
-chanModeConfig.type = ModeType::bothParam;
-chanModeConfig.mode = 'o';
-chanModeConfig.events = CHANMODE_KICK | CHANMODE_MODE | CHANMODE_INVITE;
-
-chanModeConfig.type = ModeType::bothParam;
-chanModeConfig.mode = 'v';
-chanModeConfig.events = 0;
-*/
-//void BanChanMode::unloadChanMode(void)
-//{
-//}
-
-void	BanChanMode::onChanEvent(ModeAccess &access, Message &message)
+void	BanChanMode::onChanEvent(Access &access, Message &message)
 {
 	(void)access;
 	(void)message;
@@ -80,7 +38,7 @@ void	BanChanMode::onChanEvent(ModeAccess &access, Message &message)
 	//si se deniega, access = deny;
 }
 
-void	BanChanMode::onEnableChanModeEvent(ModeAccess &access, std::string &value)
+void	BanChanMode::onEnableChanModeEvent(Access &access, std::string &value)
 {
 	(void)access;
 	(void)value;
@@ -102,7 +60,7 @@ void	BanChanMode::onEnableChanModeEvent(ModeAccess &access, std::string &value)
 	//Si el parámetro no cumpliese, access = deny;
 }
 
-void	BanChanMode::onDisableChanModeEvent(ModeAccess &access, std::string &value)
+void	BanChanMode::onDisableChanModeEvent(Access &access, std::string &value)
 {
 	(void)access;
 	(void)value;

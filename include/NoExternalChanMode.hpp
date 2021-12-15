@@ -1,5 +1,5 @@
-#ifndef BANCHANMODE_HPP
-# define BANCHANMODE_HPP
+#ifndef NOEXTERNALCHANMODE_HPP
+# define NOEXTERNALCHANMODE_HPP
  
 #include "AChanMode.hpp"
 
@@ -7,11 +7,11 @@
 
 class Message;
 
-class BanChanMode : public AChanMode
+class NoExternalChanMode : public AChanMode
 {
 public:
-	BanChanMode(Server &server);
-	~BanChanMode(void);
+	NoExternalChanMode(Server &server);
+	~NoExternalChanMode(void);
 
 	void onChanEvent(Access &access, Message &message);
 	void onEnableChanModeEvent(Access &access, std::string &value);

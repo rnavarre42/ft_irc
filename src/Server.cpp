@@ -4,8 +4,10 @@
 #include "Channel.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
+#include "chanmodes.hpp"
 #include "commands.hpp"
 #include "Numeric.hpp"
+#include "ChanModeConfig.hpp"
 
 #include <set>
 #include <string>
@@ -113,6 +115,71 @@ void	Server::_unloadCommands(void)
 
 	for (Server::eventHandler_type::delegateMMap_iterator it = this->_eventHandler.begin(); it != this->_eventHandler.end(); it++)
 		delete &it->second;
+}
+
+void	Server::_loadChanModes(void)
+{
+	this->_loadChanMode(new BanChanMode(*this));
+	this->_loadChanMode(new ExceptChanMode(*this));
+	this->_loadChanMode(new InviteChanMode(*this));
+	this->_loadChanMode(new KeyChanMode(*this));
+	this->_loadChanMode(new LimitChanMode(*this));
+	this->_loadChanMode(new ModerateChanMode(*this));
+	this->_loadChanMode(new NoExternalChanMode(*this));
+	this->_loadChanMode(new OperChanMode(*this));
+	this->_loadChanMode(new SecretChanMode(*this));
+	this->_loadChanMode(new TopicChanMode(*this));
+	this->_loadChanMode(new VoiceChanMode(*this));
+}
+
+void	Server::_unloadChanModes(void)
+{
+	Server::aChanModeMap_iterator currentIt;
+
+	for (Server::aChanModeMap_iterator it = this->_chanModeMap.begin(); it !=  this->_chanModeMap.end();)
+	{
+		currentIt = it;
+		it++;
+		this->_unloadChanMode(currentIt);
+	}
+}
+
+void	Server::_loadChanMode(AChanMode *newChanMode)
+{
+	ChanModeConfig chanModeConfig;
+
+	chanModeConfig = newChanMode->getConfig();
+	this->_chanModeMap[chanModeConfig.mode] = newChanMode;
+}
+
+bool	Server::_unloadChanMode(Server::aChanModeMap_iterator it)
+{
+	if (it != this->_chanModeMap.end())
+	{
+		this->_chanModeMap.erase(it);
+		delete it->second;
+		return true;
+	}
+	return false;
+}
+
+AChanMode	*Server::_findChanMode(char modeName)
+{
+	return this->_chanModeMap.find(modeName)->second;
+}
+
+bool	Server::_unloadChanMode(char modeName)
+{
+	return this->_unloadChanMode(this->_chanModeMap.find(modeName));
+}
+
+void	Server::_raiseChanMode(bool action, char modeName, Channel *channel, User *user)
+{
+	(void)action;
+	(void)modeName;
+	(void)channel;
+	(void)user;
+//	AChanMode::Access	
 }
 
 Server	&Server::getInstance(void)

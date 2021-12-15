@@ -1,5 +1,5 @@
-#ifndef BANCHANMODE_HPP
-# define BANCHANMODE_HPP
+#ifndef MODERATECHANMODE_HPP
+# define MODERATECHANMODE_HPP
  
 #include "AChanMode.hpp"
 
@@ -7,11 +7,11 @@
 
 class Message;
 
-class BanChanMode : public AChanMode
+class ModerateChanMode : public AChanMode
 {
 public:
-	BanChanMode(Server &server);
-	~BanChanMode(void);
+	ModerateChanMode(Server &server);
+	~ModerateChanMode(void);
 
 	void onChanEvent(Access &access, Message &message);
 	void onEnableChanModeEvent(Access &access, std::string &value);

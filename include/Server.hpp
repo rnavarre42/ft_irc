@@ -71,16 +71,15 @@
 
 class Channel;
 class ACommand;
+class AChanMode;
 class User;
 class Channel;
 
 class Server : public ISender
 {
-	public:
+public:
 	~Server(void);
 
-	typedef std::map<std::string, ACommand *>					aCommandMap_type;
-	typedef aCommandMap_type::iterator							aCommandMap_iterator;
 	typedef EventHandler<int, Message>							eventHandler_type;
 	typedef std::map<std::string, Channel *>					channelMap_type;
 	typedef channelMap_type::iterator							channelMap_iterator;
@@ -93,11 +92,14 @@ class Server : public ISender
 	typedef userMap_type::iterator								serverMap_iterator;
 	typedef std::map<int, User *>								fdMap_type;
 	typedef fdMap_type::iterator								fdMap_iterator;
-	typedef std::map<std::string, ACommand *>					commandMap_type;
+	typedef std::map<std::string, ACommand *>					aCommandMap_type;
+	typedef aCommandMap_type::iterator							aCommandMap_iterator;
 	typedef std::vector<ISender *>								userVector_type;
 	typedef userVector_type::iterator							userVector_iterator;
 	typedef std::set<Channel *>									channelSet_type;
 	typedef channelSet_type::iterator							channelSet_iterator;
+	typedef std::map<char, AChanMode *>							aChanModeMap_type;
+	typedef aChanModeMap_type::iterator							aChanModeMap_iterator;
 
 	static void						signalHandler(int sig);
 	static Server					&getInstance(void);
@@ -208,30 +210,38 @@ private:
 	fdMap_type			_fdMap;
 	userMap_type		_userMap;
 	channelMap_type		_channelMap;
-	commandMap_type		_commandMap;
+	aCommandMap_type	_commandMap;
 	eventHandler_type	_eventHandler;
+	aChanModeMap_type	_chanModeMap;
 	Invite				_invite;
 
 //	Source						_source;
 	
-	int		_freePollIndexFind(void);
-	int		_poll(void);
-	int		_checkUserConnection(void);
+	int			_freePollIndexFind(void);
+	int			_poll(void);
+	int			_checkUserConnection(void);
 
-	void	_setSignals(void);
-	void	_removeUserFromChannel(Channel &channel, User &user);
-	void	_loadCommands(void);
-	void	_unloadCommands(void);
-	void	_checkConsoleInput(void);
-	void	_checkUserIO(void);
-	void	_checkTimeout(void);
-	void	_checkUserTimeout(User &user);
-	void	_closeClients(std::string msg);
-	void	_loop(void);
-	void	_initSocket(void);
-	void	_bind(void);
-	void	_listen(void);
-	User	*_accept();
+	void		_setSignals(void);
+	void		_removeUserFromChannel(Channel &channel, User &user);
+	void		_loadCommands(void);
+	void		_unloadCommands(void);
+	void		_unloadChanModes(void);
+	bool		_unloadChanMode(char modeName);
+	bool		_unloadChanMode(aChanModeMap_iterator it);
+	void		_loadChanModes(void);
+	void		_loadChanMode(AChanMode *newChanMode);
+	AChanMode	*_findChanMode(char modeChar);
+	void		_raiseChanMode(bool action, char modename, Channel *channel, User *user);
+	void		_checkConsoleInput(void);
+	void		_checkUserIO(void);
+	void		_checkTimeout(void);
+	void		_checkUserTimeout(User &user);
+	void		_closeClients(std::string msg);
+	void		_loop(void);
+	void		_initSocket(void);
+	void		_bind(void);
+	void		_listen(void);
+	User		*_accept();
 };
 
 #endif
