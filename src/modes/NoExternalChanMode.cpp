@@ -18,16 +18,20 @@ void	NoExternalChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	NoExternalChanMode::onEnableChanModeEvent(Access &access, std::string &value)
+void	NoExternalChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
-void	NoExternalChanMode::onDisableChanModeEvent(Access &access, std::string &value)
+void	NoExternalChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
 void	NoExternalChanMode::onShowChanModeEvent(void)

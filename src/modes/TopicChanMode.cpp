@@ -18,16 +18,20 @@ void	TopicChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	TopicChanMode::onEnableChanModeEvent(Access &access, std::string &value)
+void	TopicChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
-void	TopicChanMode::onDisableChanModeEvent(Access &access, std::string &value)
+void	TopicChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel,std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
 void	TopicChanMode::onShowChanModeEvent(void)

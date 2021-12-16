@@ -18,16 +18,20 @@ void	SecretChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	SecretChanMode::onEnableChanModeEvent(Access &access, std::string &value)
+void	SecretChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
-void	SecretChanMode::onDisableChanModeEvent(Access &access, std::string &value)
+void	SecretChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
 void	SecretChanMode::onShowChanModeEvent(void)

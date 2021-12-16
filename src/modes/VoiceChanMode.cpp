@@ -18,16 +18,20 @@ void	VoiceChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	VoiceChanMode::onEnableChanModeEvent(Access &access, std::string &value)
+void	VoiceChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
-void	VoiceChanMode::onDisableChanModeEvent(Access &access, std::string &value)
+void	VoiceChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
 void	VoiceChanMode::onShowChanModeEvent(void)

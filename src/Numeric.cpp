@@ -127,4 +127,5 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_NAMREPLY] = "$ $ :%";
 	Numeric::_numericMap[RPL_ENDOFNAMES] = "$ :End of NAMES list";
 	Numeric::_numericMap[RPL_INVITING] = "$ :$";
+	Numeric::_numericMap[ERR_CHANOPRIVSNEEDED]	= "$ :You're not channel operator";
 }

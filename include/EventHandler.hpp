@@ -10,44 +10,44 @@ template <class KeyT, class ValueT>
 class EventHandler
 {
 public:
-	typedef typename std::multimap<KeyT, IDelegate &>	delegateMMap_type;
-	typedef typename delegateMMap_type::iterator		delegateMMap_iterator;
+	typedef typename std::multimap<KeyT, IDelegate &>	delegateMultimap_type;
+	typedef typename delegateMultimap_type::iterator		delegateMultimap_iterator;
 
 	EventHandler(void) {}
 	~EventHandler(void) {}
 
 	void	add(KeyT key, IDelegate &delegate)
 	{
-		this->_delegateMMap.insert(typename std::pair<KeyT, IDelegate &>(key, delegate));
+		this->_delegateMultimap.insert(typename std::pair<KeyT, IDelegate &>(key, delegate));
 	}
 
 	void	clear(void)
 	{
-		for (delegateMMap_iterator it = this->_delegateMMap.begin(); it != this->_delegateMMap.end(); it++)
+		for (delegateMultimap_iterator it = this->_delegateMultimap.begin(); it != this->_delegateMultimap.end(); it++)
 			delete it->second;
 	}
 
-	delegateMMap_iterator	begin(void)
+	delegateMultimap_iterator	begin(void)
 	{
-		return this->_delegateMMap.begin();
+		return this->_delegateMultimap.begin();
 	}
 
-	delegateMMap_iterator	end(void)
+	delegateMultimap_iterator	end(void)
 	{
-		return this->_delegateMMap.end();
+		return this->_delegateMultimap.end();
 	}
 
 	void	removeByValue(IDelegate &delegate)
 	{
-		delegateMMap_type	currentIt;
+		delegateMultimap_type	currentIt;
 
-		for (delegateMMap_iterator it = this->_delegateMMap.begin(); it != this->_delegateMMap.end();)
+		for (delegateMultimap_iterator it = this->_delegateMultimap.begin(); it != this->_delegateMultimap.end();)
 		{
 			currentIt = it;
 			it++;
 			if (currentIt->second == delegate)
 			{
-				this->_delegateMMap.remove(currentIt);
+				this->_delegateMultimap.remove(currentIt);
 				break;
 			}
 		}
@@ -55,15 +55,15 @@ public:
 
 	void	raise(KeyT key, ValueT &value)
 	{
-		std::pair<delegateMMap_iterator, delegateMMap_iterator> ret;
+		std::pair<delegateMultimap_iterator, delegateMultimap_iterator> ret;
 
-		ret = this->_delegateMMap.equal_range(key);
-		for (delegateMMap_iterator it = ret.first; it != ret.second; ++it)
+		ret = this->_delegateMultimap.equal_range(key);
+		for (delegateMultimap_iterator it = ret.first; it != ret.second; ++it)
 			it->second.invoke(&value);
 	}
 
 private:
-	delegateMMap_type	_delegateMMap;
+	delegateMultimap_type	_delegateMultimap;
 };
 
 #endif

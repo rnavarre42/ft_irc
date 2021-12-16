@@ -18,16 +18,20 @@ void	ModerateChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	ModerateChanMode::onEnableChanModeEvent(Access &access, std::string &value)
+void	ModerateChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
-void	ModerateChanMode::onDisableChanModeEvent(Access &access, std::string &value)
+void	ModerateChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
 void	ModerateChanMode::onShowChanModeEvent(void)

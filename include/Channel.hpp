@@ -27,8 +27,8 @@ class User;
 class Channel
 {
 public:
-	typedef std::multimap<char, User *>							modeMultiMap_type;
-	typedef modeMultiMap_type::iterator							modeMultiMap_iterator;
+	typedef std::multimap<char, User *>							modeMultimap_type;
+	typedef modeMultimap_type::iterator							modeMultimap_iterator;
 	
 	Channel(std::string name, User &user);
 	~Channel(void);
@@ -62,7 +62,7 @@ private:
 	std::string						_topicOwn;
 	time_t							_topicTime;
 	Server::userPairMap_type		_userMap;
-	modeMultiMap_type				_modeMultiMap;
+	modeMultimap_type				_modeMultimap;
 
 	Channel(void);
 };

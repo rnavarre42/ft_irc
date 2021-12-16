@@ -18,16 +18,20 @@ void	LimitChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	LimitChanMode::onEnableChanModeEvent(Access &access, std::string &value)
+void	LimitChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
-void	LimitChanMode::onDisableChanModeEvent(Access &access, std::string &value)
+void	LimitChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
 void	LimitChanMode::onShowChanModeEvent(void)

@@ -1,10 +1,23 @@
 #include "ModeCommand.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
+#include "Numeric.hpp"
+
 #include <iostream>
 
-ModeCommand::ModeCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+ModeCommand::ModeCommand(Server &server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
+
+void ModeCommand::loadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
+
+void ModeCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+{
+	(void)eventHandler;
+}
 
 bool ModeCommand::_recvUser(Message &message)
 {
@@ -12,7 +25,14 @@ bool ModeCommand::_recvUser(Message &message)
 
 	(void)message;
 	(void)user;
-	return false;
+
+	if (message.getServer()->isChannel((message[0])))
+	{
+		message.setReceiver(message.getSender());
+		Numeric::insertField(message[0]);
+		message.send(Numeric::builder(message, ERR_CHANOPRIVSNEEDED));
+	}
+	return true;
 }
 
 bool ModeCommand::_recvServer(Message &message)
@@ -39,5 +59,5 @@ bool ModeCommand::_sendServer(Message &message)
 
 	(void)message;
 	(void)server;
-	retur false;
+	return false;
 }

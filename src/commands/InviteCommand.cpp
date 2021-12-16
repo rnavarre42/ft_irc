@@ -8,9 +8,7 @@
 #include <iostream>
 
 InviteCommand::InviteCommand(Server &server, int accessLevel, int paramCount)
-	: ACommand(server
-	, accessLevel
-	, paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
 void InviteCommand::loadEvents(Server::eventHandler_type &eventHandler)
@@ -29,8 +27,6 @@ bool InviteCommand::_recvUser(Message &message)
 	Server::channelMap_iterator	channelIt;
 	Server::userMap_iterator	userIt;
 	std::string					cName, uName;
-
-	(void)user;
 
 	message.setReceiver(message.getSender());
 	if ((userIt = server.userFind(message[0])) == server.getUserMap().end())

@@ -18,16 +18,20 @@ void	OperChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	OperChanMode::onEnableChanModeEvent(Access &access, std::string &value)
+void	OperChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
-void	OperChanMode::onDisableChanModeEvent(Access &access, std::string &value)
+void	OperChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 }
 
 void	OperChanMode::onShowChanModeEvent(void)
