@@ -163,23 +163,21 @@ bool	Server::_unloadChanMode(Server::aChanModeMap_iterator it)
 	return false;
 }
 
-AChanMode	*Server::_findChanMode(char modeName)
-{
-	return this->_chanModeMap.find(modeName)->second;
-}
-
 bool	Server::_unloadChanMode(char modeName)
 {
 	return this->_unloadChanMode(this->_chanModeMap.find(modeName));
 }
 
-void	Server::_raiseChanMode(bool action, char modeName, Channel *channel, User *user)
+AChanMode	*Server::_findChanMode(char modeName)
 {
-	(void)action;
-	(void)modeName;
-	(void)channel;
-	(void)user;
-//	AChanMode::Access	
+	return this->_chanModeMap.find(modeName)->second;
+}
+
+void	Server::_raiseChanMode(Message &message)
+{
+	(void)message;
+	AChanMode::Access	access = AChanMode::def;
+	(void)access;
 }
 
 Server	&Server::getInstance(void)

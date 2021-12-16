@@ -1,6 +1,9 @@
 #include "BanChanMode.hpp"
 #include "ChanModeConfig.hpp"
 
+class User;
+class Channel;
+
 BanChanMode::BanChanMode(Server &server)
 	: AChanMode(server)
 {
@@ -38,10 +41,12 @@ void	BanChanMode::onChanEvent(Access &access, Message &message)
 	//si se deniega, access = deny;
 }
 
-void	BanChanMode::onEnableChanModeEvent(Access &access, std::string &value)
+void	BanChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
-	(void)access;
 	(void)value;
+	(void)access;
+	(void)user;
+	(void)channel;
 	//TODO: value contendría la máscara a añadir
 	//nesitamos comprobar si cumple con lo que sería una máscara
 	//ver si no existe
@@ -60,10 +65,12 @@ void	BanChanMode::onEnableChanModeEvent(Access &access, std::string &value)
 	//Si el parámetro no cumpliese, access = deny;
 }
 
-void	BanChanMode::onDisableChanModeEvent(Access &access, std::string &value)
+void	BanChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
 {
 	(void)access;
 	(void)value;
+	(void)user;
+	(void)channel;
 	//TODO: value contendría la máscara a eliminar
 	//necesitamos comprobar si cumple con lo que sería una máscara
 	//ver si no existe

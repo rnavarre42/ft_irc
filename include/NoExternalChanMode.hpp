@@ -14,8 +14,8 @@ public:
 	~NoExternalChanMode(void);
 
 	void onChanEvent(Access &access, Message &message);
-	void onEnableChanModeEvent(Access &access, std::string &value);
-	void onDisableChanModeEvent(Access &access, std::string &value);
+	void onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value);
+	void onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value);
 	void onShowChanModeEvent(void);
 };
 
