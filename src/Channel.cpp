@@ -15,6 +15,28 @@ Channel::Channel(void)
 Channel::~Channel(void)
 {}
 
+bool Channel::Mode::isSet(char modeName)
+{
+	return this->_modeMultimap.count(modeName) > 0;
+}
+
+Channel::Mode::rangeMultimap_type	Channel::Mode::getList(char modeName)
+{
+	std::cout << "modeName = '" << modeName << "'" << std::endl;
+	return this->_modeMultimap.equal_range(modeName);
+}
+
+bool	Channel::isOper(User *user)
+{
+	Channel::Mode::rangeMultimap_type	rangeIt = mode.getList('o');
+	for (Channel::Mode::multimap_iterator it = rangeIt.first; it != rangeIt.second; it++)
+	{
+		if (it->second == user)
+			return true;
+	}
+	return false;
+}
+
 std::string const	&Channel::getName(void) const
 {
 	return this->_name;

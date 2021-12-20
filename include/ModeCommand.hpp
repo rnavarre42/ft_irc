@@ -16,6 +16,8 @@ private:
 	virtual bool	_recvServer(Message &message);
 	virtual bool	_sendUser(Message &message);
 	virtual bool	_sendServer(Message &message);
+
+	void			_checkChanModes(Message &message);
 };
 
 #endif

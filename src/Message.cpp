@@ -231,19 +231,29 @@ void	Message::clearReceiver(void)
 	this->_receiverVector.clear();
 }
 
+void	Message::reply(void)
+{
+	this->_sender->send(this->toString());
+}
+
+void	Message::reply(std::string data)
+{
+	this->_sender->send(data);
+}
+
 void	Message::send(void)
 {
-	std::string msg = this->toString();
+	std::string data = this->toString();
 
 	if (this->_receiverVector.size() > 1)
 		this->_hideReceiver = true;
 	for (std::vector<ISender *>::iterator it = this->_receiverVector.begin(); it != this->_receiverVector.end(); it++)
-			(*it)->send(msg);
+			(*it)->send(data);
 }
 
-void	Message::send(std::string msg)
+void	Message::send(std::string data)
 {
-	this->_receiverVector[0]->send(msg);
+	this->_receiverVector[0]->send(data);
 }
 
 void	Message::process(void)

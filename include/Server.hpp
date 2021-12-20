@@ -231,7 +231,6 @@ private:
 	void		_loadChanModes(void);
 	void		_loadChanMode(AChanMode *newChanMode);
 	AChanMode	*_findChanMode(char modeChar);
-	void		_raiseChanMode(Message &message);
 	void		_checkConsoleInput(void);
 	void		_checkUserIO(void);
 	void		_checkTimeout(void);

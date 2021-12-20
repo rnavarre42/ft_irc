@@ -40,6 +40,8 @@ public:
 	void				setChannel(Channel *value);
 	Channel				*getChannel(void);
 
+	void				reply(void);
+	void				reply(std::string data);
 	void				send(void);
 	void				send(std::string data);
 	void				process(void);

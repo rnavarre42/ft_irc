@@ -26,18 +26,31 @@ class User;
 
 class Channel
 {
-public:
-	typedef std::multimap<char, User *>							modeMultimap_type;
-	typedef modeMultimap_type::iterator							modeMultimap_iterator;
-	
+public:	
 	Channel(std::string name, User &user);
 	~Channel(void);
 	
+	class Mode
+	{
+	public:
+		typedef std::multimap<char, User *>						multimap_type;
+		typedef multimap_type::iterator							multimap_iterator;
+		typedef std::pair<multimap_iterator, multimap_iterator>	rangeMultimap_type;
+
+		bool				isSet(char modeName);
+		rangeMultimap_type	getList(char modeName);
+
+	private:
+		multimap_type						_modeMultimap;
+
+	}								mode;
 	std::string const				&getName(void) const;
 	Server::userPairMap_type		&getUserMap(void);
 	void							insertUser(User *user);
 	void							eraseUser(std::string value);
 	bool							empty(void);
+
+	bool							isOper(User *user);
 
 	void							setOwner(std::string value);
 	std::string const				&getOwner(void) const;
@@ -62,7 +75,6 @@ private:
 	std::string						_topicOwn;
 	time_t							_topicTime;
 	Server::userPairMap_type		_userMap;
-	modeMultimap_type				_modeMultimap;
 
 	Channel(void);
 };

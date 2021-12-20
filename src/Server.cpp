@@ -173,13 +173,6 @@ AChanMode	*Server::_findChanMode(char modeName)
 	return this->_chanModeMap.find(modeName)->second;
 }
 
-void	Server::_raiseChanMode(Message &message)
-{
-	(void)message;
-	AChanMode::Access	access = AChanMode::def;
-	(void)access;
-}
-
 Server	&Server::getInstance(void)
 {
 	return *Server::_instance;

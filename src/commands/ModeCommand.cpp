@@ -1,6 +1,7 @@
 #include "ModeCommand.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
+#include "Channel.hpp"
 #include "Numeric.hpp"
 
 #include <iostream>
@@ -19,19 +20,32 @@ void ModeCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
+inline void ModeCommand::_checkChanModes(Message &message)
+{
+	Channel			&channel = *message.getChannel();
+
+	if (channel.isOper(this->userSender))
+	{
+		Numeric::insertField(channel.getName());
+		message.reply(Numeric::builder(message, ERR_CHANOPRIVSNEEDED));
+	}
+}
+
+inline static void _checkUserModes(Message &message)
+{
+	(void)message;
+}
+
 bool ModeCommand::_recvUser(Message &message)
 {
-	User	&user = *this->userSender;
+	User						&user = *this->userSender;
 
-	(void)message;
 	(void)user;
 
 	if (message.getServer()->isChannel((message[0])))
-	{
-		message.setReceiver(message.getSender());
-		Numeric::insertField(message[0]);
-		message.send(Numeric::builder(message, ERR_CHANOPRIVSNEEDED));
-	}
+		this->_checkChanModes(message);
+	else
+		_checkUserModes(message);
 	return true;
 }
 
