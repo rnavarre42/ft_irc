@@ -22,11 +22,19 @@ void ModeCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 
 inline void ModeCommand::_checkChanModes(Message &message)
 {
-	Channel			&channel = *message.getChannel();
+	Channel							*channel;
+	Channel::channelMap_iterator	it = server.channelFind(message[0]);
 
-	if (channel.isOper(this->userSender))
+	if (it == server.getChannelMap().end())
 	{
-		Numeric::insertField(channel.getName());
+		Numeric::insertField(message[0]);
+		message.reply(Numeric::builder(message, ERR_NOSUCHCHANNEL));
+		return ;
+	}
+	channel = it->second;
+	if (!channel->isOper(this->userSender))
+	{
+		Numeric::insertField(channel->getName());
 		message.reply(Numeric::builder(message, ERR_CHANOPRIVSNEEDED));
 	}
 }

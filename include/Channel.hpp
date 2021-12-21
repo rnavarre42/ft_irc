@@ -26,7 +26,10 @@ class User;
 
 class Channel
 {
-public:	
+public:
+	typedef std::map<std::string, Channel *>	channelMap_type;
+	typedef channelMap_type::iterator			channelMap_iterator;
+
 	Channel(std::string name, User &user);
 	~Channel(void);
 	
