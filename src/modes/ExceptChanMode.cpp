@@ -4,7 +4,7 @@
 ExceptChanMode::ExceptChanMode(Server &server)
 	: AChanMode(server)
 {
-	this->_chanModeConfig.type = ChanModeConfig::bothParam;
+	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'e';
 	this->_chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE | CHANMODE_NICK;
 }

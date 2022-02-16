@@ -4,7 +4,7 @@
 VoiceChanMode::VoiceChanMode(Server &server)
 	: AChanMode(server)
 {
-	this->_chanModeConfig.type = ChanModeConfig::bothParam;
+	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'v';
 	this->_chanModeConfig.events = 0;
 }

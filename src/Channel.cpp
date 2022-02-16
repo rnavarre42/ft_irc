@@ -20,15 +20,15 @@ bool Channel::Mode::isSet(char modeName)
 	return this->_modeMultimap.count(modeName) > 0;
 }
 
-Channel::Mode::rangeMultimap_type	Channel::Mode::getList(char modeName)
+Channel::Mode::rangeMultimap_type Channel::Mode::getList(char modeName)
 {
 	return this->_modeMultimap.equal_range(modeName);
 }
 
-bool	Channel::isOper(User *user)
+bool Channel::isOper(User *user)
 {
-	Channel::Mode::rangeMultimap_type	rangeIt = mode.getList('o');
-	for (Channel::Mode::multimap_iterator it = rangeIt.first; it != rangeIt.second; it++)
+	Channel::Mode::rangeMultimap_type		rangeIt = mode.getList('o');
+	for (Channel::Mode::multimap_iterator	it = rangeIt.first; it != rangeIt.second; it++)
 	{
 		if (it->second == user)
 			return true;

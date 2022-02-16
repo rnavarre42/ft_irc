@@ -41,6 +41,11 @@ void	Numeric::insertField(std::string data)
 	Numeric::_instance->_fieldVector.push_back(data);
 }
 
+void	Numeric::insertField(char chr)
+{
+	Numeric::insertField(std::string(1, chr));
+}
+
 std::string	Numeric::builder(Server &server, ISender &sender, int num)
 {
 	size_t					replacePos, offset = 0;
@@ -128,4 +133,6 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_ENDOFNAMES] = "$ :End of NAMES list";
 	Numeric::_numericMap[RPL_INVITING] = "$ :$";
 	Numeric::_numericMap[ERR_CHANOPRIVSNEEDED]	= "$ :You're not channel operator";
+	Numeric::_numericMap[ERR_USERSDONTMATCH]	= ":Cannot change mode for other users";
+	Numeric::_numericMap[ERR_UNKNOWNMODE] = "$ :is unknown mode char to me for $";
 }

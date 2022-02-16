@@ -33,6 +33,9 @@ public:
 		return _chanModeConfig;
 	}
 
+private:
+	AChanMode(void);
+
 protected:
 	Server			&_server;
 	ChanModeConfig	_chanModeConfig;

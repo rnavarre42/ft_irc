@@ -19,6 +19,7 @@ public:
 	~Numeric(void);
 	static std::string			builder(Server &server, ISender &sender, int num);
 	static void					insertField(std::string data);
+	static void					insertField(char chr);
 	
 	inline static std::string	builder(Message &message, int num)
 	{
