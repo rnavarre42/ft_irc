@@ -22,7 +22,6 @@ bool Channel::Mode::isSet(char modeName)
 
 Channel::Mode::rangeMultimap_type	Channel::Mode::getList(char modeName)
 {
-	std::cout << "modeName = '" << modeName << "'" << std::endl;
 	return this->_modeMultimap.equal_range(modeName);
 }
 
