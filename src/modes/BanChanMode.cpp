@@ -17,7 +17,7 @@ BanChanMode::BanChanMode(Server &server)
 	//chanModeConfig.mode = 'b';
 	//chanModeConfig.events = JOIN_EVENT | PRIVMSG_EVENT | NOTICE_EVENT;
 
-	this->_chanModeConfig.type = ChanModeConfig::bothParam;
+	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'b';
 	this->_chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE | CHANMODE_NICK;
 }
@@ -56,7 +56,7 @@ void	BanChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &cha
 	//wildcards.
 	//ntpsm no acepta parámetro alguno y por tanto value == empty()
 	//
-	//ov aceptan por parámetro un nick que exista en el canal.
+	//+o +v aceptan por parámetro un nick que exista en el canal.
 	//Aquí se gregaría la instancia User de ese nick.
 	//chanModeMultimap acepta un void * para que cada modo almacene
 	//la información que necesite. Después, cada modo, se encargará
@@ -72,9 +72,9 @@ void	BanChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &ch
 	(void)user;
 	(void)channel;
 	//TODO: value contendría la máscara a eliminar
-	//necesitamos comprobar si cumple con lo que sería una máscara
-	//ver si no existe
-	//borrarla
+	//- necesitamos comprobar si cumple con lo que sería una máscara
+	//- ver si no existe
+	//- borrarla
 
 }
 

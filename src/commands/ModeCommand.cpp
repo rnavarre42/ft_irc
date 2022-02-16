@@ -1,8 +1,11 @@
 #include "ModeCommand.hpp"
+#include "AChanMode.hpp"
+#include "User.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
 #include "Channel.hpp"
 #include "Numeric.hpp"
+#include "Console.hpp"
 
 #include <iostream>
 
@@ -20,40 +23,98 @@ void ModeCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
+/*
+ *	Funcion que verifica si el modo de canal existe, la sintaxis es correcta y tiene privilegios para
+ *	ejecutarlo.
+ */
 inline void ModeCommand::_checkChanModes(Message &message)
 {
 	Channel							*channel;
 	Channel::channelMap_iterator	it = server.channelFind(message[0]);
+	AChanMode						*chanMode;
+	bool							set = true;
+	int								i = 2;
+	AChanMode::Access				access;
 
+	// Si el canal no existe...
 	if (it == server.getChannelMap().end())
 	{
 		Numeric::insertField(message[0]);
-		message.reply(Numeric::builder(message, ERR_NOSUCHCHANNEL));
+		message.replyNumeric(ERR_NOSUCHCHANNEL);
 		return ;
 	}
 	channel = it->second;
-	if (!channel->isOper(this->userSender))
+	// Si el usuario no es operador...
+	if (channel->isOper(this->userSender))
 	{
 		Numeric::insertField(channel->getName());
-		message.reply(Numeric::builder(message, ERR_CHANOPRIVSNEEDED));
+		message.replyNumeric(ERR_CHANOPRIVSNEEDED);
+		return ;
+	}
+	for (std::string::iterator strIt = message[1].begin(); strIt != message[1].end(); ++strIt)
+	{
+		if (*strIt == '+')
+			set = true;
+		else if (*strIt == '-')
+			set = false;
+		else if ((chanMode = server.findChanMode(*strIt)))
+		{
+			if (set)
+			{
+				chanMode->onEnableChanModeEvent(access, *this->userSender, *channel, message[i]);
+				if (chanMode->getConfig().type & ChanModeConfig::enableParam)
+					++i;
+			}
+			else
+			{
+				chanMode->onDisableChanModeEvent(access, *this->userSender, *channel, message[i]);
+				if (chanMode->getConfig().type & ChanModeConfig::disableParam)
+					++i;
+			}
+		}
+		else
+		{
+			Numeric::insertField(*strIt);
+			Numeric::insertField(channel->getName());
+			message.replyNumeric(ERR_UNKNOWNMODE);
+		}
 	}
 }
 
-inline static void _checkUserModes(Message &message)
+/*
+ *	Funcion que verifica si el modo de usuario existe, la sintaxis es correcta y tiene privilegios para
+ *	ejecutarlo.
+ */ 
+
+inline void ModeCommand::_checkUserModes(Message &message)
 {
-	(void)message;
+	Server::userMap_iterator	it = server.userFind(message[0]);
+
+	if (it == this->server.getUserMap().end())
+	{
+		Numeric::insertField(message[0]);
+		message.replyNumeric(ERR_NOSUCHNICK);
+		return ;
+	}	  
+	if (*this->userSender != message[0])
+	{
+		Numeric::insertField(message[0]);
+		message.replyNumeric(ERR_USERSDONTMATCH);
+		return ;
+	}
 }
 
 bool ModeCommand::_recvUser(Message &message)
 {
-	User						&user = *this->userSender;
+	User	&user = *this->userSender;
 
 	(void)user;
 
-	if (message.getServer()->isChannel((message[0])))
+	// El mensaje va destinado a un canal
+	if (server.isChannel((message[0])))
 		this->_checkChanModes(message);
-	else
-		_checkUserModes(message);
+	else // El mensaje va destinado al propio cliente.
+		this->_checkUserModes(message);
 	return true;
 }
 

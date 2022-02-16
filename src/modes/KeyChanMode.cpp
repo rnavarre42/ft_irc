@@ -4,7 +4,7 @@
 KeyChanMode::KeyChanMode(Server &server)
 	: AChanMode(server)
 {
-	this->_chanModeConfig.type = ChanModeConfig::bothParam;
+	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'k';
 	this->_chanModeConfig.events = CHANMODE_JOIN;
 }

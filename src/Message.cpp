@@ -1,4 +1,5 @@
 #include "Message.hpp"
+#include "Numeric.hpp"
 #include "User.hpp"
 #include "utils.hpp"
 #include "ISender.hpp"
@@ -239,6 +240,16 @@ void	Message::reply(void)
 void	Message::reply(std::string data)
 {
 	this->_sender->send(data);
+}
+
+void	Message::replyNumeric(int numeric)
+{
+	this->reply(Numeric::builder(*this, numeric));
+}
+
+void	Message::sendNumeric(int numeric)
+{
+	this->send(Numeric::builder(*this, numeric));
 }
 
 void	Message::send(void)

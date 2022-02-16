@@ -55,6 +55,7 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 	, _type(TYPE_SERVER)
 {
 	this->_loadCommands();
+	this->_loadChanModes();
 //	this->_logger();
 	this->_setSignals();
 	std::memset(this->_pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
@@ -168,9 +169,14 @@ bool	Server::_unloadChanMode(char modeName)
 	return this->_unloadChanMode(this->_chanModeMap.find(modeName));
 }
 
-AChanMode	*Server::_findChanMode(char modeName)
+AChanMode	*Server::findChanMode(char modeName)
 {
-	return this->_chanModeMap.find(modeName)->second;
+	aChanModeMap_iterator	it;
+
+	it = this->_chanModeMap.find(modeName);
+	if (it == this->_chanModeMap.end())
+		return NULL;
+	return it->second;
 }
 
 Server	&Server::getInstance(void)
@@ -689,7 +695,7 @@ void	Server::names(Channel &channel)
 	Numeric::insertField(channel.getName());
 	for (Server::userPairMap_iterator it = channel.getUserMap().begin(); it != channel.getUserMap().end(); it++)
 	{
-//		añadir @ o +
+	//TODO añadir prefijo @ o + a cada nick si tiene ese modo en el canal
 //		if (it->second->first & I
 		Numeric::insertField(it->second.second->getName());
 	}

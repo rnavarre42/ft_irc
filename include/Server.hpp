@@ -109,6 +109,7 @@ public:
 	userMap_type					&getUserMap(void);
 	channelMap_type					&getChannelMap(void);
 	std::string						getMask(void);
+	AChanMode						*findChanMode(char modeChar);
 
 	inline Invite					&invite(void)
 	{
@@ -230,7 +231,6 @@ private:
 	bool		_unloadChanMode(aChanModeMap_iterator it);
 	void		_loadChanModes(void);
 	void		_loadChanMode(AChanMode *newChanMode);
-	AChanMode	*_findChanMode(char modeChar);
 	void		_checkConsoleInput(void);
 	void		_checkUserIO(void);
 	void		_checkTimeout(void);

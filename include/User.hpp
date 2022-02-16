@@ -102,6 +102,16 @@ public:
 	Server::userVector_type	*getUniqueVector(void);
 	Channel					*findFullestChannel(void);
 
+	inline bool	operator==(std::string &rhs)
+	{
+		return (strToUpper(this->_name) == strToUpper(rhs));
+	}
+
+	inline bool	operator!=(std::string &rhs)
+	{
+		return !operator==(rhs);
+	}
+
 private:
 	User(void);
 
@@ -128,4 +138,20 @@ private:
 	std::string					_getLine(size_t pos);
 };
 
+/*
+inline bool operator==(User const &lhs, User const &rhs)
+{
+	return (&lhs == &rhs);
+}
+
+inline bool operator==(std::string const &lhs, User const &rhs)
+{
+	return (strToUpper(rhs.getName()) == strToUpper(lhs));
+}
+
+inline bool operator==(User const &lhs, std::string const &rhs)
+{
+	return (strToUpper(lhs.getName()) == strToUpper(rhs));
+}
+*/
 #endif

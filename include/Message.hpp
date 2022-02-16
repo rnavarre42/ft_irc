@@ -42,8 +42,10 @@ public:
 
 	void				reply(void);
 	void				reply(std::string data);
+	void				replyNumeric(int numeric);
 	void				send(void);
 	void				send(std::string data);
+	void				sendNumeric(int numeric);
 	void				process(void);
 
 	size_t				size(void);

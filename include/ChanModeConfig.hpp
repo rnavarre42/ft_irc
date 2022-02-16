@@ -33,12 +33,11 @@ struct ChanModeConfig
 {
 	enum ModeType
 	{
-		noParam,
-		bothParam,
-		enableParam,
-		disableParam
+		noParam = 0x00,
+		enableParam = 0x01,
+		disableParam = 0x02
 	};
-	ModeType	type;
+	int			type;
 	char		mode;
 	int			events;
 };
