@@ -5,7 +5,7 @@ int	main(int argc, char **argv)
 {
 	if (argc != 5)
 	{
-		std::cerr << "Usage: client hostname port" << std::endl;
+		std::cerr << "Usage: ./irclient host port nick username" << std::endl;
 		return 1;
 	}
 

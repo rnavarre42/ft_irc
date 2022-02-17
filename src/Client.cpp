@@ -140,12 +140,7 @@ void	Client::_checkNetworkInput(void)
 	std::string	line;
 	size_t		pos;
 
-	if (this->_pollfds[1].revents & POLLHUP)
-	{
-		std::cout << "Socket has been disconnected, goodbye!" << std::endl;
-		exit(0);
-	}
-	else if (this->_pollfds[1].revents & POLLIN)
+	if (this->_pollfds[1].revents & POLLIN)
 	{
 		size = recv(this->_fd, buffer, BUFFERSIZE, 0);
 		if (size == -1)
@@ -164,6 +159,11 @@ void	Client::_checkNetworkInput(void)
 			this->_displayLine(line);
 			this->_doAutoPong(line);
 		}
+	}
+	if (this->_pollfds[1].revents & POLLHUP)
+	{
+		std::cout << "Socket has been disconnected, goodbye!" << std::endl;
+		exit(0);
 	}
 }
 
