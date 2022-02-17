@@ -18,16 +18,18 @@ void	SecretChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	SecretChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
+void	SecretChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
 {
+	(void)order;
 	(void)access;
 	(void)message;
 	(void)user;
 	(void)channel;
 }
 
-void	SecretChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
+void	SecretChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
 {
+	(void)order;
 	(void)access;
 	(void)message;
 	(void)user;

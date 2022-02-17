@@ -1,4 +1,6 @@
 #include "OperChanMode.hpp"
+#include "User.hpp"
+#include "Channel.hpp"
 #include "ChanModeConfig.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
@@ -21,22 +23,63 @@ void	OperChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	OperChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
+void	OperChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
 {
+	Server::userMap_iterator	targetIt;
+	(void)order;
 	(void)access;
-	(void)message;
 	(void)user;
-	(void)channel;
-	Console::log(LOG_DEBUG, "onEnableChanModeEvent");
+	if (message.size() == 2)
+	{
+		Numeric::insertField(message.getCmd());
+		message.replyNumeric(ERR_NEEDMOREPARAMS);
+	}
+	else
+	{
+		targetIt = channel.userFind(message[2]);
+		if (targetIt == channel.getUserMap().end())
+		{
+			Numeric::insertField(message[2]);
+			message.replyNumeric(ERR_NOSUCHNICK);
+		}
+		else	// Aquí se añade el modo a la lista del canal
+		{
+			if (this->setMode(channel, targetIt->second))
+			{
+				message[2] = targetIt->second->getName();
+				message.reply();
+			}
+		}
+		Console::log(LOG_DEBUG, "onEnableChanModeEvent");
+	}
 }
 
-void	OperChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
+void	OperChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
 {
+	Server::userMap_iterator	targetIt;
+	(void)order;
 	(void)access;
-	(void)message;
 	(void)user;
-	(void)channel;
-	Console::log(LOG_DEBUG, "onDisableChanModeEvent");
+	if (message.size() == 2)
+	{
+		Numeric::insertField(message.getCmd());
+		message.replyNumeric(ERR_NEEDMOREPARAMS);
+	}
+	else
+	{
+		targetIt = channel.userFind(message[2]);
+		if (targetIt == channel.getUserMap().end())
+		{
+			Numeric::insertField(message[2]);
+			message.replyNumeric(ERR_NOSUCHNICK);
+		}
+		else
+		{
+			message[2] = targetIt->second->getName();
+			message.reply();
+		}
+		Console::log(LOG_DEBUG, "onDisableChanModeEvent");
+	}
 }
 
 void	OperChanMode::onShowChanModeEvent(void)

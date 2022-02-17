@@ -36,19 +36,29 @@ public:
 	class Mode
 	{
 	public:
-		typedef std::multimap<char, User *>						multimap_type;
+		typedef std::multimap<char, void *>						multimap_type;
 		typedef multimap_type::iterator							multimap_iterator;
-		typedef std::pair<multimap_iterator, multimap_iterator>	rangeMultimap_type;
+		typedef std::pair<multimap_iterator, multimap_iterator>	rangePairMultimap_type;
 
-		bool				isSet(char modeName);
-		rangeMultimap_type	getList(char modeName);
+		multimap_type const		&getModeMultimap(void)
+		{
+			return this->_modeMultimap;
+		}
+
+		bool					isSet(char modeName);
+		rangePairMultimap_type	getList(char modeName);
+		void					insert(char modeName, void *value);
+		void					erase(char modeName, void *value);
+		void					erase(multimap_iterator pos);
+		multimap_iterator		findUnique(char modeName, void *value);
+		
 
 	private:
 		multimap_type						_modeMultimap;
 
 	}								mode;
 	std::string const				&getName(void) const;
-	Server::userPairMap_type		&getUserMap(void);
+	Server::userMap_type			&getUserMap(void);
 	void							insertUser(User *user);
 	void							eraseUser(std::string value);
 	bool							empty(void);
@@ -67,6 +77,11 @@ public:
 	void							setTopicTime(time_t value);
 	time_t const					&getTopicTime(void) const;
 
+	inline Server::userMap_iterator	userFind(std::string &userName)
+	{
+		return this->_userMap.find(strToUpper(userName));
+	}
+
 	void send(std::string msg);
 	void join(User user);
 	void part(User user);
@@ -77,7 +92,7 @@ private:
 	std::string						_owner;
 	std::string						_topicOwn;
 	time_t							_topicTime;
-	Server::userPairMap_type		_userMap;
+	Server::userMap_type			_userMap;
 
 	Channel(void);
 };

@@ -85,9 +85,9 @@ public:
 	typedef channelMap_type::iterator							channelMap_iterator;
 	typedef std::map<std::string, User *>						userMap_type;
 	typedef userMap_type::iterator								userMap_iterator;
-	typedef std::pair<int, User *>								userPair_type;
-	typedef std::map<std::string, userPair_type>				userPairMap_type;
-	typedef userPairMap_type::iterator							userPairMap_iterator;
+//	typedef std::pair<int, User *>								userPair_type;
+//	typedef std::map<std::string, userPair_type>				userPairMap_type;
+//	typedef userPairMap_type::iterator							userPairMap_iterator;
 	typedef std::map<std::string, Server *>						serverMap_type;
 	typedef userMap_type::iterator								serverMap_iterator;
 	typedef std::map<int, User *>								fdMap_type;

@@ -373,19 +373,19 @@ Server::userVector_type	*User::getUniqueVector(void)
 	//añadir los usuarios del canal mas grande al vector
 	checkChannelSet.insert(currentChannel);
 	userVector = new Server::userVector_type;
-	for (Server::userPairMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
-		userVector->push_back(it->second.second);
+	for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+		userVector->push_back(it->second);
 	//añadir los usuarios de los canales restantes sin repetir usuario en el vector
 	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
 	{
 		currentChannel = it->second;
 		ret = checkChannelSet.insert(currentChannel);
 		if (ret.second == true)
-			for (Server::userPairMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+			for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
 			{
-				vectorIt = std::find(userVector->begin(), userVector->end(), it->second.second);
+				vectorIt = std::find(userVector->begin(), userVector->end(), it->second);
 				if (vectorIt == userVector->end())
-					userVector->push_back(it->second.second);
+					userVector->push_back(it->second);
 			}
 	}
 //	for_each(userVector->begin(), userVector->end(), displayUserName);

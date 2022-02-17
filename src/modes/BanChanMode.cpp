@@ -41,8 +41,9 @@ void	BanChanMode::onChanEvent(Access &access, Message &message)
 	//si se deniega, access = deny;
 }
 
-void	BanChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
+void	BanChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
 {
+	(void)order;
 	(void)message;
 	(void)access;
 	(void)user;
@@ -65,8 +66,9 @@ void	BanChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &cha
 	//Si el parámetro no cumpliese, access = deny;
 }
 
-void	BanChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
+void	BanChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
 {
+	(void)order;
 	(void)access;
 	(void)message;
 	(void)user;

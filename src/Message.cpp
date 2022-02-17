@@ -80,11 +80,11 @@ void Message::set(ISender &sender, std::string data)
 //Message::Message(ISender &sender) : _sender(&sender), _channel(NULL), _broadcast(false)
 //{}
 
-void		Message::setReceiver(std::map<std::string, std::pair<int, User *> > &userMap)
+void		Message::setReceiver(Server::userMap_type &userMap)
 {
-	for (std::map<std::string, std::pair<int, User *> >::iterator it = userMap.begin(); it != userMap.end(); it++)
-		if (it->second.second != this->_sender)
-			this->_receiverVector.push_back(it->second.second);
+	for (Server::userMap_iterator it = userMap.begin(); it != userMap.end(); it++)
+		if (it->second != this->_sender)
+			this->_receiverVector.push_back(it->second);
 }
 
 void		Message::setReceiver(Server::userVector_type &userVector)

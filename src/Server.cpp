@@ -556,7 +556,7 @@ void	Server::addToChannel(Message &message)
 	std::string										&channelName = message[0];
 	User											&user = static_cast<User &>(*message.getSender());
 	Server::channelMap_iterator						it;
-	std::pair<Server::userPairMap_iterator, bool>	retUser;
+	std::pair<Server::userMap_iterator, bool>		retUser;
 
 //	this->_source.message = &message;
 	if (this->isChannel(channelName))
@@ -570,7 +570,7 @@ void	Server::addToChannel(Message &message)
 			channel = new Channel(channelName, user);
 			this->_channelMap[strToUpper(channelName)] = channel;
 			// añade el canal al usuario y el usuario al canal
-			channel->getUserMap()[strToUpper(user.getName())].second = &user;
+			channel->getUserMap()[strToUpper(user.getName())] = &user;
 			user.getChannelMap()[strToUpper(channelName)] = channel;
 			//
 			message.setChannel(channel);
@@ -605,7 +605,7 @@ void	Server::addToChannel(Message &message)
 			
 	//		retUser = channel->getUserMap().insert(pair1);
 
-			retUser = channel->getUserMap().insert(std::make_pair(strToUpper(user.getName()), std::make_pair(0, &user)));
+			retUser = channel->getUserMap().insert(std::make_pair(strToUpper(user.getName()), &user));
 			
 //			retUser = channel->getUserMap().insert(std::pair<std::string, std::pair<int, User *>  >(strToUpper(user.getName(), par)));
 			if (retUser.second == true)  //El nick no está en el canal
@@ -694,11 +694,11 @@ void	Server::names(Channel &channel)
 	//TODO hay que determinar si el canal tiene +p, se enviará "*", +s "@" o nada "="
 	Numeric::insertField("=");
 	Numeric::insertField(channel.getName());
-	for (Server::userPairMap_iterator it = channel.getUserMap().begin(); it != channel.getUserMap().end(); it++)
+	for (Server::userMap_iterator it = channel.getUserMap().begin(); it != channel.getUserMap().end(); it++)
 	{
 	//TODO añadir prefijo @ o + a cada nick si tiene ese modo en el canal
 //		if (it->second->first & I
-		Numeric::insertField(it->second.second->getName());
+		Numeric::insertField(it->second->getName());
 	}
 }
 

@@ -14,8 +14,8 @@ public:
 	~ModerateChanMode(void);
 
 	void onChanEvent(Access &access, Message &message);
-	void onEnableChanModeEvent(Access &access, User &user, Channel &channel, Message &message);
-	void onDisableChanModeEvent(Access &access, User &user, Channel &channel, Message &message);
+	void onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message);
+	void onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message);
 	void onShowChanModeEvent(void);
 };
 

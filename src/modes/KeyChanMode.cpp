@@ -18,16 +18,18 @@ void	KeyChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	KeyChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
+void	KeyChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
 {
+	(void)order;
 	(void)access;
 	(void)message;
 	(void)user;
 	(void)channel;
 }
 
-void	KeyChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
+void	KeyChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
 {
+	(void)order;
 	(void)access;
 	(void)message;
 	(void)user;
