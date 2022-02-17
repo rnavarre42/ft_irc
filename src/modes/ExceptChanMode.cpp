@@ -18,18 +18,18 @@ void	ExceptChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	ExceptChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
+void	ExceptChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
 {
 	(void)access;
-	(void)value;
+	(void)message;
 	(void)user;
 	(void)channel;
 }
 
-void	ExceptChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
+void	ExceptChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
 {
 	(void)access;
-	(void)value;
+	(void)message;
 	(void)user;
 	(void)channel;
 }

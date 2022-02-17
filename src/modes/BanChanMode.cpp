@@ -41,9 +41,9 @@ void	BanChanMode::onChanEvent(Access &access, Message &message)
 	//si se deniega, access = deny;
 }
 
-void	BanChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
+void	BanChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
 {
-	(void)value;
+	(void)message;
 	(void)access;
 	(void)user;
 	(void)channel;
@@ -65,10 +65,10 @@ void	BanChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &cha
 	//Si el parámetro no cumpliese, access = deny;
 }
 
-void	BanChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
+void	BanChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
 {
 	(void)access;
-	(void)value;
+	(void)message;
 	(void)user;
 	(void)channel;
 	//TODO: value contendría la máscara a eliminar

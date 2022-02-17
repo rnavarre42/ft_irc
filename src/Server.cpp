@@ -70,6 +70,7 @@ Server::Server(std::string listenIp, int listenPort, std::string name)
 Server::~Server(void)
 {
 	this->_unloadCommands();
+	this->_unloadChanModes();
 	delete &this->_message;
 	Console::log(LOG_INFO, "Server destroyed");
 }
@@ -157,8 +158,8 @@ bool	Server::_unloadChanMode(Server::aChanModeMap_iterator it)
 {
 	if (it != this->_chanModeMap.end())
 	{
-		this->_chanModeMap.erase(it);
 		delete it->second;
+		this->_chanModeMap.erase(it);
 		return true;
 	}
 	return false;

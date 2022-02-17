@@ -18,18 +18,18 @@ void	InviteChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	InviteChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
+void	InviteChanMode::onEnableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
 {
 	(void)access;
-	(void)value;
+	(void)message;
 	(void)user;
 	(void)channel;
 }
 
-void	InviteChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, std::string &value)
+void	InviteChanMode::onDisableChanModeEvent(Access &access, User &user, Channel &channel, Message &message)
 {
 	(void)access;
-	(void)value;
+	(void)message;
 	(void)user;
 	(void)channel;
 }

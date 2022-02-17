@@ -29,11 +29,10 @@ void ModeCommand::unloadEvents(Server::eventHandler_type &eventHandler)
  */
 inline void ModeCommand::_checkChanModes(Message &message)
 {
+	bool							set = true;
 	Channel							*channel;
 	Channel::channelMap_iterator	it = server.channelFind(message[0]);
 	AChanMode						*chanMode;
-	bool							set = true;
-	int								i = 2;
 	AChanMode::Access				access;
 
 	// Si el canal no existe...
@@ -61,15 +60,15 @@ inline void ModeCommand::_checkChanModes(Message &message)
 		{
 			if (set)
 			{
-				chanMode->onEnableChanModeEvent(access, *this->userSender, *channel, message[i]);
+				chanMode->onEnableChanModeEvent(access, *this->userSender, *channel, message);
 				if (chanMode->getConfig().type & ChanModeConfig::enableParam)
-					++i;
+					message.eraseAt(2);
 			}
 			else
 			{
-				chanMode->onDisableChanModeEvent(access, *this->userSender, *channel, message[i]);
+				chanMode->onDisableChanModeEvent(access, *this->userSender, *channel, message);
 				if (chanMode->getConfig().type & ChanModeConfig::disableParam)
-					++i;
+					message.eraseAt(2);
 			}
 		}
 		else
