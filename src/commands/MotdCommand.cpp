@@ -24,7 +24,7 @@ bool MotdCommand::_recvUser(Message &message)
 	User	&user = *this->userSender;
 
 	message.setReceiver(&user);
-	message.send();
+	message.process();
 
 	(void)user;
 	return true;
