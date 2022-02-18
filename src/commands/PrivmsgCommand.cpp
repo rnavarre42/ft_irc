@@ -11,15 +11,11 @@
 PrivmsgCommand::PrivmsgCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
 {}
 
-void PrivmsgCommand::loadEvents(Server::eventHandler_type &eventHandler)
-{
-	(void)eventHandler;
-}
+void PrivmsgCommand::loadEvents(Server::eventHandler_type &)
+{}
 
-void PrivmsgCommand::unloadEvents(Server::eventHandler_type &eventHandler)
-{
-	(void)eventHandler;
-}
+void PrivmsgCommand::unloadEvents(Server::eventHandler_type &)
+{}
 
 bool PrivmsgCommand::_recvUser(Message &message)
 {
@@ -29,7 +25,7 @@ bool PrivmsgCommand::_recvUser(Message &message)
 
 	if (message.size() < 2)
 	{
-		user.send(Numeric::builder(this->server, user, ERR_NOTEXTTOSEND));
+		message.replyNumeric(ERR_NOTEXTTOSEND);
 		return true;
 	}
 	if (this->server.isChannel(message[0]))
@@ -37,7 +33,7 @@ bool PrivmsgCommand::_recvUser(Message &message)
 		if ((chanIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
 		{	
 			Numeric::insertField(message[0]);
-			user.send(Numeric::builder(this->server, user, ERR_NOSUCHCHANNEL));
+			message.replyNumeric(ERR_NOSUCHCHANNEL);
 			return true;
 		}
 		message.setReceiver(chanIt->second->getUserMap());
@@ -49,7 +45,7 @@ bool PrivmsgCommand::_recvUser(Message &message)
 		if ((userIt = this->server.userFind(message[0])) == this->server.getUserMap().end())
 		{
 			Numeric::insertField(message[0]);
-			user.send(Numeric::builder(this->server, user, ERR_NOSUCHNICK));
+			message.replyNumeric(ERR_NOSUCHNICK);
 			return true;
 		}
 		message.eraseAt(0);

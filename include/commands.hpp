@@ -18,6 +18,7 @@
 # include "PongCommand.hpp"
 # include "PrivmsgCommand.hpp"
 # include "QuitCommand.hpp"
+# include "ShutdownCommand.hpp"
 # include "UserCommand.hpp"
 //# include "WhoCommand.hpp"
 //# include "WhoisCommand.hpp"

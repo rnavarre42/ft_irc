@@ -46,9 +46,10 @@ public:
 		}
 
 		bool					isSet(char modeName);
+		bool					isSet(char modeName, void *value);
 		rangePairMultimap_type	getList(char modeName);
-		void					insert(char modeName, void *value);
-		void					erase(char modeName, void *value);
+		bool					insert(char modeName, void *value);
+		bool					erase(char modeName, void *value);
 		void					erase(multimap_iterator pos);
 		multimap_iterator		findUnique(char modeName, void *value);
 		
@@ -64,6 +65,7 @@ public:
 	bool							empty(void);
 
 	bool							isOper(User *user);
+	bool							isVoice(User *user);
 
 	void							setOwner(std::string value);
 	std::string const				&getOwner(void) const;

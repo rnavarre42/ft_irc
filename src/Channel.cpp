@@ -21,15 +21,26 @@ bool Channel::Mode::isSet(char modeName)
 	return this->_modeMultimap.count(modeName) > 0;
 }
 
+bool Channel::Mode::isSet(char modeName, void *value)
+{
+	return (this->findUnique(modeName, value) != this->_modeMultimap.end());
+}
+
 Channel::Mode::rangePairMultimap_type Channel::Mode::getList(char modeName)
 {
 	return this->_modeMultimap.equal_range(modeName);
 }
 
-void	Channel::Mode::insert(char modeName, void *value)
+bool Channel::Mode::insert(char modeName, void *value)
 {
-	Console::log(LOG_DEBUG, "insert mode");
-	this->_modeMultimap.insert(std::make_pair(modeName, value));
+	bool	ret = !this->isSet(modeName, value);
+
+	if (ret)
+	{
+		this->_modeMultimap.insert(std::make_pair(modeName, value));
+		Console::log(LOG_DEBUG, "insert mode");
+	}
+	return ret;
 }
 
 Channel::Mode::multimap_iterator	Channel::Mode::findUnique(char modeName, void *value)
@@ -47,12 +58,16 @@ Channel::Mode::multimap_iterator	Channel::Mode::findUnique(char modeName, void *
 	return this->_modeMultimap.end();
 }
 
-void	Channel::Mode::erase(char modeName, void *value)
+bool	Channel::Mode::erase(char modeName, void *value)
 {
 	Channel::Mode::multimap_iterator	pos = this->findUnique(modeName, value);
 	   
 	if (pos	!= this->_modeMultimap.end())
+	{
 		this->erase(pos);
+		return true;
+	}
+	return false;
 }
 
 void	Channel::Mode::erase(Channel::Mode::multimap_iterator pos)
@@ -62,13 +77,19 @@ void	Channel::Mode::erase(Channel::Mode::multimap_iterator pos)
 
 bool Channel::isOper(User *user)
 {
-	Channel::Mode::rangePairMultimap_type		rangeIt = mode.getList('o');
-	for (Channel::Mode::multimap_iterator	it = rangeIt.first; it != rangeIt.second; it++)
-	{
-		if (it->second == user)
-			return true;
-	}
-	return false;
+	return (this->mode.isSet('o', user));
+//	Channel::Mode::rangePairMultimap_type		rangeIt = mode.getList('o');
+//	for (Channel::Mode::multimap_iterator	it = rangeIt.first; it != rangeIt.second; it++)
+//	{
+//		if (it->second == user)
+//			return true;
+//	}
+//	return false;
+}
+
+bool Channel::isVoice(User *user)
+{
+	return (this->mode.isSet('+', user));
 }
 
 std::string const	&Channel::getName(void) const

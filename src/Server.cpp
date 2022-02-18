@@ -91,6 +91,7 @@ void	Server::_loadCommands(void)
 	this->_commandMap["PONG"]		= new PongCommand	(*this, LEVEL_NEGOTIATING | LEVEL_REGISTERED, 1);
 	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["QUIT"]		= new QuitCommand	(*this, LEVEL_ALL, 0);
+	this->_commandMap["SHUTDOWN"]	= new ShutdownCommand	(*this, LEVEL_IRCOPERATOR, 0);
 	this->_commandMap["USER"]		= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
 
 //	this->_commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);

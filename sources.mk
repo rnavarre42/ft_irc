@@ -45,6 +45,7 @@ COMMAND_SRCS	=	\
 					PongCommand.cpp				\
 					PrivmsgCommand.cpp			\
 					QuitCommand.cpp				\
+					ShutdownCommand.cpp			\
 					UserCommand.cpp				\
 
 #					ListCommand.cpp				\

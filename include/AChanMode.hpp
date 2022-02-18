@@ -40,14 +40,19 @@ protected:
 	Server			&_server;
 	ChanModeConfig	_chanModeConfig;
 
+	bool	isSetMode(Channel &channel, void *value)
+	{
+		return (channel.mode.isSet(this->_chanModeConfig.mode, value));
+	}
+
 	bool	setMode(Channel &channel, void *value)
 	{
-		if (channel.mode.findUnique(this->_chanModeConfig.mode, value) == channel.mode.getModeMultimap().end())
-		{
-			channel.mode.insert(this->_chanModeConfig.mode, value);
-			return true;
-		}
-		return false;
+		return channel.mode.insert(this->_chanModeConfig.mode, value);
+	}
+
+	bool	unsetMode(Channel &channel, void *value)
+	{
+		return channel.mode.erase(this->_chanModeConfig.mode, value);
 	}
 };
 
