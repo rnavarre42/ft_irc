@@ -693,14 +693,19 @@ int	Server::_checkUserConnection(void)
 
 void	Server::names(Channel &channel)
 {
+	std::string	mode;
+
 	//TODO hay que determinar si el canal tiene +p, se enviará "*", +s "@" o nada "="
 	Numeric::insertField("=");
 	Numeric::insertField(channel.getName());
 	for (Server::userMap_iterator it = channel.getUserMap().begin(); it != channel.getUserMap().end(); it++)
 	{
-	//TODO añadir prefijo @ o + a cada nick si tiene ese modo en el canal
-//		if (it->second->first & I
-		Numeric::insertField(it->second->getName());
+		if (channel.isOper(it->second))
+			mode += "@";
+		if (channel.isVoice(it->second))
+			mode += "+";
+		Numeric::insertField(mode + it->second->getName());
+		mode.clear();
 	}
 }
 
