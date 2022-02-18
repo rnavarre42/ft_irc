@@ -24,8 +24,8 @@ public:
 	virtual ~AChanMode(void) {}
 
 	virtual void onChanEvent(Access &access, Message &message) = 0;
-	virtual void onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message) = 0;
-	virtual void onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message) = 0;
+	virtual bool onChanModeEvent(int pos, int sign, Access &access, User &user, Channel &channel, Message &message) = 0;
+//	virtual void onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message) = 0;
 	virtual void onShowChanModeEvent(void) = 0;
 
 	ChanModeConfig	const &getConfig(void) const

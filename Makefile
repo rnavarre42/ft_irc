@@ -51,6 +51,10 @@ tag:
 run:		all
 	./$(NAME)
 
+c:
+	make -C client run non NoSoyNadie 10.11.13.2 6667
+	reset
+
 cli:
 	make -C client run non NoSoyNadie 127.0.0.1 6667
 	reset

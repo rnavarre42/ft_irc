@@ -23,18 +23,45 @@ void ModeCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 	(void)eventHandler;
 }
 
+inline int	isSignMode(char c)
+{
+	return (c == '+') * 1 + (c == '-') * 2;
+}
+
+//	+o++--+-+o
+//	+oo
+//  101
+void	cleanSignModes(std::string &modes)
+{
+	int	set = 3;
+
+	for (std::string::iterator it = modes.begin(); it != modes.end();)
+	{
+		if ((isSignMode(*it) && ((1 + it) == modes.end() || isSignMode(*(1 + it))))
+				|| isSignMode(*it) == set)
+			modes.erase(it);
+		else
+		{
+			if (isSignMode(*it))
+				set = isSignMode(*it);
+			++it;
+		}
+	}
+}
+
 /*
  *	Funcion que verifica si el modo de canal existe, la sintaxis es correcta y tiene privilegios para
  *	ejecutarlo.
  */
 inline void ModeCommand::_checkChanModes(Message &message)
 {
-	int								order = 0;
+	int								pos = 2;
 	bool							set = true;
 	Channel							*channel;
 	Channel::channelMap_iterator	it = server.channelFind(message[0]);
 	AChanMode						*chanMode;
 	AChanMode::Access				access;
+	std::string::iterator 			currentIt;
 
 	if (message.size() < 2)
 		//TODO Mostrar raw 324 (modes) 329 (creation time)
@@ -54,35 +81,57 @@ inline void ModeCommand::_checkChanModes(Message &message)
 		message.replyNumeric(ERR_CHANOPRIVSNEEDED);
 		return ;
 	}
-	for (std::string::iterator strIt = message[1].begin(); strIt != message[1].end(); ++strIt)
+	for (std::string::iterator strIt = message[1].begin(); strIt != message[1].end(); )
 	{
-		if (*strIt == '+')
+		currentIt = strIt;
+		++strIt;
+		if (*currentIt == '+')
 			set = true;
-		else if (*strIt == '-')
+		else if (*currentIt == '-')
 			set = false;
-		else if ((chanMode = server.findChanMode(*strIt)))
+		else if ((chanMode = server.findChanMode(*currentIt)))
 		{
-			if (set)
+			std::cout << message.toString() << std::endl;
+			if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() == 2)
 			{
-				chanMode->onEnableChanModeEvent(order, access, *this->userSender, *channel, message);
-				if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() > 2)
-					message.eraseAt(2);
+				Numeric::insertField(message.getCmd());
+				message.replyNumeric(ERR_NEEDMOREPARAMS);
+				message[1].erase(currentIt);
+				--strIt;
 			}
 			else
 			{
-				chanMode->onDisableChanModeEvent(order, access, *this->userSender, *channel, message);
-				if (chanMode->getConfig().type & ChanModeConfig::disableParam && message.size() > 2)
-					message.eraseAt(2);
+				if (chanMode->onChanModeEvent(pos, set, access, *this->userSender, *channel, message))
+				{
+					if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() > 2)
+						++pos;
+				}
+				else
+				{
+					message[1].erase(currentIt);
+					--strIt;
+					if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() > 2)
+						message.eraseAt(pos);
+				}
 			}
-			++order;
-		}
+		}	
+/*			else
+			{
+				if (chanMode->onDisableChanModeEvent(pos, access, *this->userSender, *channel, message)
+					&& chanMode->getConfig().type & ChanModeConfig::disableParam && message.size() > 2)
+					++pos;
+			}*/
 		else
 		{
-			Numeric::insertField(*strIt);
+			Numeric::insertField(*currentIt);
 			Numeric::insertField(channel->getName());
 			message.replyNumeric(ERR_UNKNOWNMODE);
 		}
 	}
+	cleanSignModes(message[1]);
+	message.limitMaxParam(pos);
+	if (!message[1].empty())
+		message.reply();
 }
 
 /*

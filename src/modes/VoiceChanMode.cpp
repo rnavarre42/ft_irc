@@ -18,15 +18,17 @@ void	VoiceChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	VoiceChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
+bool	VoiceChanMode::onChanModeEvent(int order, int sign, Access &access, User &user, Channel &channel, Message &message)
 {
 	(void)order;
+	(void)sign;
 	(void)access;
 	(void)message;
 	(void)user;
 	(void)channel;
+	return (false);
 }
-
+/*
 void	VoiceChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
 {
 	(void)order;
@@ -35,7 +37,7 @@ void	VoiceChanMode::onDisableChanModeEvent(int order, Access &access, User &user
 	(void)user;
 	(void)channel;
 }
-
+*/
 void	VoiceChanMode::onShowChanModeEvent(void)
 {
 }

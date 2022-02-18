@@ -23,68 +23,52 @@ void	OperChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	OperChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
+bool	OperChanMode::onChanModeEvent(int pos, int sign, Access &access, User &user, Channel &channel, Message &message)
 {
 	Server::userMap_iterator	targetIt;
-	(void)order;
 	(void)access;
 	(void)user;
-	if (message.size() == 2)
+	
+	Console::log(LOG_DEBUG, "onChanModeEvent " + message[pos]);
+	targetIt = channel.userFind(message[pos]);
+	if (targetIt == channel.getUserMap().end())
 	{
-		Numeric::insertField(message.getCmd());
-		message.replyNumeric(ERR_NEEDMOREPARAMS);
+		Numeric::insertField(message[pos]);
+		message.replyNumeric(ERR_NOSUCHNICK);
+	}
+	else	// Aquí se añade el modo a la lista del canal
+	{
+		if ((sign && this->setMode(channel, targetIt->second))
+				|| (!sign && this->unsetMode(channel, targetIt->second)))
+		{
+			message[pos] = targetIt->second->getName();
+			return true;
+		}
+	}
+	return false;
+}
+/*
+bool	OperChanMode::onDisableChanModeEvent(int pos, Access &access, User &user, Channel &channel, Message &message)
+{
+	Server::userMap_iterator	targetIt;
+	(void)access;
+	(void)user;
+	targetIt = channel.userFind(message[pos]);
+	if (targetIt == channel.getUserMap().end())
+	{
+		Numeric::insertField(message[pos]);
+		message.replyNumeric(ERR_NOSUCHNICK);
 	}
 	else
 	{
-		targetIt = channel.userFind(message[2]);
-		if (targetIt == channel.getUserMap().end())
+		if (this->unsetMode(channel, targetIt->second))
 		{
-			Numeric::insertField(message[2]);
-			message.replyNumeric(ERR_NOSUCHNICK);
+			message[pos] = targetIt->second->getName();
 		}
-		else	// Aquí se añade el modo a la lista del canal
-		{
-			if (this->setMode(channel, targetIt->second))
-			{
-				message[2] = targetIt->second->getName();
-				message.reply();
-			}
-		}
-		Console::log(LOG_DEBUG, "onEnableChanModeEvent");
 	}
+	Console::log(LOG_DEBUG, "onDisableChanModeEvent " + message[pos]);
 }
-
-void	OperChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
-{
-	Server::userMap_iterator	targetIt;
-	(void)order;
-	(void)access;
-	(void)user;
-	if (message.size() == 2)
-	{
-		Numeric::insertField(message.getCmd());
-		message.replyNumeric(ERR_NEEDMOREPARAMS);
-	}
-	else
-	{
-		targetIt = channel.userFind(message[2]);
-		if (targetIt == channel.getUserMap().end())
-		{
-			Numeric::insertField(message[2]);
-			message.replyNumeric(ERR_NOSUCHNICK);
-		}
-		else
-		{
-			if (this->unsetMode(channel, targetIt->second))
-			{
-				message[2] = targetIt->second->getName();
-				message.reply();
-			}
-		}
-		Console::log(LOG_DEBUG, "onDisableChanModeEvent");
-	}
-}
-
+*/
 void	OperChanMode::onShowChanModeEvent(void)
 {
 }
