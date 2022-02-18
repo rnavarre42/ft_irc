@@ -40,7 +40,7 @@ void JoinCommand::joinChannelEvent(Message &message)
 {
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha entrado al canal " + message[0]);
 	message.setReceiver(message.getChannel()->getUserMap());
-	message.setReceiver(message.getSender());
+	message.setReceiver(message.getSender());	// cuando el canal está vacio, hay que añadir a uno mismo
 	message.hideReceiver();
 	message.send();
 	message.clearReceiver();

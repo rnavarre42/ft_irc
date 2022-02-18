@@ -131,7 +131,12 @@ inline void ModeCommand::_checkChanModes(Message &message)
 	cleanSignModes(message[1]);
 	message.limitMaxParam(pos);
 	if (!message[1].empty())
-		message.reply();
+	{
+		message.setReceiver(channel->getUserMap());
+		message.setReceiver(this->userSender);
+		message.hideReceiver();
+		message.send();
+	}
 }
 
 /*
