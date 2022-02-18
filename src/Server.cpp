@@ -573,7 +573,8 @@ void	Server::addToChannel(Message &message)
 			// añade el canal al usuario y el usuario al canal
 			channel->getUserMap()[strToUpper(user.getName())] = &user;
 			user.getChannelMap()[strToUpper(channelName)] = channel;
-			//
+			//TODO falta dar op al primero que entra.
+			channel->mode.insert('o', &user);
 			message.setChannel(channel);
 			this->_eventHandler.raise(NEWCHANEVENT, this->_message);
 			//this->_eventHandler.raise(JOINEVENT, this->_source);

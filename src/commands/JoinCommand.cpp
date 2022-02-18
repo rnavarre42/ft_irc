@@ -13,7 +13,7 @@ JoinCommand::JoinCommand(Server &server, int accessLevel, int paramCount) : ACom
 
 void JoinCommand::loadEvents(Server::eventHandler_type &eventHandler)
 {
-	eventHandler.add(JOINEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::joinChannelEvent));
+	eventHandler.add(JOINEVENT,    *new Delegate<JoinCommand, Message>(*this, &JoinCommand::joinChannelEvent));
 	eventHandler.add(NEWCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::createChannelEvent));
 	eventHandler.add(ALREADYEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::alreadyChannelEvent));
 	eventHandler.add(ERRCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::errChannelEvent));
@@ -88,7 +88,7 @@ bool JoinCommand::_recvUser(Message &message)
 		for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end();)
 		{
 			currentIt = it;
-			it++;
+			++it;
 			message[0] = currentIt->second->getName();
 			this->server.delFromChannel(message);
 			message.clearReceiver();

@@ -48,7 +48,7 @@ inline void ModeCommand::_checkChanModes(Message &message)
 	}
 	channel = it->second;
 	// Si el usuario no es operador...
-	if (channel->isOper(this->userSender))
+	if (!channel->isOper(this->userSender))
 	{
 		Numeric::insertField(channel->getName());
 		message.replyNumeric(ERR_CHANOPRIVSNEEDED);

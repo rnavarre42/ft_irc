@@ -75,8 +75,11 @@ void	OperChanMode::onDisableChanModeEvent(int order, Access &access, User &user,
 		}
 		else
 		{
-			message[2] = targetIt->second->getName();
-			message.reply();
+			if (this->unsetMode(channel, targetIt->second))
+			{
+				message[2] = targetIt->second->getName();
+				message.reply();
+			}
 		}
 		Console::log(LOG_DEBUG, "onDisableChanModeEvent");
 	}
