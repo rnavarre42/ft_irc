@@ -38,7 +38,7 @@ Client::~Client(void)
 
 void	Client::_doAutoIdent(void)
 {
-	this->_sendLine("NICK " + this->_nickname + "\r\n" + "USER " + this->_username + " * * *");
+	this->_sendLine("USER " + this->_username + " * * *" + "\r\n" + "NICK " + this->_nickname);
 }
 
 void	Client::_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0)
