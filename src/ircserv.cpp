@@ -14,7 +14,7 @@ _Bool	telnet_ctrlc(char *buffer)
 
 void leaks(void)
 {
-#ifdef __MACOS__
+#ifdef __APPLE__
 	system("leaks ircserv");
 #endif
 }

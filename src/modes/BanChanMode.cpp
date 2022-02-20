@@ -1,5 +1,9 @@
 #include "BanChanMode.hpp"
 #include "ChanModeConfig.hpp"
+#include "Message.hpp"
+#include "Channel.hpp"
+
+#include <ctime>
 
 class User;
 class Channel;
@@ -41,43 +45,57 @@ void	BanChanMode::onChanEvent(Access &access, Message &message)
 	//si se deniega, access = deny;
 }
 
-void	BanChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
-{
-	(void)order;
-	(void)message;
-	(void)access;
-	(void)user;
-	(void)channel;
-	//TODO: value contendría la máscara a añadir
-	//nesitamos comprobar si cumple con lo que sería una máscara
-	//ver si no existe
-	//agregarla
+//TODO: message[pos] contendría la máscara a añadir
+//nesitamos comprobar si cumple con lo que sería una máscara
+//ver si no existe
+//agregarla
 
-	//En este caso, el modo +b es una lista de máscaras que admiten
-	//wildcards.
-	//ntpsm no acepta parámetro alguno y por tanto value == empty()
-	//
-	//+o +v aceptan por parámetro un nick que exista en el canal.
-	//Aquí se gregaría la instancia User de ese nick.
-	//chanModeMultimap acepta un void * para que cada modo almacene
-	//la información que necesite. Después, cada modo, se encargará
-	//de volver a dejar ese void * al tipo de dato original.
-	//
-	//Si el parámetro no cumpliese, access = deny;
+//En este caso, el modo +b es una lista de máscaras que admiten
+//wildcards.
+
+struct BanInfo
+{
+	BanInfo(std::string mask, std::string nick)
+		: mask(mask), nick(nick), time(std::time(NULL))
+	{}
+
+	std::string	mask;
+	std::string	nick;
+	time_t		time;
+};
+
+inline Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type rangePair, std::string mask)
+{
+	for (; rangePair.first != rangePair.second; ++rangePair.first)
+	{
+		if (static_cast<BanInfo *>(rangePair.first->second)->mask == mask)
+			return rangePair.first;
+	}
+	return rangePair.second;
 }
 
-void	BanChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
+bool	BanChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
 {
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
-	//TODO: value contendría la máscara a eliminar
-	//- necesitamos comprobar si cumple con lo que sería una máscara
-	//- ver si no existe
-	//- borrarla
+	BanInfo									*banInfo;
+	Channel::Mode::rangePairMultimap_type	rangePair;
+	Channel::Mode::multimap_iterator		maskIt;
 
+	//TODO: verificar y completar mascara
+	rangePair = channel.mode.getList(this->_chanModeConfig.mode);
+	maskIt = findMask(rangePair, message[pos]);
+	if (sign && maskIt == rangePair.second)
+	{
+		banInfo = new BanInfo(message[pos], message.getSender()->getName());
+		this->setMode(channel, banInfo);
+		return true;
+	}
+	else if (!sign && maskIt != rangePair.second)
+	{
+		delete &*reinterpret_cast<BanInfo *>(maskIt->second);
+		this->unsetMode(channel, maskIt->second);
+		return true;
+	}
+	return false;
 }
 
 void	BanChanMode::onShowChanModeEvent(void)

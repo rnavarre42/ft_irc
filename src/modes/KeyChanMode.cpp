@@ -1,5 +1,7 @@
 #include "KeyChanMode.hpp"
 #include "ChanModeConfig.hpp"
+#include "Message.hpp"
+#include "Channel.hpp"
 
 KeyChanMode::KeyChanMode(Server &server)
 	: AChanMode(server)
@@ -18,22 +20,35 @@ void	KeyChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	KeyChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
+bool	KeyChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
 {
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
-}
+	std::string	*password;
 
-void	KeyChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
-{
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
+	if (sign)
+	{
+		if (this->isSetMode(channel))
+		{
+			if (*(password = static_cast<std::string *>(channel.mode[this->_chanModeConfig.mode])) == message[pos])
+				return false;
+			*password = message[pos];
+		}
+		else
+			this->setMode(channel, new std::string(message[pos]));
+	}
+	else if (this->isSetMode(channel))
+	{
+		if (*(password = static_cast<std::string *>(channel.mode[this->_chanModeConfig.mode])) != message[pos])
+			return false;
+		else
+		{
+			delete password;
+			this->unsetMode(channel);
+		}
+	}
+	else
+		return false;
+
+	return true;
 }
 
 void	KeyChanMode::onShowChanModeEvent(void)

@@ -14,11 +14,7 @@ Channel::Channel(void)
 {}
 
 Channel::~Channel(void)
-{
-	//TODO eliminar y liberar toda la lista de modos de canal
-	//Se deberá llamar a un método de clase a la que pertenece el modo para
-	//determinar si será o no liberado.
-}
+{}
 
 void *Channel::Mode::operator[](char chr)
 {
@@ -79,9 +75,9 @@ bool	Channel::Mode::erase(char modeName, void *value)
 	return false;
 }
 
-bool	Channel::Mode::erase(char modeName)
+void	Channel::Mode::erase(char modeName)
 {
-	return this->_modeMultimap.erase(modeName) > 0;
+	this->_modeMultimap.erase(modeName);
 }
 
 void	Channel::Mode::erase(Channel::Mode::multimap_iterator pos)

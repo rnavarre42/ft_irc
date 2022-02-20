@@ -1,5 +1,9 @@
 #include "VoiceChanMode.hpp"
 #include "ChanModeConfig.hpp"
+#include "Message.hpp"
+#include "Numeric.hpp"
+#include "Console.hpp"
+#include "User.hpp"
 
 VoiceChanMode::VoiceChanMode(Server &server)
 	: AChanMode(server)
@@ -20,11 +24,25 @@ void	VoiceChanMode::onChanEvent(Access &access, Message &message)
 
 bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
 {
-	(void)pos;
-	(void)sign;
-	(void)message;
-	(void)channel;
-	return (false);
+	Server::userMap_iterator	targetIt;
+
+	Console::log(LOG_DEBUG, "onChanModeEvent " + message[pos]);
+	targetIt = channel.userFind(message[pos]);
+	if (targetIt == channel.getUserMap().end())
+	{
+		Numeric::insertField(message[pos]);
+		message.replyNumeric(ERR_NOSUCHNICK);
+	}
+	else
+	{
+		if ((sign && this->setMode(channel, targetIt->second))
+				|| (!sign && this->unsetMode(channel, targetIt->second)))
+		{
+			message[pos] = targetIt->second->getName();
+			return true;
+		}
+	}
+	return false;
 }
 /*
 void	VoiceChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)

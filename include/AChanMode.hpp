@@ -40,6 +40,11 @@ protected:
 	Server			&_server;
 	ChanModeConfig	_chanModeConfig;
 
+	bool	isSetMode(Channel &channel)
+	{
+		return (channel.mode.isSet(this->_chanModeConfig.mode));
+	}
+
 	bool	isSetMode(Channel &channel, void *value)
 	{
 		return (channel.mode.isSet(this->_chanModeConfig.mode, value));
@@ -53,6 +58,11 @@ protected:
 	bool	unsetMode(Channel &channel, void *value)
 	{
 		return channel.mode.erase(this->_chanModeConfig.mode, value);
+	}
+
+	bool	unsetMode(Channel &channel)
+	{
+		return channel.mode.erase(this->_chanModeConfig.mode);
 	}
 };
 

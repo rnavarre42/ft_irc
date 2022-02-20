@@ -40,6 +40,11 @@ public:
 		typedef multimap_type::iterator							multimap_iterator;
 		typedef std::pair<multimap_iterator, multimap_iterator>	rangePairMultimap_type;
 
+		Mode(void) {}
+		~Mode(void) {}
+
+		void *operator[](char chr);
+
 		multimap_type const		&getModeMultimap(void)
 		{
 			return this->_modeMultimap;
@@ -50,6 +55,7 @@ public:
 		rangePairMultimap_type	getList(char modeName);
 		bool					insert(char modeName, void *value);
 		bool					erase(char modeName, void *value);
+		bool					erase(char modeName);
 		void					erase(multimap_iterator pos);
 		multimap_iterator		findUnique(char modeName, void *value);
 		

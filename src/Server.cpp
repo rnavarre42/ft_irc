@@ -122,16 +122,16 @@ void	Server::_unloadCommands(void)
 
 void	Server::_loadChanModes(void)
 {
-//	this->_loadChanMode(new BanChanMode(*this));
-//	this->_loadChanMode(new ExceptChanMode(*this));
-//	this->_loadChanMode(new InviteChanMode(*this));
-//	this->_loadChanMode(new KeyChanMode(*this));
-//	this->_loadChanMode(new LimitChanMode(*this));
-//	this->_loadChanMode(new ModerateChanMode(*this));
-//	this->_loadChanMode(new NoExternalChanMode(*this));
+	this->_loadChanMode(new BanChanMode(*this));
+	this->_loadChanMode(new ExceptChanMode(*this));
+	this->_loadChanMode(new InviteChanMode(*this));
+	this->_loadChanMode(new KeyChanMode(*this));
+	this->_loadChanMode(new LimitChanMode(*this));
+	this->_loadChanMode(new ModerateChanMode(*this));
+	this->_loadChanMode(new NoExternalChanMode(*this));
 	this->_loadChanMode(new OperChanMode(*this));
-//	this->_loadChanMode(new SecretChanMode(*this));
-//	this->_loadChanMode(new TopicChanMode(*this));
+	this->_loadChanMode(new SecretChanMode(*this));
+	this->_loadChanMode(new TopicChanMode(*this));
 	this->_loadChanMode(new VoiceChanMode(*this));
 }
 

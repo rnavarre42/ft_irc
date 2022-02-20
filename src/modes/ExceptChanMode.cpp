@@ -1,5 +1,9 @@
 #include "ExceptChanMode.hpp"
 #include "ChanModeConfig.hpp"
+#include "Message.hpp"
+#include "Channel.hpp"
+
+#include <ctime>
 
 ExceptChanMode::ExceptChanMode(Server &server)
 	: AChanMode(server)
@@ -12,28 +16,55 @@ ExceptChanMode::ExceptChanMode(Server &server)
 ExceptChanMode::~ExceptChanMode(void)
 {}
 
+struct BanInfo
+{
+	BanInfo(std::string mask, std::string nick)
+		: mask(mask), nick(nick), time(std::time(NULL))
+	{}
+
+	std::string	mask;
+	std::string	nick;
+	time_t		time;
+};
+
+inline Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type rangePair, std::string mask)
+{
+	for (; rangePair.first != rangePair.second; ++rangePair.first)
+	{
+		if (static_cast<BanInfo *>(rangePair.first->second)->mask == mask)
+			return rangePair.first;
+	}
+	return rangePair.second;
+}
+
 void	ExceptChanMode::onChanEvent(Access &access, Message &message)
 {
 	(void)access;
 	(void)message;
 }
 
-void	ExceptChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
+bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
 {
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
-}
+	BanInfo									*banInfo;
+	Channel::Mode::rangePairMultimap_type	rangePair;
+	Channel::Mode::multimap_iterator		maskIt;
 
-void	ExceptChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
-{
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
+	//TODO: verificar y completar mascara
+	rangePair = channel.mode.getList(this->_chanModeConfig.mode);
+	maskIt = findMask(rangePair, message[pos]);
+	if (sign && maskIt == rangePair.second)
+	{
+		banInfo = new BanInfo(message[pos], message.getSender()->getName());
+		this->setMode(channel, banInfo);
+		return true;
+	}
+	else if (!sign && maskIt != rangePair.second)
+	{
+		delete &*reinterpret_cast<BanInfo *>(maskIt->second);
+		this->unsetMode(channel, maskIt->second);
+		return true;
+	}
+	return false;
 }
 
 void	ExceptChanMode::onShowChanModeEvent(void)

@@ -28,9 +28,12 @@ inline int	isSignMode(char c)
 	return (c == '+') * 1 + (c == '-') * 2;
 }
 
-//	+o++--+-+o
-//	+oo
-//  101
+inline bool	hasParamMode(bool set, AChanMode *chanMode)
+{
+	return ((set && chanMode->getConfig().type & ChanModeConfig::enableParam)
+			|| (!set && chanMode->getConfig().type & ChanModeConfig::disableParam));
+}
+
 void	cleanSignModes(std::string &modes)
 {
 	int	set = 3;
@@ -53,7 +56,7 @@ void	cleanSignModes(std::string &modes)
  *	Funcion que verifica si el modo de canal existe, la sintaxis es correcta y tiene privilegios para
  *	ejecutarlo.
  */
-inline void ModeCommand::_checkChanModes(Message &message)
+void ModeCommand::_checkChanModes(Message &message)
 {
 	unsigned long					pos = 2;
 	bool							set = true;
@@ -83,7 +86,7 @@ inline void ModeCommand::_checkChanModes(Message &message)
 			set = false;
 		else if ((chanMode = server.findChanMode(*currentIt)))
 		{
-			if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() == 2)
+			if (hasParamMode(set, chanMode) && message.size() <= pos)
 			{
 				Numeric::insertField(message.getCmd());
 				message.replyNumeric(ERR_NEEDMOREPARAMS);
@@ -96,21 +99,21 @@ inline void ModeCommand::_checkChanModes(Message &message)
 				message.replyNumeric(ERR_CHANOPRIVSNEEDED);
 				message[1].erase(currentIt);
 				--strIt;
-				if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() > pos)
+				if (hasParamMode(set, chanMode) && message.size() > pos)
 					message.eraseAt(pos);
 			}
 			else
 			{
-				if (chanMode->onChanModeEvent(pos, set, *channel, message))
+				if (message.size() >= pos && chanMode->onChanModeEvent(pos, set, *channel, message))
 				{
-					if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() > 2)
+					if (hasParamMode(set, chanMode) && message.size() > pos)
 						++pos;
 				}
 				else
 				{
 					message[1].erase(currentIt);
 					--strIt;
-					if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() > 2)
+					if (hasParamMode(set, chanMode) && message.size() > pos)
 						message.eraseAt(pos);
 				}
 			}
@@ -140,7 +143,7 @@ inline void ModeCommand::_checkChanModes(Message &message)
  *	ejecutarlo.
  */ 
 
-inline void ModeCommand::_checkUserModes(Message &message)
+void ModeCommand::_checkUserModes(Message &message)
 {
 	Server::userMap_iterator	it = server.userFind(message[0]);
 

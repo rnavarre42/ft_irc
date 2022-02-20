@@ -1,5 +1,10 @@
 #include "LimitChanMode.hpp"
 #include "ChanModeConfig.hpp"
+#include "Message.hpp"
+#include "Channel.hpp"
+#include <cstdlib>
+#include <climits>
+#include <cctype>
 
 LimitChanMode::LimitChanMode(Server &server)
 	: AChanMode(server)
@@ -18,22 +23,40 @@ void	LimitChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	LimitChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
+inline bool	isValidLimit(unsigned long limit, Channel &channel, char chanMode)
 {
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
+	return !(limit == 0 || limit == ULONG_MAX || limit == reinterpret_cast<unsigned long>(channel.mode[chanMode]));
 }
 
-void	LimitChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
+inline bool	isNumber(std::string &str)
 {
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
+	for (std::string::iterator it = str.begin(); it != str.end(); ++it)
+	{
+		if (!std::isdigit(*it))
+			return false;
+	}
+	return true;
+}
+
+bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
+{
+	unsigned long	limit;
+
+	if (sign)
+	{
+		limit = std::strtoul(message[pos].c_str(), NULL, 0);
+		if (isNumber(message[pos]) && isValidLimit(limit, channel, this->_chanModeConfig.mode))
+		{
+			this->setMode(channel, reinterpret_cast<void *>(limit));
+			return true;
+		}
+	}
+	else if (this->isSetMode(channel))
+	{
+		this->unsetMode(channel);
+		return true;
+	}
+	return false;
 }
 
 void	LimitChanMode::onShowChanModeEvent(void)

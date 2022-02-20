@@ -18,22 +18,12 @@ void	InviteChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-void	InviteChanMode::onEnableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
+bool	InviteChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &)
 {
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
-}
+	(void)pos;
 
-void	InviteChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
-{
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
+	return (sign && this->setMode(channel, NULL))
+				|| (!sign && this->unsetMode(channel, NULL));
 }
 
 void	InviteChanMode::onShowChanModeEvent(void)
