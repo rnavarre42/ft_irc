@@ -23,11 +23,9 @@ void	OperChanMode::onChanEvent(Access &access, Message &message)
 	(void)message;
 }
 
-bool	OperChanMode::onChanModeEvent(int pos, int sign, Access &access, User &user, Channel &channel, Message &message)
+bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
 {
 	Server::userMap_iterator	targetIt;
-	(void)access;
-	(void)user;
 	
 	Console::log(LOG_DEBUG, "onChanModeEvent " + message[pos]);
 	targetIt = channel.userFind(message[pos]);

@@ -452,7 +452,7 @@ void	Server::_removeUserFromChannel(Channel &channel, User &user)
 	{
 //		this->_source.message->setChannel(&channel);
 		this->_eventHandler.raise(DELCHANEVENT, this->_message);
-		this->_invite.eraseChannel(&channel);
+		this->_invite.erase(&channel);
 		this->delChannel(channel);	// se elimina
 	}
 }
@@ -545,7 +545,7 @@ void	Server::deleteUser(User &user, std::string text)
 	this->_pollfds[user.getPollIndex()].fd = 0;
 	this->_pollfds[user.getPollIndex()].events = 0;
 	this->_message.clear();
-	this->_invite.eraseUser(&user);
+	this->_invite.erase(&user);
 	delete &user;
 	delete userVector;
 }
@@ -596,28 +596,13 @@ void	Server::addToChannel(Message &message)
 				Console::log(LOG_INFO, user.getName() + " no tenia invitacion");
 			}
 
-	//		std::pair<std::string, Server::userPair_type>	pair1;
-	//		Server::userPair_type							pair2;
-
-	//		pair2 = std::make_pair(0, &user);
-	//		pair1 = std::make_pair(strToUpper(user.getName()), pair2);
-	//		pair1 = std::make_pair(strToUpper(user.getName()), std::make_pair(0, &user));
-	//		std::pair<int, User *>						level2 = std::make_pair<int, User *>(0, &user);
-	//		std::pair<std::string, std::pair<int, User *> >	level1 = std::make_pair<std::string, std::pair<int, User *> >(strToUpper(user.getName()), level2);
-			
-	//		retUser = channel->getUserMap().insert(pair1);
-
 			retUser = channel->getUserMap().insert(std::make_pair(strToUpper(user.getName()), &user));
 			
-//			retUser = channel->getUserMap().insert(std::pair<std::string, std::pair<int, User *>  >(strToUpper(user.getName(), par)));
 			if (retUser.second == true)  //El nick no está en el canal
 			{
 				// añade el canal al usuario y el usuario al canal
 				channel->insertUser(&user);
 				user.insertChannel(channel);
-				//channel->getUserMap()[strToUpper(user.getName())].second = &user;
-				//user.getChannelMap()[strToUpper(channelName)] = channel;
-				//
 				this->_eventHandler.raise(JOINEVENT, this->_message);
 			}
 			else

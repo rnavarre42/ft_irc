@@ -14,8 +14,7 @@ public:
 	~OperChanMode(void);
 
 	void onChanEvent(Access &access, Message &message);
-	bool onChanModeEvent(int order, int sign, Access &access, User &user, Channel &channel, Message &message);
-//	void onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message);
+	bool onChanModeEvent(int pos, int sign, Channel &channel, Message &message);
 	void onShowChanModeEvent(void);
 };
 

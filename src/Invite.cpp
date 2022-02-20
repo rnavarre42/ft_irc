@@ -37,29 +37,23 @@ Invite::inviteVector_iterator	Invite::find(User *user, Channel *channel)
 	return this->_inviteVector.end();
 }
 
-void	Invite::eraseUser(User *user)
+void	Invite::erase(User *user)
 {
-	inviteVector_iterator currentIt;
-
 	for (inviteVector_iterator it = this->_inviteVector.begin(); it != this->_inviteVector.end(); )
 	{
-		currentIt = it;
-		if (currentIt->first == user)
-			this->_inviteVector.erase(currentIt);
+		if (it->first == user)
+			this->_inviteVector.erase(it);
 		else
 			it++;
 	}
 }
 
-void	Invite::eraseChannel(Channel *channel)
+void	Invite::erase(Channel *channel)
 {
-	inviteVector_iterator currentIt;
-
 	for (inviteVector_iterator it = this->_inviteVector.begin(); it != this->_inviteVector.end(); )
 	{
-		currentIt = it;
-		if (currentIt->second == channel)
-			this->_inviteVector.erase(currentIt);
+		if (it->second == channel)
+			this->_inviteVector.erase(it);
 		else
 			it++;
 	}

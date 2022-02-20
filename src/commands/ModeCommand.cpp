@@ -55,12 +55,11 @@ void	cleanSignModes(std::string &modes)
  */
 inline void ModeCommand::_checkChanModes(Message &message)
 {
-	int								pos = 2;
+	unsigned long					pos = 2;
 	bool							set = true;
 	Channel							*channel;
 	Channel::channelMap_iterator	it = server.channelFind(message[0]);
 	AChanMode						*chanMode;
-	AChanMode::Access				access;
 	std::string::iterator 			currentIt;
 
 	if (message.size() < 2)
@@ -74,13 +73,6 @@ inline void ModeCommand::_checkChanModes(Message &message)
 		return ;
 	}
 	channel = it->second;
-	// Si el usuario no es operador...
-	if (!channel->isOper(this->userSender))
-	{
-		Numeric::insertField(channel->getName());
-		message.replyNumeric(ERR_CHANOPRIVSNEEDED);
-		return ;
-	}
 	for (std::string::iterator strIt = message[1].begin(); strIt != message[1].end(); )
 	{
 		currentIt = strIt;
@@ -91,7 +83,6 @@ inline void ModeCommand::_checkChanModes(Message &message)
 			set = false;
 		else if ((chanMode = server.findChanMode(*currentIt)))
 		{
-			std::cout << message.toString() << std::endl;
 			if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() == 2)
 			{
 				Numeric::insertField(message.getCmd());
@@ -99,9 +90,18 @@ inline void ModeCommand::_checkChanModes(Message &message)
 				message[1].erase(currentIt);
 				--strIt;
 			}
+			else if (!channel->isOper(this->userSender)) // Si el usuario no es operador...
+			{
+				Numeric::insertField(channel->getName());
+				message.replyNumeric(ERR_CHANOPRIVSNEEDED);
+				message[1].erase(currentIt);
+				--strIt;
+				if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() > pos)
+					message.eraseAt(pos);
+			}
 			else
 			{
-				if (chanMode->onChanModeEvent(pos, set, access, *this->userSender, *channel, message))
+				if (chanMode->onChanModeEvent(pos, set, *channel, message))
 				{
 					if (chanMode->getConfig().type & ChanModeConfig::enableParam && message.size() > 2)
 						++pos;
@@ -115,17 +115,13 @@ inline void ModeCommand::_checkChanModes(Message &message)
 				}
 			}
 		}	
-/*			else
-			{
-				if (chanMode->onDisableChanModeEvent(pos, access, *this->userSender, *channel, message)
-					&& chanMode->getConfig().type & ChanModeConfig::disableParam && message.size() > 2)
-					++pos;
-			}*/
 		else
 		{
 			Numeric::insertField(*currentIt);
 			Numeric::insertField(channel->getName());
 			message.replyNumeric(ERR_UNKNOWNMODE);
+			message[1].erase(currentIt);
+			--strIt;
 		}
 	}
 	cleanSignModes(message[1]);

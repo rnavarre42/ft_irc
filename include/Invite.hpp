@@ -20,15 +20,15 @@ class Invite
 		bool					insert(User *user, Channel *channel);
 		inviteVector_iterator	find(User *user, Channel *channel);
 		bool					erase(User *user, Channel *channel);
-		void					eraseChannel(Channel *channel);
-		void					eraseUser(User *user);
+		void					erase(Channel *channel);
+		void					erase(User *user);
 
-		inline inviteVector_iterator	begin(void)
+		inviteVector_iterator	begin(void)
 		{
 			return this->_inviteVector.begin();
 		}
 
-		inline inviteVector_iterator	end(void)
+		inviteVector_iterator	end(void)
 		{
 			return this->_inviteVector.end();
 		}
