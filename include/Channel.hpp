@@ -1,7 +1,8 @@
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
-# include <Server.hpp>
+# include "Server.hpp"
+# include "User.hpp"
 
 # include <string>
 # include <map>
@@ -22,15 +23,13 @@
 # define CHANNEL_PASSWORD	0x1000
 # define CHANNEL_BANNED		0x2000
 
-class User;
-
 class Channel
 {
 public:
 	typedef std::map<std::string, Channel *>	channelMap_type;
 	typedef channelMap_type::iterator			channelMap_iterator;
 
-	Channel(std::string name, User &user);
+	Channel(std::string name, User &user, Server &server);
 	~Channel(void);
 	
 	class Mode
@@ -50,6 +49,9 @@ public:
 			return this->_modeMultimap;
 		}
 
+		multimap_iterator		begin(void);
+		multimap_iterator		end(void);
+
 		bool					isSet(char modeName);
 		bool					isSet(char modeName, void *value);
 		rangePairMultimap_type	getList(char modeName);
@@ -61,13 +63,11 @@ public:
 		
 
 	private:
-		multimap_type						_modeMultimap;
+		multimap_type				_modeMultimap;
 
 	}								mode;
 	std::string const				&getName(void) const;
-	Server::userMap_type			&getUserMap(void);
-	void							insertUser(User *user);
-	void							eraseUser(std::string value);
+//	Server::userMap_type			&getUserMap(void);
 	bool							empty(void);
 
 	bool							isOper(User *user);
@@ -85,9 +85,32 @@ public:
 	void							setTopicTime(time_t value);
 	time_t const					&getTopicTime(void) const;
 
-	inline Server::userMap_iterator	userFind(std::string &userName)
+	Server::userMap_insert			insert(User *user);
+	void							erase(User *user);
+	
+	Server::userMap_iterator		begin(void)
+	{
+		return this->_userMap.begin();
+	}
+
+	Server::userMap_iterator		end(void)
+	{
+		return this->_userMap.end();
+	}
+	
+	Server::userMap_type::size_type	size(void)
+	{
+		return this->_userMap.size();
+	}
+
+	Server::userMap_iterator	find(std::string &userName)
 	{
 		return this->_userMap.find(strToUpper(userName));
+	}
+
+	User	*&operator[](std::string userName)
+	{
+		return this->_userMap.at(strToUpper(userName));
 	}
 
 	void send(std::string msg);
@@ -95,14 +118,15 @@ public:
 	void part(User user);
 
 private:
+	Channel(void);
+
 	std::string						_name;
 	std::string						_topic;
 	std::string						_owner;
 	std::string						_topicOwn;
 	time_t							_topicTime;
 	Server::userMap_type			_userMap;
-
-	Channel(void);
+	Server&							_server;
 };
 
 #endif

@@ -40,10 +40,7 @@ bool	KeyChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &
 		if (*(password = static_cast<std::string *>(channel.mode[this->_chanModeConfig.mode])) != message[pos])
 			return false;
 		else
-		{
-			delete password;
 			this->unsetMode(channel);
-		}
 	}
 	else
 		return false;
@@ -53,4 +50,9 @@ bool	KeyChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &
 
 void	KeyChanMode::onShowChanModeEvent(void)
 {
+}
+
+void	KeyChanMode::onDelete(void *pointer)
+{
+	delete reinterpret_cast<std::string *>(pointer);
 }

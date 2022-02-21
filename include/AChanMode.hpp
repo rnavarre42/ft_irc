@@ -27,6 +27,7 @@ public:
 	virtual bool onChanModeEvent(int pos, int sign, Channel &channel, Message &message) = 0;
 //	virtual bool onDisableChanModeEvent(int pos, int sign, Channel &channel, Message &message) = 0;
 	virtual void onShowChanModeEvent(void) = 0;
+	virtual void onDelete(void *pointer) = 0;
 
 	ChanModeConfig	const &getConfig(void) const
 	{
@@ -57,6 +58,7 @@ protected:
 
 	bool	unsetMode(Channel &channel, void *value)
 	{
+		this->onDelete(value);
 		return channel.mode.erase(this->_chanModeConfig.mode, value);
 	}
 

@@ -15,11 +15,6 @@ BanChanMode::BanChanMode(Server &server)
 	//
 	//ban acepta un parámetro, por lo que tenemos que comunicarselo
 	//al servidor para que nos lo envíe.
-	//chanModeConfig.type = modeType.BothParam; // el parámetro se ha de tener en cuenta en +b y -b
-	//chanModeConfig.type = modeType.enableParam;
-	//chanModeConfig.type = modeType.disableParam;
-	//chanModeConfig.mode = 'b';
-	//chanModeConfig.events = JOIN_EVENT | PRIVMSG_EVENT | NOTICE_EVENT;
 
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'b';
@@ -44,14 +39,6 @@ void	BanChanMode::onChanEvent(Access &access, Message &message)
 	//
 	//si se deniega, access = deny;
 }
-
-//TODO: message[pos] contendría la máscara a añadir
-//nesitamos comprobar si cumple con lo que sería una máscara
-//ver si no existe
-//agregarla
-
-//En este caso, el modo +b es una lista de máscaras que admiten
-//wildcards.
 
 struct BanInfo
 {
@@ -91,7 +78,6 @@ bool	BanChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &
 	}
 	else if (!sign && maskIt != rangePair.second)
 	{
-		delete &*reinterpret_cast<BanInfo *>(maskIt->second);
 		this->unsetMode(channel, maskIt->second);
 		return true;
 	}
@@ -100,4 +86,9 @@ bool	BanChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &
 
 void	BanChanMode::onShowChanModeEvent(void)
 {
+}
+
+void	BanChanMode::onDelete(void *pointer)
+{
+	delete &*reinterpret_cast<BanInfo *>(pointer);
 }

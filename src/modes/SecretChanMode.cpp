@@ -29,3 +29,7 @@ bool	SecretChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Messag
 void	SecretChanMode::onShowChanModeEvent(void)
 {
 }
+
+void	SecretChanMode::onDelete(void *)
+{
+}

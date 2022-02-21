@@ -2,9 +2,7 @@
 # define ACOMMAND_HPP
 
 # include "Server.hpp"
-//# include "User.hpp"
-//# include "EventHandler.hpp"
-//# include "Message.hpp"
+
 # include <string>
 
 # define LEVEL_UNREGISTERED	0x01

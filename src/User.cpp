@@ -67,7 +67,7 @@ std::string &User::getInputBuffer(void)
 
 bool	User::isOnChannel(std::string &channel)
 {
-	return (this->channelFind(channel) != this->_channelMap.end());
+	return (this->find(channel) != this->_channelMap.end());
 }
 
 bool	User::isOnChannel(Channel &channel)
@@ -216,9 +216,21 @@ int	User::getStatus(void)
 	return this->_status;
 }
 
+/*
 std::map<std::string, Channel *> &User::getChannelMap(void)
 {
 	return this->_channelMap;
+}
+*/
+
+void	User::insert(Channel *channel)
+{
+	this->_channelMap.insert(std::make_pair(strToUpper(channel->getName()), channel));
+}
+
+void	User::erase(Channel *channel)
+{
+	this->_channelMap.erase(strToUpper(channel->getName()));
 }
 
 Server const	&User::getServer(void) const
@@ -229,16 +241,6 @@ Server const	&User::getServer(void) const
 bool	User::isAway(void)
 {
 	return !this->_awayMsg.empty();
-}
-
-void	User::insertChannel(Channel *channel)
-{
-	this->_channelMap[strToUpper(channel->getName())] = channel;
-}
-
-void	User::eraseChannel(std::string value)
-{
-	this->_channelMap.erase(strToUpper(value));
 }
 
 void	User::sendToBuffer(Message &message)
@@ -349,7 +351,7 @@ Channel	*User::findFullestChannel(void)
 
 	for (; nextIt != this->_channelMap.end(); nextIt++)
 	{
-		if (nextIt->second->getUserMap().size() > currentIt->second->getUserMap().size())
+		if (nextIt->second->size() > currentIt->second->size())
 			currentIt = nextIt;
 	}
 	return	currentIt->second;
@@ -364,7 +366,7 @@ Server::userVector_type	*User::getUniqueVector(void)
 	std::pair<Server::channelSet_iterator, bool>		ret;
 	Server::userVector_iterator							vectorIt;
 
-	if (!this->getChannelMap().size())
+	if (!this->_channelMap.size())
 		return NULL;
 	//buscar el canal que tiene mas usuarios
 	currentChannel = findFullestChannel();
@@ -373,7 +375,7 @@ Server::userVector_type	*User::getUniqueVector(void)
 	//añadir los usuarios del canal mas grande al vector
 	checkChannelSet.insert(currentChannel);
 	userVector = new Server::userVector_type;
-	for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+	for (Server::userMap_iterator it = currentChannel->begin(); it != currentChannel->end(); it++)
 		userVector->push_back(it->second);
 	//añadir los usuarios de los canales restantes sin repetir usuario en el vector
 	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
@@ -381,7 +383,7 @@ Server::userVector_type	*User::getUniqueVector(void)
 		currentChannel = it->second;
 		ret = checkChannelSet.insert(currentChannel);
 		if (ret.second == true)
-			for (Server::userMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
+			for (Server::userMap_iterator it = currentChannel->begin(); it != currentChannel->end(); it++)
 			{
 				vectorIt = std::find(userVector->begin(), userVector->end(), it->second);
 				if (vectorIt == userVector->end())

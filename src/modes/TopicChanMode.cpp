@@ -17,6 +17,7 @@ void	TopicChanMode::onChanEvent(Access &access, Message &message)
 {
 	(void)access;
 	(void)message;
+	Console::log(LOG_DEBUG, "onChanEvent - topic");
 }
 
 bool	TopicChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &)
@@ -28,5 +29,9 @@ bool	TopicChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message
 }
 
 void	TopicChanMode::onShowChanModeEvent(void)
+{
+}
+
+void	TopicChanMode::onDelete(void *)
 {
 }

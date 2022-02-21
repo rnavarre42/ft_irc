@@ -27,9 +27,8 @@ bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message 
 {
 	Server::userMap_iterator	targetIt;
 	
-	Console::log(LOG_DEBUG, "onChanModeEvent " + message[pos]);
-	targetIt = channel.userFind(message[pos]);
-	if (targetIt == channel.getUserMap().end())
+	targetIt = channel.find(message[pos]);
+	if (targetIt == channel.end())
 	{
 		Numeric::insertField(message[pos]);
 		message.replyNumeric(ERR_NOSUCHNICK);
@@ -45,28 +44,11 @@ bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message 
 	}
 	return false;
 }
-/*
-bool	OperChanMode::onDisableChanModeEvent(int pos, Access &access, User &user, Channel &channel, Message &message)
-{
-	Server::userMap_iterator	targetIt;
-	(void)access;
-	(void)user;
-	targetIt = channel.userFind(message[pos]);
-	if (targetIt == channel.getUserMap().end())
-	{
-		Numeric::insertField(message[pos]);
-		message.replyNumeric(ERR_NOSUCHNICK);
-	}
-	else
-	{
-		if (this->unsetMode(channel, targetIt->second))
-		{
-			message[pos] = targetIt->second->getName();
-		}
-	}
-	Console::log(LOG_DEBUG, "onDisableChanModeEvent " + message[pos]);
-}
-*/
+
 void	OperChanMode::onShowChanModeEvent(void)
+{
+}
+
+void	OperChanMode::onDelete(void *)
 {
 }

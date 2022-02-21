@@ -29,3 +29,7 @@ bool	InviteChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Messag
 void	InviteChanMode::onShowChanModeEvent(void)
 {
 }
+
+void	InviteChanMode::onDelete(void *)
+{
+}

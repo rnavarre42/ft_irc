@@ -36,7 +36,7 @@ bool PrivmsgCommand::_recvUser(Message &message)
 			message.replyNumeric(ERR_NOSUCHCHANNEL);
 			return true;
 		}
-		message.setReceiver(chanIt->second->getUserMap());
+		message.setReceiver(chanIt->second);
 		message.limitMaxParam(2);
 		message.hideReceiver();
 	}

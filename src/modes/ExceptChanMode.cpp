@@ -60,7 +60,6 @@ bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Messag
 	}
 	else if (!sign && maskIt != rangePair.second)
 	{
-		delete &*reinterpret_cast<BanInfo *>(maskIt->second);
 		this->unsetMode(channel, maskIt->second);
 		return true;
 	}
@@ -69,4 +68,9 @@ bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Messag
 
 void	ExceptChanMode::onShowChanModeEvent(void)
 {
+}
+
+void	ExceptChanMode::onDelete(void *pointer)
+{
+	delete &*reinterpret_cast<BanInfo *>(pointer);
 }

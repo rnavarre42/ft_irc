@@ -4,6 +4,7 @@
 # include "ISender.hpp"
 # include "Server.hpp"
 # include "utils.hpp"
+# include "Channel.hpp"
 
 # include <string>
 # include <map>
@@ -30,19 +31,39 @@ public:
 	void				setPass(std::string value);
 	std::string const	&getPass(void) const;
 
-	void			setSignTime(time_t volue);
-	time_t const	&getSignTime(void) const;
+	void				setSignTime(time_t volue);
+	time_t const		&getSignTime(void) const;
 		
 	void				setName(std::string value);
 	std::string const	&getName(void) const;
 	std::string const	&getUpperName(void) const;
 
-	void			eraseChannel(std::string value);	
-	void			insertChannel(Channel *channel);
+	void				insert(Channel *channel);
+	void				erase(Channel *channel);
 
-	inline Server::channelMap_iterator channelFind(std::string &value)
+	Server::channelMap_iterator	begin(void)
+	{
+		return this->_channelMap.begin();
+	}
+
+	Server::channelMap_iterator	end(void)
+	{
+		return this->_channelMap.end();
+	}
+
+	Server::channelMap_type::size_type	size(void)
+	{
+		return this->_channelMap.size();
+	}
+
+	Server::channelMap_iterator	find(std::string &value)
 	{
 		return this->_channelMap.find(strToUpper(value));
+	}
+
+	Channel	*&operator[](std::string channelName)
+	{
+		return this->_channelMap.at(strToUpper(channelName));
 	}
 
 	std::string &getInputBuffer(void);
@@ -63,7 +84,7 @@ public:
 	void				setAwayMsg(std::string value);
 	std::string const	&getAwayMsg(void) const;
 
-	Server::channelMap_type		&getChannelMap(void);
+	//Server::channelMap_type		&getChannelMap(void);
 	Server const				&getServer(void) const;
 
 	void 			setAwayTime(time_t value);
@@ -102,12 +123,12 @@ public:
 	Server::userVector_type	*getUniqueVector(void);
 	Channel					*findFullestChannel(void);
 
-	inline bool	operator==(std::string &rhs)
+	bool	operator==(std::string &rhs)
 	{
 		return (strToUpper(this->_name) == strToUpper(rhs));
 	}
 
-	inline bool	operator!=(std::string &rhs)
+	bool	operator!=(std::string &rhs)
 	{
 		return !operator==(rhs);
 	}

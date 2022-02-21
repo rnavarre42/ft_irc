@@ -29,3 +29,7 @@ bool	ModerateChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Mess
 void	ModerateChanMode::onShowChanModeEvent(void)
 {
 }
+
+void	ModerateChanMode::onDelete(void *)
+{
+}

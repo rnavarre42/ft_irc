@@ -446,8 +446,8 @@ void	Server::createUser(User &user)
 
 void	Server::_removeUserFromChannel(Channel &channel, User &user)
 {
-	user.eraseChannel(channel.getName());	// se elimina al canal del usuario
-	channel.eraseUser(user.getName());	// se elimina al usuario del canal
+	user.erase(&channel);	// se elimina al canal del usuario
+	channel.erase(&user);	// se elimina al usuario del canal
 	if (channel.empty())	// si no quedan usuarios en el canal
 	{
 //		this->_source.message->setChannel(&channel);
@@ -531,7 +531,7 @@ void	Server::deleteUser(User &user, std::string text)
 			this->_message.setReceiver(*userVector);
 		this->_message.hideReceiver();
 		this->_eventHandler.raise(QUITEVENT, this->_message);
-		for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end();)
+		for (Server::channelMap_iterator it = user.begin(); it != user.end();)
 		{
 			currentIt = it;
 			it++;
@@ -563,16 +563,17 @@ void	Server::addToChannel(Message &message)
 	if (this->isChannel(channelName))
 	{
 //		std::cout << "user " << user.getName() << " " << user.getChannelMap().size() << std::end;
-		if (user.getChannelMap().size() == MAXCHANNEL)
+		if (user.size() == MAXCHANNEL)
 			this->_eventHandler.raise(MAXCHANEVENT, this->_message);
 		// el canal no existe, se ha de crear
 		else if ((it = this->channelFind(channelName)) == this->_channelMap.end())
 		{
-			channel = new Channel(channelName, user);
+			channel = new Channel(channelName, user, *this);
 			this->_channelMap[strToUpper(channelName)] = channel;
 			// añade el canal al usuario y el usuario al canal
-			channel->getUserMap()[strToUpper(user.getName())] = &user;
-			user.getChannelMap()[strToUpper(channelName)] = channel;
+			channel->insert(&user);
+			user.insert(channel);
+			//user[strToUpper(channelName)] = channel;
 			//TODO falta dar op al primero que entra.
 			channel->mode.insert('o', &user);
 			message.setChannel(channel);
@@ -596,13 +597,13 @@ void	Server::addToChannel(Message &message)
 				Console::log(LOG_INFO, user.getName() + " no tenia invitacion");
 			}
 
-			retUser = channel->getUserMap().insert(std::make_pair(strToUpper(user.getName()), &user));
+			retUser = channel->insert(&user);
 			
 			if (retUser.second == true)  //El nick no está en el canal
 			{
 				// añade el canal al usuario y el usuario al canal
-				channel->insertUser(&user);
-				user.insertChannel(channel);
+				channel->insert(&user);
+				user.insert(channel);
 				this->_eventHandler.raise(JOINEVENT, this->_message);
 			}
 			else
@@ -629,7 +630,7 @@ void	Server::delFromChannel(Message &message)
 		{
 			channel = it->second;
 			message.setChannel(channel);
-			if ((it = user.channelFind(channelName)) == user.getChannelMap().end())
+			if ((it = user.find(channelName)) == user.end())
 				this->_eventHandler.raise(NOTINCHANEVENT, this->_message);
 			else
 			{
@@ -683,7 +684,7 @@ void	Server::names(Channel &channel)
 	//TODO hay que determinar si el canal tiene +p, se enviará "*", +s "@" o nada "="
 	Numeric::insertField("=");
 	Numeric::insertField(channel.getName());
-	for (Server::userMap_iterator it = channel.getUserMap().begin(); it != channel.getUserMap().end(); it++)
+	for (Server::userMap_iterator it = channel.begin(); it != channel.end(); it++)
 	{
 		if (channel.isOper(it->second))
 			mode += "@";

@@ -24,7 +24,7 @@ void PartCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 void PartCommand::partChannelEvent(Message &message)
 {
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha salido de " + message.getChannel()->getName());
-	message.setReceiver(message.getChannel()->getUserMap());
+	message.setReceiver(message.getChannel());
 	message.setReceiver(message.getSender());
 	message.limitMaxParam(2);
 	message.hideReceiver();

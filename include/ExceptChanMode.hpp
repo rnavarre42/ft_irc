@@ -16,6 +16,7 @@ public:
 	void onChanEvent(Access &access, Message &message);
 	bool onChanModeEvent(int pos, int sign, Channel &channel, Message &message);
 	void onShowChanModeEvent(void);
+	void onDelete(void *pointer);
 };
 
 #endif

@@ -29,3 +29,7 @@ bool	NoExternalChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Me
 void	NoExternalChanMode::onShowChanModeEvent(void)
 {
 }
+
+void	NoExternalChanMode::onDelete(void *)
+{
+}

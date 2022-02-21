@@ -32,6 +32,9 @@ clean:
 fclean:		clean
 	$(RM) $(NAME) tags
 
+pre:
+	$(CXX) -E -I $(INCLUDEPATH) $(filter-out $@,$(MAKECMDGOALS))
+
 print:
 	echo $(SRCS)
 	echo $(OBJS)

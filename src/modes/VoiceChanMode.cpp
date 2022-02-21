@@ -26,9 +26,8 @@ bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message
 {
 	Server::userMap_iterator	targetIt;
 
-	Console::log(LOG_DEBUG, "onChanModeEvent " + message[pos]);
-	targetIt = channel.userFind(message[pos]);
-	if (targetIt == channel.getUserMap().end())
+	targetIt = channel.find(message[pos]);
+	if (targetIt == channel.end())
 	{
 		Numeric::insertField(message[pos]);
 		message.replyNumeric(ERR_NOSUCHNICK);
@@ -44,16 +43,11 @@ bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message
 	}
 	return false;
 }
-/*
-void	VoiceChanMode::onDisableChanModeEvent(int order, Access &access, User &user, Channel &channel, Message &message)
-{
-	(void)order;
-	(void)access;
-	(void)message;
-	(void)user;
-	(void)channel;
-}
-*/
+
 void	VoiceChanMode::onShowChanModeEvent(void)
+{
+}
+
+void	VoiceChanMode::onDelete(void *)
 {
 }

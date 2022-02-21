@@ -1,28 +1,38 @@
 #include "Channel.hpp"
-#include "User.hpp"
+#include "AChanMode.hpp"
 #include "utils.hpp"
 #include "Console.hpp"
+#include "User.hpp"
 
 #include <string>
 #include <map>
 #include <ctime>
 
-Channel::Channel(std::string name, User &user) : _name(name), _owner(user.getName())
-{}
-
-Channel::Channel(void)
+Channel::Channel(std::string name, User &user, Server &server)
+	: _name(name)
+	, _owner(user.getName())
+	, _server(server)
 {}
 
 Channel::~Channel(void)
 {
-	//TODO eliminar y liberar toda la lista de modos de canal
-	//Se deberá llamar a un método de clase a la que pertenece el modo para
-	//determinar si será o no liberado.
+	for (Channel::Mode::multimap_iterator it = this->mode.begin(); it != this->mode.end(); ++it)
+		this->_server.findChanMode(it->first)->onDelete(it->second);
 }
 
 void *Channel::Mode::operator[](char chr)
 {
 	return this->_modeMultimap.find(chr)->second;
+}
+
+Channel::Mode::multimap_iterator	Channel::Mode::begin(void)
+{
+	return this->_modeMultimap.begin();
+}
+
+Channel::Mode::multimap_iterator	Channel::Mode::end(void)
+{
+	return this->_modeMultimap.end();
 }
 
 bool Channel::Mode::isSet(char modeName)
@@ -45,10 +55,7 @@ bool Channel::Mode::insert(char modeName, void *value)
 	bool	ret = !this->isSet(modeName, value);
 
 	if (ret)
-	{
 		this->_modeMultimap.insert(std::make_pair(modeName, value));
-		Console::log(LOG_DEBUG, "insert mode");
-	}
 	return ret;
 }
 
@@ -103,7 +110,7 @@ bool Channel::isOper(User *user)
 
 bool Channel::isVoice(User *user)
 {
-	return (this->mode.isSet('+', user));
+	return (this->mode.isSet('v', user));
 }
 
 std::string const	&Channel::getName(void) const
@@ -111,20 +118,21 @@ std::string const	&Channel::getName(void) const
 	return this->_name;
 }
 
+Server::userMap_insert	Channel::insert(User *user)
+{
+	return this->_userMap.insert(std::make_pair(strToUpper(user->getName()), user));
+}
+
+void	Channel::erase(User *user)
+{
+	this->_userMap.erase(strToUpper(user->getName()));
+}
+/*
 Server::userMap_type	&Channel::getUserMap(void)
 {
 	return this->_userMap;
 }
-
-void	Channel::insertUser(User *user)
-{
-	this->_userMap[strToUpper(user->getName())] = user;
-}
-
-void	Channel::eraseUser(std::string value)
-{
-	this->_userMap.erase(strToUpper(value));
-}
+*/
 
 bool	Channel::empty(void)
 {
@@ -185,8 +193,9 @@ void Channel::join(User user)
 	if (it == this->_userMap.end())
 	{
 		this->send(user.getName() + " ha entrado al canal " + this->_name + "\r\n");
-		this->_userMap[user.getName()] = &user;
-		user.getChannelMap()[this->_name] = this;
+		this->_userMap.insert(std::make_pair(user.getName(), &user));
+		user.insert(this);
+		//user.getChannelMap()[this->_name] = this;
 		user.send("Has entrado al canal " + this->_name + "\r\n");
 	}
 	else
@@ -204,7 +213,7 @@ void Channel::part(User user)
 	{
 		user.send("Has salido de " + this->_name + "\r\n");
 		this->_userMap.erase(it);
-		user.getChannelMap().erase(this->_name);
+		user.erase(this);
 		this->send(user.getName() + " ha salido de " + this->_name + "\r\n");
 	}
 }

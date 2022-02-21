@@ -23,7 +23,7 @@ public:
 	std::string const	&getCmd(void) const;
 
 	void				set(ISender &sender, std::string data);
-	void				setReceiver(Server::userMap_type &userMap);
+	void				setReceiver(Channel *channel);
 	void				setReceiver(Server::userVector_type &userVector);
 //	void				setReceiver(Server::serverMap_iterator first, Server::serverMap_iterator last);
 	void				setReceiver(ISender *value);

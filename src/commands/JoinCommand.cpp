@@ -39,7 +39,7 @@ void JoinCommand::createChannelEvent(Message &message)
 void JoinCommand::joinChannelEvent(Message &message)
 {
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha entrado al canal " + message[0]);
-	message.setReceiver(message.getChannel()->getUserMap());
+	message.setReceiver(message.getChannel());
 	message.setReceiver(message.getSender());	// cuando el canal está vacio, hay que añadir a uno mismo
 	message.hideReceiver();
 	message.send();
@@ -85,7 +85,7 @@ bool JoinCommand::_recvUser(Message &message)
 		if (message.size() == 1)
 			message.insertField("exit from all channels");
 		message.setCmd("PART");
-		for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end();)
+		for (Server::channelMap_iterator it = user.begin(); it != user.end();)
 		{
 			currentIt = it;
 			++it;

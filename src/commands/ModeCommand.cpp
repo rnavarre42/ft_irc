@@ -131,7 +131,7 @@ void ModeCommand::_checkChanModes(Message &message)
 	message.limitMaxParam(pos);
 	if (!message[1].empty())
 	{
-		message.setReceiver(channel->getUserMap());
+		message.setReceiver(channel);
 		message.setReceiver(this->userSender);
 		message.hideReceiver();
 		message.send();

@@ -83,8 +83,12 @@ public:
 	typedef EventHandler<int, Message>							eventHandler_type;
 	typedef std::map<std::string, Channel *>					channelMap_type;
 	typedef channelMap_type::iterator							channelMap_iterator;
+	typedef std::pair<channelMap_iterator, bool>				channelMap_insert;
+	typedef std::pair<std::string, Channel *>					stringChannelPair_type;
 	typedef std::map<std::string, User *>						userMap_type;
 	typedef userMap_type::iterator								userMap_iterator;
+	typedef std::pair<userMap_iterator, bool>					userMap_insert;
+	typedef std::pair<std::string, User *>						stringUserPair_type;
 //	typedef std::pair<int, User *>								userPair_type;
 //	typedef std::map<std::string, userPair_type>				userPairMap_type;
 //	typedef userPairMap_type::iterator							userPairMap_iterator;
@@ -154,24 +158,24 @@ public:
 
 	void							setPollout(User &user);
 
-	inline bool	isChannel(std::string &channelName)
+	bool	isChannel(std::string &channelName)
 	{
 		return channelName[0] == '#';
 	}
 
-	inline ACommand	*commandFind(std::string cmd)
+	ACommand	*commandFind(std::string cmd)
 	{
 		if (this->_commandMap.find(cmd) != this->_commandMap.end())
 			return this->_commandMap[cmd];
 		return NULL;
 	}
 
-	inline userMap_iterator userFind(std::string &userName)
+	userMap_iterator userFind(std::string &userName)
 	{
 		return this->_userMap.find(strToUpper(userName));
 	}
 
-	inline channelMap_iterator channelFind(std::string &channelName)
+	channelMap_iterator channelFind(std::string &channelName)
 	{
 		return this->_channelMap.find(strToUpper(channelName));
 	}
