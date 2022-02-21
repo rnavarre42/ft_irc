@@ -47,6 +47,8 @@ CLIENT_PATH		=	src/
 CLIENT_SRC		=	\
 					irclient.cpp				\
 					Client.cpp					\
+					Readline.cpp				\
+
 
 CLIENT_SRCS		=	$(addprefix $(CLIENT_PATH), $(CLIENT_SRC)			\
 					)													\

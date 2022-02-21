@@ -5,6 +5,8 @@
 # include <netdb.h>
 # include <poll.h>
 
+# include "Readline.hpp"
+
 # define FDNUM			2
 # define BUFFERSIZE		512
 # define POLLTIMEOUT	1000
@@ -42,6 +44,8 @@ private:
 	void			_doAutoIdent(void);
 	void			_sendLine(std::string data);
 	void			_displayLine(std::string &line);
+
+	Readline		readline;
 
 	Client(void);
 };

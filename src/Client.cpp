@@ -108,12 +108,13 @@ void	Client::_checkConsoleInput(void)
 
 	if (this->_pollfds[0].revents & POLLIN)
 	{
-		std::getline(std::cin, buffer);
-		if (!std::cin)
-		{
-			std::cout << "client: getline failed" << std::endl;
-			exit(EXIT_FAILURE);
-		}
+		buffer = readline();
+//		std::getline(std::cin, buffer);
+//		if (!std::cin)
+//		{
+//			std::cout << "client: getline failed" << std::endl;
+//			exit(EXIT_FAILURE);
+//		}
 		this->_sendLine(buffer);
 	}
 }
