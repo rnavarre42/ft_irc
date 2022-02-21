@@ -39,6 +39,7 @@ COMMAND_SRCS	=	\
 					MotdCommand.cpp				\
 					NamesCommand.cpp			\
 					NickCommand.cpp				\
+					NoticeCommand.cpp			\
 					PartCommand.cpp				\
 					PassCommand.cpp				\
 					PingCommand.cpp				\
@@ -50,7 +51,6 @@ COMMAND_SRCS	=	\
 					UserCommand.cpp				\
 
 #					ListCommand.cpp				\
-#					NoticeCommand.cpp			\
 #					WhoCommand.cpp				\
 #					WhoisCommand.cpp			\
 #					WhowasCommand.cpp			\

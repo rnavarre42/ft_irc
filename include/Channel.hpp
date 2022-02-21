@@ -119,7 +119,9 @@ public:
 	std::string const				&getOwner(void) const;
 
 	Server::userMap_insert			insert(User *user);
+	Server::userMap_insert			insert(std::string &userName, User *user);
 	void							erase(User *user);
+	void							erase(std::string &userName);
 	
 	Server::userMap_iterator		begin(void)
 	{

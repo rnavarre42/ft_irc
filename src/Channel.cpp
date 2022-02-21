@@ -123,9 +123,19 @@ Server::userMap_insert	Channel::insert(User *user)
 	return this->_userMap.insert(std::make_pair(strToUpper(user->getName()), user));
 }
 
+Server::userMap_insert	Channel::insert(std::string &userName, User *user)
+{
+	return this->_userMap.insert(std::make_pair(strToUpper(userName), user));
+}
+
 void	Channel::erase(User *user)
 {
 	this->_userMap.erase(strToUpper(user->getName()));
+}
+
+void	Channel::erase(std::string &userName)
+{
+	this->_userMap.erase(strToUpper(userName));
 }
 /*
 Server::userMap_type	&Channel::getUserMap(void)

@@ -85,6 +85,7 @@ void	Server::_loadCommands(void)
 	this->_commandMap["MODE"]		= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["MOTD"]		= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
 	this->_commandMap["NICK"]		= new NickCommand	(*this, LEVEL_ALL, 1);
+	this->_commandMap["NOTICE"]		= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
 	this->_commandMap["PART"]		= new PartCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["PASS"]		= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
 	this->_commandMap["PING"]		= new PingCommand	(*this, LEVEL_REGISTERED, 1);
@@ -99,7 +100,6 @@ void	Server::_loadCommands(void)
 //	this->_commandMap["KILL"]		= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
 //	this->_commandMap["LIST"]		= new ListCommand	(*this, LEVEL_REGISTERED, 0);
 //	this->_commandMap["WHOIS"]		= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["NOTICE"]		= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
 //	this->_commandMap["WHOWAS"]		= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["NAMES"]		= new NamesCommand	(*this, LEVEL_REGISTERED, 1);
 
@@ -526,8 +526,7 @@ void	Server::deleteUser(User &user, std::string text)
 	{
 		this->_message.setCmd("QUIT");
 		this->_message.clearReceiver();
-		if (userVector)
-			this->_message.setReceiver(*userVector);
+		this->_message.setReceiver(*userVector);
 		this->_message.hideReceiver();
 		this->_eventHandler.raise(QUITEVENT, this->_message);
 		for (Server::channelMap_iterator it = user.begin(); it != user.end();)

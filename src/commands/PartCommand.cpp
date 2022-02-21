@@ -23,12 +23,19 @@ void PartCommand::unloadEvents(Server::eventHandler_type &eventHandler)
 
 void PartCommand::partChannelEvent(Message &message)
 {
+	Channel	*channel = message.getChannel();
+
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha salido de " + message.getChannel()->getName());
-	message.setReceiver(message.getChannel());
+	message.setReceiver(channel);
 	message.setReceiver(message.getSender());
 	message.limitMaxParam(2);
 	message.hideReceiver();
 	message.send();
+	if (channel->size() > 1)
+	{
+		channel->mode.erase('o', message.getSender());
+		channel->mode.erase('v', message.getSender());
+	}
 }
 
 void PartCommand::notChannelEvent(Message &message)

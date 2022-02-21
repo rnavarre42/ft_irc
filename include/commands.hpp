@@ -11,7 +11,7 @@
 # include "MotdCommand.hpp"
 # include "NickCommand.hpp"
 //# include "KillCommand.hpp"
-//# include "NoticeCommand.hpp"
+# include "NoticeCommand.hpp"
 # include "PartCommand.hpp"
 //# include "PassCommand.hpp"
 # include "PingCommand.hpp"

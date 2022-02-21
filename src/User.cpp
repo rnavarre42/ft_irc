@@ -366,15 +366,15 @@ Server::userVector_type	*User::getUniqueVector(void)
 	std::pair<Server::channelSet_iterator, bool>		ret;
 	Server::userVector_iterator							vectorIt;
 
+	userVector = new Server::userVector_type;
 	if (!this->_channelMap.size())
-		return NULL;
+		return userVector;
 	//buscar el canal que tiene mas usuarios
 	currentChannel = findFullestChannel();
 	//std::cout << "channel name = " << currentChannel->getName() << std::endl;
 
 	//añadir los usuarios del canal mas grande al vector
 	checkChannelSet.insert(currentChannel);
-	userVector = new Server::userVector_type;
 	for (Server::userMap_iterator it = currentChannel->begin(); it != currentChannel->end(); it++)
 		userVector->push_back(it->second);
 	//añadir los usuarios de los canales restantes sin repetir usuario en el vector

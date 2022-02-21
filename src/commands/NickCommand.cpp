@@ -31,11 +31,12 @@ void NickCommand::nickEvent(Message &message)
 
 bool NickCommand::_recvUser(Message &message)
 {
-	User &user = *this->userSender;
+	User									&user = *this->userSender;
 	std::string								oldName = user.getName();
 	std::string								newName = message[0];
 	std::map<std::string, User *>::iterator	it;
 	std::map<std::string, User *>			&userMap = this->server.getUserMap();
+	Server::userVector_type					*uniqueUsers;
 
 	message.setReceiver(message.getSender());
 	if (newName.size() > MAXNICK)
@@ -54,7 +55,6 @@ bool NickCommand::_recvUser(Message &message)
 	{
 		message.hideReceiver();
 		message.send();
-//		user.send(":" + user.getMask() + " NICK :" + newName);
 		user.setName(newName);
 		return true;
 	}
@@ -72,10 +72,17 @@ bool NickCommand::_recvUser(Message &message)
 			userMap.erase(strToUpper(oldName));
 			if ((user.getStatus() & (LEVEL_REGISTERED | LEVEL_IRCOPERATOR)))
 			{
+				uniqueUsers = user.getUniqueVector();
+				message.setReceiver(*uniqueUsers);
 				message.hideReceiver();
 				message.send();
+				delete uniqueUsers;
 			}
-//				user.send(":" + user.getMask() + " NICK :" + newName);
+			for (Server::channelMap_iterator it = user.begin(); it != user.end(); ++it)
+			{
+				it->second->erase(oldName);
+				it->second->insert(newName, &user);
+			}
 		}
 		user.setName(newName);
 		userMap[strToUpper(newName)] = &user;
