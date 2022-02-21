@@ -96,9 +96,9 @@ void	Channel::Mode::erase(Channel::Mode::multimap_iterator pos)
 	this->_modeMultimap.erase(pos);
 }
 
-bool Channel::isOper(User *user)
+bool Channel::isOper(ISender *sender)
 {
-	return (this->mode.isSet('o', user));
+	return (this->mode.isSet('o', sender));
 //	Channel::Mode::rangePairMultimap_type		rangeIt = mode.getList('o');
 //	for (Channel::Mode::multimap_iterator	it = rangeIt.first; it != rangeIt.second; it++)
 //	{
@@ -108,9 +108,9 @@ bool Channel::isOper(User *user)
 //	return false;
 }
 
-bool Channel::isVoice(User *user)
+bool Channel::isVoice(ISender *sender)
 {
-	return (this->mode.isSet('v', user));
+	return (this->mode.isSet('v', sender));
 }
 
 std::string const	&Channel::getName(void) const
@@ -149,34 +149,14 @@ std::string const	&Channel::getOwner(void) const
 	return this->_owner;
 }
 
-void Channel::setTopic(std::string value)
+void Channel::setTopicInfo(std::string own, std::string topic)
 {
-	this->_topic = value;
+	this->_topicInfo.setTopic(own, topic);
 }
 
-std::string const	&Channel::getTopic(void) const
+Channel::TopicInfo const	&Channel::getTopicInfo(void) const
 {
-	return this->_topic;
-}
-
-void Channel::setTopicOwn(std::string value)
-{
-	this->_topicOwn = value;
-}
-
-std::string const	&Channel::getTopicOwn(void) const
-{
-	return this->_topicOwn;
-}
-
-void Channel::setTopicTime(time_t value)
-{
-	this->_topicTime = value;
-}
-
-time_t const	&Channel::getTopicTime(void) const
-{
-	return this->_topicTime;
+	return this->_topicInfo;
 }
 
 void Channel::send(std::string msg)

@@ -4,6 +4,7 @@
 # include "Server.hpp"
 # include "User.hpp"
 
+# include <sstream>
 # include <string>
 # include <map>
 # include <ctime>
@@ -31,7 +32,41 @@ public:
 
 	Channel(std::string name, User &user, Server &server);
 	~Channel(void);
-	
+
+	struct TopicInfo
+	{
+		TopicInfo(void)
+		{
+			this->setTopic("", "");
+		}
+
+		TopicInfo(std::string own, std::string topic)
+		{
+			this->setTopic(own, topic);
+		}
+
+		~TopicInfo()
+		{}
+
+		void setTopic(std::string own, std::string topic)
+		{
+			std::ostringstream	oss;
+
+			oss << std::time(NULL);
+			this->own = own;
+			this->topic = topic;
+			this->time = oss.str();
+		}
+
+		std::string own;
+		std::string	topic;
+		std::string	time;
+
+	private:
+		TopicInfo(TopicInfo const &src);
+		TopicInfo &operator=(TopicInfo const &rhs);
+	};
+
 	class Mode
 	{
 	public:
@@ -60,9 +95,13 @@ public:
 		bool					erase(char modeName);
 		void					erase(multimap_iterator pos);
 		multimap_iterator		findUnique(char modeName, void *value);
+//		bool					raiseEvent(
 		
 
 	private:
+		Mode(Mode const &src);
+		Mode &operator=(Mode const &rhs);
+
 		multimap_type				_modeMultimap;
 
 	}								mode;
@@ -70,20 +109,14 @@ public:
 //	Server::userMap_type			&getUserMap(void);
 	bool							empty(void);
 
-	bool							isOper(User *user);
-	bool							isVoice(User *user);
+	bool							isOper(ISender *sender);
+	bool							isVoice(ISender *sender);
+
+	void							setTopicInfo(std::string own, std::string topic);
+	TopicInfo const					&getTopicInfo(void) const;
 
 	void							setOwner(std::string value);
 	std::string const				&getOwner(void) const;
-	
-	void							setTopic(std::string value);
-	std::string	const				&getTopic(void) const;
-		
-	void							setTopicOwn(std::string value);
-	std::string	const				&getTopicOwn(void) const;
-
-	void							setTopicTime(time_t value);
-	time_t const					&getTopicTime(void) const;
 
 	Server::userMap_insert			insert(User *user);
 	void							erase(User *user);
@@ -119,9 +152,11 @@ public:
 
 private:
 	Channel(void);
+	Channel(Channel const &src);
+	Channel &operator=(Channel const &rhs);
 
 	std::string						_name;
-	std::string						_topic;
+	TopicInfo						_topicInfo;	
 	std::string						_owner;
 	std::string						_topicOwn;
 	time_t							_topicTime;

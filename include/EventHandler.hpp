@@ -63,6 +63,9 @@ public:
 	}
 
 private:
+	EventHandler(EventHandler const &src);
+	EventHandler &operator=(EventHandler const &rhs);
+
 	delegateMultimap_type	_delegateMultimap;
 };
 

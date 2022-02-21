@@ -4,6 +4,7 @@
 #include "Channel.hpp"
 
 #include <ctime>
+#include <sstream>
 
 ExceptChanMode::ExceptChanMode(Server &server)
 	: AChanMode(server)
@@ -73,4 +74,14 @@ void	ExceptChanMode::onShowChanModeEvent(void)
 void	ExceptChanMode::onDelete(void *pointer)
 {
 	delete &*reinterpret_cast<BanInfo *>(pointer);
+}
+
+std::string ExceptChanMode::getValue(void *pointer)
+{
+	std::ostringstream	oss;
+	BanInfo				*banInfo;
+
+	banInfo	= reinterpret_cast<BanInfo *>(pointer);
+	oss << banInfo->mask << " " << banInfo->nick << " :" << banInfo->time;
+	return oss.str();
 }

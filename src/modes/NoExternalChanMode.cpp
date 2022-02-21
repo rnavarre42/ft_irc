@@ -33,3 +33,8 @@ void	NoExternalChanMode::onShowChanModeEvent(void)
 void	NoExternalChanMode::onDelete(void *)
 {
 }
+
+std::string NoExternalChanMode::getValue(void *)
+{
+	return "";
+}

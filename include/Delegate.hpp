@@ -23,8 +23,9 @@ public:
 	}
 
 private:
-//	Delegate(void);
-//	Delegate(const Delegate &);
+	Delegate(void);
+	Delegate(Delegate const &src);
+	Delegate &operator=(Delegate const &rhs);
 
 	KeyT	&_target;
 	fn		_prototype;

@@ -35,6 +35,7 @@ enum
 	RPL_CHANNELMODEIS		= 324,	// "<channel> <mode> <mode params>"
 	RPL_NOTOPIC				= 331,	// "<channel> :No topic is set"
 	RPL_TOPIC				= 332,	// "<channel> :<topic>"
+	RPL_TOPICTIME			= 333,	// "<channel> :<own> <time>"
 
 	RPL_INVITING			= 341,	// "<channel> <nick>"
 	RPL_SUMMONING			= 342,	// "<user> :Summoning user to IRC"

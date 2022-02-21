@@ -30,6 +30,10 @@ public:
 	void	send(Message &msg);
 
 private:
+	ACommand(void);
+	ACommand(ACommand const &src);
+	ACommand &operator=(ACommand const &rhs);
+
 	virtual bool	_recvUser(Message &message) = 0;
 	virtual bool	_recvServer(Message &message) = 0;
 	virtual bool	_sendUser(Message &message) = 0;

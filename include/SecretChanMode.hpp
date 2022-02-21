@@ -17,6 +17,7 @@ public:
 	bool onChanModeEvent(int pos, int sign, Channel &channel, Message &message);
 	void onShowChanModeEvent(void);
 	void onDelete(void *pinter);
+	std::string getValue(void *pointer);
 };
 
 #endif

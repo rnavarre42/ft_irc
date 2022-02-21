@@ -31,6 +31,12 @@ mode #canal +v nick
 
 struct ChanModeConfig
 {
+	ChanModeConfig()
+	{}
+
+	~ChanModeConfig()
+	{}
+
 	enum ModeType
 	{
 		noParam = 0x00,
@@ -40,6 +46,11 @@ struct ChanModeConfig
 	int			type;
 	char		mode;
 	int			events;
+
+private:
+	ChanModeConfig(ChanModeConfig const &src);
+	ChanModeConfig &operator=(ChanModeConfig const &rhs);
+
 };
 
 #endif

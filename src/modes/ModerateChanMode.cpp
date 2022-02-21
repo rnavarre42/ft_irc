@@ -33,3 +33,8 @@ void	ModerateChanMode::onShowChanModeEvent(void)
 void	ModerateChanMode::onDelete(void *)
 {
 }
+
+std::string ModerateChanMode::getValue(void *)
+{
+	return "";
+}

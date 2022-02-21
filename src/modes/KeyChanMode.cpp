@@ -56,3 +56,8 @@ void	KeyChanMode::onDelete(void *pointer)
 {
 	delete reinterpret_cast<std::string *>(pointer);
 }
+
+std::string KeyChanMode::getValue(void *pointer)
+{
+	return *reinterpret_cast<std::string *>(pointer);
+}

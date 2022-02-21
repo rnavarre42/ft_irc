@@ -92,6 +92,7 @@ void	Server::_loadCommands(void)
 	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["QUIT"]		= new QuitCommand	(*this, LEVEL_ALL, 0);
 	this->_commandMap["SHUTDOWN"]	= new ShutdownCommand	(*this, LEVEL_IRCOPERATOR, 0);
+	this->_commandMap["TOPIC"]		= new TopicCommand	(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["USER"]		= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
 
 //	this->_commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
@@ -149,9 +150,7 @@ void	Server::_unloadChanModes(void)
 
 void	Server::_loadChanMode(AChanMode *newChanMode)
 {
-	ChanModeConfig chanModeConfig;
-
-	chanModeConfig = newChanMode->getConfig();
+	ChanModeConfig const &chanModeConfig = newChanMode->getConfig();
 	this->_chanModeMap[chanModeConfig.mode] = newChanMode;
 }
 
@@ -376,7 +375,7 @@ User	*Server::_accept(void)
 	int					user_addrlen;
 
 	user_addrlen = sizeof(struct sockaddr_in);
-	newFd = accept(this->_fd, (struct sockaddr *)&user_addr, (socklen_t *)&user_addrlen);
+	newFd = accept(this->_fd, reinterpret_cast<struct sockaddr *>(&user_addr), reinterpret_cast<socklen_t *>(&user_addrlen));
 	if (newFd < 0)
 	{
 		Console::log(LOG_ERROR, "Server::accept function accept() failed");
@@ -402,7 +401,7 @@ void	Server::_bind(void)
 	this->_address.sin_family = AF_INET;
 	this->_address.sin_addr.s_addr = INADDR_ANY;
 	this->_address.sin_port = htons(this->_port);
-	if (bind(this->_fd, (struct sockaddr *)&this->_address, sizeof(this->_address)) < 0)
+	if (bind(this->_fd, reinterpret_cast<struct sockaddr *>(&this->_address), sizeof(this->_address)) < 0)
 	{
 		ss << "Server::bind function bind() failed: " << std::strerror(errno);
 		Console::log(LOG_ERROR, ss.str());

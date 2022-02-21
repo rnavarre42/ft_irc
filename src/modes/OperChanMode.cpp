@@ -52,3 +52,8 @@ void	OperChanMode::onShowChanModeEvent(void)
 void	OperChanMode::onDelete(void *)
 {
 }
+
+std::string OperChanMode::getValue(void *pointer)
+{
+	return reinterpret_cast<User *>(pointer)->getName();
+}

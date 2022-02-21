@@ -135,6 +135,8 @@ public:
 
 private:
 	User(void);
+	User(User const &src);
+	User &operator=(User const &rhs);
 
 	std::string					_name;
 	std::string					_host;

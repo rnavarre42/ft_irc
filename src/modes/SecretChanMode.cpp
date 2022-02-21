@@ -33,3 +33,8 @@ void	SecretChanMode::onShowChanModeEvent(void)
 void	SecretChanMode::onDelete(void *)
 {
 }
+
+std::string SecretChanMode::getValue(void *)
+{
+	return "";
+}

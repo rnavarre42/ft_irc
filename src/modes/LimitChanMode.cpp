@@ -2,9 +2,11 @@
 #include "ChanModeConfig.hpp"
 #include "Message.hpp"
 #include "Channel.hpp"
+
 #include <cstdlib>
 #include <climits>
 #include <cctype>
+#include <sstream>
 
 LimitChanMode::LimitChanMode(Server &server)
 	: AChanMode(server)
@@ -65,4 +67,12 @@ void	LimitChanMode::onShowChanModeEvent(void)
 
 void	LimitChanMode::onDelete(void *)
 {
+}
+
+std::string LimitChanMode::getValue(void *pointer)
+{
+	std::ostringstream	oss;
+
+	oss << reinterpret_cast<unsigned long>(pointer);
+	return oss.str();
 }

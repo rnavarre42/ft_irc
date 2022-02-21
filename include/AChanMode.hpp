@@ -23,11 +23,11 @@ public:
 	AChanMode(Server &server) : _server(server) {}
 	virtual ~AChanMode(void) {}
 
-	virtual void onChanEvent(Access &access, Message &message) = 0;
-	virtual bool onChanModeEvent(int pos, int sign, Channel &channel, Message &message) = 0;
-//	virtual bool onDisableChanModeEvent(int pos, int sign, Channel &channel, Message &message) = 0;
-	virtual void onShowChanModeEvent(void) = 0;
-	virtual void onDelete(void *pointer) = 0;
+	virtual void		onChanEvent(Access &access, Message &message) = 0;
+	virtual bool		onChanModeEvent(int pos, int sign, Channel &channel, Message &message) = 0;
+	virtual void 		onShowChanModeEvent(void) = 0;
+	virtual void 		onDelete(void *pointer) = 0;
+	virtual std::string getValue(void *pointer) = 0;
 
 	ChanModeConfig	const &getConfig(void) const
 	{
@@ -36,6 +36,8 @@ public:
 
 private:
 	AChanMode(void);
+	AChanMode(AChanMode const &src);
+	AChanMode &operator=(AChanMode const &rhs);
 
 protected:
 	Server			&_server;

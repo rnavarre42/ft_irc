@@ -4,6 +4,7 @@
 #include "Channel.hpp"
 
 #include <ctime>
+#include <sstream>
 
 class User;
 class Channel;
@@ -91,4 +92,15 @@ void	BanChanMode::onShowChanModeEvent(void)
 void	BanChanMode::onDelete(void *pointer)
 {
 	delete &*reinterpret_cast<BanInfo *>(pointer);
+
+}
+
+std::string BanChanMode::getValue(void *pointer)
+{
+	std::ostringstream	oss;
+	BanInfo				*banInfo;
+
+	banInfo	= reinterpret_cast<BanInfo *>(pointer);
+	oss << banInfo->mask << " " << banInfo->nick << " :" << banInfo->time;
+	return oss.str();
 }

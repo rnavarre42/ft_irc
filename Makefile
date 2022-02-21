@@ -14,8 +14,8 @@ RM			=	rm -Rf
 
 -include	sources.mk
 
-#all:	debug
-all:	$(NAME)
+all:	debug
+#all:	$(NAME)
 
 -include	$(DEPS)
 

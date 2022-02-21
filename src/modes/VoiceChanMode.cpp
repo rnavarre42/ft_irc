@@ -51,3 +51,8 @@ void	VoiceChanMode::onShowChanModeEvent(void)
 void	VoiceChanMode::onDelete(void *)
 {
 }
+
+std::string VoiceChanMode::getValue(void *pointer)
+{
+	return reinterpret_cast<User *>(pointer)->getName();
+}

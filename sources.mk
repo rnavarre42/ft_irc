@@ -46,11 +46,11 @@ COMMAND_SRCS	=	\
 					PrivmsgCommand.cpp			\
 					QuitCommand.cpp				\
 					ShutdownCommand.cpp			\
+					TopicCommand.cpp			\
 					UserCommand.cpp				\
 
 #					ListCommand.cpp				\
 #					NoticeCommand.cpp			\
-#					TopicCommand.cpp			\
 #					WhoCommand.cpp				\
 #					WhoisCommand.cpp			\
 #					WhowasCommand.cpp			\

@@ -3,7 +3,8 @@
 #include <iomanip>
 #include <string>
 
-Console::Console(Server server) : _server(server)
+Console::Console(Server &server)
+	: _server(server)
 {}
 
 void	Console::log(int logLevel, std::string str)

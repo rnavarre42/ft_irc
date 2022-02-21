@@ -1,5 +1,7 @@
 #include "TopicChanMode.hpp"
 #include "ChanModeConfig.hpp"
+#include "Message.hpp"
+#include "User.hpp"
 #include "Console.hpp"
 
 TopicChanMode::TopicChanMode(Server &server)
@@ -15,15 +17,12 @@ TopicChanMode::~TopicChanMode(void)
 
 void	TopicChanMode::onChanEvent(Access &access, Message &message)
 {
-	(void)access;
-	(void)message;
-	Console::log(LOG_DEBUG, "onChanEvent - topic");
+	if (message.getChannel()->isOper(message.getSender()))
+		access = allow;
 }
 
-bool	TopicChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &)
+bool	TopicChanMode::onChanModeEvent(int, int sign, Channel &channel, Message &)
 {
-	(void)pos;
-
 	return (sign && this->setMode(channel, NULL))
 				|| (!sign && this->unsetMode(channel, NULL));
 }
@@ -34,4 +33,9 @@ void	TopicChanMode::onShowChanModeEvent(void)
 
 void	TopicChanMode::onDelete(void *)
 {
+}
+
+std::string TopicChanMode::getValue(void *)
+{
+	return "";
 }

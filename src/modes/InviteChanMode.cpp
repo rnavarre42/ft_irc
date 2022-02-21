@@ -33,3 +33,8 @@ void	InviteChanMode::onShowChanModeEvent(void)
 void	InviteChanMode::onDelete(void *)
 {
 }
+
+std::string InviteChanMode::getValue(void *)
+{
+	return "";
+}

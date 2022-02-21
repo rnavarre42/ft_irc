@@ -29,6 +29,8 @@ public:
 
 private:
 	Numeric(void);
+	Numeric(Numeric const &src);
+	Numeric &operator=(Numeric const &rhs);
 
 	static Numeric						*_instance;
 	static std::map<int, std::string>	_numericMap;
