@@ -1,5 +1,7 @@
 #include "InviteChanMode.hpp"
 #include "ChanModeConfig.hpp"
+#include "Message.hpp"
+#include "Numeric.hpp"
 
 InviteChanMode::InviteChanMode(Server &server)
 	: AChanMode(server)
@@ -14,8 +16,15 @@ InviteChanMode::~InviteChanMode(void)
 
 void	InviteChanMode::onChanEvent(Access &access, Message &message)
 {
-	(void)access;
-	(void)message;
+	Channel	*channel = message.getChannel();
+
+	if (this->isSetMode(*channel)
+			&& (this->_server.invite().find(message.getSender(), channel)) == this->_server.invite().end())
+	{
+		Numeric::insertField(message.getChannel()->getName());
+		message.replyNumeric(ERR_INVITEONLYCHAN);
+		access = AChanMode::deny;
+	}
 }
 
 bool	InviteChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &)

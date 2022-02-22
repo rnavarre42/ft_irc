@@ -8,7 +8,7 @@
 #include <map>
 #include <ctime>
 
-Channel::Channel(std::string name, User &user, Server &server)
+Channel::Channel(const std::string& name, const User &user, Server &server)
 	: _name(name)
 	, _owner(user.getName())
 	, _server(server)
@@ -56,6 +56,9 @@ bool Channel::Mode::insert(char modeName, void *value)
 
 	if (ret)
 		this->_modeMultimap.insert(std::make_pair(modeName, value));
+	else
+		this->_modeMultimap.find(modeName)->second = value;
+
 	return ret;
 }
 

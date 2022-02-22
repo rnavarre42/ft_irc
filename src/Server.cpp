@@ -47,7 +47,7 @@ const char	*Server::ServerFullException::what(void) const throw()
 	return "The server is full.";
 }
 
-Server::Server(std::string listenIp, int listenPort, std::string name)
+Server::Server(const std::string& listenIp, int listenPort, const std::string& name)
 	: _ip(listenIp)
 	, _port(listenPort)
 	, _message(*new Message(*this))
@@ -184,7 +184,7 @@ Server	&Server::getInstance(void)
 {
 	return *Server::_instance;
 }
-Server	&Server::createInstance(std::string listenIp, int listenPort, std::string name)
+Server	&Server::createInstance(const std::string& listenIp, int listenPort, const std::string& name)
 {
 	if (Server::_instance == NULL)
 		Server::_instance = new Server(listenIp, listenPort, name);
@@ -282,7 +282,7 @@ void	Server::setSenderStatus(ISender &sender, int value)
 		this->_eventHandler.raise(REGUSEREVENT, this->_message);
 }
 
-void	Server::quit(std::string msg)
+void	Server::quit(const std::string& msg)
 {
 	Server::fdMap_iterator	currentIt;
 
@@ -430,17 +430,44 @@ int		Server::_poll(void)
 	return poll(this->_pollfds, MAXUSERS + 2, this->_pollTimeout);
 }
 
-void	Server::delChannel(Channel &channel)
+void	Server::eraseChannel(Channel &channel)
 {
 	this->_channelMap.erase(strToUpper(channel.getName()));
 	delete &channel;
 }
 
-void	Server::createUser(User &user)
+Channel*	Server::insertChannel(const std::string& name, const User& user)
+{
+	Channel	*channel = new Channel(name, user, *this);
+//	this->_channelMap[strToUpper(channelName)] = channel;
+	this->_channelMap.insert(std::make_pair(strToUpper(name), channel));
+	return channel;
+}
+
+void	Server::insertUser(User &user)
 {
 	this->_message.setReceiver(&user);
-	this->_fdMap[user.getFd()] = &user;
+	this->_fdMap.insert(std::make_pair(user.getFd(), &user));
 	this->_eventHandler.raise(NEWUSEREVENT, this->_message);
+}
+
+void	Server::eraseUser(User &user)
+{
+	this->_fdMap.erase(user.getFd());
+}
+
+bool	Server::checkChannelMode(Message& message, int commandEvent)
+{
+	AChanMode::Access	access = AChanMode::def;
+
+	for (aChanModeMap_iterator it = this->_chanModeMap.begin();
+			it != this->_chanModeMap.end() && access != AChanMode::allow;
+			++it)
+	{
+		if (it->second->getConfig().events & commandEvent)
+			it->second->onChanEvent(access, message);
+	}
+	return access != AChanMode::deny;
 }
 
 void	Server::_removeUserFromChannel(Channel &channel, User &user)
@@ -452,68 +479,11 @@ void	Server::_removeUserFromChannel(Channel &channel, User &user)
 //		this->_source.message->setChannel(&channel);
 		this->_eventHandler.raise(DELCHANEVENT, this->_message);
 		this->_invite.erase(&channel);
-		this->delChannel(channel);	// se elimina
+		this->eraseChannel(channel);	// se elimina
 	}
 }
 
-/*
-void	displayUserName(User *user)
-{
-	std::cout << "User name = " << user->getName() << std::endl;
-}
-*/
-/*
-Channel	*findFullestChannel(User &user)
-{
-	Server::channelMap_iterator	currentIt = user.getChannelMap().begin();
-	Server::channelMap_iterator	nextIt = currentIt;
-
-	for (; nextIt != user.getChannelMap().end(); nextIt++)
-	{
-		if (nextIt->second->getUserMap().size() > currentIt->second->getUserMap().size())
-			currentIt = nextIt;
-	}
-	return	currentIt->second;
-}
-
-Server::userVector_type	*getUserVector(User &user)
-{
-	//aloca memoria para el nuevo vector
-	Server::userVector_type								*userVector;
-	Server::channelSet_type								channelSet;
-	Channel												*currentChannel;
-	std::pair<Server::channelSet_iterator, bool>		ret;
-	Server::userVector_iterator							vectorIt;
-
-	if (!user.getChannelMap().size())
-		return NULL;
-	//buscar el canal que tiene mas usuarios
-	currentChannel = findFullestChannel(user);
-	//std::cout << "channel name = " << currentChannel->getName() << std::endl;
-
-	//añadir los usuarios del canal mas grande al vector
-	channelSet.insert(currentChannel);
-	userVector = new Server::userVector_type;
-	for (Server::userPairMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
-		userVector->push_back(it->second.second);
-	//añadir los usuarios de los canales restantes sin repetir usuario en el vector
-	for (Server::channelMap_iterator it = user.getChannelMap().begin(); it != user.getChannelMap().end(); it++)
-	{
-		currentChannel = it->second;
-		ret = channelSet.insert(currentChannel);
-		if (ret.second == true)
-			for (Server::userPairMap_iterator it = currentChannel->getUserMap().begin(); it != currentChannel->getUserMap().end(); it++)
-			{
-				vectorIt = std::find(userVector->begin(), userVector->end(), it->second.second);
-				if (vectorIt == userVector->end())
-					userVector->push_back(it->second.second);
-			}
-	}
-//	for_each(userVector->begin(), userVector->end(), displayUserName);
-	return userVector;
-}
-*/
-void	Server::deleteUser(User &user, std::string text)
+void	Server::deleteUser(User& user, const std::string& text)
 {
 	Server::channelMap_iterator	currentIt;
 	Server::userVector_type*	userVector = user.getUniqueVector();
@@ -532,7 +502,7 @@ void	Server::deleteUser(User &user, std::string text)
 		for (Server::channelMap_iterator it = user.begin(); it != user.end();)
 		{
 			currentIt = it;
-			it++;
+			++it;
 			this->_message.setChannel(currentIt->second);
 			this->_removeUserFromChannel(*currentIt->second, user);
 		}
@@ -551,61 +521,55 @@ void	Server::deleteUser(User &user, std::string text)
 // :masksource JOIN #CHAN :Pass
 void	Server::addToChannel(Message &message)
 {
-	Channel											*channel = NULL;
-	std::string										&channelName = message[0];
-	User											&user = static_cast<User &>(*message.getSender());
+	Channel*										channel = NULL;
+	const std::string&								channelName = message[0];
+	User&											user = static_cast<User& >(*message.getSender());
 	Server::channelMap_iterator						it;
-	std::pair<Server::userMap_iterator, bool>		retUser;
+	Server::userMap_insert							retUser;
 
-//	this->_source.message = &message;
 	if (this->isChannel(channelName))
 	{
-//		std::cout << "user " << user.getName() << " " << user.getChannelMap().size() << std::end;
 		if (user.size() == MAXCHANNEL)
 			this->_eventHandler.raise(MAXCHANEVENT, this->_message);
 		// el canal no existe, se ha de crear
 		else if ((it = this->channelFind(channelName)) == this->_channelMap.end())
 		{
-			channel = new Channel(channelName, user, *this);
-			this->_channelMap[strToUpper(channelName)] = channel;
+			channel = insertChannel(channelName, user);
 			// añade el canal al usuario y el usuario al canal
 			channel->insert(&user);
 			user.insert(channel);
-			//user[strToUpper(channelName)] = channel;
-			//TODO falta dar op al primero que entra.
 			channel->mode.insert('o', &user);
 			message.setChannel(channel);
 			this->_eventHandler.raise(NEWCHANEVENT, this->_message);
-			//this->_eventHandler.raise(JOINEVENT, this->_source);
 		}
 		else
 		{
-
 			//TODO hay que limpiar este código y tratar de hacerlo más compacto
 			channel = it->second;
 			message.setChannel(channel);
-		
-			//eliminamos la invitación, si existiera.
-			if (this->_invite.erase(&user, channel))
-			{
-				Console::log(LOG_INFO, user.getName() + " ha hecho efectiva su invitacion");
-			}
+			//if (retUser.second == true)  //El nick no está en el canal
+			if (user.isOnChannel(*channel))
+				this->_eventHandler.raise(ALREADYEVENT, this->_message);
 			else
 			{
-				Console::log(LOG_INFO, user.getName() + " no tenia invitacion");
-			}
-
-			retUser = channel->insert(&user);
-			
-			if (retUser.second == true)  //El nick no está en el canal
-			{
+				if (!checkChannelMode(message, CHANMODE_JOIN))
+					return ;
+				channel->insert(&user);
+				//eliminamos la invitación, si existiera.
+				//
+				if (this->_invite.erase(&user, channel))
+				{
+					Console::log(LOG_INFO, user.getName() + " ha hecho efectiva su invitacion");
+				}
+				else
+				{
+					Console::log(LOG_INFO, user.getName() + " no tenia invitacion");
+				}
 				// añade el canal al usuario y el usuario al canal
 				channel->insert(&user);
 				user.insert(channel);
 				this->_eventHandler.raise(JOINEVENT, this->_message);
 			}
-			else
-				this->_eventHandler.raise(ALREADYEVENT, this->_message);
 			//TODO falta por gestionar +l +i +k
 		}
 	}
@@ -613,11 +577,11 @@ void	Server::addToChannel(Message &message)
 		this->_eventHandler.raise(ERRCHANEVENT, this->_message);
 }
 
-void	Server::delFromChannel(Message &message)
+void	Server::delFromChannel(Message& message)
 {
-	Channel							*channel = NULL;
-	User							&user = static_cast<User &>(*message.getSender());
-	std::string						&channelName = message[0];
+	Channel*						channel = NULL;
+	User&							user = static_cast<User& >(*message.getSender());
+	const std::string&				channelName = message[0];
 	Server::channelMap_iterator		it;	
 	
 	if (this->isChannel(channelName))
@@ -643,7 +607,7 @@ void	Server::delFromChannel(Message &message)
 
 int	Server::_checkUserConnection(void)
 {
-	User	*user;
+	User*	user;
 
 	if (this->_pollfds[0].revents & POLLIN)
 	{
@@ -660,7 +624,7 @@ int	Server::_checkUserConnection(void)
 			exit(EXIT_FAILURE);
 		}
 */
-		this->createUser(*user);
+		this->insertUser(*user);
 		Console::log(LOG_INFO, "User <anonymous> connected");
 		return 1;
 	}
@@ -675,7 +639,7 @@ int	Server::_checkUserConnection(void)
  */
 }
 
-void	Server::names(Channel &channel)
+void	Server::names(Channel& channel)
 {
 	std::string	mode;
 
@@ -722,9 +686,9 @@ void	Server::_checkUserIO(void)
 	}
 }
 
-bool	Server::recvCommand(Message &message)
+bool	Server::recvCommand(Message& message)
 {
-	ACommand	*command;
+	ACommand*	command;
 
 	message.getSender()->setIdleTime(time(NULL));
 	if ((command = this->commandFind(message.getCmd())))
@@ -735,9 +699,9 @@ bool	Server::recvCommand(Message &message)
 	return false;
 }
 
-bool	Server::sendCommand(Message &message)
+bool	Server::sendCommand(Message& message)
 {
-	ACommand	*command;
+	ACommand*	command;
 
 	if ((command = this->commandFind(message.getCmd())))
 	{
@@ -774,7 +738,7 @@ void	Server::_checkConsoleInput(void)
 	}
 }
 
-void	Server::_checkUserTimeout(User &user)
+void	Server::_checkUserTimeout(User& user)
 {
 	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
 		this->deleteUser(user, "Registration timeout");

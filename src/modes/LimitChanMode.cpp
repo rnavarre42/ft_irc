@@ -1,12 +1,14 @@
 #include "LimitChanMode.hpp"
 #include "ChanModeConfig.hpp"
 #include "Message.hpp"
+#include "Numeric.hpp"
 #include "Channel.hpp"
 
 #include <cstdlib>
 #include <climits>
 #include <cctype>
 #include <sstream>
+#include <cstdlib>
 
 LimitChanMode::LimitChanMode(Server &server)
 	: AChanMode(server)
@@ -21,8 +23,17 @@ LimitChanMode::~LimitChanMode(void)
 
 void	LimitChanMode::onChanEvent(Access &access, Message &message)
 {
-	(void)access;
-	(void)message;
+	Channel*	channel = message.getChannel();
+	void*		limit = this->getMode(*channel);
+	size_t		temp = std::strtoul(this->getValue(limit).c_str(), NULL, 0);
+
+	if (limit && channel->size() == std::strtoul(this->getValue(limit).c_str(), NULL, 0))
+	{
+		Numeric::insertField(channel->getName());
+		message.replyNumeric(ERR_CHANNELISFULL);
+		access = AChanMode::deny;
+	}
+	std::cout << "users: " << channel->size() << " : " << temp << std::endl;
 }
 
 inline bool	isValidLimit(unsigned long limit, Channel &channel, char chanMode)

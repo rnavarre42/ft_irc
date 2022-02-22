@@ -4,6 +4,7 @@
 # include <vector>
 # include <cstddef>
 
+class ISender;
 class User;
 class Channel;
 
@@ -18,7 +19,7 @@ class Invite
 		~Invite(void);
 
 		bool					insert(User *user, Channel *channel);
-		inviteVector_iterator	find(User *user, Channel *channel);
+		inviteVector_iterator	find(ISender *sender, Channel *channel);
 		bool					erase(User *user, Channel *channel);
 		void					erase(Channel *channel);
 		void					erase(User *user);

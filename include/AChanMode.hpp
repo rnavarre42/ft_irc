@@ -68,6 +68,11 @@ protected:
 	{
 		return channel.mode.erase(this->_chanModeConfig.mode);
 	}
+
+	void*	getMode(Channel& channel)
+	{
+		return channel.mode[this->_chanModeConfig.mode];
+	}
 };
 
 #endif

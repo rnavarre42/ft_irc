@@ -27,10 +27,10 @@
 class Channel
 {
 public:
-	typedef std::map<std::string, Channel *>	channelMap_type;
+	typedef std::map<std::string, Channel* >	channelMap_type;
 	typedef channelMap_type::iterator			channelMap_iterator;
 
-	Channel(std::string name, User &user, Server &server);
+	Channel(const std::string& name, const User& user, Server& server);
 	~Channel(void);
 
 	struct TopicInfo
@@ -40,7 +40,7 @@ public:
 			this->setTopic("", "");
 		}
 
-		TopicInfo(std::string own, std::string topic)
+		TopicInfo(const std::string& own, const std::string& topic)
 		{
 			this->setTopic(own, topic);
 		}
@@ -48,7 +48,7 @@ public:
 		~TopicInfo()
 		{}
 
-		void setTopic(std::string own, std::string topic)
+		void setTopic(const std::string& own, const std::string& topic)
 		{
 			std::ostringstream	oss;
 
