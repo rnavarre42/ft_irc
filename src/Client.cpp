@@ -56,7 +56,6 @@ Client::Client(const std::string& hostname, const std::string& port, const std::
 Client::~Client(void)
 {
 	close(this->_fd);
-	std::cout << "destructor client called" << std::endl;
 }
 
 void	Client::start(void)

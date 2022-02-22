@@ -21,7 +21,6 @@ Readline::Readline(void)
 Readline::~Readline(void)
 {
 	tcsetattr(STDOUT_FILENO, TCSANOW, &this->old_tio);
-	std::cout << "destructor readline called" << std::endl;
 }
 
 void Readline::_newLine(std::string const &data)
