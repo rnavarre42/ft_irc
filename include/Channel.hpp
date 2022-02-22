@@ -57,7 +57,6 @@ public:
 			this->topic = topic;
 			this->time = oss.str();
 		}
-
 		std::string own;
 		std::string	topic;
 		std::string	time;
@@ -95,8 +94,6 @@ public:
 		bool					erase(char modeName);
 		void					erase(multimap_iterator pos);
 		multimap_iterator		findUnique(char modeName, void *value);
-//		bool					raiseEvent(
-		
 
 	private:
 		Mode(Mode const &src);
@@ -106,7 +103,6 @@ public:
 
 	}								mode;
 	std::string const				&getName(void) const;
-//	Server::userMap_type			&getUserMap(void);
 	bool							empty(void);
 
 	bool							isOper(ISender *sender);
@@ -128,12 +124,22 @@ public:
 		return this->_userMap.begin();
 	}
 
+	Server::userMap_const_iterator	begin(void) const
+	{
+		return this->_userMap.begin();
+	}
+
 	Server::userMap_iterator		end(void)
 	{
 		return this->_userMap.end();
 	}
 	
-	Server::userMap_type::size_type	size(void)
+	Server::userMap_const_iterator	end(void) const
+	{
+		return this->_userMap.end();
+	}
+
+	Server::userMap_type::size_type	size(void) const
 	{
 		return this->_userMap.size();
 	}
