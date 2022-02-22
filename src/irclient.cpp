@@ -9,8 +9,10 @@ int	main(int argc, char **argv)
 		return 1;
 	}
 
-	Client	client(argv[1], argv[2], argv[3], argv[4]);
-	client.start();
+	Client*	client = Client::createInstance(argv[1], argv[2], argv[3], argv[4]);
 
+	client->start();
+
+	Client::deleteInstance();
 	return 0;
 }

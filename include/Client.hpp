@@ -15,10 +15,16 @@
 class	Client
 {
 public:
-	Client(std::string hostname, std::string port, std::string nick, std::string user);
+
 	~Client(void);
 
-	void start(void);
+	static Client*	getInstance(void);
+	static Client*	createInstance(std::string host, std::string port, std::string nick, std::string user);
+	static void		deleteInstance(void);
+
+	void	start(void);
+
+	Readline		readline;
 
 private:
 	std::string		_hostname;
@@ -29,14 +35,15 @@ private:
 	std::string		_nickname;
 	std::string		_username;
 
-	void			_connectToSocket(void);
-	void			_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0);
+	bool			_connectToSocket(void);
+	bool			_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0);
 	void			_displayIpAddress(struct addrinfo *res);
 
 	struct pollfd	_pollfds[FDNUM];
 	int				_pollTimeout;
 	void			_initPoll(void);
 	void			_loop(void);
+	bool			_running;
 
 	std::string		_inputBuffer;
 	void			_checkConsoleInput(void);
@@ -44,13 +51,13 @@ private:
 
 	void			_doAutoPong(std::string data);
 	void			_doAutoIdent(void);
-	void			_sendLine(std::string data);
+	void			_sendLine(std::string &data);
 	void			_displayLine(std::string &line);
 
-	Readline		readline;
-	bool			_running;
+	static Client*	_instance;
 
 	Client(void);
+	Client(const std::string& hostname, const std::string& port, const std::string& nick, const std::string& user);
 };
 
 #endif

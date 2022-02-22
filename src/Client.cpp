@@ -1,4 +1,5 @@
 #include "Client.hpp"
+
 #include <string>
 #include <iostream>
 #include <sys/types.h>
@@ -12,14 +13,37 @@
 #include <csignal>
 #include <poll.h>
 
-void signalHandler(int sig)
+void	signalHandler(int sig)
 {
+	Client*	client = Client::getInstance();
+
 	if (sig == SIGINT)
 		std::cout << std::endl;
+	tcsetattr(STDOUT_FILENO, TCSANOW, &client->readline.getOldTermios());
 	exit(0);
 }
 
-Client::Client(std::string hostname, std::string port, std::string nick, std::string user)
+Client*	Client::_instance = 0;
+
+Client*	Client::getInstance(void)
+{
+	return Client::_instance;
+}
+
+Client*	Client::createInstance(std::string host, std::string port, std::string nick, std::string user)
+{
+	if (Client::_instance == 0)
+		Client::_instance = new Client(host, port, nick, user);
+	return Client::_instance;
+}
+
+void	Client::deleteInstance(void)
+{
+	delete Client::_instance;
+	Client::_instance = 0;
+}
+
+Client::Client(const std::string& hostname, const std::string& port, const std::string& nick, const std::string& user)
 	: _hostname(hostname)
 	, _port(port)
 	, _nickname(nick)
@@ -27,8 +51,6 @@ Client::Client(std::string hostname, std::string port, std::string nick, std::st
 	, _running(1)
 {
 	signal(SIGINT, signalHandler);
-	this->_connectToSocket();
-	this->_doAutoIdent();
 }
 
 Client::~Client(void)
@@ -39,15 +61,21 @@ Client::~Client(void)
 
 void	Client::start(void)
 {
-	this->_loop();
+	if (this->_connectToSocket())
+	{
+		this->_doAutoIdent();
+		this->_loop();
+	}
 }
 
 void	Client::_doAutoIdent(void)
 {
-	this->_sendLine("USER " + this->_username + " 0 * :the last param" + "\r\n" + "NICK " + this->_nickname);
+	std::string	registerLine("USER " + this->_username + " 0 * :the last param\r\nNICK " + this->_nickname);
+
+	this->_sendLine(registerLine);
 }
 
-void	Client::_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0)
+bool	Client::_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0)
 {
 	int	error;
 
@@ -58,8 +86,9 @@ void	Client::_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0)
 	if (error)
 	{
 		std::cerr << "client: getaddrinfo failed: " << gai_strerror(error) << std::endl;
-		exit(EXIT_FAILURE);
+		return false;
 	}
+	return true;
 }
 
 void	Client::_displayIpAddress(struct addrinfo *res)
@@ -71,12 +100,13 @@ void	Client::_displayIpAddress(struct addrinfo *res)
 	std::cout << "connecting to address: " << this->_ip << std::endl;
 }
 
-void	Client::_connectToSocket(void)
+bool	Client::_connectToSocket(void)
 {
 	struct addrinfo	hints, *res, *res0;
 	std::string		strError;
 
-	this->_getAddrInfoList(&hints, &res0);
+	if (!this->_getAddrInfoList(&hints, &res0))
+		return false;
 	for (res = res0; res != NULL; res = res->ai_next)
 	{
 		this->_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
@@ -96,13 +126,15 @@ void	Client::_connectToSocket(void)
 	if (this->_fd < 0 || !res)
 	{
 		std::cerr << "client: " << strError << std::endl;
-		exit(0);
+		freeaddrinfo(res0);
+		return false;
 	}
 	this->_displayIpAddress(res);
 	freeaddrinfo(res0);
+	return true;
 }
 
-void	Client::_sendLine(std::string data)
+void	Client::_sendLine(std::string &data)
 {
 	data += "\r\n";
 	send(this->_fd, data.c_str(), data.size(), 0);
@@ -153,7 +185,8 @@ void	Client::_checkNetworkInput(void)
 		if (size == -1)
 		{
 			std::cout << "client: recv failed" << std::endl;
-			exit(EXIT_FAILURE);
+			this->_running = 0;
+			return ;
 		}
 		buffer[size] = '\0';
 		this->_inputBuffer += buffer;
@@ -194,7 +227,7 @@ void	Client::_loop(void)
 		if (rv == -1)
 		{
 			std::cerr << "client: poll failed" << std::endl;
-			exit(EXIT_FAILURE);
+			break ;
 		}
 		this->_checkConsoleInput();
 		this->_checkNetworkInput();
