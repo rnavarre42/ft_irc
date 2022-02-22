@@ -9,10 +9,10 @@ Readline::Readline(void)
 	: index(0)
 	, eventVector(5)
 {
-    tcgetattr(STDOUT_FILENO, &old_tio);
-    new_tio = old_tio;
-    new_tio.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDOUT_FILENO, TCSAFLUSH, &new_tio);
+    tcgetattr(STDOUT_FILENO, &this->old_tio);
+    this->new_tio = this->old_tio;
+    this->new_tio.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDOUT_FILENO, TCSAFLUSH, &this->new_tio);
 
 //	eventVector.push_back(std::make_pair(LF_CHR, &Readline::_newLine));
 //	eventVector.push_back(std::make_pair(DEL, &Readline::_backSpace));
@@ -20,8 +20,7 @@ Readline::Readline(void)
 
 Readline::~Readline(void)
 {
-	tcsetattr(STDOUT_FILENO, TCSANOW, &old_tio);
-	std::cout << "destructor readline called" << std::endl;
+	tcsetattr(STDOUT_FILENO, TCSANOW, &this->old_tio);
 }
 
 void Readline::_newLine(std::string const &data)
@@ -35,10 +34,10 @@ void Readline::_newLine(std::string const &data)
 void Readline::_backSpace(std::string const &)
 {
 	std::cout << "\033[D \033[D" << std::endl;
-	if (index)
+	if (this->index)
 	{
-		--index;
-		line.erase(index, 1);
+		--this->index;
+		this->line.erase(this->index, 1);
 	}
 }
 
@@ -92,4 +91,9 @@ std::string &Readline::operator()(void)
 		++index;
 	}
 	return copy;
+}
+
+const struct termios&	Readline::getOldTermios(void) const
+{
+	return this->old_tio;
 }

@@ -7,7 +7,7 @@
 # include <utility>
 # include <termios.h>
 
-# define LF_CHR		"\n"
+# define LF_CHR		10
 # define DEL_CHR	127
 
 
@@ -26,6 +26,8 @@ public:
 	~Readline(void);
 
 	std::string &operator()(void);
+
+	const struct termios&	getOldTermios(void) const;
 
 private:
 	Readline(Readline const &src);
