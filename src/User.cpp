@@ -72,12 +72,17 @@ bool	User::isOnChannel(std::string &channel)
 
 bool	User::isOnChannel(Channel &channel)
 {
+	return (this->find(channel.getName()) != this->_channelMap.end());
+}
+/*
+bool	User::isOnChannel(Channel &channel)
+{
 	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
 		if (it->second == &channel)
 			return true;
 	return false;
 }
-
+*/
 std::string &User::getOutputBuffer(void)
 {
 	return this->_outputBuffer;

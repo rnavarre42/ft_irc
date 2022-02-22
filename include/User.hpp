@@ -56,7 +56,7 @@ public:
 		return this->_channelMap.size();
 	}
 
-	Server::channelMap_iterator	find(std::string &value)
+	Server::channelMap_iterator	find(std::string const &value)
 	{
 		return this->_channelMap.find(strToUpper(value));
 	}

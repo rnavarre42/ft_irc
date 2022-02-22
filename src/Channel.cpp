@@ -99,13 +99,6 @@ void	Channel::Mode::erase(Channel::Mode::multimap_iterator pos)
 bool Channel::isOper(ISender *sender)
 {
 	return (this->mode.isSet('o', sender));
-//	Channel::Mode::rangePairMultimap_type		rangeIt = mode.getList('o');
-//	for (Channel::Mode::multimap_iterator	it = rangeIt.first; it != rangeIt.second; it++)
-//	{
-//		if (it->second == user)
-//			return true;
-//	}
-//	return false;
 }
 
 bool Channel::isVoice(ISender *sender)
@@ -137,12 +130,6 @@ void	Channel::erase(std::string &userName)
 {
 	this->_userMap.erase(strToUpper(userName));
 }
-/*
-Server::userMap_type	&Channel::getUserMap(void)
-{
-	return this->_userMap;
-}
-*/
 
 bool	Channel::empty(void)
 {
@@ -175,6 +162,7 @@ void Channel::send(std::string msg)
 		it->second->send(msg);
 }
 
+/*
 void Channel::join(User user)
 {
 	Server::userMap_iterator	it;
@@ -185,7 +173,6 @@ void Channel::join(User user)
 		this->send(user.getName() + " ha entrado al canal " + this->_name + "\r\n");
 		this->_userMap.insert(std::make_pair(user.getName(), &user));
 		user.insert(this);
-		//user.getChannelMap()[this->_name] = this;
 		user.send("Has entrado al canal " + this->_name + "\r\n");
 	}
 	else
@@ -207,3 +194,4 @@ void Channel::part(User user)
 		this->send(user.getName() + " ha salido de " + this->_name + "\r\n");
 	}
 }
+*/
