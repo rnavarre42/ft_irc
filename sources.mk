@@ -58,3 +58,14 @@ SRCS			=	$(addprefix $(BASE_PATH), $(BASE_SRCS)				\
 						$(addprefix $(COMMAND_PATH), $(COMMAND_SRCS))	\
 						$(addprefix $(MODES_PATH), $(MODES_SRCS))		\
 					)													\
+
+
+CLIENT_PATH		=	src/
+CLIENT_SRCS		=	\
+					irclient.cpp				\
+					Client.cpp					\
+					Readline.cpp				\
+
+
+CSRCS			=	$(addprefix $(CLIENT_PATH), $(CLIENT_SRCS)			\
+					)

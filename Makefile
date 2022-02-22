@@ -1,8 +1,11 @@
-NAME		=	ircserv
+SERVER		=	ircserv
+CLIENT		=	irclient
 SRCSPATH	=	src/
 OBJSPATH	=	obj/
-OBJS		=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
-DEPS		=	$(OBJS:.o=.d)
+SERVEROBJS	=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
+SERVERDEPS	=	$(OBJS:.o=.d)
+CLIENTOBJS	=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(CSRCS:.cpp=.o))
+CLIENTDEPS	=	$(CLIENTOBJS:.o=.d)
 CXXFLAGS	=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
 COMMONFLAGS	=	
 LDFLAGS		=	$(LDLIBS) $(COMMONFLAGS)
@@ -14,23 +17,45 @@ RM			=	rm -Rf
 
 -include	sources.mk
 
-all:	debug
-#all:	$(NAME)
+all:	$(SERVER) $(CLIENT)
+#all:	$(SERVER)
 
--include	$(DEPS)
+server: $(SERVER)
+client:	$(CLIENT)
+
+-include	$(SERVERDEPS) $(CLIENTDEPS)
 
 $(OBJSPATH)%.o:	$(SRCSPATH)%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(NAME):	$(OBJS)
-	$(CXX) -o $(NAME) $(OBJS) $(LDFLAGS)
+$(SERVER):	$(SERVEROBJS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
-clean:
-	$(RM) $(OBJS) $(DEPS)
+$(CLIENT):	$(CLIENTOBJS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
-fclean:		clean
-	$(RM) $(NAME) tags
+.PHONY: += clean
+clean:	clean_server clean_client
+
+.PHONY: += clean_server
+clean_server:
+	$(RM) $(SERVEROBJS) $(SERVERDEPS)
+
+.PHONY: += clean_client
+clean_client:
+	$(RM) $(CLIENTOBJS) $(CLIENTDEPS)
+
+.PHONY: += fclean_server
+fclean_server: clean_server
+	$(RM) $(SERVERNAME) tags
+
+.PHONY: += fclean_client
+fclean_client: clean_client
+	$(RM) $(CLIENTNAME) tags
+
+.PHONY: += fclean
+fclean:		fclean_server fclean_client
 
 pre:
 	$(CXX) -E -I $(INCLUDEPATH) $(filter-out $@,$(MAKECMDGOALS))
@@ -39,34 +64,37 @@ print:
 	echo $(SRCS)
 	echo $(OBJS)
 
+.PHONY: += re
 re:			fclean all
 
+.PHONY: += debug
 debug:		COMMONFLAGS = $(FSANITIZE)
-debug:		$(NAME) tag
+debug:		$(SERVER) tag
 
+.PHONY: += release
 release:	COMMONFLAGS = -O3
-release:	$(NAME)
-	strip $(NAME)
+release:	$(SERVER)
+	strip $(SERVER)
 
+.PHONY: += tag
 tag:
 	ctags	$(SRCS)
 
+.PHONY: += run
 run:		all
-	./$(NAME)
+	./$(SERVER)
 
-c:
-	make -C client run non NoSoyNadie 10.11.13.2 6667
-	reset
-
+.PHONY: += cli
 cli:
 	make -C client run non NoSoyNadie 127.0.0.1 6667
 	reset
 
+.PHONY: += hispano
 hispano:
 	make -C client run non NoSoyNadie 195.234.61.209 6667
 
+.PHONY: += dalnet
 dalnet:
 	make -C client run non NoSoyNadie 143.244.34.1 6667
 
 .SILENT:	clean fclean tag release print
-.PHONY:		all clean fclean re debug tag release
