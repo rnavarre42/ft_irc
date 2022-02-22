@@ -18,6 +18,8 @@ public:
 	Client(std::string hostname, std::string port, std::string nick, std::string user);
 	~Client(void);
 
+	void start(void);
+
 private:
 	std::string		_hostname;
 	std::string		_port;
@@ -46,6 +48,7 @@ private:
 	void			_displayLine(std::string &line);
 
 	Readline		readline;
+	bool			_running;
 
 	Client(void);
 };

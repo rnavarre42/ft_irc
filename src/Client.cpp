@@ -24,17 +24,22 @@ Client::Client(std::string hostname, std::string port, std::string nick, std::st
 	, _port(port)
 	, _nickname(nick)
 	, _username(user)
+	, _running(1)
 {
 	signal(SIGINT, signalHandler);
 	this->_connectToSocket();
 	this->_doAutoIdent();
-	this->_loop();
 }
 
 Client::~Client(void)
 {
 	close(this->_fd);
 	std::cout << "destructor client called" << std::endl;
+}
+
+void	Client::start(void)
+{
+	this->_loop();
 }
 
 void	Client::_doAutoIdent(void)
@@ -165,7 +170,7 @@ void	Client::_checkNetworkInput(void)
 	if (this->_pollfds[1].revents & POLLHUP)
 	{
 		std::cout << "Socket has been disconnected, goodbye!" << std::endl;
-		exit(0);
+		this->_running = 0;
 	}
 }
 
@@ -183,7 +188,7 @@ void	Client::_loop(void)
 	int	rv;
 
 	this->_initPoll();
-	while (1)
+	while (this->_running)
 	{
 		rv = poll(this->_pollfds, FDNUM, this->_pollTimeout);
 		if (rv == -1)
