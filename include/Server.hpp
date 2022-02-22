@@ -122,7 +122,7 @@ public:
 	
 	void							delChannel(Channel &channel);
 
-	void							setPass(std::string value);
+	void							setPass(const std::string& value);
 	std::string const				&getPass(void) const;
 
 	void							names(Channel &channel);
@@ -138,8 +138,8 @@ public:
 	void							setIdleTime(time_t value);
 
 	void							run(void);
-	ssize_t							send(std::string msg = "");
-	ssize_t							send(Message &message);
+	ssize_t							send(const std::string msg = "");
+	ssize_t							send(const Message &message);
 
 	void							addToChannel(Message &message);
 	void							delFromChannel(Message &message);

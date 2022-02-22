@@ -223,7 +223,7 @@ int	const	&Server::getFd(void) const
 	return this->_fd;
 }
 
-void	Server::setPass(std::string value)
+void	Server::setPass(const std::string& value)
 {
 	this->_pass = value;
 }
@@ -261,7 +261,7 @@ ssize_t	Server::send(std::string msg)
 	return 0;
 }
 
-ssize_t	Server::send(Message &message)
+ssize_t	Server::send(const Message& message)
 {
 	return this->send(message.toString());
 }
@@ -516,7 +516,7 @@ Server::userVector_type	*getUserVector(User &user)
 void	Server::deleteUser(User &user, std::string text)
 {
 	Server::channelMap_iterator	currentIt;
-	Server::userVector_type		*userVector = user.getUniqueVector();
+	Server::userVector_type*	userVector = user.getUniqueVector();
 
 	this->_message.setSender(&user);
 	this->_message.setReceiver(&user);	

@@ -19,14 +19,13 @@ public:
 
 	std::string			&operator[](size_t index);
 
-	void				setCmd(std::string value);
+	void				setCmd(const std::string& value);
 	std::string const	&getCmd(void) const;
 
-	void				set(ISender &sender, std::string data);
-	void				setReceiver(Channel *channel);
-	void				setReceiver(Server::userVector_type &userVector);
-//	void				setReceiver(Server::serverMap_iterator first, Server::serverMap_iterator last);
-	void				setReceiver(ISender *value);
+	void				set(ISender& sender, std::string data);
+	void				setReceiver(Channel* channel);
+	void				setReceiver(Server::userVector_type& userVector);
+	void				setReceiver(ISender* value);
 	void				hideReceiver(void);
 	ISender				*getReceiver(void);
 
@@ -41,10 +40,10 @@ public:
 	Channel				*getChannel(void);
 
 	void				reply(void);
-	void				reply(std::string data);
+	void				reply(const std::string& data);
 	void				replyNumeric(int numeric);
 	void				send(void);
-	void				send(std::string data);
+	void				send(const std::string& data);
 	void				sendNumeric(int numeric);
 	void				process(void);
 
@@ -60,7 +59,7 @@ public:
 
 	void				swapField(size_t first, size_t second);
 	void				insertField(std::string field);
-	std::string			toString(void);
+	std::string			toString(void) const;
 //	static Message		&builder(ISender &sender, std::string data);
 //	static Message		&builder(ISender &sender);
 

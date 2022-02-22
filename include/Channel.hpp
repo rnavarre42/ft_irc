@@ -72,6 +72,7 @@ public:
 	public:
 		typedef std::multimap<char, void *>						multimap_type;
 		typedef multimap_type::iterator							multimap_iterator;
+		typedef multimap_type::const_iterator					multimap_const_iterator;
 		typedef std::pair<multimap_iterator, multimap_iterator>	rangePairMultimap_type;
 
 		Mode(void) {}
@@ -86,17 +87,17 @@ public:
 
 		multimap_iterator		begin(void);
 		multimap_iterator		end(void);
+		multimap_const_iterator	begin(void) const;
+		multimap_const_iterator	end(void) const;
 
-		bool					isSet(char modeName);
-		bool					isSet(char modeName, void *value);
-		rangePairMultimap_type	getList(char modeName);
-		bool					insert(char modeName, void *value);
-		bool					erase(char modeName, void *value);
-		bool					erase(char modeName);
-		void					erase(multimap_iterator pos);
-		multimap_iterator		findUnique(char modeName, void *value);
-//		bool					raiseEvent(
-		
+		bool					isSet(const char modeName);
+		bool					isSet(const char modeName, const void* value) ;
+		rangePairMultimap_type	getList(const char modeName);
+		bool					insert(char modeName, void* value);
+		bool					erase(const char modeName, void* value);
+		bool					erase(const char modeName);
+		void					erase(const multimap_iterator pos);
+		multimap_iterator		findUnique(const char modeName, const void* value);
 
 	private:
 		Mode(Mode const &src);
@@ -105,23 +106,22 @@ public:
 		multimap_type				_modeMultimap;
 
 	}								mode;
-	std::string const				&getName(void) const;
-//	Server::userMap_type			&getUserMap(void);
+	const std::string&				getName(void) const;
 	bool							empty(void);
 
-	bool							isOper(ISender *sender);
-	bool							isVoice(ISender *sender);
+	bool							isOper(const ISender* sender);
+	bool							isVoice(const ISender* sender);
 
-	void							setTopicInfo(std::string own, std::string topic);
-	TopicInfo const					&getTopicInfo(void) const;
+	void							setTopicInfo(const std::string& own, const std::string& topic);
+	const TopicInfo&				getTopicInfo(void) const;
 
-	void							setOwner(std::string value);
-	std::string const				&getOwner(void) const;
+	void							setOwner(const std::string& value);
+	const std::string&				getOwner(void) const;
 
-	Server::userMap_insert			insert(User *user);
-	Server::userMap_insert			insert(std::string &userName, User *user);
-	void							erase(User *user);
-	void							erase(std::string &userName);
+	Server::userMap_insert			insert(User* user);
+	Server::userMap_insert			insert(const std::string& userName, User* user);
+	void							erase(const User* user);
+	void							erase(const std::string& userName);
 	
 	Server::userMap_iterator		begin(void)
 	{

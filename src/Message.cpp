@@ -108,7 +108,7 @@ ISender		*Message::getReceiver(void)
 	return NULL;
 }
 
-std::string		Message::toString(void)
+std::string		Message::toString(void) const
 {
 	std::ostringstream	ss;
 
@@ -153,10 +153,9 @@ void	Message::limitMaxParam(size_t limit)
 		this->_paramVector.erase(it);
 }
 
-void	Message::setCmd(std::string value)
+void	Message::setCmd(const std::string& value)
 {
 	this->_cmd = value;
-//	this->_server.commandF(
 }
 
 std::string const &Message::getCmd(void) const
@@ -238,7 +237,7 @@ void	Message::reply(void)
 	this->_sender->send(this->toString());
 }
 
-void	Message::reply(std::string data)
+void	Message::reply(const std::string& data)
 {
 	this->_sender->send(data);
 }
@@ -263,7 +262,7 @@ void	Message::send(void)
 			(*it)->send(data);
 }
 
-void	Message::send(std::string data)
+void	Message::send(const std::string& data)
 {
 	this->_receiverVector[0]->send(data);
 }

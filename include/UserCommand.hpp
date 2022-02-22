@@ -2,7 +2,6 @@
 # define USERCOMMAND_HPP
 
 # include "ACommand.hpp"
-# include <string>
 
 class UserCommand : public ACommand
 {
