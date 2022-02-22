@@ -15,31 +15,31 @@ class ISender;
 class User : public ISender
 {
 public:
-	User(int fd, Server& server);
+	User(int fd, Server &server);
 	~User(void);
 
-	void				setHost(const std::string& value);
-	const std::string&	getHost(void) const;
+	void				setHost(std::string value);
+	std::string const	&getHost(void) const;
 
-	void				setIdent(const std::string& value);
-	const std::string&	getIdent(void) const;
+	void				setIdent(std::string value);
+	std::string const	&getIdent(void) const;
 
-	void				setReal(const std::string& value);
-	const std::string&	getReal(void) const;
+	void				setReal(std::string value);
+	std::string const	&getReal(void) const;
 	std::string			getMask(void);
 
-	void				setPass(const std::string& value);
-	const std::string&	getPass(void) const;
+	void				setPass(std::string value);
+	std::string const	&getPass(void) const;
 
 	void				setSignTime(time_t volue);
 	time_t const		&getSignTime(void) const;
 		
-	void				setName(const std::string& value);
-	const std::string&	getName(void) const;
-	const std::string&	getUpperName(void) const;
+	void				setName(std::string value);
+	std::string const	&getName(void) const;
+	std::string const	&getUpperName(void) const;
 
-	void				insert(const Channel* channel);
-	void				erase(const Channel* channel);
+	void				insert(Channel *channel);
+	void				erase(Channel *channel);
 
 	Server::channelMap_iterator	begin(void)
 	{
@@ -56,7 +56,7 @@ public:
 		return this->_channelMap.size();
 	}
 
-	Server::channelMap_iterator	find(const std::string& value)
+	Server::channelMap_iterator	find(std::string const &value)
 	{
 		return this->_channelMap.find(strToUpper(value));
 	}
@@ -66,76 +66,77 @@ public:
 		return this->_channelMap.at(strToUpper(channelName));
 	}
 
-	std::string&		getInputBuffer(void);
-	std::string&		getOutputBuffer(void);
+	std::string &getInputBuffer(void);
+	std::string &getOutputBuffer(void);
 
-	bool				isUser(void);
-	bool				isServer(void);
-	bool				isOper(void);
-	bool				isOnChannel(const Channel& channel);
-	bool				isOnChannel(const std::string& channel);
+	bool		isUser(void);
+	bool		isServer(void);
+	bool		isOper(void);
+	bool		isOnChannel(Channel &channel);
+	bool		isOnChannel(std::string &channel);
 
-	int					getType(void);
+	int			getType(void);
 
 	void				clearPingChallenge();
-	void				setPingChallenge(const std::string& value);
-	const std::string&	getPingChallenge(void) const;
+	void				setPingChallenge(std::string value);
+	std::string const	&getPingChallenge(void) const;
 
-	void				setAwayMsg(const std::string& value);
-	const std::string&	getAwayMsg(void) const;
+	void				setAwayMsg(std::string value);
+	std::string const	&getAwayMsg(void) const;
 
-	const Server&		getServer(void) const;
+	//Server::channelMap_type		&getChannelMap(void);
+	Server const				&getServer(void) const;
 
-	void 				setAwayTime(time_t value);
-	const time_t&		getAwayTime(void) const;
+	void 			setAwayTime(time_t value);
+	time_t const	&getAwayTime(void) const;
 
-	void 				setNextTimeout(time_t value);
-	const time_t&		getNextTimeout(void) const;
+	void 			setNextTimeout(time_t value);
+	time_t const	&getNextTimeout(void) const;
 
-	void				setIdleTime(time_t value);
-	const time_t&		getIdleTime(void) const;
+	void			setIdleTime(time_t value);
+	time_t const	&getIdleTime(void) const;
 
-	void				setStatus(int value);
-	int					getStatus(void);
+	void		setStatus(int value);
+	int			getStatus(void);
 
-	void				setPollIndex(int value);
-	const int&			getPollIndex(void) const;
+	void		setPollIndex(int value);
+	int const	&getPollIndex(void) const;
 
-	void				setFd(int value);
-	const int&			getFd(void) const;
+	void		setFd(int value);
+	int	const	&getFd(void) const;
 
-	bool				isPingSended(void);
-	bool				isAway(void);
+	bool	isPingSended(void);
+	bool	isAway(void);
 
-	void				sendPing(void);
-	ssize_t				send(const std::string& msg = "");
-	ssize_t				send(const Message& message);
-	void				sendToBuffer(const std::string& msg);
-	void				sendToBuffer(const Message& message);
+	void		sendPing(void);
+	ssize_t		send(std::string msg = "");
+	ssize_t		send(Message &message);
+	void		sendToBuffer(std::string msg);
+	void		sendToBuffer(Message &message);
 
-	size_t				recv(int fd);
+	size_t	recv(int fd);
 
-	Message*			buildMessage(std::string &buff);
-	size_t				checkInput(int fd, Message &message);
-	bool				checkOutput(int fd);
+	Message	*buildMessage(std::string &buff);
+	size_t	checkInput(int fd, Message &message);
+	bool	checkOutput(int fd);
 
-	const Server::userVector_type*	getUniqueVector(void);
-	Channel*						findFullestChannel(void);
+	Server::userVector_type	*getUniqueVector(void);
+	Channel					*findFullestChannel(void);
 
-	bool	operator==(const std::string& rhs)
+	bool	operator==(std::string &rhs)
 	{
 		return (strToUpper(this->_name) == strToUpper(rhs));
 	}
 
-	bool	operator!=(const std::string& rhs)
+	bool	operator!=(std::string &rhs)
 	{
-		return !this->operator==(rhs);
+		return !operator==(rhs);
 	}
 
 private:
 	User(void);
-	User(const User& src);
-	User &operator=(const User& rhs);
+	User(User const &src);
+	User &operator=(User const &rhs);
 
 	std::string					_name;
 	std::string					_host;
@@ -146,7 +147,7 @@ private:
 	std::string					_outputBuffer;
 	std::string 				_awayMsg;
 	std::string					_pingChallenge;
-	Server&						_server;
+	Server						&_server;
 	Server::channelMap_type		_channelMap;
 	int							_status;
 	time_t						_signTime;
@@ -160,4 +161,20 @@ private:
 	std::string					_getLine(size_t pos);
 };
 
+/*
+inline bool operator==(User const &lhs, User const &rhs)
+{
+	return (&lhs == &rhs);
+}
+
+inline bool operator==(std::string const &lhs, User const &rhs)
+{
+	return (strToUpper(rhs.getName()) == strToUpper(lhs));
+}
+
+inline bool operator==(User const &lhs, std::string const &rhs)
+{
+	return (strToUpper(lhs.getName()) == strToUpper(rhs));
+}
+*/
 #endif

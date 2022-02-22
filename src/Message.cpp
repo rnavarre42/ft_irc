@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Message.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rnavarre <rnavarre@student.42madrid.com>   +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/22 07:50:24 by rnavarre          #+#    #+#             */
-/*   Updated: 2022/02/22 07:53:22 by rnavarre         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Message.hpp"
 #include "Numeric.hpp"
 #include "User.hpp"
@@ -64,7 +52,7 @@ std::string extractPhrase(std::string &data)
 Message::Message(Server &server) : _server(server), _sender(NULL), _channel(NULL), _command(NULL), _hideReceiver(false)
 {}
 
-void Message::set(ISender& sender, std::string data)
+void Message::set(ISender &sender, std::string data)
 {
 	this->_sender = &sender;
 	leftTrim(data);
@@ -92,7 +80,7 @@ void Message::set(ISender& sender, std::string data)
 //Message::Message(ISender &sender) : _sender(&sender), _channel(NULL), _broadcast(false)
 //{}
 
-void		Message::setReceiver(Channel* channel)
+void		Message::setReceiver(Channel *channel)
 {
 	for (Server::userMap_iterator it = channel->begin(); it != channel->end(); it++)
 		if (it->second != this->_sender)
@@ -100,14 +88,14 @@ void		Message::setReceiver(Channel* channel)
 }
 
 
-void		Message::setReceiver(Server::userVector_type& userVector)
+void		Message::setReceiver(Server::userVector_type &userVector)
 {
 	for (Server::userVector_iterator it = userVector.begin(); it != userVector.end(); it++)
 		if (*it != this->_sender)
 			this->_receiverVector.push_back(*it);
 }
 
-void		Message::setReceiver(ISender* value)
+void		Message::setReceiver(ISender *value)
 {
 //	this->_receiverVector.clear();
 	this->_receiverVector.push_back(value);
@@ -120,7 +108,7 @@ ISender		*Message::getReceiver(void)
 	return NULL;
 }
 
-std::string		Message::toString(void) const
+std::string		Message::toString(void)
 {
 	std::ostringstream	ss;
 

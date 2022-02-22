@@ -80,50 +80,50 @@ class Server : public ISender
 public:
 	~Server(void);
 
-	typedef EventHandler<int, Message>				eventHandler_type;
-	typedef std::map<std::string, Channel* >		channelMap_type;
-	typedef channelMap_type::iterator				channelMap_iterator;
-	typedef channelMap_type::const_iterator			channelMap_const_iterator;
-	typedef std::pair<channelMap_iterator, bool>	channelMap_insert;
-	typedef std::pair<std::string, Channel* >		stringChannelPair_type;
-	typedef std::map<std::string, User* >			userMap_type;
-	typedef userMap_type::iterator					userMap_iterator;
-	typedef userMap_type::const_iterator			userMap_const_iterator;
-	typedef std::pair<userMap_iterator, bool>		userMap_insert;
-	typedef std::pair<std::string, User* >			stringUserPair_type;
-	typedef std::map<std::string, Server* >			serverMap_type;
-	typedef serverMap_type::iterator				serverMap_iterator;
-	typedef std::map<int, User* >					fdMap_type;
-	typedef fdMap_type::iterator					fdMap_iterator;
-	typedef std::map<std::string, ACommand* >		aCommandMap_type;
-	typedef aCommandMap_type::iterator				aCommandMap_iterator;
-	typedef std::vector<ISender* >					userVector_type;
-	typedef userVector_type::iterator				userVector_iterator;
-	typedef userVector_type::const_iterator			userVector_const_iterator;
-	typedef std::set<Channel* >						channelSet_type;
-	typedef channelSet_type::iterator				channelSet_iterator;
-	typedef std::map<char, AChanMode* >				aChanModeMap_type;
-	typedef aChanModeMap_type::iterator				aChanModeMap_iterator;
+	typedef EventHandler<int, Message>							eventHandler_type;
+	typedef std::map<std::string, Channel *>					channelMap_type;
+	typedef channelMap_type::iterator							channelMap_iterator;
+	typedef std::pair<channelMap_iterator, bool>				channelMap_insert;
+	typedef std::pair<std::string, Channel *>					stringChannelPair_type;
+	typedef std::map<std::string, User *>						userMap_type;
+	typedef userMap_type::iterator								userMap_iterator;
+	typedef std::pair<userMap_iterator, bool>					userMap_insert;
+	typedef std::pair<std::string, User *>						stringUserPair_type;
+//	typedef std::pair<int, User *>								userPair_type;
+//	typedef std::map<std::string, userPair_type>				userPairMap_type;
+//	typedef userPairMap_type::iterator							userPairMap_iterator;
+	typedef std::map<std::string, Server *>						serverMap_type;
+	typedef userMap_type::iterator								serverMap_iterator;
+	typedef std::map<int, User *>								fdMap_type;
+	typedef fdMap_type::iterator								fdMap_iterator;
+	typedef std::map<std::string, ACommand *>					aCommandMap_type;
+	typedef aCommandMap_type::iterator							aCommandMap_iterator;
+	typedef std::vector<ISender *>								userVector_type;
+	typedef userVector_type::iterator							userVector_iterator;
+	typedef std::set<Channel *>									channelSet_type;
+	typedef channelSet_type::iterator							channelSet_iterator;
+	typedef std::map<char, AChanMode *>							aChanModeMap_type;
+	typedef aChanModeMap_type::iterator							aChanModeMap_iterator;
 
 	static void						signalHandler(int sig);
-	static Server&					getInstance(void);
-	static Server&					createInstance(std::string listenIp, int listenPort, std::string name);
+	static Server					&getInstance(void);
+	static Server					&createInstance(std::string listenIp, int listenPort, std::string name);
 	static void						deleteInstance(void);
-	const std::string&				getName(void) const;
-	userMap_type&					getUserMap(void);
-	channelMap_type&				getChannelMap(void);
+	std::string const				&getName(void) const;
+	userMap_type					&getUserMap(void);
+	channelMap_type					&getChannelMap(void);
 	std::string						getMask(void);
-	AChanMode*						findChanMode(char modeChar);
+	AChanMode						*findChanMode(char modeChar);
 
-	inline Invite&					invite(void)
+	inline Invite					&invite(void)
 	{
 		return this->_invite;
 	}
 	
 	void							delChannel(Channel &channel);
 
-	void							setPass(const std::string& value);
-	const std::string&				getPass(void) const;
+	void							setPass(std::string value);
+	std::string const				&getPass(void) const;
 
 	void							names(Channel &channel);
 
@@ -131,15 +131,15 @@ public:
 	bool							isServer(void);
 	bool							isOper(void);
 	int								getType(void);
-	const int&						getFd(void) const;
+	int const						&getFd(void) const;
 	int								getStatus(void);
 	void							setStatus(int value);
 	void							setSenderStatus(ISender &sender, int value);
 	void							setIdleTime(time_t value);
 
 	void							run(void);
-	ssize_t							send(const std::string& msg = "");
-	ssize_t							send(const Message& message);
+	ssize_t							send(std::string msg = "");
+	ssize_t							send(Message &message);
 
 	void							addToChannel(Message &message);
 	void							delFromChannel(Message &message);
@@ -150,6 +150,7 @@ public:
 	void							createUser(User &user);
 	void							deleteUser(User &user, std::string text);
 	
+//	void							killUser(User &user, std::string reason);
 	int								count(void);
 
 	bool							recvCommand(Message &msg);
@@ -157,83 +158,59 @@ public:
 
 	void							setPollout(User &user);
 
-	bool	isChannel(std::string& channelName)
+	bool	isChannel(std::string &channelName)
 	{
 		return channelName[0] == '#';
 	}
 
-	ACommand	*commandFind(const std::string& cmd)
+	ACommand	*commandFind(std::string cmd)
 	{
 		if (this->_commandMap.find(cmd) != this->_commandMap.end())
 			return this->_commandMap[cmd];
 		return NULL;
 	}
 
-	userMap_iterator userFind(std::string& userName)
+	userMap_iterator userFind(std::string &userName)
 	{
 		return this->_userMap.find(strToUpper(userName));
 	}
 
-	channelMap_iterator channelFind(std::string& channelName)
+	channelMap_iterator channelFind(std::string &channelName)
 	{
 		return this->_channelMap.find(strToUpper(channelName));
 	}
 
 	struct ServerFullException : public std::exception
 	{
-		virtual const char*	what(void) const throw();
+		virtual const char	*what(void) const throw();
 	};
 
 private:
 	Server(std::string listenIp, int listenPort, std::string name);
 	Server(void);
 
-	int					_freePollIndexFind(void);
-	int					_poll(void);
-	int					_checkUserConnection(void);
+	std::string	_ip;
+	int			_fd;
+	int			_port;
+	int			_opt;
+	int			_addrlen;
+	int			_pollTimeout;
+	Message		&_message;
 
-	void				_setSignals(void);
-	void				_removeUserFromChannel(Channel &channel, User &user);
-	void				_loadCommands(void);
-	void				_unloadCommands(void);
-	void				_unloadChanModes(void);
-	bool				_unloadChanMode(char modeName);
-	bool				_unloadChanMode(aChanModeMap_iterator it);
-	void				_loadChanModes(void);
-	void				_loadChanMode(AChanMode *newChanMode);
-	void				_checkConsoleInput(void);
-	void				_checkUserIO(void);
-	void				_checkTimeout(void);
-	void				_checkUserTimeout(User &user);
-	void				_closeClients(std::string msg);
-	void				_loop(void);
-	void				_initSocket(void);
-	void				_bind(void);
-	void				_listen(void);
-	User*				_accept();
+	int			_status;
+	bool		_stop;
 
-	std::string			_ip;
-	int					_fd;
-	int					_port;
-	int					_opt;
-	int					_addrlen;
-	int					_pollTimeout;
-	Message&			_message;
-
-	int					_status;
-	bool				_stop;
-
-	std::string			_pass;
-	std::string			_name;
-	int					_type;
-	time_t				_idleTime;
+	std::string	_pass;
+	std::string	_name;
+	int			_type;
+	time_t		_idleTime;
 
 	struct sockaddr_in	_address;
 	// El motivo de usar una estructura de tamaño fijo es porque en user almacenamos el indice donde se encuentra registrado el fd en pollfds
 	// Si usamos un vector y eliminamos cualquier posición, nos obligaría a hacer un cambio a todos los usuarios que tengan un indice superior
 	// en pollIndex. Dado que la estructura pollfds consta de tres campos, creo que no es necesario hacer ningun cambio.
 	struct pollfd		_pollfds[MAXUSERS + 2];
-	static Server*		_instance;
+	static Server		*_instance;
 
 	fdMap_type			_fdMap;
 	userMap_type		_userMap;
@@ -242,6 +219,32 @@ private:
 	eventHandler_type	_eventHandler;
 	aChanModeMap_type	_chanModeMap;
 	Invite				_invite;
+
+//	Source						_source;
+	
+	int			_freePollIndexFind(void);
+	int			_poll(void);
+	int			_checkUserConnection(void);
+
+	void		_setSignals(void);
+	void		_removeUserFromChannel(Channel &channel, User &user);
+	void		_loadCommands(void);
+	void		_unloadCommands(void);
+	void		_unloadChanModes(void);
+	bool		_unloadChanMode(char modeName);
+	bool		_unloadChanMode(aChanModeMap_iterator it);
+	void		_loadChanModes(void);
+	void		_loadChanMode(AChanMode *newChanMode);
+	void		_checkConsoleInput(void);
+	void		_checkUserIO(void);
+	void		_checkTimeout(void);
+	void		_checkUserTimeout(User &user);
+	void		_closeClients(std::string msg);
+	void		_loop(void);
+	void		_initSocket(void);
+	void		_bind(void);
+	void		_listen(void);
+	User		*_accept();
 };
 
 #endif
