@@ -26,9 +26,9 @@ public:
 	const std::string&	getCmd(void) const;
 
 	void				set(ISender& sender, std::string data);
-	void				setReceiver(const Channel* channel);
-	void				setReceiver(const Server::userVector_type& userVector);
-	void				setReceiver(const ISender* value);
+	void				setReceiver(Channel* channel);
+	void				setReceiver(Server::userVector_type& userVector);
+	void				setReceiver(ISender* value);
 	void				hideReceiver(void);
 	ISender*			getReceiver(void);
 

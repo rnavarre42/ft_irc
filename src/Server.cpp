@@ -516,7 +516,7 @@ Server::userVector_type	*getUserVector(User &user)
 void	Server::deleteUser(User &user, std::string text)
 {
 	Server::channelMap_iterator	currentIt;
-	const Server::userVector_type*	userVector = user.getUniqueVector();
+	Server::userVector_type*	userVector = user.getUniqueVector();
 
 	this->_message.setSender(&user);
 	this->_message.setReceiver(&user);	

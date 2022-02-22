@@ -6,7 +6,7 @@
 /*   By: rnavarre <rnavarre@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 07:50:24 by rnavarre          #+#    #+#             */
-/*   Updated: 2022/02/22 07:53:22 by rnavarre         ###   ########.fr       */
+/*   Updated: 2022/02/22 11:31:59 by rnavarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ void	Message::limitMaxParam(size_t limit)
 		this->_paramVector.erase(it);
 }
 
-void	Message::setCmd(std::string value)
+void	Message::setCmd(const std::string& value)
 {
 	this->_cmd = value;
 //	this->_server.commandF(
@@ -250,7 +250,7 @@ void	Message::reply(void)
 	this->_sender->send(this->toString());
 }
 
-void	Message::reply(std::string data)
+void	Message::reply(const std::string& data)
 {
 	this->_sender->send(data);
 }
@@ -275,7 +275,7 @@ void	Message::send(void)
 			(*it)->send(data);
 }
 
-void	Message::send(std::string data)
+void	Message::send(const std::string& data)
 {
 	this->_receiverVector[0]->send(data);
 }

@@ -1,6 +1,5 @@
 #include "JoinCommand.hpp"
 #include "Message.hpp"
-#include "Source.hpp"
 #include "Server.hpp"
 #include "User.hpp"
 #include "Numeric.hpp"

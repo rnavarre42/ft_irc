@@ -38,8 +38,8 @@ public:
 	const std::string&	getName(void) const;
 	const std::string&	getUpperName(void) const;
 
-	void				insert(const Channel* channel);
-	void				erase(const Channel* channel);
+	void				insert(Channel* channel);
+	void				erase(Channel* channel);
 
 	Server::channelMap_iterator	begin(void)
 	{
@@ -110,7 +110,7 @@ public:
 	void				sendPing(void);
 	ssize_t				send(const std::string& msg = "");
 	ssize_t				send(const Message& message);
-	void				sendToBuffer(const std::string& msg);
+	void				sendToBuffer(std::string msg);
 	void				sendToBuffer(const Message& message);
 
 	size_t				recv(int fd);
@@ -119,8 +119,8 @@ public:
 	size_t				checkInput(int fd, Message &message);
 	bool				checkOutput(int fd);
 
-	const Server::userVector_type*	getUniqueVector(void);
-	Channel*						findFullestChannel(void);
+	Server::userVector_type*	getUniqueVector(void);
+	Channel*					findFullestChannel(void);
 
 	bool	operator==(const std::string& rhs)
 	{

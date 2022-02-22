@@ -40,12 +40,12 @@ bool Channel::Mode::isSet(char modeName)
 	return this->_modeMultimap.count(modeName) > 0;
 }
 
-bool Channel::Mode::isSet(char modeName, void *value)
+bool Channel::Mode::isSet(const char modeName, const void* value)
 {
 	return (this->findUnique(modeName, value) != this->_modeMultimap.end());
 }
 
-Channel::Mode::rangePairMultimap_type Channel::Mode::getList(char modeName)
+Channel::Mode::rangePairMultimap_type Channel::Mode::getList(const char modeName)
 {
 	return this->_modeMultimap.equal_range(modeName);
 }
@@ -59,7 +59,7 @@ bool Channel::Mode::insert(char modeName, void *value)
 	return ret;
 }
 
-Channel::Mode::multimap_iterator	Channel::Mode::findUnique(char modeName, void *value)
+Channel::Mode::multimap_iterator	Channel::Mode::findUnique(const char modeName, const void* value)
 {
 	for (Channel::Mode::rangePairMultimap_type rangePair = this->getList(modeName);
 			rangePair.first != rangePair.second;
@@ -74,7 +74,7 @@ Channel::Mode::multimap_iterator	Channel::Mode::findUnique(char modeName, void *
 	return this->_modeMultimap.end();
 }
 
-bool	Channel::Mode::erase(char modeName, void *value)
+bool	Channel::Mode::erase(const char modeName, void *value)
 {
 	Channel::Mode::multimap_iterator	pos = this->findUnique(modeName, value);
 	   
@@ -86,22 +86,22 @@ bool	Channel::Mode::erase(char modeName, void *value)
 	return false;
 }
 
-bool	Channel::Mode::erase(char modeName)
+bool	Channel::Mode::erase(const char modeName)
 {
 	return this->_modeMultimap.erase(modeName) > 0;
 }
 
-void	Channel::Mode::erase(Channel::Mode::multimap_iterator pos)
+void	Channel::Mode::erase(const Channel::Mode::multimap_iterator pos)
 {
 	this->_modeMultimap.erase(pos);
 }
 
-bool Channel::isOper(ISender *sender)
+bool Channel::isOper(const ISender* sender)
 {
 	return (this->mode.isSet('o', sender));
 }
 
-bool Channel::isVoice(ISender *sender)
+bool Channel::isVoice(const ISender *sender)
 {
 	return (this->mode.isSet('v', sender));
 }
@@ -111,22 +111,22 @@ std::string const	&Channel::getName(void) const
 	return this->_name;
 }
 
-Server::userMap_insert	Channel::insert(User *user)
+Server::userMap_insert	Channel::insert(User* user)
 {
 	return this->_userMap.insert(std::make_pair(strToUpper(user->getName()), user));
 }
 
-Server::userMap_insert	Channel::insert(std::string &userName, User *user)
+Server::userMap_insert	Channel::insert(const std::string &userName, User* user)
 {
 	return this->_userMap.insert(std::make_pair(strToUpper(userName), user));
 }
 
-void	Channel::erase(User *user)
+void	Channel::erase(const User* user)
 {
 	this->_userMap.erase(strToUpper(user->getName()));
 }
 
-void	Channel::erase(std::string &userName)
+void	Channel::erase(const std::string& userName)
 {
 	this->_userMap.erase(strToUpper(userName));
 }
@@ -136,7 +136,7 @@ bool	Channel::empty(void)
 	return this->_userMap.empty();
 }
 
-void Channel::setOwner(std::string value)
+void Channel::setOwner(const std::string& value)
 {
 	this->_owner = value;
 }
@@ -146,7 +146,7 @@ std::string const	&Channel::getOwner(void) const
 	return this->_owner;
 }
 
-void Channel::setTopicInfo(std::string own, std::string topic)
+void Channel::setTopicInfo(const std::string& own, const std::string& topic)
 {
 	this->_topicInfo.setTopic(own, topic);
 }

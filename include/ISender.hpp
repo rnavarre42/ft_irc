@@ -13,7 +13,7 @@ class Message;
 class ISender
 {
 public:
-	virtual ~ISender(void);
+	virtual ~ISender(void) {}
 
 	virtual const std::string&	getName(void) const = 0;
 	virtual const int&			getFd(void) const = 0;

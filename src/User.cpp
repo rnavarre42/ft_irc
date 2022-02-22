@@ -30,32 +30,32 @@ User::~User(void)
 	this->_fd = 0;
 }
 
-void	User::setHost(std::string value)
+void	User::setHost(const std::string& value)
 {
 	this->_host = value;
 }
 
-std::string const	&User::getHost(void) const
+const std::string&	User::getHost(void) const
 {
 	return this->_host;
 }
 
-void	User::setIdent(std::string value)
+void	User::setIdent(const std::string& value)
 {
 	this->_ident = value;
 }
 
-std::string const &User::getIdent(void) const
+const std::string&	User::getIdent(void) const
 {
 	return this->_ident;
 }
 
-void	User::setReal(std::string value)
+void	User::setReal(const std::string& value)
 {
 	this->_real = value;
 }
 
-std::string const &User::getReal(void) const
+const std::string&	User::getReal(void) const
 {
 	return this->_real;
 }
@@ -65,12 +65,12 @@ std::string &User::getInputBuffer(void)
 	return this->_inputBuffer;
 }
 
-bool	User::isOnChannel(std::string &channel)
+bool	User::isOnChannel(const std::string &channel)
 {
 	return (this->find(channel) != this->_channelMap.end());
 }
 
-bool	User::isOnChannel(Channel &channel)
+bool	User::isOnChannel(const Channel& channel)
 {
 	return (this->find(channel.getName()) != this->_channelMap.end());
 }
@@ -93,22 +93,22 @@ void	User::setSignTime(time_t value)
 	this->_signTime = value;
 }
 
-time_t const	&User::getSignTime(void) const
+const time_t&	User::getSignTime(void) const
 {
 	return this->_signTime;
 }
 
-void	User::setName(std::string value)
+void	User::setName(const std::string& value)
 {
 	this->_name = value;
 }
 
-std::string const	&User::getName(void) const
+const std::string&	User::getName(void) const
 {
 	return this->_name;
 }
 
-void	User::setPass(std::string value)
+void	User::setPass(const std::string& value)
 {
 	this->_pass = value;
 }
@@ -154,7 +154,7 @@ int	const	&User::getPollIndex(void) const
 	return this->_pollIndex;
 }
 
-void	User::setAwayMsg(std::string value)
+void	User::setAwayMsg(const std::string& value)
 {
 	this->_awayMsg = value;
 }
@@ -200,7 +200,7 @@ void	User::clearPingChallenge(void)
 	this->_pingChallenge.clear();
 }
 
-void	User::setPingChallenge(std::string value)
+void	User::setPingChallenge(const std::string& value)
 {
 	this->_pingChallenge = value;
 }
@@ -228,12 +228,12 @@ std::map<std::string, Channel *> &User::getChannelMap(void)
 }
 */
 
-void	User::insert(Channel *channel)
+void	User::insert(Channel* channel)
 {
 	this->_channelMap.insert(std::make_pair(strToUpper(channel->getName()), channel));
 }
 
-void	User::erase(Channel *channel)
+void	User::erase(Channel* channel)
 {
 	this->_channelMap.erase(strToUpper(channel->getName()));
 }
@@ -248,19 +248,20 @@ bool	User::isAway(void)
 	return !this->_awayMsg.empty();
 }
 
-void	User::sendToBuffer(Message &message)
+void	User::sendToBuffer(const Message& message)
 {
 	this->sendToBuffer(message.toString());
 }
 
 void	User::sendToBuffer(std::string msg)
 {
+
 	if (msg.size() > (MAXLINE - 2))
 		msg.erase((MAXLINE - 2), std::string::npos);
 	this->_outputBuffer += msg + "\r\n";
 }
 
-ssize_t	User::send(std::string msg)
+ssize_t	User::send(const std::string& msg)
 {
 	ssize_t	len;
 
@@ -277,7 +278,7 @@ ssize_t	User::send(std::string msg)
 	return len;
 }
 
-ssize_t	User::send(Message &message)
+ssize_t	User::send(const Message& message)
 {
 	this->sendToBuffer(message.toString());
 	return this->send();

@@ -6,7 +6,6 @@ BASE_SRCS		=	\
 					Channel.cpp					\
 					Console.cpp					\
 					Invite.cpp					\
-					ISender.cpp					\
 					Message.cpp					\
 					Numeric.cpp					\
 					Server.cpp					\
