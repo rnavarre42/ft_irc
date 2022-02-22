@@ -34,6 +34,7 @@ Client::Client(std::string hostname, std::string port, std::string nick, std::st
 Client::~Client(void)
 {
 	close(this->_fd);
+	std::cout << "destructor client called" << std::endl;
 }
 
 void	Client::_doAutoIdent(void)

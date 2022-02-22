@@ -7,25 +7,50 @@
 
 Readline::Readline(void)
 	: index(0)
+	, eventVector(5)
 {
-    tcgetattr(STDIN_FILENO, &old_tio);
+    tcgetattr(STDOUT_FILENO, &old_tio);
     new_tio = old_tio;
     new_tio.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &new_tio);
+    tcsetattr(STDOUT_FILENO, TCSAFLUSH, &new_tio);
+
+//	eventVector.push_back(std::make_pair(LF_CHR, &Readline::_newLine));
+//	eventVector.push_back(std::make_pair(DEL, &Readline::_backSpace));
 }
 
 Readline::~Readline(void)
 {
-	tcsetattr(STDIN_FILENO, TCSANOW, &old_tio);
+	tcsetattr(STDOUT_FILENO, TCSANOW, &old_tio);
+	std::cout << "destructor readline called" << std::endl;
+}
+
+void Readline::_newLine(std::string const &data)
+{
+	std::cout << data << std::endl;
+	this->copy = this->line;
+	this->line.clear();
+	index = 0;
+}
+
+void Readline::_backSpace(std::string const &)
+{
+	std::cout << "\033[D \033[D" << std::endl;
+	if (index)
+	{
+		--index;
+		line.erase(index, 1);
+	}
 }
 
 std::string &Readline::operator()(void)
 {
 	char		data[9];
+	std::string	buffer;
 	ssize_t		size;
 
 	size = read(0, &data, 8);
 	data[size] = '\0';
+	buffer += data;
 
 	copy.clear();
 	if (*data == '\n')
@@ -62,10 +87,9 @@ std::string &Readline::operator()(void)
 	}
 	else
 	{
+		write(1, &data, strlen(data));
 		line.insert(index, 1, *data);
 		++index;
-		write(1, &data, strlen(data));
 	}
 	return copy;
 }
-

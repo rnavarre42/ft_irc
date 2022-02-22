@@ -17,8 +17,8 @@ RM			=	rm -Rf
 
 -include	sources.mk
 
-#all:	debug
-$(NAME): $(CLIENT)
+all:	debug
+#$(NAME): $(CLIENT)
 
 -include	$(DEPS)
 
