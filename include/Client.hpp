@@ -24,7 +24,7 @@ public:
 
 	void	start(void);
 
-	Readline		readline;
+//	Readline		readline;
 
 private:
 	std::string		_hostname;

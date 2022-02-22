@@ -84,6 +84,10 @@ tag:
 run:		all
 	./$(SERVER)
 
+.PHONY: += run_client
+run_client:	all
+	./$(CLIENT) localhost 6667 non NoSoyNadie
+
 .PHONY: += cli
 cli:
 	make -C client run non NoSoyNadie 127.0.0.1 6667

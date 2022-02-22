@@ -20,9 +20,14 @@ Channel::~Channel(void)
 		this->_server.findChanMode(it->first)->onDelete(it->second);
 }
 
-void *Channel::Mode::operator[](char chr)
+void*	Channel::Mode::operator[](char chr)
 {
 	return this->_modeMultimap.find(chr)->second;
+}
+
+Channel::Mode::multimap_iterator	Channel::Mode::find(char chr)
+{
+	return this->_modeMultimap.find(chr);
 }
 
 Channel::Mode::multimap_iterator	Channel::Mode::begin(void)
@@ -56,9 +61,6 @@ bool Channel::Mode::insert(char modeName, void *value)
 
 	if (ret)
 		this->_modeMultimap.insert(std::make_pair(modeName, value));
-	else
-		this->_modeMultimap.find(modeName)->second = value;
-
 	return ret;
 }
 

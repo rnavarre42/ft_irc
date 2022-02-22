@@ -552,7 +552,7 @@ void	Server::addToChannel(Message &message)
 				this->_eventHandler.raise(ALREADYEVENT, this->_message);
 			else
 			{
-				if (!checkChannelMode(message, CHANMODE_JOIN))
+				if (!this->checkChannelMode(message, CHANMODE_JOIN))
 					return ;
 				channel->insert(&user);
 				//eliminamos la invitación, si existiera.

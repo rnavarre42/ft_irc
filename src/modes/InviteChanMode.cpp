@@ -18,6 +18,7 @@ void	InviteChanMode::onChanEvent(Access &access, Message &message)
 {
 	Channel	*channel = message.getChannel();
 
+	access = AChanMode::allow;
 	if (this->isSetMode(*channel)
 			&& (this->_server.invite().find(message.getSender(), channel)) == this->_server.invite().end())
 	{

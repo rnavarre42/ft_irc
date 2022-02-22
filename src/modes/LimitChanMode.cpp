@@ -25,23 +25,24 @@ void	LimitChanMode::onChanEvent(Access &access, Message &message)
 {
 	Channel*	channel = message.getChannel();
 	void*		limit = this->getMode(*channel);
-	size_t		temp = std::strtoul(this->getValue(limit).c_str(), NULL, 0);
+//	size_t		temp = std::strtoul(this->getValue(limit).c_str(), NULL, 0);
 
-	if (limit && channel->size() == std::strtoul(this->getValue(limit).c_str(), NULL, 0))
+	if (limit && channel->size() >= std::strtoul(this->getValue(limit).c_str(), NULL, 0))
 	{
 		Numeric::insertField(channel->getName());
 		message.replyNumeric(ERR_CHANNELISFULL);
 		access = AChanMode::deny;
 	}
-	std::cout << "users: " << channel->size() << " : " << temp << std::endl;
+//	std::cout << "users: " << channel->size() << " : " << temp << std::endl;
 }
 
-inline bool	isValidLimit(unsigned long limit, Channel &channel, char chanMode)
+inline bool	isValidLimit(unsigned long limit, Channel& channel, char chanMode)
 {
-	return !(limit == 0 || limit == ULONG_MAX || limit == reinterpret_cast<unsigned long>(channel.mode[chanMode]));
+	return !(limit == 0 || limit == ULONG_MAX
+			|| limit == reinterpret_cast<unsigned long>(channel.mode[chanMode]));
 }
 
-inline bool	isNumber(std::string &str)
+bool	isNumber(std::string &str)
 {
 	for (std::string::iterator it = str.begin(); it != str.end(); ++it)
 	{
@@ -53,14 +54,20 @@ inline bool	isNumber(std::string &str)
 
 bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
 {
-	unsigned long	limit;
+	unsigned long						limit;
+	Channel::Mode::multimap_iterator	it;
 
 	if (sign)
 	{
 		limit = std::strtoul(message[pos].c_str(), NULL, 0);
-		if (isNumber(message[pos]) && isValidLimit(limit, channel, this->_chanModeConfig.mode))
+		it = channel.mode.find(this->_chanModeConfig.mode);
+		if (isNumber(message[pos])
+			&& isValidLimit(limit, channel, this->_chanModeConfig.mode))
 		{
-			this->setMode(channel, reinterpret_cast<void *>(limit));
+			if (it != channel.mode.end())
+				it->second = reinterpret_cast<void *>(limit);
+			else
+				this->setMode(channel, reinterpret_cast<void *>(limit));
 			return true;
 		}
 	}

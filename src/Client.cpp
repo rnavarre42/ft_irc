@@ -15,11 +15,11 @@
 
 void	signalHandler(int sig)
 {
-	Client*	client = Client::getInstance();
+//	Client*	client = Client::getInstance();
 
 	if (sig == SIGINT)
 		std::cout << std::endl;
-	tcsetattr(STDOUT_FILENO, TCSANOW, &client->readline.getOldTermios());
+//	tcsetattr(STDOUT_FILENO, TCSANOW, &client->readline.getOldTermios());
 	exit(0);
 }
 
@@ -145,13 +145,14 @@ void	Client::_checkConsoleInput(void)
 
 	if (this->_pollfds[0].revents & POLLIN)
 	{
-		buffer = readline();
-//		std::getline(std::cin, buffer);
-//		if (!std::cin)
-//		{
-//			std::cout << "client: getline failed" << std::endl;
-//			exit(EXIT_FAILURE);
-//		}
+//		buffer = readline();
+		std::getline(std::cin, buffer);
+		if (!std::cin)
+		{
+			std::cout << "client: getline failed" << std::endl;
+			this->_running = 0;
+			return ;
+		}
 		this->_sendLine(buffer);
 	}
 }
