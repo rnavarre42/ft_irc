@@ -28,10 +28,7 @@
 //	listen, accept, htons, htonl, ntohs, ntohl, inet_addr, inet_htoa, send, recv, signal, lseek, fstat, fcntl
 //	poll
 
-//template <typename T>
-//class EventHandler;
-
-Server	*Server::_instance = NULL;
+Server*	Server::_instance = NULL;
 
 void	Server::signalHandler(int sig)
 {
@@ -40,11 +37,6 @@ void	Server::signalHandler(int sig)
 	std::cout << std::endl;
 	if (sig == SIGINT)
 		server.quit(SHUTDOWN_STRING);
-}
-
-const char	*Server::ServerFullException::what(void) const throw()
-{
-	return "The server is full.";
 }
 
 Server::Server(const std::string& listenIp, int listenPort, const std::string& name)
@@ -148,9 +140,9 @@ void	Server::_unloadChanModes(void)
 	}
 }
 
-void	Server::_loadChanMode(AChanMode *newChanMode)
+void	Server::_loadChanMode(AChanMode* newChanMode)
 {
-	ChanModeConfig const &chanModeConfig = newChanMode->getConfig();
+	const ChanModeConfig&	chanModeConfig = newChanMode->getConfig();
 	this->_chanModeMap[chanModeConfig.mode] = newChanMode;
 }
 
@@ -170,7 +162,7 @@ bool	Server::_unloadChanMode(char modeName)
 	return this->_unloadChanMode(this->_chanModeMap.find(modeName));
 }
 
-AChanMode	*Server::findChanMode(char modeName)
+AChanMode*	Server::findChanMode(char modeName)
 {
 	aChanModeMap_iterator	it;
 
@@ -180,11 +172,11 @@ AChanMode	*Server::findChanMode(char modeName)
 	return it->second;
 }
 
-Server	&Server::getInstance(void)
+Server&	Server::getInstance(void)
 {
 	return *Server::_instance;
 }
-Server	&Server::createInstance(const std::string& listenIp, int listenPort, const std::string& name)
+Server&	Server::createInstance(const std::string& listenIp, int listenPort, const std::string& name)
 {
 	if (Server::_instance == NULL)
 		Server::_instance = new Server(listenIp, listenPort, name);
@@ -203,12 +195,12 @@ void	Server::_setSignals(void)
 	signal(SIGINT, Server::signalHandler);
 }
 
-Server::userMap_type	&Server::getUserMap(void)
+Server::userMap_type&	Server::getUserMap(void)
 {
 	return this->_userMap;
 }
 
-Server::channelMap_type	&Server::getChannelMap(void)
+Server::channelMap_type&	Server::getChannelMap(void)
 {
 	return this->_channelMap;
 }
@@ -218,7 +210,7 @@ int		Server::count(void)
 	return this->_fdMap.size();
 }
 
-int	const	&Server::getFd(void) const
+const int&	Server::getFd(void) const
 {
 	return this->_fd;
 }
@@ -228,7 +220,7 @@ void	Server::setPass(const std::string& value)
 	this->_pass = value;
 }
 
-std::string	const	&Server::getPass(void) const
+const std::string&	Server::getPass(void) const
 {
 	return this->_pass;
 }
@@ -238,26 +230,31 @@ void	Server::setPollout(User &user)
 	this->_pollfds[user.getPollIndex()].events |= POLLOUT;
 }
 
-ssize_t	Server::send(std::string msg)
+ssize_t	Server::send(void)
+{
+	return this->send("");
+}
+
+ssize_t	Server::send(const std::string& data)
 {
 	//int usersLeft;
 	Server::fdMap_iterator	it;
 
 	//usersLeft = this->fdMap.size();
 	for (it = this->_fdMap.begin(); it != this->_fdMap.end(); it++)
-		it->second->send(msg);
+		it->second->send(data);
 /*
 	for (size_t i = 1; usersLeft; i++)
 	{
 		if (this->pollfds[i].fd)
 		{
-			this->fdMap[this->pollfds[i].fd]->send(msg);
+			this->fdMap[this->pollfds[i].fd]->send(data);
 			usersLeft--;
 		}
 	}
 */
 //	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
-//		it->sendTo(msg);
+//		it->sendTo(data);
 	return 0;
 }
 
@@ -275,7 +272,7 @@ int		Server::getStatus(void)
 {
 	return this->_status;
 }
-void	Server::setSenderStatus(ISender &sender, int value)
+void	Server::setSenderStatus(ISender& sender, int value)
 {
 	sender.setStatus(value);
 	if (value == LEVEL_REGISTERED)
@@ -333,13 +330,14 @@ inline int Server::_freePollIndexFind(void)
 	return 0;
 }
 
-std::string const	&Server::getName(void) const
+const std::string&	Server::getName(void) const
 {
 	return this->_name;
 }
 
-std::string			Server::getMask(void)
+std::string	Server::getMask(void)
 {
+	throw Server::NotImplementedException();
 	return this->_name;
 }
 
@@ -369,13 +367,13 @@ void	Server::setIdleTime(time_t value)
 
 User	*Server::_accept(void)
 {
-	User				*user;
+	User*				user;
 	int					newFd;
 	struct sockaddr_in	user_addr;
 	int					user_addrlen;
 
 	user_addrlen = sizeof(struct sockaddr_in);
-	newFd = accept(this->_fd, reinterpret_cast<struct sockaddr *>(&user_addr), reinterpret_cast<socklen_t *>(&user_addrlen));
+	newFd = accept(this->_fd, reinterpret_cast<struct sockaddr* >(&user_addr), reinterpret_cast<socklen_t* >(&user_addrlen));
 	if (newFd < 0)
 	{
 		Console::log(LOG_ERROR, "Server::accept function accept() failed");
@@ -430,7 +428,7 @@ int		Server::_poll(void)
 	return poll(this->_pollfds, MAXUSERS + 2, this->_pollTimeout);
 }
 
-void	Server::eraseChannel(Channel &channel)
+void	Server::eraseChannel(Channel& channel)
 {
 	this->_channelMap.erase(strToUpper(channel.getName()));
 	delete &channel;
@@ -444,14 +442,14 @@ Channel*	Server::insertChannel(const std::string& name, const User& user)
 	return channel;
 }
 
-void	Server::insertUser(User &user)
+void	Server::insertUser(User& user)
 {
 	this->_message.setReceiver(&user);
 	this->_fdMap.insert(std::make_pair(user.getFd(), &user));
 	this->_eventHandler.raise(NEWUSEREVENT, this->_message);
 }
 
-void	Server::eraseUser(User &user)
+void	Server::eraseUser(User& user)
 {
 	this->_fdMap.erase(user.getFd());
 }
@@ -470,7 +468,7 @@ bool	Server::checkChannelMode(Message& message, int commandEvent)
 	return access != AChanMode::deny;
 }
 
-void	Server::_removeUserFromChannel(Channel &channel, User &user)
+void	Server::_removeUserFromChannel(Channel& channel, User& user)
 {
 	user.erase(&channel);	// se elimina al canal del usuario
 	channel.erase(&user);	// se elimina al usuario del canal
@@ -519,7 +517,7 @@ void	Server::deleteUser(User& user, const std::string& text)
 }
 
 // :masksource JOIN #CHAN :Pass
-void	Server::addToChannel(Message &message)
+void	Server::addToChannel(Message& message)
 {
 	Channel*										channel = NULL;
 	const std::string&								channelName = message[0];

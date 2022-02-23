@@ -7,27 +7,27 @@
 #include "Numeric.hpp"
 #include <iostream>
 
-InviteCommand::InviteCommand(Server &server, int accessLevel, int paramCount)
+InviteCommand::InviteCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void InviteCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void InviteCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void InviteCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void InviteCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-bool InviteCommand::_recvUser(Message &message)
+bool InviteCommand::_recvUser(Message& message)
 {
-	User						&user = *this->userSender;
+	User&						user = *this->userSender;
 	Server::channelMap_iterator	channelIt;
 	Server::userMap_iterator	invitedUserIt;
-	Channel						*channel;
-	User						*invitedUser;
+	Channel*					channel;
+	User*						invitedUser;
 	std::string					channelName, invitedName;
 
 	message.setReceiver(message.getSender());
@@ -74,7 +74,7 @@ bool InviteCommand::_recvUser(Message &message)
 
 bool InviteCommand::_recvServer(Message &message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
@@ -83,7 +83,7 @@ bool InviteCommand::_recvServer(Message &message)
 
 bool InviteCommand::_sendUser(Message &message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	(void)message;
 	(void)user;
@@ -92,7 +92,7 @@ bool InviteCommand::_sendUser(Message &message)
 
 bool InviteCommand::_sendServer(Message &message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

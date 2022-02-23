@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
-User::User(int fd, Server &server) :
+User::User(int fd, Server&	server) :
 	_ident("anonymous"),
 	_server(server), 
 	_status(1), 
@@ -60,12 +60,12 @@ const std::string&	User::getReal(void) const
 	return this->_real;
 }
 
-std::string &User::getInputBuffer(void)
+std::string&	User::getInputBuffer(void)
 {
 	return this->_inputBuffer;
 }
 
-bool	User::isOnChannel(const std::string &channel)
+bool	User::isOnChannel(const std::string& channel)
 {
 	return (this->find(channel) != this->_channelMap.end());
 }
@@ -83,7 +83,7 @@ bool	User::isOnChannel(Channel &channel)
 	return false;
 }
 */
-std::string &User::getOutputBuffer(void)
+std::string&	User::getOutputBuffer(void)
 {
 	return this->_outputBuffer;
 }
@@ -113,12 +113,13 @@ void	User::setPass(const std::string& value)
 	this->_pass = value;
 }
 
-std::string			User::getMask(void)
+//TODO: Mismo mensaje que en Server, hay que determinar si almacenamos esta información y no la generamos constantemente.
+std::string	User::getMask(void)
 {
 	return this->_name + "!" + this->_ident + "@" + this->_host;
 }
 
-std::string const	&User::getPass(void) const
+const std::string&	User::getPass(void) const
 {
 	return this->_pass;
 }
@@ -149,7 +150,7 @@ void	User::setPollIndex(int value)
 	this->_pollIndex = value;
 }
 
-int	const	&User::getPollIndex(void) const
+const int&	User::getPollIndex(void) const
 {
 	return this->_pollIndex;
 }
@@ -159,7 +160,7 @@ void	User::setAwayMsg(const std::string& value)
 	this->_awayMsg = value;
 }
 
-std::string const	&User::getAwayMsg(void) const
+const std::string&	User::getAwayMsg(void) const
 {
 	return this->_awayMsg;
 }
@@ -169,7 +170,7 @@ void	User::setIdleTime(time_t value)
 	this->_idleTime = value;
 }
 
-time_t const	&User::getIdleTime(void) const
+const time_t&	User::getIdleTime(void) const
 {
 	return this->_idleTime;
 }
@@ -179,7 +180,7 @@ void	User::setNextTimeout(time_t value)
 	this->_nextTimeout = value;
 }
 
-time_t const	&User::getNextTimeout(void) const
+const time_t&	User::getNextTimeout(void) const
 {
 //	std::cout << "User::getNextTimeout = " << this->nextTimeout << " - " << time(NULL) << " used" << std::endl;
 	return this->_nextTimeout;
@@ -190,7 +191,7 @@ void	User::setFd(int value)
 	this->_fd = value;
 }
 
-int const &User::getFd(void) const
+const int&	User::getFd(void) const
 {
 	return this->_fd;
 }
@@ -205,7 +206,7 @@ void	User::setPingChallenge(const std::string& value)
 	this->_pingChallenge = value;
 }
 
-std::string const	&User::getPingChallenge(void) const
+const std::string&	User::getPingChallenge(void) const
 {
 	return this->_pingChallenge;
 }
@@ -261,14 +262,19 @@ void	User::sendToBuffer(std::string msg)
 	this->_outputBuffer += msg + "\r\n";
 }
 
-ssize_t	User::send(const std::string msg)
+ssize_t	User::send(void)
+{
+	return this->send("");
+}
+
+ssize_t	User::send(const std::string& data)
 {
 	ssize_t	len;
 
-	if (!msg.empty())
-		this->sendToBuffer(msg);
+	if (!data.empty())
+		this->sendToBuffer(data);
 	len = ::send(this->_fd, this->_outputBuffer.c_str(), this->_outputBuffer.size(), 0);
-	if ((size_t)len != msg.size())
+	if (static_cast<size_t>(len) != data.size())
 	{
 		this->_outputBuffer.erase(0, len);
 		this->_server.setPollout(*this);
@@ -295,7 +301,7 @@ size_t	User::recv(int fd)
 	return size;
 }
 
-Message	*User::buildMessage(std::string &buff)
+Message*	User::buildMessage(std::string& buff)
 {
 	(void)buff;
 	std::cout << "huh";
@@ -314,7 +320,7 @@ std::string	User::_getLine(size_t pos)
 	return line;
 }
 
-size_t	User::checkInput(int fd, Message &message)
+size_t	User::checkInput(int fd, Message& message)
 {
 	size_t		size;
 	size_t		pos;
@@ -350,7 +356,7 @@ bool	User::checkOutput(int fd)
 	return false;
 }
 
-Channel	*User::findFullestChannel(void)
+Channel*	User::findFullestChannel(void)
 {
 	Server::channelMap_iterator		currentIt = this->_channelMap.begin();
 	Server::channelMap_iterator		nextIt = currentIt;
@@ -363,12 +369,12 @@ Channel	*User::findFullestChannel(void)
 	return	currentIt->second;
 }
 
-Server::userVector_type	*User::getUniqueVector(void)
+Server::userVector_type*	User::getUniqueVector(void)
 {
 	//aloca memoria para el nuevo vector
-	Server::userVector_type								*userVector;
+	Server::userVector_type*							userVector;
 	Server::channelSet_type								checkChannelSet;
-	Channel												*currentChannel;
+	Channel*											currentChannel;
 	std::pair<Server::channelSet_iterator, bool>		ret;
 	Server::userVector_iterator							vectorIt;
 

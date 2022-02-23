@@ -7,10 +7,11 @@
 #include "Console.hpp"
 #include <iostream>
 
-JoinCommand::JoinCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+JoinCommand::JoinCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void JoinCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void JoinCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	eventHandler.add(JOINEVENT,    *new Delegate<JoinCommand, Message>(*this, &JoinCommand::joinChannelEvent));
 	eventHandler.add(NEWCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::createChannelEvent));
@@ -20,12 +21,12 @@ void JoinCommand::loadEvents(Server::eventHandler_type &eventHandler)
 	eventHandler.add(DELCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::delChannelEvent));
 }
 
-void JoinCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void JoinCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void JoinCommand::createChannelEvent(Message &message)
+void JoinCommand::createChannelEvent(Message& message)
 {
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha creado el canal " + message[0]);
 	message.setReceiver(message.getSender());
@@ -35,7 +36,7 @@ void JoinCommand::createChannelEvent(Message &message)
 	message.process();
 }
 
-void JoinCommand::joinChannelEvent(Message &message)
+void JoinCommand::joinChannelEvent(Message& message)
 {
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha entrado al canal " + message[0]);
 	message.setReceiver(message.getChannel());
@@ -48,12 +49,12 @@ void JoinCommand::joinChannelEvent(Message &message)
 	message.process();
 }
 
-void JoinCommand::alreadyChannelEvent(Message &message)
+void JoinCommand::alreadyChannelEvent(Message& message)
 {
 	Console::log(LOG_INFO, message.getSender()->getName() + " ya está en " + message[0]);
 }
 
-void JoinCommand::limitChannelEvent(Message &message)
+void JoinCommand::limitChannelEvent(Message& message)
 {
 	Console::log(LOG_INFO, message.getSender()->getName() + " ha alcanzado el limite de canales");
 	message.setReceiver(message.getSender());
@@ -61,12 +62,12 @@ void JoinCommand::limitChannelEvent(Message &message)
 	message.send(Numeric::builder(message, ERR_TOOMANYCHANNELS));
 }
 
-void JoinCommand::delChannelEvent(Message &message)
+void JoinCommand::delChannelEvent(Message& message)
 {
 	Console::log(LOG_INFO, message.getChannel()->getName() + " el canal se ha eliminado");
 }
 
-void JoinCommand::errChannelEvent(Message &message)
+void JoinCommand::errChannelEvent(Message& message)
 {
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
@@ -74,9 +75,9 @@ void JoinCommand::errChannelEvent(Message &message)
 }
 
 
-bool JoinCommand::_recvUser(Message &message)
+bool JoinCommand::_recvUser(Message& message)
 {
-	User						&user = *this->userSender;
+	User&						user = *this->userSender;
 	Server::channelMap_iterator	currentIt;
 
 	if (message[0] == "0")
@@ -98,27 +99,27 @@ bool JoinCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool JoinCommand::_recvServer(Message &message)
+bool JoinCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool JoinCommand::_sendUser(Message &message)
+bool JoinCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool JoinCommand::_sendServer(Message &message)
+bool JoinCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

@@ -141,7 +141,8 @@ public:
 	void							setIdleTime(time_t value);
 
 	void							run(void);
-	ssize_t							send(const std::string msg = "");
+	ssize_t							send(void);
+	ssize_t							send(const std::string& data);
 	ssize_t							send(const Message& message);
 
 	void							addToChannel(Message& message);
@@ -182,9 +183,12 @@ public:
 		return this->_channelMap.find(strToUpper(channelName));
 	}
 
-	struct ServerFullException : public std::exception
+	struct NotImplementedException : public std::exception
 	{
-		virtual const char	*what(void) const throw();
+		const char*	what(void) const throw()
+		{
+			return "Functionality not implemented yet";
+		}
 	};
 
 private:

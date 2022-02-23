@@ -5,22 +5,23 @@
 #include "Server.hpp"
 #include <iostream>
 
-AwayCommand::AwayCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+AwayCommand::AwayCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void AwayCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void AwayCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void AwayCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void AwayCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-bool AwayCommand::_recvUser(Message &message)
+bool AwayCommand::_recvUser(Message& message)
 {
-	User	&user = *this->userSender;
+	User&	user = *this->userSender;
 
 	if (!message.size() || message[0].empty())
 	{
@@ -35,27 +36,27 @@ bool AwayCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool AwayCommand::_recvServer(Message &message)
+bool AwayCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool AwayCommand::_sendUser(Message &message)
+bool AwayCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool AwayCommand::_sendServer(Message &message)
+bool AwayCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;
