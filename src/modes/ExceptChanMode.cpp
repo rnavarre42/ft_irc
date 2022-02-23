@@ -1,7 +1,9 @@
 #include "ExceptChanMode.hpp"
 #include "ChanModeConfig.hpp"
 #include "Message.hpp"
+#include "Numeric.hpp"
 #include "Channel.hpp"
+#include "User.hpp"
 
 #include <ctime>
 #include <sstream>
@@ -39,12 +41,23 @@ inline static Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePair
 	return rangePair.second;
 }
 
-void	ExceptChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
+void	ExceptChanMode::onChanEvent(Access& access, int event, Message& message, int&)
 {
-	(void)access;
+	Channel*	channel = message.getChannel();
+	std::string	mask = message.getSender()->getMask();
+	Channel::Mode::rangePairMultimap_type	pairList = channel->mode.getList('e');
+	BanInfo		*banInfo;
+
 	(void)event;
-	(void)message;
-	(void)numeric;
+	for (; pairList.first != pairList.second; ++pairList.first)
+	{
+		banInfo = reinterpret_cast<BanInfo*>(pairList.first->second);
+		if (banInfo->mask == mask)
+		{
+			access = AChanMode::allow;
+			break ;
+		}
+	}
 }
 
 bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)

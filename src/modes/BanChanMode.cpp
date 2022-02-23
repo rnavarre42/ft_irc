@@ -1,13 +1,26 @@
 #include "BanChanMode.hpp"
 #include "ChanModeConfig.hpp"
 #include "Message.hpp"
+#include "Numeric.hpp"
 #include "Channel.hpp"
+#include "User.hpp"
 
 #include <ctime>
 #include <sstream>
 
 class User;
 class Channel;
+
+struct BanInfo
+{
+	BanInfo(const std::string& mask, const std::string& nick)
+		: mask(mask), nick(nick), time(std::time(NULL))
+	{}
+
+	std::string	mask;
+	std::string	nick;
+	time_t		time;
+};
 
 BanChanMode::BanChanMode(Server& server)
 	: AChanMode(server)
@@ -27,33 +40,26 @@ BanChanMode::~BanChanMode(void) {}
 
 void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
-	(void)access;
+	Channel*	channel = message.getChannel();
+	std::string	mask = message.getSender()->getMask();
+	Channel::Mode::rangePairMultimap_type	pairList = channel->mode.getList('b');
+	BanInfo		*banInfo;
+
 	(void)event;
-	(void)message;
-	(void)numeric;
-	//onChanEvent nos debe proporcionar un listado de las entradas
-	//que coinciden con el modo que gestionamos, en esta ocasión 'b'
-	//y verificar que la máscara de sender no está en el listado.
-	//
-	//en caso de que esté, se le deniega el comando, bien sea JOIN
-	//PRIVMSG o NOTICE.
-	//
-	//lo único que cambiaría es el mensaje de error que es dstinto
-	//en cada caso
-	//
-	//si se deniega, access = deny;
+	if (access == AChanMode::deny)
+		return ;
+	for (; pairList.first != pairList.second; ++pairList.first)
+	{
+		banInfo = reinterpret_cast<BanInfo*>(pairList.first->second);
+		if (banInfo->mask == mask)
+		{
+			Numeric::insertField(channel->getName());
+			numeric = ERR_BANNEDFROMCHAN;
+			access = AChanMode::deny;
+			break ;
+		}
+	}
 }
-
-struct BanInfo
-{
-	BanInfo(const std::string& mask, const std::string& nick)
-		: mask(mask), nick(nick), time(std::time(NULL))
-	{}
-
-	std::string	mask;
-	std::string	nick;
-	time_t		time;
-};
 
 inline static Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type& rangePair, const std::string& mask)
 {
