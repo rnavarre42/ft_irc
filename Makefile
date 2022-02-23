@@ -35,27 +35,28 @@ $(SERVER):	$(SERVEROBJS)
 $(CLIENT):	$(CLIENTOBJS)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-.PHONY: += clean
+PHONY += clean
 clean:	clean_server clean_client
 
-.PHONY: += clean_server
+PHONY += clean_server
 clean_server:
 	$(RM) $(SERVEROBJS) $(SERVERDEPS)
 
-.PHONY: += clean_client
+PHONY += clean_client
 clean_client:
 	$(RM) $(CLIENTOBJS) $(CLIENTDEPS)
 
-.PHONY: += fclean_server
+PHONY += fclean_server
 fclean_server: clean_server
-	$(RM) $(SERVERNAME) tags
+	$(RM) $(SERVER)
 
-.PHONY: += fclean_client
+PHONY += fclean_client
 fclean_client: clean_client
-	$(RM) $(CLIENTNAME) tags
+	$(RM) $(CLIENT)
 
-.PHONY: += fclean
+PHONY += fclean
 fclean:		fclean_server fclean_client
+	$(RM) tags
 
 pre:
 	$(CXX) -E -I $(INCLUDEPATH) $(filter-out $@,$(MAKECMDGOALS))
@@ -64,41 +65,42 @@ print:
 	echo $(SRCS)
 	echo $(OBJS)
 
-.PHONY: += re
+PHONY += re
 re:			fclean all
 
-.PHONY: += debug
+PHONY += debug
 debug:		COMMONFLAGS = $(FSANITIZE)
-debug:		$(SERVER) tag
+debug:		$(SERVER)
 
-.PHONY: += release
+PHONY += release
 release:	COMMONFLAGS = -O3
 release:	$(SERVER)
 	strip $(SERVER)
 
-.PHONY: += tag
+PHONY += tag
 tag:
 	ctags	$(SRCS)
 
-.PHONY: += run
+PHONY += run
 run:		all
 	./$(SERVER)
 
-.PHONY: += run_client
+PHONY += run_client
 run_client:	all
 	./$(CLIENT) localhost 6667 non NoSoyNadie
 
-.PHONY: += cli
+PHONY += cli
 cli:
 	make -C client run non NoSoyNadie 127.0.0.1 6667
 	reset
 
-.PHONY: += hispano
+PHONY += hispano
 hispano:
 	make -C client run non NoSoyNadie 195.234.61.209 6667
 
-.PHONY: += dalnet
+PHONY += dalnet
 dalnet:
 	make -C client run non NoSoyNadie 143.244.34.1 6667
 
 .SILENT:	clean fclean tag release print
+.PHONY: $(PHONY)

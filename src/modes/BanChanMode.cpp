@@ -9,7 +9,7 @@
 class User;
 class Channel;
 
-BanChanMode::BanChanMode(Server &server)
+BanChanMode::BanChanMode(Server& server)
 	: AChanMode(server)
 {
 	//Tenemos que suscribirnos a JOIN, PRIVMSG y NOTICE
@@ -24,7 +24,7 @@ BanChanMode::BanChanMode(Server &server)
 
 BanChanMode::~BanChanMode(void) {}
 
-void	BanChanMode::onChanEvent(Access &access, Message &message)
+void	BanChanMode::onChanEvent(Access& access, Message& message)
 {
 	(void)access;
 	(void)message;
@@ -43,7 +43,7 @@ void	BanChanMode::onChanEvent(Access &access, Message &message)
 
 struct BanInfo
 {
-	BanInfo(std::string mask, std::string nick)
+	BanInfo(const std::string& mask, const std::string& nick)
 		: mask(mask), nick(nick), time(std::time(NULL))
 	{}
 
@@ -52,7 +52,7 @@ struct BanInfo
 	time_t		time;
 };
 
-inline Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type rangePair, std::string mask)
+inline Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type& rangePair, std::string& mask)
 {
 	for (; rangePair.first != rangePair.second; ++rangePair.first)
 	{
@@ -62,7 +62,7 @@ inline Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultima
 	return rangePair.second;
 }
 
-bool	BanChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
+bool	BanChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)
 {
 	BanInfo									*banInfo;
 	Channel::Mode::rangePairMultimap_type	rangePair;
@@ -89,18 +89,18 @@ void	BanChanMode::onShowChanModeEvent(void)
 {
 }
 
-void	BanChanMode::onDelete(void *pointer)
+void	BanChanMode::onDelete(void* pointer)
 {
 	delete &*reinterpret_cast<BanInfo *>(pointer);
 
 }
 
-std::string BanChanMode::toString(void *pointer)
+std::string BanChanMode::toString(void* pointer)
 {
 	std::ostringstream	oss;
 	BanInfo				*banInfo;
 
-	banInfo	= reinterpret_cast<BanInfo *>(pointer);
+	banInfo	= reinterpret_cast<BanInfo* >(pointer);
 	oss << banInfo->mask << " " << banInfo->nick << " :" << banInfo->time;
 	return oss.str();
 }

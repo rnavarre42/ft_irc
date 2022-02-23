@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/uio.h>
+#include <cstring>
 
 Readline::Readline(void)
 	: index(0)
@@ -68,7 +69,7 @@ std::string &Readline::operator()(void)
 			line.erase(index, 1);
 		}
 	}
-	else if (!strcmp(data, "\033[C"))
+	else if (!std::strcmp(data, "\033[C"))
 	{
 		if (index < line.size())
 		{
@@ -76,7 +77,7 @@ std::string &Readline::operator()(void)
 			++index;
 		}
 	}
-	else if (!strcmp(data, "\033[D"))
+	else if (!std::strcmp(data, "\033[D"))
 	{
 		if (index)
 		{
