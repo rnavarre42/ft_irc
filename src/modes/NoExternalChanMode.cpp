@@ -12,9 +12,10 @@ NoExternalChanMode::NoExternalChanMode(Server &server)
 NoExternalChanMode::~NoExternalChanMode(void)
 {}
 
-void	NoExternalChanMode::onChanEvent(Access &access, Message &message)
+void	NoExternalChanMode::onChanEvent(Access &access, int event, Message &message)
 {
 	(void)access;
+	(void)event;
 	(void)message;
 }
 

@@ -24,9 +24,10 @@ BanChanMode::BanChanMode(Server& server)
 
 BanChanMode::~BanChanMode(void) {}
 
-void	BanChanMode::onChanEvent(Access& access, Message& message)
+void	BanChanMode::onChanEvent(Access& access, int event, Message& message)
 {
 	(void)access;
+	(void)event;
 	(void)message;
 	//onChanEvent nos debe proporcionar un listado de las entradas
 	//que coinciden con el modo que gestionamos, en esta ocasión 'b'

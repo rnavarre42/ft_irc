@@ -5,7 +5,7 @@
 #include "Console.hpp"
 #include "User.hpp"
 
-VoiceChanMode::VoiceChanMode(Server &server)
+VoiceChanMode::VoiceChanMode(Server& server)
 	: AChanMode(server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
@@ -16,13 +16,14 @@ VoiceChanMode::VoiceChanMode(Server &server)
 VoiceChanMode::~VoiceChanMode(void)
 {}
 
-void	VoiceChanMode::onChanEvent(Access &access, Message &message)
+void	VoiceChanMode::onChanEvent(Access& access, int event, Message &message)
 {
 	(void)access;
+	(void)event;
 	(void)message;
 }
 
-bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
+bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)
 {
 	Server::userMap_iterator	targetIt;
 
@@ -48,11 +49,11 @@ void	VoiceChanMode::onShowChanModeEvent(void)
 {
 }
 
-void	VoiceChanMode::onDelete(void *)
+void	VoiceChanMode::onDelete(void* )
 {
 }
 
-std::string VoiceChanMode::toString(void *pointer)
+std::string VoiceChanMode::toString(void* pointer)
 {
 	return reinterpret_cast<User *>(pointer)->getName();
 }

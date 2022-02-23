@@ -38,9 +38,10 @@ inline Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultima
 	return rangePair.second;
 }
 
-void	ExceptChanMode::onChanEvent(Access &access, Message &message)
+void	ExceptChanMode::onChanEvent(Access &access, int event, Message &message)
 {
 	(void)access;
+	(void)event;
 	(void)message;
 }
 

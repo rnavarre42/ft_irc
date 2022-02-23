@@ -14,9 +14,10 @@ InviteChanMode::InviteChanMode(Server &server)
 InviteChanMode::~InviteChanMode(void)
 {}
 
-void	InviteChanMode::onChanEvent(Access &access, Message &message)
+void	InviteChanMode::onChanEvent(Access &access, int event, Message &message)
 {
 	Channel	*channel = message.getChannel();
+	(void)event;
 
 	if (this->isSetMode(*channel))
 	{

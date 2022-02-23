@@ -17,9 +17,10 @@ OperChanMode::OperChanMode(Server &server)
 OperChanMode::~OperChanMode(void)
 {}
 
-void	OperChanMode::onChanEvent(Access &access, Message &message)
+void	OperChanMode::onChanEvent(Access &access, int event, Message &message)
 {
 	(void)access;
+	(void)event;
 	(void)message;
 }
 

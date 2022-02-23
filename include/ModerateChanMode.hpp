@@ -10,14 +10,14 @@ class Message;
 class ModerateChanMode : public AChanMode
 {
 public:
-	ModerateChanMode(Server &server);
+	ModerateChanMode(Server& server);
 	~ModerateChanMode(void);
 
-	void		onChanEvent(Access &access, Message &message);
-	bool		onChanModeEvent(int pos, int sign, Channel &channel, Message &message);
+	void		onChanEvent(Access& access, int event, Message& message);
+	bool		onChanModeEvent(int pos, int sign, Channel& channel, Message& message);
 	void		onShowChanModeEvent(void);
-	void		onDelete(void *pinter);
-	std::string toString(void *pointer);
+	void		onDelete(void* pinter);
+	std::string toString(void* pointer);
 };
 
 #endif

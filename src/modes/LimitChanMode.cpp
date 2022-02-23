@@ -21,10 +21,11 @@ LimitChanMode::LimitChanMode(Server &server)
 LimitChanMode::~LimitChanMode(void)
 {}
 
-void	LimitChanMode::onChanEvent(Access &access, Message &message)
+void	LimitChanMode::onChanEvent(Access &access, int event, Message &message)
 {
 	Channel*	channel = message.getChannel();
 	size_t		limit = reinterpret_cast<size_t>(this->getMode(*channel));
+	(void)event;
 
 	if (limit && limit <= channel->size())
 	{

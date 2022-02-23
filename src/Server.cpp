@@ -463,7 +463,7 @@ bool	Server::checkChannelMode(Message& message, int commandEvent)
 			++it)
 	{
 		if (it->second->getConfig().events & commandEvent)
-			it->second->onChanEvent(access, message);
+			it->second->onChanEvent(access, commandEvent, message);
 	}
 	return access != AChanMode::deny;
 }

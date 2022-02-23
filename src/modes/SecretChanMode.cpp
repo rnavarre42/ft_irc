@@ -12,9 +12,10 @@ SecretChanMode::SecretChanMode(Server &server)
 SecretChanMode::~SecretChanMode(void)
 {}
 
-void	SecretChanMode::onChanEvent(Access &access, Message &message)
+void	SecretChanMode::onChanEvent(Access &access, int event, Message &message)
 {
 	(void)access;
+	(void)event;
 	(void)message;
 }
 

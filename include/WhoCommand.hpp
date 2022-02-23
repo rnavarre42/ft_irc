@@ -7,13 +7,13 @@
 class WhoCommand : public ACommand
 {
 public:
-	WhoCommand(Server &server, int accessLevel, int paramCount);
-	void loadEvents(Server::eventHandler_type &eventHandler);
-	void unloadEvents(Server::eventHandler_type &eventHandler);
+	WhoCommand(Server& server, int accessLevel, int paramCount);
+	void loadEvents(Server::eventHandler_type& eventHandler);
+	void unloadEvents(Server::eventHandler_type& eventHandler);
 
 private:
-	virtual bool	_execUser(Message &message);
-	virtual bool	_execServer(Message &message);
+	virtual bool	_execUser(Message& message);
+	virtual bool	_execServer(Message& message);
 };
 
 #endif

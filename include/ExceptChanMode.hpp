@@ -10,14 +10,14 @@ class Message;
 class ExceptChanMode : public AChanMode
 {
 public:
-	ExceptChanMode(Server &server);
+	ExceptChanMode(Server& server);
 	~ExceptChanMode(void);
 
-	void onChanEvent(Access &access, Message &message);
-	bool onChanModeEvent(int pos, int sign, Channel &channel, Message &message);
+	void onChanEvent(Access& access, int event, Message& message);
+	bool onChanModeEvent(int pos, int sign, Channel& channel, Message& message);
 	void onShowChanModeEvent(void);
-	void onDelete(void *pointer);
-	std::string toString(void *pointer);
+	void onDelete(void* pointer);
+	std::string toString(void* pointer);
 };
 
 #endif

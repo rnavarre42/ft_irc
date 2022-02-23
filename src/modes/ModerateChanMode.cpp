@@ -12,9 +12,10 @@ ModerateChanMode::ModerateChanMode(Server &server)
 ModerateChanMode::~ModerateChanMode(void)
 {}
 
-void	ModerateChanMode::onChanEvent(Access &access, Message &message)
+void	ModerateChanMode::onChanEvent(Access &access, int event, Message &message)
 {
 	(void)access;
+	(void)event;
 	(void)message;
 }
 

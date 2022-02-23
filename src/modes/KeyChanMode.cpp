@@ -14,9 +14,10 @@ KeyChanMode::KeyChanMode(Server &server)
 KeyChanMode::~KeyChanMode(void)
 {}
 
-void	KeyChanMode::onChanEvent(Access &access, Message &message)
+void	KeyChanMode::onChanEvent(Access &access, int event, Message &message)
 {
 	(void)access;
+	(void)event;
 	(void)message;
 }
 
