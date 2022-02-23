@@ -13,11 +13,11 @@ public:
 	SecretChanMode(Server &server);
 	~SecretChanMode(void);
 
-	void onChanEvent(Access &access, Message &message);
-	bool onChanModeEvent(int pos, int sign, Channel &channel, Message &message);
-	void onShowChanModeEvent(void);
-	void onDelete(void *pinter);
-	std::string getValue(void *pointer);
+	void 		onChanEvent(Access &access, Message &message);
+	bool 		onChanModeEvent(int pos, int sign, Channel &channel, Message &message);
+	void 		onShowChanModeEvent(void);
+	void 		onDelete(void *pinter);
+	std::string toString(void *pointer);
 };
 
 #endif

@@ -18,13 +18,16 @@ void	InviteChanMode::onChanEvent(Access &access, Message &message)
 {
 	Channel	*channel = message.getChannel();
 
-	access = AChanMode::allow;
-	if (this->isSetMode(*channel)
-			&& (this->_server.invite().find(message.getSender(), channel)) == this->_server.invite().end())
+	if (this->isSetMode(*channel))
 	{
-		Numeric::insertField(message.getChannel()->getName());
-		message.replyNumeric(ERR_INVITEONLYCHAN);
-		access = AChanMode::deny;
+		if ((this->_server.invite().find(message.getSender(), channel)) == this->_server.invite().end())
+		{
+			Numeric::insertField(message.getChannel()->getName());
+			message.replyNumeric(ERR_INVITEONLYCHAN);
+			access = AChanMode::deny;
+		}
+		else
+			access = AChanMode::allow;
 	}
 }
 
@@ -44,7 +47,7 @@ void	InviteChanMode::onDelete(void *)
 {
 }
 
-std::string InviteChanMode::getValue(void *)
+std::string InviteChanMode::toString(void *)
 {
 	return "";
 }

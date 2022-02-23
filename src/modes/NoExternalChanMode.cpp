@@ -34,7 +34,7 @@ void	NoExternalChanMode::onDelete(void *)
 {
 }
 
-std::string NoExternalChanMode::getValue(void *)
+std::string NoExternalChanMode::toString(void *)
 {
 	return "";
 }

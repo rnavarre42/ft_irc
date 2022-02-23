@@ -95,7 +95,7 @@ void	BanChanMode::onDelete(void *pointer)
 
 }
 
-std::string BanChanMode::getValue(void *pointer)
+std::string BanChanMode::toString(void *pointer)
 {
 	std::ostringstream	oss;
 	BanInfo				*banInfo;

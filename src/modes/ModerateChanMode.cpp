@@ -34,7 +34,7 @@ void	ModerateChanMode::onDelete(void *)
 {
 }
 
-std::string ModerateChanMode::getValue(void *)
+std::string ModerateChanMode::toString(void *)
 {
 	return "";
 }

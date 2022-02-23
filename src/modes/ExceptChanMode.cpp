@@ -76,7 +76,7 @@ void	ExceptChanMode::onDelete(void *pointer)
 	delete &*reinterpret_cast<BanInfo *>(pointer);
 }
 
-std::string ExceptChanMode::getValue(void *pointer)
+std::string ExceptChanMode::toString(void *pointer)
 {
 	std::ostringstream	oss;
 	BanInfo				*banInfo;

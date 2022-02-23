@@ -61,6 +61,8 @@ bool Channel::Mode::insert(char modeName, void *value)
 
 	if (ret)
 		this->_modeMultimap.insert(std::make_pair(modeName, value));
+//	else
+//		this->_modeMultimap.find(modeName)->second = value;
 	return ret;
 }
 

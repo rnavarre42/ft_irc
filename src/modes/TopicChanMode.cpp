@@ -35,7 +35,7 @@ void	TopicChanMode::onDelete(void *)
 {
 }
 
-std::string TopicChanMode::getValue(void *)
+std::string TopicChanMode::toString(void *)
 {
 	return "";
 }

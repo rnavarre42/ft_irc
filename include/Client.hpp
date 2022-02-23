@@ -19,7 +19,7 @@ public:
 	~Client(void);
 
 	static Client*	getInstance(void);
-	static Client*	createInstance(std::string host, std::string port, std::string nick, std::string user);
+	static Client*	createInstance(std::string host, std::string port, std::string nick, std::string ident);
 	static void		deleteInstance(void);
 
 	void	start(void);
@@ -32,8 +32,8 @@ private:
 	std::string		_ip;
 	int				_fd;
 
-	std::string		_nickname;
-	std::string		_username;
+	std::string		_nick;
+	std::string		_ident;
 
 	bool			_connectToSocket(void);
 	bool			_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0);
@@ -57,7 +57,7 @@ private:
 	static Client*	_instance;
 
 	Client(void);
-	Client(const std::string& hostname, const std::string& port, const std::string& nick, const std::string& user);
+	Client(const std::string& hostname, const std::string& port, const std::string& nick, const std::string& ident);
 };
 
 #endif

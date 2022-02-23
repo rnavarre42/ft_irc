@@ -34,7 +34,7 @@ void	SecretChanMode::onDelete(void *)
 {
 }
 
-std::string SecretChanMode::getValue(void *)
+std::string SecretChanMode::toString(void *)
 {
 	return "";
 }

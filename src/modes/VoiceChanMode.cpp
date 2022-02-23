@@ -52,7 +52,7 @@ void	VoiceChanMode::onDelete(void *)
 {
 }
 
-std::string VoiceChanMode::getValue(void *pointer)
+std::string VoiceChanMode::toString(void *pointer)
 {
 	return reinterpret_cast<User *>(pointer)->getName();
 }

@@ -13,11 +13,11 @@ public:
 	NoExternalChanMode(Server &server);
 	~NoExternalChanMode(void);
 
-	void onChanEvent(Access &access, Message &message);
-	bool onChanModeEvent(int pos, int sign, Channel &channel, Message &message);
-	void onShowChanModeEvent(void);
-	void onDelete(void *pointer);
-	std::string getValue(void *pointer);
+	void		onChanEvent(Access &access, Message &message);
+	bool		onChanModeEvent(int pos, int sign, Channel &channel, Message &message);
+	void		onShowChanModeEvent(void);
+	void		onDelete(void *pointer);
+	std::string toString(void *pointer);
 };
 
 #endif

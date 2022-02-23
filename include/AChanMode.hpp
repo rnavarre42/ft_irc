@@ -27,7 +27,7 @@ public:
 	virtual bool		onChanModeEvent(int pos, int sign, Channel& channel, Message& message) = 0;
 	virtual void 		onShowChanModeEvent(void) = 0;
 	virtual void 		onDelete(void* pointer) = 0;
-	virtual std::string	getValue(void* pointer) = 0;
+	virtual std::string	toString(void* pointer) = 0;
 
 	const ChanModeConfig&	getConfig(void) const
 	{

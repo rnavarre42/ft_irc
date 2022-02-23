@@ -30,10 +30,10 @@ Client*	Client::getInstance(void)
 	return Client::_instance;
 }
 
-Client*	Client::createInstance(std::string host, std::string port, std::string nick, std::string user)
+Client*	Client::createInstance(std::string host, std::string port, std::string nick, std::string ident)
 {
 	if (Client::_instance == 0)
-		Client::_instance = new Client(host, port, nick, user);
+		Client::_instance = new Client(host, port, nick, ident);
 	return Client::_instance;
 }
 
@@ -43,11 +43,11 @@ void	Client::deleteInstance(void)
 	Client::_instance = 0;
 }
 
-Client::Client(const std::string& hostname, const std::string& port, const std::string& nick, const std::string& user)
+Client::Client(const std::string& hostname, const std::string& port, const std::string& nick, const std::string& ident)
 	: _hostname(hostname)
 	, _port(port)
-	, _nickname(nick)
-	, _username(user)
+	, _nick(nick)
+	, _ident(ident)
 	, _running(1)
 {
 	signal(SIGINT, signalHandler);
@@ -69,7 +69,7 @@ void	Client::start(void)
 
 void	Client::_doAutoIdent(void)
 {
-	std::string	registerLine("USER " + this->_username + " 0 * :the last param\r\nNICK " + this->_nickname);
+	std::string	registerLine("USER " + this->_ident + " 0 * :the last param\r\nNICK " + this->_nick);
 
 	this->_sendLine(registerLine);
 }
@@ -106,7 +106,7 @@ bool	Client::_connectToSocket(void)
 
 	if (!this->_getAddrInfoList(&hints, &res0))
 		return false;
-	for (res = res0; res != NULL; res = res->ai_next)
+	for (res = res0; res != 0; res = res->ai_next)
 	{
 		this->_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 		if (this->_fd < 0)
@@ -218,13 +218,13 @@ void	Client::_initPoll(void)
 
 void	Client::_loop(void)
 {
-	int	rv;
+	int	ret;
 
 	this->_initPoll();
 	while (this->_running)
 	{
-		rv = poll(this->_pollfds, FDNUM, this->_pollTimeout);
-		if (rv == -1)
+		ret = poll(this->_pollfds, FDNUM, this->_pollTimeout);
+		if (ret == -1)
 		{
 			std::cerr << "client: poll failed" << std::endl;
 			break ;

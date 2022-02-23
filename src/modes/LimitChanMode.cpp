@@ -24,16 +24,15 @@ LimitChanMode::~LimitChanMode(void)
 void	LimitChanMode::onChanEvent(Access &access, Message &message)
 {
 	Channel*	channel = message.getChannel();
-	void*		limit = this->getMode(*channel);
-//	size_t		temp = std::strtoul(this->getValue(limit).c_str(), NULL, 0);
+	size_t		limit = reinterpret_cast<size_t>(this->getMode(*channel));
 
-	if (limit && channel->size() >= std::strtoul(this->getValue(limit).c_str(), NULL, 0))
+	if (limit && limit <= channel->size())
 	{
 		Numeric::insertField(channel->getName());
 		message.replyNumeric(ERR_CHANNELISFULL);
 		access = AChanMode::deny;
 	}
-//	std::cout << "users: " << channel->size() << " : " << temp << std::endl;
+	std::cout << "users: joined " << channel->size() << " : limit " << limit << std::endl;
 }
 
 inline bool	isValidLimit(unsigned long limit, Channel& channel, char chanMode)
@@ -55,19 +54,21 @@ bool	isNumber(std::string &str)
 bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
 {
 	unsigned long						limit;
-	Channel::Mode::multimap_iterator	it;
+	Channel::Mode::multimap_iterator	modeIt;
+	void*								value;
 
 	if (sign)
 	{
 		limit = std::strtoul(message[pos].c_str(), NULL, 0);
-		it = channel.mode.find(this->_chanModeConfig.mode);
+		modeIt = channel.mode.find(this->_chanModeConfig.mode);
 		if (isNumber(message[pos])
 			&& isValidLimit(limit, channel, this->_chanModeConfig.mode))
 		{
-			if (it != channel.mode.end())
-				it->second = reinterpret_cast<void *>(limit);
+			value = reinterpret_cast<void*>(limit);
+			if (modeIt != channel.mode.end())
+				modeIt->second = value;
 			else
-				this->setMode(channel, reinterpret_cast<void *>(limit));
+				this->setMode(channel, value);
 			return true;
 		}
 	}
@@ -87,7 +88,7 @@ void	LimitChanMode::onDelete(void *)
 {
 }
 
-std::string LimitChanMode::getValue(void *pointer)
+std::string LimitChanMode::toString(void *pointer)
 {
 	std::ostringstream	oss;
 

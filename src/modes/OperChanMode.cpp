@@ -53,7 +53,7 @@ void	OperChanMode::onDelete(void *)
 {
 }
 
-std::string OperChanMode::getValue(void *pointer)
+std::string OperChanMode::toString(void *pointer)
 {
 	return reinterpret_cast<User *>(pointer)->getName();
 }
