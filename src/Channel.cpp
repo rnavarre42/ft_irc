@@ -22,7 +22,11 @@ Channel::~Channel(void)
 
 void*&	Channel::Mode::operator[](char chr)
 {
-	return this->_modeMultimap.find(chr)->second;
+	Channel::Mode::multimap_iterator pos;
+
+	if ((pos = this->_modeMultimap.find(chr)) == this->_modeMultimap.end())
+		return this->_modeMultimap.insert(std::make_pair(chr, static_cast<void*>(0)))->second;
+	return pos->second;
 }
 
 Channel::Mode::multimap_iterator	Channel::Mode::find(char chr)

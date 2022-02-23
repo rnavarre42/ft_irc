@@ -42,7 +42,7 @@ bool	KeyChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& 
 		if (*(password = static_cast<std::string* >(channel.mode[this->_chanModeConfig.mode])) != message[pos])
 			return false;
 		else
-			this->unsetMode(channel);
+			this->unsetMode(channel, password);
 	}
 	else
 		return false;

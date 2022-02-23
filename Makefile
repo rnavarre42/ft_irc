@@ -3,13 +3,13 @@ CLIENT		=	irclient
 SRCSPATH	=	src/
 OBJSPATH	=	obj/
 SERVEROBJS	=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
-SERVERDEPS	=	$(OBJS:.o=.d)
+SERVERDEPS	=	$(SERVEROBJS:.o=.d)
 CLIENTOBJS	=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(CSRCS:.cpp=.o))
 CLIENTDEPS	=	$(CLIENTOBJS:.o=.d)
 CXXFLAGS	=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
-COMMONFLAGS	=	
+COMMONFLAGS	=
 LDFLAGS		=	$(LDLIBS) $(COMMONFLAGS)
-LDLIBS		=	
+LDLIBS		=
 INCLUDEPATH	=	./include/
 FSANITIZE	=	-g3 -fsanitize=address
 CXX			=	clang++

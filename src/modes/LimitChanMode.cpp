@@ -56,21 +56,22 @@ bool	isNumber(std::string& str)
 bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)
 {
 	unsigned long						limit;
-	Channel::Mode::multimap_iterator	modeIt;
+//	Channel::Mode::multimap_iterator	modeIt;
 	void*								value;
 
 	if (sign)
 	{
 		limit = std::strtoul(message[pos].c_str(), NULL, 0);
-		modeIt = channel.mode.find(this->_chanModeConfig.mode);
+	//	modeIt = channel.mode.find(this->_chanModeConfig.mode);
 		if (isNumber(message[pos])
 			&& isValidLimit(limit, channel, this->_chanModeConfig.mode))
 		{
 			value = reinterpret_cast<void*>(limit);
-			if (modeIt != channel.mode.end())
-				modeIt->second = value;
-			else
-				this->setMode(channel, value);
+	//		if (modeIt != channel.mode.end())
+	//			modeIt->second = value;
+	//		else
+			std::cout << "entra limit set mode" << std::endl;
+			this->setMode(channel, value);
 			return true;
 		}
 	}

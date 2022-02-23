@@ -55,6 +55,11 @@ protected:
 
 	bool	setMode(Channel& channel, void* value)
 	{
+		if (this->_chanModeConfig.unique)
+		{
+			channel.mode[this->_chanModeConfig.mode] = value;
+			return true;
+		}
 		return channel.mode.insert(this->_chanModeConfig.mode, value);
 	}
 
@@ -71,7 +76,7 @@ protected:
 
 	void*	getMode(Channel& channel)
 	{
-		return channel.mode[this->_chanModeConfig.mode];
+		return channel.mode.find(this->_chanModeConfig.mode)->second;
 	}
 };
 
