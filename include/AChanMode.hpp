@@ -23,7 +23,7 @@ public:
 	AChanMode(Server& server) : _server(server) {}
 	virtual ~AChanMode(void) {}
 
-	virtual void		onChanEvent(Access& access, int event, Message& message) = 0;
+	virtual void		onChanEvent(Access& access, int event, Message& message, int& numeric) = 0;
 	virtual bool		onChanModeEvent(int pos, int sign, Channel& channel, Message& message) = 0;
 	virtual void 		onShowChanModeEvent(void) = 0;
 	virtual void 		onDelete(void* pointer) = 0;

@@ -457,14 +457,17 @@ void	Server::eraseUser(User& user)
 bool	Server::checkChannelMode(Message& message, int commandEvent)
 {
 	AChanMode::Access	access = AChanMode::def;
+	int					numeric = 0;
 
 	for (aChanModeMap_iterator it = this->_chanModeMap.begin();
 			it != this->_chanModeMap.end() && access != AChanMode::allow;
 			++it)
 	{
 		if (it->second->getConfig().events & commandEvent)
-			it->second->onChanEvent(access, commandEvent, message);
+			it->second->onChanEvent(access, commandEvent, message, numeric);
 	}
+	if (access == AChanMode::deny)
+		message.replyNumeric(numeric);
 	return access != AChanMode::deny;
 }
 

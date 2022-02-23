@@ -1,6 +1,7 @@
 #include "KeyChanMode.hpp"
 #include "ChanModeConfig.hpp"
 #include "Message.hpp"
+#include "Numeric.hpp"
 #include "Channel.hpp"
 
 KeyChanMode::KeyChanMode(Server& server)
@@ -15,11 +16,24 @@ KeyChanMode::KeyChanMode(Server& server)
 KeyChanMode::~KeyChanMode(void)
 {}
 
-void	KeyChanMode::onChanEvent(Access& access, int event, Message& message)
+void	KeyChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
+	Channel* channel = message.getChannel();
 	(void)access;
 	(void)event;
-	(void)message;
+	(void)numeric;
+	if (this->isSetMode(*channel))
+	{
+		if ((this->toString(this->getMode(*channel)) == message[2]))
+		{
+		}
+		else
+		{
+			Numeric::insertField(channel->getName());
+			numeric = ERR_BADCHANNELKEY;
+			access = AChanMode::deny;
+		}
+	}
 }
 
 bool	KeyChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)

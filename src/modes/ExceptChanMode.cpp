@@ -39,11 +39,12 @@ inline static Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePair
 	return rangePair.second;
 }
 
-void	ExceptChanMode::onChanEvent(Access& access, int event, Message& message)
+void	ExceptChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
 	(void)access;
 	(void)event;
 	(void)message;
+	(void)numeric;
 }
 
 bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)

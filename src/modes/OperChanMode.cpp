@@ -18,11 +18,12 @@ OperChanMode::OperChanMode(Server& server)
 OperChanMode::~OperChanMode(void)
 {}
 
-void	OperChanMode::onChanEvent(Access& access, int event, Message& message)
+void	OperChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
 	(void)access;
 	(void)event;
 	(void)message;
+	(void)numeric;
 }
 
 bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)

@@ -17,11 +17,12 @@ VoiceChanMode::VoiceChanMode(Server& server)
 VoiceChanMode::~VoiceChanMode(void)
 {}
 
-void	VoiceChanMode::onChanEvent(Access& access, int event, Message &message)
+void	VoiceChanMode::onChanEvent(Access& access, int event, Message &message, int& numeric)
 {
 	(void)access;
 	(void)event;
 	(void)message;
+	(void)numeric;
 }
 
 bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)

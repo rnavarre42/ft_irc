@@ -22,16 +22,16 @@ LimitChanMode::LimitChanMode(Server& server)
 LimitChanMode::~LimitChanMode(void)
 {}
 
-void	LimitChanMode::onChanEvent(Access& access, int event, Message& message)
+void	LimitChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
 	Channel*	channel = message.getChannel();
 	size_t		limit = reinterpret_cast<size_t>(this->getMode(*channel));
 	(void)event;
 
-	if (limit && limit <= channel->size())
+	if (limit && limit <= channel->size() && access != AChanMode::deny)
 	{
 		Numeric::insertField(channel->getName());
-		message.replyNumeric(ERR_CHANNELISFULL);
+		numeric = ERR_CHANNELISFULL;
 		access = AChanMode::deny;
 	}
 	std::cout << "users: joined " << channel->size() << " : limit " << limit << std::endl;
