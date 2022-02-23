@@ -4,22 +4,23 @@
 #include "Server.hpp"
 #include <iostream>
 
-PingCommand::PingCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+PingCommand::PingCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void PingCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void PingCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void PingCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void PingCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-bool PingCommand::_recvUser(Message &message)
+bool PingCommand::_recvUser(Message& message)
 {
-	User			&user = *this->userSender;
+	User&			user = *this->userSender;
 	std::string		param;
 
 	message.setReceiver(message.getSender());
@@ -39,27 +40,27 @@ bool PingCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool PingCommand::_recvServer(Message &message)
+bool PingCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool PingCommand::_sendUser(Message &message)
+bool PingCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool PingCommand::_sendServer(Message &message)
+bool PingCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

@@ -78,10 +78,10 @@ public:
 		Mode(void) {}
 		~Mode(void) {}
 
-		void*				operator[](char chr);
+		void*&				operator[](char chr);
 		multimap_iterator	find(char chr);
 
-		multimap_type const		&getModeMultimap(void)
+		multimap_type const&	getModeMultimap(void)
 		{
 			return this->_modeMultimap;
 		}

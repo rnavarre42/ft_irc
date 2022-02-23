@@ -6,22 +6,23 @@
 #include "numerics.hpp"
 #include <iostream>
 
-UserCommand::UserCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+UserCommand::UserCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void	UserCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void	UserCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void	UserCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void	UserCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-bool UserCommand::_recvUser(Message &message)
+bool UserCommand::_recvUser(Message& message)
 {
-	User &user = *this->userSender;
+	User&	user = *this->userSender;
 
 	if (user.getIdent() == "anonymous")
 	{
@@ -39,27 +40,27 @@ bool UserCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool UserCommand::_recvServer(Message &message)
+bool UserCommand::_recvServer(Message& message)
 {
-	Server &server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)server;
 	(void)message;
 	return false;
 }
 
-bool UserCommand::_sendUser(Message &message)
+bool UserCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool UserCommand::_sendServer(Message &message)
+bool UserCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

@@ -5,22 +5,23 @@
 #include "Console.hpp"
 #include <iostream>
 
-ShutdownCommand::ShutdownCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+ShutdownCommand::ShutdownCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void ShutdownCommand::loadEvents(Server::eventHandler_type &)
+void ShutdownCommand::loadEvents(Server::eventHandler_type& )
 {
 //	eventHandler.add(QUITEVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::QuitEvent));
 //	eventHandler.add(DELUSEREVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::DelUserEvent));
 }
 
-void ShutdownCommand::unloadEvents(Server::eventHandler_type &)
+void ShutdownCommand::unloadEvents(Server::eventHandler_type& )
 {
 }
 
-bool ShutdownCommand::_recvUser(Message &message)
+bool ShutdownCommand::_recvUser(Message& message)
 {
-	User	&user = *this->userSender;
+	User&	user = *this->userSender;
 
 	if (message.size())
 		message[0].insert(0, "Quit: ");
@@ -30,18 +31,18 @@ bool ShutdownCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool ShutdownCommand::_recvServer(Message &message)
+bool ShutdownCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool ShutdownCommand::_sendUser(Message &message)
+bool ShutdownCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	if (!message.size())
 		message.insertField("Client exited");
@@ -49,9 +50,9 @@ bool ShutdownCommand::_sendUser(Message &message)
 	return true;
 }
 
-bool ShutdownCommand::_sendServer(Message &message)
+bool ShutdownCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

@@ -5,23 +5,24 @@
 #include "Console.hpp"
 #include <iostream>
 
-QuitCommand::QuitCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+QuitCommand::QuitCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void QuitCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void QuitCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	eventHandler.add(QUITEVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::QuitEvent));
 	eventHandler.add(DELUSEREVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::DelUserEvent));
 }
 
-void QuitCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void QuitCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void QuitCommand::DelUserEvent(Message &message)
+void QuitCommand::DelUserEvent(Message& message)
 {
-	User	&user	= static_cast<User &>(*message.getSender());
+	User&	user	= static_cast<User& >(*message.getSender());
 	
 	if (user.getName().empty())
 		Console::log(LOG_INFO, "User <anonymous> disconnected (" + message[0] + ")");
@@ -30,14 +31,14 @@ void QuitCommand::DelUserEvent(Message &message)
 	message.send("ERROR :Closing link: (" + user.getIdent() + "@" + user.getHost() + ") [" + message[0] + "]");
 }
 
-void QuitCommand::QuitEvent(Message &message)
+void QuitCommand::QuitEvent(Message& message)
 {
 	message.send();
 }
 
-bool QuitCommand::_recvUser(Message &message)
+bool QuitCommand::_recvUser(Message& message)
 {
-	User	&user = *this->userSender;
+	User&	user = *this->userSender;
 
 	if (message.size())
 		message[0].insert(0, "Quit: ");
@@ -47,18 +48,18 @@ bool QuitCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool QuitCommand::_recvServer(Message &message)
+bool QuitCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool QuitCommand::_sendUser(Message &message)
+bool QuitCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	if (!message.size())
 		message.insertField("Client exited");
@@ -66,9 +67,9 @@ bool QuitCommand::_sendUser(Message &message)
 	return true;
 }
 
-bool QuitCommand::_sendServer(Message &message)
+bool QuitCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

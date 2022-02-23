@@ -5,22 +5,23 @@
 #include <string>
 #include <iostream>
 
-KickCommand::KickCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+KickCommand::KickCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void KickCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void KickCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void KickCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-bool KickCommand::_recvUser(Message &message)
+bool KickCommand::_recvUser(Message& message)
 {
-	User	&user = *this->userSender;
+	User&	user = *this->userSender;
 	std::string	data;
 
 	for (int i = 0; i < 100; i++)
@@ -33,27 +34,27 @@ bool KickCommand::_recvUser(Message &message)
 	return false;
 }
 
-bool KickCommand::_recvServer(Message &message)
+bool KickCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool KickCommand::_sendUser(Message &message)
+bool KickCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool KickCommand::_sendServer(Message &message)
+bool KickCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

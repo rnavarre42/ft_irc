@@ -20,7 +20,7 @@ Channel::~Channel(void)
 		this->_server.findChanMode(it->first)->onDelete(it->second);
 }
 
-void*	Channel::Mode::operator[](char chr)
+void*&	Channel::Mode::operator[](char chr)
 {
 	return this->_modeMultimap.find(chr)->second;
 }

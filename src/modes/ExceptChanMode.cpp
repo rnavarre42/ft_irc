@@ -12,6 +12,7 @@ ExceptChanMode::ExceptChanMode(Server &server)
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'e';
 	this->_chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE | CHANMODE_NICK;
+	this->_chanModeConfig.unique = false;
 }
 
 ExceptChanMode::~ExceptChanMode(void)
@@ -28,26 +29,26 @@ struct BanInfo
 	time_t		time;
 };
 
-inline Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type rangePair, std::string mask)
+inline static Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type rangePair, const std::string& mask)
 {
 	for (; rangePair.first != rangePair.second; ++rangePair.first)
 	{
-		if (static_cast<BanInfo *>(rangePair.first->second)->mask == mask)
+		if (static_cast<BanInfo* >(rangePair.first->second)->mask == mask)
 			return rangePair.first;
 	}
 	return rangePair.second;
 }
 
-void	ExceptChanMode::onChanEvent(Access &access, int event, Message &message)
+void	ExceptChanMode::onChanEvent(Access& access, int event, Message& message)
 {
 	(void)access;
 	(void)event;
 	(void)message;
 }
 
-bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
+bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)
 {
-	BanInfo									*banInfo;
+	BanInfo*								banInfo;
 	Channel::Mode::rangePairMultimap_type	rangePair;
 	Channel::Mode::multimap_iterator		maskIt;
 
@@ -72,17 +73,17 @@ void	ExceptChanMode::onShowChanModeEvent(void)
 {
 }
 
-void	ExceptChanMode::onDelete(void *pointer)
+void	ExceptChanMode::onDelete(void* pointer)
 {
-	delete &*reinterpret_cast<BanInfo *>(pointer);
+	delete &*reinterpret_cast<BanInfo* >(pointer);
 }
 
-std::string ExceptChanMode::toString(void *pointer)
+std::string ExceptChanMode::toString(void* pointer)
 {
 	std::ostringstream	oss;
-	BanInfo				*banInfo;
+	BanInfo*			banInfo;
 
-	banInfo	= reinterpret_cast<BanInfo *>(pointer);
+	banInfo	= reinterpret_cast<BanInfo* >(pointer);
 	oss << banInfo->mask << " " << banInfo->nick << " :" << banInfo->time;
 	return oss.str();
 }

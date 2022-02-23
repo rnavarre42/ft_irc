@@ -11,6 +11,7 @@ VoiceChanMode::VoiceChanMode(Server& server)
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'v';
 	this->_chanModeConfig.events = 0;
+	this->_chanModeConfig.unique = false;
 }
 
 VoiceChanMode::~VoiceChanMode(void)
@@ -46,14 +47,12 @@ bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message
 }
 
 void	VoiceChanMode::onShowChanModeEvent(void)
-{
-}
+{}
 
 void	VoiceChanMode::onDelete(void* )
-{
-}
+{}
 
 std::string VoiceChanMode::toString(void* pointer)
 {
-	return reinterpret_cast<User *>(pointer)->getName();
+	return reinterpret_cast<User* >(pointer)->getName();
 }

@@ -5,26 +5,26 @@
 #include "Server.hpp"
 #include <iostream>
 
-TopicCommand::TopicCommand(Server &server, int accessLevel, int paramCount)
+TopicCommand::TopicCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void	TopicCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void	TopicCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void	TopicCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void	TopicCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-bool TopicCommand::_recvUser(Message &message)
+bool TopicCommand::_recvUser(Message& message)
 {
-	User						*user = this->userSender;
+	User*						user = this->userSender;
 	Server::channelMap_iterator	chanIt = server.channelFind(message[0]);
-	Channel						*channel = chanIt->second;
-	Channel::TopicInfo const	&topicInfo = channel->getTopicInfo();
+	Channel*					channel = chanIt->second;
+	const Channel::TopicInfo&	topicInfo = channel->getTopicInfo();
 
 	if (chanIt == server.getChannelMap().end())
 	{
@@ -71,27 +71,27 @@ bool TopicCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool TopicCommand::_recvServer(Message &message)
+bool TopicCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool TopicCommand::_sendUser(Message &message)
+bool TopicCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userSender;
+	User&	user = *this->userSender;
 
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool TopicCommand::_sendServer(Message &message)
+bool TopicCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;

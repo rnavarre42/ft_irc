@@ -9,16 +9,16 @@
 
 #include <iostream>
 
-ModeCommand::ModeCommand(Server &server, int accessLevel, int paramCount)
+ModeCommand::ModeCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void ModeCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void ModeCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void ModeCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void ModeCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
@@ -28,13 +28,13 @@ inline int	isSignMode(char c)
 	return (c == '+') * 1 + (c == '-') * 2;
 }
 
-inline bool	hasParamMode(bool set, AChanMode *chanMode)
+inline bool	hasParamMode(bool set, AChanMode* chanMode)
 {
 	return ((set && chanMode->getConfig().type & ChanModeConfig::enableParam)
 			|| (!set && chanMode->getConfig().type & ChanModeConfig::disableParam));
 }
 
-void	cleanSignModes(std::string &modes)
+void	cleanSignModes(std::string& modes)
 {
 	int	set = 3;
 
@@ -56,13 +56,13 @@ void	cleanSignModes(std::string &modes)
  *	Funcion que verifica si el modo de canal existe, la sintaxis es correcta y tiene privilegios para
  *	ejecutarlo.
  */
-void ModeCommand::_checkChanModes(Message &message)
+void ModeCommand::_checkChanModes(Message& message)
 {
 	unsigned long					pos = 2;
 	bool							set = true;
-	Channel							*channel;
+	Channel*						channel;
 	Channel::channelMap_iterator	it = server.channelFind(message[0]);
-	AChanMode						*chanMode;
+	AChanMode*						chanMode;
 	std::string::iterator 			currentIt;
 
 	if (message.size() < 2)
@@ -143,7 +143,7 @@ void ModeCommand::_checkChanModes(Message &message)
  *	ejecutarlo.
  */ 
 
-void ModeCommand::_checkUserModes(Message &message)
+void ModeCommand::_checkUserModes(Message& message)
 {
 	Server::userMap_iterator	it = server.userFind(message[0]);
 
@@ -161,9 +161,9 @@ void ModeCommand::_checkUserModes(Message &message)
 	}
 }
 
-bool ModeCommand::_recvUser(Message &message)
+bool ModeCommand::_recvUser(Message& message)
 {
-	User	&user = *this->userSender;
+	User&	user = *this->userSender;
 
 	(void)user;
 
@@ -175,27 +175,27 @@ bool ModeCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool ModeCommand::_recvServer(Message &message)
+bool ModeCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool ModeCommand::_sendUser(Message &message)
+bool ModeCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool ModeCommand::_sendServer(Message &message)
+bool ModeCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

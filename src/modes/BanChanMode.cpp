@@ -20,6 +20,7 @@ BanChanMode::BanChanMode(Server& server)
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'b';
 	this->_chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE | CHANMODE_NICK;
+	this->_chanModeConfig.unique = false;
 }
 
 BanChanMode::~BanChanMode(void) {}
@@ -53,7 +54,7 @@ struct BanInfo
 	time_t		time;
 };
 
-inline Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type& rangePair, std::string& mask)
+inline static Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type& rangePair, const std::string& mask)
 {
 	for (; rangePair.first != rangePair.second; ++rangePair.first)
 	{
@@ -65,7 +66,7 @@ inline Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultima
 
 bool	BanChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)
 {
-	BanInfo									*banInfo;
+	BanInfo*								banInfo;
 	Channel::Mode::rangePairMultimap_type	rangePair;
 	Channel::Mode::multimap_iterator		maskIt;
 
@@ -92,14 +93,14 @@ void	BanChanMode::onShowChanModeEvent(void)
 
 void	BanChanMode::onDelete(void* pointer)
 {
-	delete &*reinterpret_cast<BanInfo *>(pointer);
+	delete &*reinterpret_cast<BanInfo* >(pointer);
 
 }
 
 std::string BanChanMode::toString(void* pointer)
 {
 	std::ostringstream	oss;
-	BanInfo				*banInfo;
+	BanInfo*			banInfo;
 
 	banInfo	= reinterpret_cast<BanInfo* >(pointer);
 	oss << banInfo->mask << " " << banInfo->nick << " :" << banInfo->time;

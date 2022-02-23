@@ -337,7 +337,7 @@ const std::string&	Server::getName(void) const
 
 std::string	Server::getMask(void)
 {
-	throw Server::NotImplementedException();
+//	throw Server::NotImplementedException();
 	return this->_name;
 }
 
@@ -627,14 +627,6 @@ int	Server::_checkUserConnection(void)
 		return 1;
 	}
 	return 0;
-/*
- * Excepción eliminada al devolver _accept un puntero y no una referencia
- *
- *		catch (Server::ServerFullException &e)
- *		{
- *			std::cerr << e.what() << std::endl;
- *		}
- */
 }
 
 void	Server::names(Channel& channel)

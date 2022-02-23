@@ -6,22 +6,23 @@
 #include <iostream>
 #include <fstream>
 
-MotdCommand::MotdCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+MotdCommand::MotdCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void MotdCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void MotdCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void MotdCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void MotdCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-bool MotdCommand::_recvUser(Message &message)
+bool MotdCommand::_recvUser(Message& message)
 {
-	User	&user = *this->userSender;
+	User&	user = *this->userSender;
 
 	message.setReceiver(&user);
 	message.process();
@@ -30,18 +31,18 @@ bool MotdCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool MotdCommand::_recvServer(Message &message)
+bool MotdCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool MotdCommand::_sendUser(Message &message)
+bool MotdCommand::_sendUser(Message& message)
 {
-	User			&user = *this->userReceiver;
+	User&			user = *this->userReceiver;
 	std::ifstream	ifs;
 	std::string		line;
 
@@ -63,9 +64,9 @@ bool MotdCommand::_sendUser(Message &message)
 	return true;
 }
 
-bool MotdCommand::_sendServer(Message &message)
+bool MotdCommand::_sendServer(Message& message)
 {
-	Server &server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

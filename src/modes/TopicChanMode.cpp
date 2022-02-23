@@ -4,39 +4,38 @@
 #include "User.hpp"
 #include "Console.hpp"
 
-TopicChanMode::TopicChanMode(Server &server)
+TopicChanMode::TopicChanMode(Server& server)
 	: AChanMode(server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::noParam;
 	this->_chanModeConfig.mode = 't';
 	this->_chanModeConfig.events = CHANMODE_TOPIC;
+	this->_chanModeConfig.unique = true;
 }
 
 TopicChanMode::~TopicChanMode(void)
 {}
 
-void	TopicChanMode::onChanEvent(Access &access, int event, Message &message)
+void	TopicChanMode::onChanEvent(Access& access, int event, Message& message)
 {
 	(void)event;
 	if (message.getChannel()->isOper(message.getSender()))
 		access = allow;
 }
 
-bool	TopicChanMode::onChanModeEvent(int, int sign, Channel &channel, Message &)
+bool	TopicChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )
 {
 	return (sign && this->setMode(channel, NULL))
 				|| (!sign && this->unsetMode(channel, NULL));
 }
 
 void	TopicChanMode::onShowChanModeEvent(void)
-{
-}
+{}
 
-void	TopicChanMode::onDelete(void *)
-{
-}
+void	TopicChanMode::onDelete(void* )
+{}
 
-std::string TopicChanMode::toString(void *)
+std::string TopicChanMode::toString(void* )
 {
 	return "";
 }

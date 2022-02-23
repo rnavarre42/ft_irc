@@ -4,15 +4,16 @@
 #include "Server.hpp"
 #include <iostream>
 
-PassCommand::PassCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+PassCommand::PassCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void PassCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void PassCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void PassCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void PassCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }

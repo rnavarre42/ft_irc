@@ -9,34 +9,35 @@
 #include <iostream>
 #include <map>
 
-NickCommand::NickCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+NickCommand::NickCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void NickCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void NickCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	Delegate<NickCommand, Message> *nickDelegate = new Delegate<NickCommand, Message>(*this, &NickCommand::nickEvent);
 
 	eventHandler.add(NICKEVENT, *nickDelegate);
 }
 
-void NickCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void NickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void NickCommand::nickEvent(Message &message)
+void NickCommand::nickEvent(Message& message)
 {
 	std::cout << "<" << message.getSender()->getName() << "> papa" << std::endl; 
 }
 
-bool NickCommand::_recvUser(Message &message)
+bool NickCommand::_recvUser(Message& message)
 {
-	User									&user = *this->userSender;
+	User&									user = *this->userSender;
 	std::string								oldName = user.getName();
 	std::string								newName = message[0];
-	std::map<std::string, User *>::iterator	it;
-	std::map<std::string, User *>			&userMap = this->server.getUserMap();
-	Server::userVector_type					*uniqueUsers;
+	std::map<std::string, User* >::iterator	it;
+	std::map<std::string, User* >&			userMap = this->server.getUserMap();
+	Server::userVector_type*				uniqueUsers;
 
 	message.setReceiver(message.getSender());
 	if (newName.size() > MAXNICK)
@@ -95,23 +96,23 @@ bool NickCommand::_recvUser(Message &message)
 	return true;	
 }
 
-bool NickCommand::_recvServer(Message &message)
+bool NickCommand::_recvServer(Message& message)
 {
 	(void)message;
 	return false;
 }
-bool NickCommand::_sendUser(Message &message)
+bool NickCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool NickCommand::_sendServer(Message &message)
+bool NickCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

@@ -3,20 +3,21 @@
 #include "Message.hpp"
 #include "Numeric.hpp"
 
-InviteChanMode::InviteChanMode(Server &server)
+InviteChanMode::InviteChanMode(Server& server)
 	: AChanMode(server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::noParam;
 	this->_chanModeConfig.mode = 'i';
 	this->_chanModeConfig.events = CHANMODE_JOIN;
+	this->_chanModeConfig.unique = true;
 }
 
 InviteChanMode::~InviteChanMode(void)
 {}
 
-void	InviteChanMode::onChanEvent(Access &access, int event, Message &message)
+void	InviteChanMode::onChanEvent(Access& access, int event, Message& message)
 {
-	Channel	*channel = message.getChannel();
+	Channel* channel = message.getChannel();
 	(void)event;
 
 	if (this->isSetMode(*channel))
@@ -32,7 +33,7 @@ void	InviteChanMode::onChanEvent(Access &access, int event, Message &message)
 	}
 }
 
-bool	InviteChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &)
+bool	InviteChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& )
 {
 	(void)pos;
 
@@ -44,11 +45,11 @@ void	InviteChanMode::onShowChanModeEvent(void)
 {
 }
 
-void	InviteChanMode::onDelete(void *)
+void	InviteChanMode::onDelete(void* )
 {
 }
 
-std::string InviteChanMode::toString(void *)
+std::string InviteChanMode::toString(void* )
 {
 	return "";
 }

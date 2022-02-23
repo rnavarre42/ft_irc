@@ -46,6 +46,7 @@ struct ChanModeConfig
 	int			type;
 	char		mode;
 	int			events;
+	bool		unique;
 
 private:
 	ChanModeConfig(ChanModeConfig const &src);

@@ -5,22 +5,23 @@
 #include "Numeric.hpp"
 #include <iostream>
 
-NamesCommand::NamesCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+NamesCommand::NamesCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void NamesCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void NamesCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void NamesCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void NamesCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
-bool NamesCommand::_recvUser(Message &message)
+bool NamesCommand::_recvUser(Message& message)
 {
 	Server::channelMap_iterator	it;
-	User	&user = *this->userSender;
+	User&	user = *this->userSender;
 
 	(void)user;
 	message.setReceiver(message.getSender());
@@ -35,18 +36,18 @@ bool NamesCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool NamesCommand::_recvServer(Message &message)
+bool NamesCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool NamesCommand::_sendUser(Message &message)
+bool NamesCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 
 	(void)message;
 	(void)user;
@@ -54,9 +55,9 @@ bool NamesCommand::_sendUser(Message &message)
 	return false;
 }
 
-bool NamesCommand::_sendServer(Message &message)
+bool NamesCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

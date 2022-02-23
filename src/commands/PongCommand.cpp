@@ -6,23 +6,22 @@
 #include "Server.hpp"
 #include <iostream>
 
-PongCommand::PongCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+PongCommand::PongCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void PongCommand::loadEvents(Server::eventHandler_type &eventHandler)
+void PongCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	eventHandler.add(REGUSEREVENT, *new Delegate<PongCommand, Message>(*this, &PongCommand::registerUserEvent));
 }
 
-void PongCommand::unloadEvents(Server::eventHandler_type &eventHandler)
+void PongCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void PongCommand::registerUserEvent(Message &message)
+void PongCommand::registerUserEvent(Message& message)
 {
-//	Message &message = *source.message;
-
 	Console::log(LOG_INFO, "El usuario " + message.getSender()->getName() + " se ha registrado");	
 	message.limitMaxParam(0);
 	message.setReceiver(this->userSender);
@@ -48,13 +47,11 @@ void PongCommand::registerUserEvent(Message &message)
 
 	message.setCmd("MOTD");
 	message.process();
-//	
-//	this->server.sendCommand(message);
 }
 
-bool PongCommand::_recvUser(Message &message)
+bool PongCommand::_recvUser(Message& message)
 {
-	User	&user = *this->userSender;
+	User&	user = *this->userSender;
 
 	if (message[0] == user.getPingChallenge())
 	{
@@ -69,33 +66,30 @@ bool PongCommand::_recvUser(Message &message)
 		message.setCmd("QUIT");
 		message[0] = "Incorrect ping reply for registration";
 		message.process();
-//		this->server.sendCommand(message);
-//		this->server.delUser(user);
 	}
-//		server.killUser(user, "You should be dead now!");
 	return true;
 }
 
-bool PongCommand::_recvServer(Message &message)
+bool PongCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
-bool PongCommand::_sendUser(Message &message)
+bool PongCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 	
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool PongCommand::_sendServer(Message &message)
+bool PongCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)message;
 	(void)server;

@@ -6,18 +6,19 @@
 
 #include <iostream>
 
-NoticeCommand::NoticeCommand(Server &server, int accessLevel, int paramCount) : ACommand(server, accessLevel, paramCount)
+NoticeCommand::NoticeCommand(Server& server, int accessLevel, int paramCount)
+	: ACommand(server, accessLevel, paramCount)
 {}
 
-void NoticeCommand::loadEvents(Server::eventHandler_type &)
+void NoticeCommand::loadEvents(Server::eventHandler_type& )
 {}
 
-void NoticeCommand::unloadEvents(Server::eventHandler_type &)
+void NoticeCommand::unloadEvents(Server::eventHandler_type& )
 {}
 
-bool NoticeCommand::_recvUser(Message &message)
+bool NoticeCommand::_recvUser(Message& message)
 {
-	User						&user = *this->userSender;
+	User&						user = *this->userSender;
 	Server::userMap_iterator 	userIt;
 	Server::channelMap_iterator	chanIt;
 
@@ -55,27 +56,27 @@ bool NoticeCommand::_recvUser(Message &message)
 	return true;
 }
 
-bool NoticeCommand::_recvServer(Message &message)
+bool NoticeCommand::_recvServer(Message& message)
 {
-	Server	&server = *this->serverSender;
+	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
 	return false;
 }
 
-bool NoticeCommand::_sendUser(Message &message)
+bool NoticeCommand::_sendUser(Message& message)
 {
-	User	&user = *this->userReceiver;
+	User&	user = *this->userReceiver;
 
 	(void)user;
 	(void)message;
 	return false;
 }
 
-bool NoticeCommand::_sendServer(Message &message)
+bool NoticeCommand::_sendServer(Message& message)
 {
-	Server	&server = *this->serverReceiver;
+	Server&	server = *this->serverReceiver;
 
 	(void)server;
 	(void)message;

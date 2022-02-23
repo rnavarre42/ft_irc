@@ -6,25 +6,26 @@
 #include "Numeric.hpp"
 #include "Console.hpp"
 
-OperChanMode::OperChanMode(Server &server)
+OperChanMode::OperChanMode(Server& server)
 	: AChanMode(server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'o';
 	this->_chanModeConfig.events = CHANMODE_KICK | CHANMODE_MODE | CHANMODE_INVITE;;
+	this->_chanModeConfig.unique = false;
 }
 
 OperChanMode::~OperChanMode(void)
 {}
 
-void	OperChanMode::onChanEvent(Access &access, int event, Message &message)
+void	OperChanMode::onChanEvent(Access& access, int event, Message& message)
 {
 	(void)access;
 	(void)event;
 	(void)message;
 }
 
-bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
+bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)
 {
 	Server::userMap_iterator	targetIt;
 	
@@ -50,11 +51,11 @@ void	OperChanMode::onShowChanModeEvent(void)
 {
 }
 
-void	OperChanMode::onDelete(void *)
+void	OperChanMode::onDelete(void* )
 {
 }
 
-std::string OperChanMode::toString(void *pointer)
+std::string OperChanMode::toString(void* pointer)
 {
-	return reinterpret_cast<User *>(pointer)->getName();
+	return reinterpret_cast<User* >(pointer)->getName();
 }

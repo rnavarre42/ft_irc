@@ -10,18 +10,19 @@
 #include <sstream>
 #include <cstdlib>
 
-LimitChanMode::LimitChanMode(Server &server)
+LimitChanMode::LimitChanMode(Server& server)
 	: AChanMode(server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam;
 	this->_chanModeConfig.mode = 'l';
 	this->_chanModeConfig.events = CHANMODE_JOIN;
+	this->_chanModeConfig.unique = true;
 }
 
 LimitChanMode::~LimitChanMode(void)
 {}
 
-void	LimitChanMode::onChanEvent(Access &access, int event, Message &message)
+void	LimitChanMode::onChanEvent(Access& access, int event, Message& message)
 {
 	Channel*	channel = message.getChannel();
 	size_t		limit = reinterpret_cast<size_t>(this->getMode(*channel));
@@ -42,7 +43,7 @@ inline bool	isValidLimit(unsigned long limit, Channel& channel, char chanMode)
 			|| limit == reinterpret_cast<unsigned long>(channel.mode[chanMode]));
 }
 
-bool	isNumber(std::string &str)
+bool	isNumber(std::string& str)
 {
 	for (std::string::iterator it = str.begin(); it != str.end(); ++it)
 	{
@@ -52,7 +53,7 @@ bool	isNumber(std::string &str)
 	return true;
 }
 
-bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message &message)
+bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)
 {
 	unsigned long						limit;
 	Channel::Mode::multimap_iterator	modeIt;
@@ -82,14 +83,12 @@ bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message
 }
 
 void	LimitChanMode::onShowChanModeEvent(void)
-{
-}
+{}
 
-void	LimitChanMode::onDelete(void *)
-{
-}
+void	LimitChanMode::onDelete(void* )
+{}
 
-std::string LimitChanMode::toString(void *pointer)
+std::string LimitChanMode::toString(void* pointer)
 {
 	std::ostringstream	oss;
 
