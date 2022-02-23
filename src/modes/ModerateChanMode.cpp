@@ -13,11 +13,12 @@ ModerateChanMode::ModerateChanMode(Server& server)
 ModerateChanMode::~ModerateChanMode(void)
 {}
 
-void	ModerateChanMode::onChanEvent(Access& access, int event, Message& message)
+void	ModerateChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
 	(void)access;
 	(void)event;
 	(void)message;
+	(void)numeric;
 }
 
 bool	ModerateChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )

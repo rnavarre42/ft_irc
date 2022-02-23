@@ -16,9 +16,10 @@ TopicChanMode::TopicChanMode(Server& server)
 TopicChanMode::~TopicChanMode(void)
 {}
 
-void	TopicChanMode::onChanEvent(Access& access, int event, Message& message)
+void	TopicChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
 	(void)event;
+	(void)numeric;
 	if (message.getChannel()->isOper(message.getSender()))
 		access = allow;
 }

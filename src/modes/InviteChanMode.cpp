@@ -15,7 +15,7 @@ InviteChanMode::InviteChanMode(Server& server)
 InviteChanMode::~InviteChanMode(void)
 {}
 
-void	InviteChanMode::onChanEvent(Access& access, int event, Message& message)
+void	InviteChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
 	Channel* channel = message.getChannel();
 	(void)event;
@@ -24,13 +24,18 @@ void	InviteChanMode::onChanEvent(Access& access, int event, Message& message)
 	{
 		if ((this->_server.invite().find(message.getSender(), channel)) == this->_server.invite().end())
 		{
-			Numeric::insertField(message.getChannel()->getName());
-			message.replyNumeric(ERR_INVITEONLYCHAN);
-			access = AChanMode::deny;
+			if (access != AChanMode::deny)
+			{
+				Numeric::insertField(channel->getName());
+				numeric = ERR_INVITEONLYCHAN;
+				access = AChanMode::deny;
+			}
 		}
 		else
 			access = AChanMode::allow;
 	}
+	else if ((this->_server.invite().find(message.getSender(), channel)) != this->_server.invite().end())
+		access = AChanMode::allow;
 }
 
 bool	InviteChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& )

@@ -13,11 +13,12 @@ NoExternalChanMode::NoExternalChanMode(Server& server)
 NoExternalChanMode::~NoExternalChanMode(void)
 {}
 
-void	NoExternalChanMode::onChanEvent(Access& access, int event, Message& message)
+void	NoExternalChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
 	(void)access;
 	(void)event;
 	(void)message;
+	(void)numeric;
 }
 
 bool	NoExternalChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )
