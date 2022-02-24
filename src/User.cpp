@@ -158,11 +158,17 @@ const int&	User::getPollIndex(void) const
 void	User::setAwayMsg(const std::string& value)
 {
 	this->_awayMsg = value;
+	this->_awayTime = time(NULL);
 }
 
 const std::string&	User::getAwayMsg(void) const
 {
 	return this->_awayMsg;
+}
+
+const time_t&	User::getAwayTime(void) const
+{
+	return this->_awayTime;
 }
 
 void	User::setIdleTime(time_t value)

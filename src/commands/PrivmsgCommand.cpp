@@ -5,6 +5,7 @@
 #include "Numeric.hpp"
 #include "Server.hpp"
 #include "utils.hpp"
+#include "chanmodes.hpp"
 
 #include <iostream>
 
@@ -37,6 +38,9 @@ bool PrivmsgCommand::_recvUser(Message& message)
 			message.replyNumeric(ERR_NOSUCHCHANNEL);
 			return true;
 		}
+		message.setChannel(chanIt->second);
+		if (!server.checkChannelMode(message, CHANMODE_PRIVMSG))
+			return true;
 		message.setReceiver(chanIt->second);
 		message.limitMaxParam(2);
 		message.hideReceiver();

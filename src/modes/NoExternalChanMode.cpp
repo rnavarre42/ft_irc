@@ -1,5 +1,9 @@
 #include "NoExternalChanMode.hpp"
 #include "ChanModeConfig.hpp"
+#include "Channel.hpp"
+#include "User.hpp"
+#include "Message.hpp"
+#include "Numeric.hpp"
 
 NoExternalChanMode::NoExternalChanMode(Server& server)
 	: AChanMode(server)
@@ -15,10 +19,16 @@ NoExternalChanMode::~NoExternalChanMode(void)
 
 void	NoExternalChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
-	(void)access;
+	Channel*	channel = message.getChannel();
+	User*		user  = static_cast<User*>(message.getSender());
 	(void)event;
-	(void)message;
-	(void)numeric;
+
+	if (access != AChanMode::deny && this->isSetMode(*channel) && !user->isOnChannel(*channel))
+	{
+		Numeric::insertField(channel->getName());
+		numeric = ERR_CANNOTSENDTOCHAN;
+		access = AChanMode::deny;
+	}
 }
 
 bool	NoExternalChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )

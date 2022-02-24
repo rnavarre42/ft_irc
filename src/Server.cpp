@@ -70,10 +70,10 @@ Server::~Server(void)
 void	Server::_loadCommands(void)
 {
 
-//	this->_commandMap["AWAY"]		= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
+	this->_commandMap["AWAY"]		= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
 	this->_commandMap["INVITE"]		= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
 	this->_commandMap["JOIN"]		= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["KICK"]		= new KickCommand	(*this, LEVEL_REGISTERED, 2);
+	this->_commandMap["KICK"]		= new KickCommand	(*this, LEVEL_REGISTERED, 2);
 	this->_commandMap["MODE"]		= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["MOTD"]		= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
 	this->_commandMap["NICK"]		= new NickCommand	(*this, LEVEL_ALL, 1);
@@ -84,7 +84,7 @@ void	Server::_loadCommands(void)
 	this->_commandMap["PONG"]		= new PongCommand	(*this, LEVEL_NEGOTIATING | LEVEL_REGISTERED, 1);
 	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["QUIT"]		= new QuitCommand	(*this, LEVEL_ALL, 0);
-	this->_commandMap["SHUTDOWN"]	= new ShutdownCommand	(*this, LEVEL_IRCOPERATOR, 0);
+//	this->_commandMap["SHUTDOWN"]	= new ShutdownCommand	(*this, LEVEL_IRCOPERATOR, 0);
 	this->_commandMap["TOPIC"]		= new TopicCommand	(*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["USER"]		= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
 

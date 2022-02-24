@@ -17,7 +17,7 @@ InviteChanMode::~InviteChanMode(void)
 
 void	InviteChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
-	Channel* channel = message.getChannel();
+	Channel*	channel = message.getChannel();
 	(void)event;
 
 	if (this->isSetMode(*channel))

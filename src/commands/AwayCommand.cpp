@@ -28,7 +28,7 @@ bool AwayCommand::_recvUser(Message& message)
 		user.getAwayMsg().empty();
 		user.send(Numeric::builder(this->server, user, RPL_UNAWAY));
 	}
-	else
+	else if (message[0] != user.getAwayMsg())
 	{
 		user.setAwayMsg(message[0]);
 		user.send(Numeric::builder(this->server, user, RPL_NOAWAY));

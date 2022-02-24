@@ -11,7 +11,7 @@ OperChanMode::OperChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'o';
-	this->_chanModeConfig.events = CHANMODE_KICK | CHANMODE_MODE | CHANMODE_INVITE;;
+	this->_chanModeConfig.events = CHANMODE_KICK | CHANMODE_MODE | CHANMODE_INVITE;
 	this->_chanModeConfig.unique = false;
 }
 
@@ -20,10 +20,21 @@ OperChanMode::~OperChanMode(void)
 
 void	OperChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
-	(void)access;
+	Channel*					channel = message.getChannel();
+	Server::userMap_iterator	kickUserIt;
 	(void)event;
-	(void)message;
-	(void)numeric;
+
+	if (this->isSetMode(*channel, message.getSender()))
+	{
+		if ((kickUserIt = this->_server.userFind(message[1])) == this->_server.getUserMap().end())
+			Numeric::insertField(channel->getName());
+	}
+	else
+	{
+		Numeric::insertField(channel->getName());
+		numeric = ERR_CHANOPRIVSNEEDED;
+		access = AChanMode::deny;
+	}
 }
 
 bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)

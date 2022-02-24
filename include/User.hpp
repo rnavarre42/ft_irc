@@ -83,11 +83,10 @@ public:
 
 	void				setAwayMsg(const std::string& value);
 	const std::string&	getAwayMsg(void) const;
+	const time_t&		getAwayTime(void) const;
 
 	const Server&		getServer(void) const;
 
-	void 				setAwayTime(time_t value);
-	const time_t&		getAwayTime(void) const;
 
 	void 				setNextTimeout(time_t value);
 	const time_t&		getNextTimeout(void) const;

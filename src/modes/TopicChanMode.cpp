@@ -3,6 +3,7 @@
 #include "Message.hpp"
 #include "User.hpp"
 #include "Console.hpp"
+#include "Numeric.hpp"
 
 TopicChanMode::TopicChanMode(Server& server)
 	: AChanMode(server)
@@ -18,10 +19,18 @@ TopicChanMode::~TopicChanMode(void)
 
 void	TopicChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
+	Channel*	channel = message.getChannel();
 	(void)event;
-	(void)numeric;
+	if (!this->isSetMode(*channel))
+		return ;
 	if (message.getChannel()->isOper(message.getSender()))
 		access = allow;
+	else
+	{
+		Numeric::insertField(message.getChannel()->getName());
+		numeric = ERR_CHANOPRIVSNEEDED;
+		access = AChanMode::deny;
+	}
 }
 
 bool	TopicChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )

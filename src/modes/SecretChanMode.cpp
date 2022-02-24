@@ -13,12 +13,8 @@ SecretChanMode::SecretChanMode(Server& server)
 SecretChanMode::~SecretChanMode(void)
 {}
 
-void	SecretChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
+void	SecretChanMode::onChanEvent(Access&, int, Message&, int&)
 {
-	(void)access;
-	(void)event;
-	(void)message;
-	(void)numeric;
 }
 
 bool	SecretChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message& )

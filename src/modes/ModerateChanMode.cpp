@@ -1,5 +1,9 @@
 #include "ModerateChanMode.hpp"
 #include "ChanModeConfig.hpp"
+#include "Message.hpp"
+#include "Numeric.hpp"
+#include "Channel.hpp"
+#include "User.hpp"
 
 ModerateChanMode::ModerateChanMode(Server& server)
 	: AChanMode(server)
@@ -15,10 +19,16 @@ ModerateChanMode::~ModerateChanMode(void)
 
 void	ModerateChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
-	(void)access;
+	Channel*	channel = message.getChannel();
+	ISender*	user = message.getSender();
 	(void)event;
-	(void)message;
-	(void)numeric;
+
+	if (access != AChanMode::deny && this->isSetMode(*channel) && !(channel->isVoice(user) || channel->isOper(user)))
+	{
+		Numeric::insertField(channel->getName());
+		numeric = ERR_CANNOTSENDTOCHAN;
+		access = AChanMode::deny;
+	}
 }
 
 bool	ModerateChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )

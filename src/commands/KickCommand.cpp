@@ -2,6 +2,9 @@
 #include "User.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
+#include "Numeric.hpp"
+#include "chanmodes.hpp"
+
 #include <string>
 #include <iostream>
 
@@ -19,19 +22,28 @@ void KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 	(void)eventHandler;
 }
 
+//KICK #canal nick :motivo
 bool KickCommand::_recvUser(Message& message)
 {
-	User&	user = *this->userSender;
-	std::string	data;
+	User*						user = this->userSender;
+	Server::channelMap_iterator	channelIt;
+	Channel*					channel;
 
-	for (int i = 0; i < 100; i++)
-		data += "1u497yfhyuewoipvjfu4y2gr79ry23984u239fuhg23u48y239yguib23iur239g4f82739yr8923hury972yr892uer892hufu2";
-	for (int i = 0; i < 10; i++)
-		user.send(data);
-
-	(void)message;
 	(void)user;
-	return false;
+	if ((channelIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
+	{
+		Numeric::insertField(message[0]);
+		message.replyNumeric(ERR_NOSUCHCHANNEL);
+	}
+	else
+	{
+		channel = channelIt->second;
+		message.setChannel(channel);
+		if (!this->server.checkChannelMode(message, CHANMODE_KICK))
+			return true;
+	}
+	
+	return true;
 }
 
 bool KickCommand::_recvServer(Message& message)

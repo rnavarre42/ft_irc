@@ -1,8 +1,12 @@
 #include "TopicCommand.hpp"
+#include "ChanModeConfig.hpp"
 #include "Channel.hpp"
+#include "User.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
 #include "Server.hpp"
+#include "chanmodes.hpp"
+			
 #include <iostream>
 
 TopicCommand::TopicCommand(Server& server, int accessLevel, int paramCount)
@@ -54,11 +58,8 @@ bool TopicCommand::_recvUser(Message& message)
 		}
 		else
 		{
-//			if (!channel.mode.raiseEvent(CHANMODE_TOPIC, message))
-//			{
-//				Numeric::insertField(channel->getName());
-//				message.replyNueric(ERR_CHANOPRIVSNEEDED);
-//			}
+			if (!server.checkChannelMode(message, CHANMODE_TOPIC))
+				return true;
 			if (topicInfo.topic != message[1])
 			{
 				channel->setTopicInfo(user->getName(), message[1]);
