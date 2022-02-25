@@ -55,7 +55,7 @@ protected:
 
 	bool	setMode(Channel& channel, void* value)
 	{
-		if (this->_chanModeConfig.unique)
+		if (value != NULL && this->_chanModeConfig.unique)
 		{
 			channel.mode[this->_chanModeConfig.mode] = value;
 			return true;
