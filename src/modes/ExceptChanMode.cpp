@@ -4,6 +4,7 @@
 #include "Numeric.hpp"
 #include "Channel.hpp"
 #include "User.hpp"
+#include "BanInfo.hpp"
 
 #include <ctime>
 #include <sstream>
@@ -19,17 +20,6 @@ ExceptChanMode::ExceptChanMode(Server &server)
 
 ExceptChanMode::~ExceptChanMode(void)
 {}
-
-struct BanInfo
-{
-	BanInfo(std::string mask, std::string nick)
-		: mask(mask), nick(nick), time(std::time(NULL))
-	{}
-
-	std::string	mask;
-	std::string	nick;
-	time_t		time;
-};
 
 inline static Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type rangePair, const std::string& mask)
 {
