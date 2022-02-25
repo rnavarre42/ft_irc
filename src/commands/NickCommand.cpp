@@ -6,7 +6,7 @@
 #include "numerics.hpp"
 #include "Server.hpp"
 #include "utils.hpp"
-#include "chanmodes.hpp"
+#include "ChanModeConfig.hpp"
 
 #include <iostream>
 #include <map>

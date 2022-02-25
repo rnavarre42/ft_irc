@@ -1,19 +1,42 @@
 #include "ListCommand.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
+#include "Numeric.hpp"
+#include "Channel.hpp"
+
 #include <iostream>
 
 ListCommand::ListCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
+void	ListCommand::loadEvents(Server::eventHandler_type& eventHandler)
+{
+	(void)eventHandler;
+}
+
+void	ListCommand::unloadEvents(Server::eventHandler_type& eventHandler)
+{
+	(void)eventHandler;
+}
+
 bool ListCommand::_recvUser(Message& message)
 {
 	User&	user = *this->userSender;
-
-	(void)message;
 	(void)user;
-	return false;
+
+	for (Server::channelMap_iterator it = this->server.getChannelMap().begin()
+			;it != this->server.getChannelMap().end()
+			;++it)
+	{
+		Numeric::insertField(it->second->getName());
+		Numeric::insertField(it->second->size());
+		Numeric::insertField(it->second->getTopicInfo().topic);
+		message.replyNumeric(RPL_LIST);
+	}
+	message.replyNumeric(RPL_LISTEND);
+	
+	return true;
 }
 
 bool ListCommand::_recvServer(Message& message)
@@ -40,5 +63,5 @@ bool ListCommand::_sendServer(Message& message)
 
 	(void)message;
 	(void)server;
-	retur false;
+	return false;
 }

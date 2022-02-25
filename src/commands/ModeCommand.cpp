@@ -6,7 +6,7 @@
 #include "Channel.hpp"
 #include "Numeric.hpp"
 #include "Console.hpp"
-#include "chanmodes.hpp"
+#include "ChanModeConfig.hpp"
 
 #include <iostream>
 

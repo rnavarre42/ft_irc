@@ -5,7 +5,7 @@
 #include "Message.hpp"
 #include "Numeric.hpp"
 #include "Server.hpp"
-#include "chanmodes.hpp"
+#include "ChanModeConfig.hpp"
 			
 #include <iostream>
 

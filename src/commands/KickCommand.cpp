@@ -3,7 +3,7 @@
 #include "Message.hpp"
 #include "Server.hpp"
 #include "Numeric.hpp"
-#include "chanmodes.hpp"
+#include "ChanModeConfig.hpp"
 
 #include <string>
 #include <iostream>
@@ -22,14 +22,12 @@ void KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 	(void)eventHandler;
 }
 
-//KICK #canal nick :motivo
 bool KickCommand::_recvUser(Message& message)
 {
 	User*						user = this->userSender;
 	Server::channelMap_iterator	channelIt;
 	Channel*					channel;
 	Server::userMap_iterator	userKickIt;
-//	User*						userKick;
 
 	(void)user;
 	if ((channelIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())

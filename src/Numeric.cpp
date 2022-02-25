@@ -140,4 +140,6 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_TOPICTIME]			= "$ :$ $";
 	Numeric::_numericMap[ERR_CANNOTSENDTOCHAN]	= "$ :Cannot send to channel";
 	Numeric::_numericMap[ERR_CANTCHANGENICK]	= ":Cannot change nickname while on $ (you're banned)";
+	Numeric::_numericMap[RPL_LIST]				= "$ $ :$";
+	Numeric::_numericMap[RPL_LISTEND]			= ":End of LIST";
 }

@@ -34,6 +34,7 @@ COMMAND_SRCS	=	\
 					JoinCommand.cpp				\
 					KickCommand.cpp				\
 					KillCommand.cpp				\
+					ListCommand.cpp				\
 					ModeCommand.cpp				\
 					MotdCommand.cpp				\
 					NamesCommand.cpp			\
@@ -49,7 +50,6 @@ COMMAND_SRCS	=	\
 					TopicCommand.cpp			\
 					UserCommand.cpp				\
 
-#					ListCommand.cpp				\
 #					WhoCommand.cpp				\
 #					WhoisCommand.cpp			\
 #					WhowasCommand.cpp			\

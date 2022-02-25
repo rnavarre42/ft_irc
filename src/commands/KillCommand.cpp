@@ -1,6 +1,9 @@
 #include "KillCommand.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
+#include "Numeric.hpp"
+#include "User.hpp"
+
 #include <iostream>
 
 KillCommand::KillCommand(Server& server, int accessLevel, int paramCount)
@@ -19,11 +22,19 @@ void KillCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 
 bool KillCommand::_recvUser(Message& message)
 {
-	User&	user = *this->userSender;
+	User&						user = *this->userSender;
+	Server::userMap_iterator	userKillIt;
 
-	(void)message;
 	(void)user;
-	return false;
+
+	if ((userKillIt = server.userFind(message[0])) != server.getUserMap().end())
+		server.deleteUser(user, message[1]);
+	else
+	{
+		Numeric::insertField(userKillIt->second->getName());
+		message.replyNumeric(ERR_NOSUCHNICK);
+	}
+	return true;
 }
 
 bool KillCommand::_recvServer(Message& message)
