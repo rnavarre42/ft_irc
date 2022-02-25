@@ -6,6 +6,7 @@
 #include "Channel.hpp"
 #include "Numeric.hpp"
 #include "Console.hpp"
+#include "chanmodes.hpp"
 
 #include <iostream>
 
@@ -76,6 +77,7 @@ void ModeCommand::_checkChanModes(Message& message)
 		return ;
 	}
 	channel = it->second;
+	message.setChannel(channel);
 	for (std::string::iterator strIt = message[1].begin(); strIt != message[1].end(); )
 	{
 		currentIt = strIt;
@@ -93,10 +95,11 @@ void ModeCommand::_checkChanModes(Message& message)
 				message[1].erase(currentIt);
 				--strIt;
 			}
-			else if (!channel->isOper(this->userSender)) // Si el usuario no es operador...
+			else if (!server.checkChannelMode(message, CHANMODE_MODE)) // Si el usuario no es operador...
+			//else if (!channel->isOper(this->userSender)) // Si el usuario no es operador...
 			{
-				Numeric::insertField(channel->getName());
-				message.replyNumeric(ERR_CHANOPRIVSNEEDED);
+//				Numeric::insertField(channel->getName());
+//				message.replyNumeric(ERR_CHANOPRIVSNEEDED);
 				message[1].erase(currentIt);
 				--strIt;
 				if (hasParamMode(set, chanMode) && message.size() > pos)

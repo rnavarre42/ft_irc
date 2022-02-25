@@ -139,4 +139,5 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_NOTOPIC]			= "$ :No topic is set";
 	Numeric::_numericMap[RPL_TOPICTIME]			= "$ :$ $";
 	Numeric::_numericMap[ERR_CANNOTSENDTOCHAN]	= "$ :Cannot send to channel";
+	Numeric::_numericMap[ERR_CANTCHANGENICK]	= ":Cannot change nickname while on $ (you're banned)";
 }

@@ -28,6 +28,8 @@ bool KickCommand::_recvUser(Message& message)
 	User*						user = this->userSender;
 	Server::channelMap_iterator	channelIt;
 	Channel*					channel;
+	Server::userMap_iterator	userKickIt;
+//	User*						userKick;
 
 	(void)user;
 	if ((channelIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
@@ -35,12 +37,24 @@ bool KickCommand::_recvUser(Message& message)
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
 	}
+	else if ((userKickIt = channelIt->second->find(message[1])) == channelIt->second->end())
+	{
+		Numeric::insertField(message[1]);
+		message.replyNumeric(ERR_NOSUCHNICK);
+	}
 	else
 	{
 		channel = channelIt->second;
 		message.setChannel(channel);
 		if (!this->server.checkChannelMode(message, CHANMODE_KICK))
 			return true;
+		message.setReceiver(channel);
+		message.setReceiver(message.getSender());
+		message[0] = channel->getName();
+		message[1] = userKickIt->second->getName();
+		message.limitMaxParam(3);
+		message.send();
+		server.removeUserFromChannel(*channel, *userKickIt->second);
 	}
 	
 	return true;

@@ -20,16 +20,16 @@ void signal_handler(int sig)
 	exit(0);
 }
 
-void irc_send(int sock, char *data)
+void irc_send(int sock, char* data)
 {
     printf("client> %s\n", data);
     send(sock, data, strlen(data), 0);
     send(sock, "\r\n", 2, 0);
 }
 
-void send_ident(int server_fd, char *nick, char *ident)
+void send_ident(int server_fd, char* nick, char* ident)
 {
-    char *data;
+    char*	data;
 
     asprintf(&data, "USER %s %s * * *", ident, ident);
     irc_send(server_fd, data);
@@ -39,7 +39,7 @@ void send_ident(int server_fd, char *nick, char *ident)
     free(data);
 }
 
-void *console(void *arg)
+void*	console(void* arg)
 {
 	// 464 + 21 + 25 + 2
     int sock;
@@ -82,14 +82,15 @@ weroiweoriweoriwe 123456 234567 345678 456789 567890 678901 789012 890123 901234
 	        send(sock, "\r\n", 2, 0);
 		}
 	    free(line);
+		sleep(0);
     }
 }
 
 void	loop_client(int server_fd)
 {
 	char	buffer[BUFFERSIZE + 1];
-	char	*line;
-	char	*response;
+	char*	line;
+	char*	response;
 	int		ret;
 
     while (1)
@@ -120,7 +121,7 @@ void	loop_client(int server_fd)
     }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char**	argv)
 {
     int server_fd = 0;
     struct sockaddr_in serv_addr;

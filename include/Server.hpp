@@ -129,6 +129,7 @@ public:
 	const std::string&				getPass(void) const;
 
 	void							names(Channel &channel);
+	void							removeUserFromChannel(Channel& channel, User& user);
 
 	bool							isUser(void);
 	bool							isServer(void);
@@ -230,7 +231,6 @@ private:
 	int					_poll(void);
 	int					_checkUserConnection(void);
 	void				_setSignals(void);
-	void				_removeUserFromChannel(Channel& channel, User& user);
 	void				_loadCommands(void);
 	void				_unloadCommands(void);
 	void				_unloadChanModes(void);

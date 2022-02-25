@@ -6,6 +6,8 @@
 #include "numerics.hpp"
 #include "Server.hpp"
 #include "utils.hpp"
+#include "chanmodes.hpp"
+
 #include <iostream>
 #include <map>
 
@@ -70,6 +72,12 @@ bool NickCommand::_recvUser(Message& message)
 		}
 		if (!oldName.empty())
 		{
+			for (Server::channelMap_iterator it = user.begin(); it != user.end(); ++it)
+			{
+				message.setChannel(it->second);
+				if (!server.checkChannelMode(message, CHANMODE_NICK))
+					return true;
+			}
 			userMap.erase(strToUpper(oldName));
 			if ((user.getStatus() & (LEVEL_REGISTERED | LEVEL_IRCOPERATOR)))
 			{

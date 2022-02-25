@@ -32,11 +32,6 @@ void PartCommand::partChannelEvent(Message& message)
 	message.limitMaxParam(2);
 	message.hideReceiver();
 	message.send();
-	if (channel->size() > 1)
-	{
-		channel->mode.erase('o', message.getSender());
-		channel->mode.erase('v', message.getSender());
-	}
 }
 
 void PartCommand::notChannelEvent(Message& message)

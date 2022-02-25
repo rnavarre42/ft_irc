@@ -106,6 +106,7 @@ enum
 	ERR_NOLOGIN				= 444,	// "<user> :User not logged in"
 	ERR_SUMMONDISABLED		= 445,	// ":SUMMON has been disabled"
 	ERR_USERSDISABLED		= 446,	// ":USERS has been disabled"
+	ERR_CANTCHANGENICK		= 447,  // ":Cannot change nickname while on <channel> (you're banned)"
 
 	ERR_NOTREGISTERED		= 451,	// ":You have not registered"
 

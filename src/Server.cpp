@@ -471,7 +471,7 @@ bool	Server::checkChannelMode(Message& message, int commandEvent)
 	return access != AChanMode::deny;
 }
 
-void	Server::_removeUserFromChannel(Channel& channel, User& user)
+void	Server::removeUserFromChannel(Channel& channel, User& user)
 {
 	user.erase(&channel);	// se elimina al canal del usuario
 	channel.erase(&user);	// se elimina al usuario del canal
@@ -481,6 +481,11 @@ void	Server::_removeUserFromChannel(Channel& channel, User& user)
 		this->_eventHandler.raise(DELCHANEVENT, this->_message);
 		this->_invite.erase(&channel);
 		this->eraseChannel(channel);	// se elimina
+	}
+	else
+	{
+		channel.mode.erase('o', &user);
+		channel.mode.erase('v', &user);
 	}
 }
 
@@ -505,7 +510,7 @@ void	Server::deleteUser(User& user, const std::string& text)
 			currentIt = it;
 			++it;
 			this->_message.setChannel(currentIt->second);
-			this->_removeUserFromChannel(*currentIt->second, user);
+			this->removeUserFromChannel(*currentIt->second, user);
 		}
 	}
 	if (!user.getName().empty())
@@ -581,7 +586,7 @@ void	Server::addToChannel(Message& message)
 void	Server::delFromChannel(Message& message)
 {
 	Channel*						channel = NULL;
-	User&							user = static_cast<User& >(*message.getSender());
+	User&							user = static_cast<User&>(*message.getSender());
 	const std::string&				channelName = message[0];
 	Server::channelMap_iterator		it;	
 	
@@ -598,7 +603,7 @@ void	Server::delFromChannel(Message& message)
 			else
 			{
 				this->_eventHandler.raise(PARTEVENT, this->_message);
-				this->_removeUserFromChannel(*channel, user);
+				this->removeUserFromChannel(*channel, user);
 			}
 		}
 	}

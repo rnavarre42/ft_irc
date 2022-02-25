@@ -25,11 +25,6 @@ struct BanInfo
 BanChanMode::BanChanMode(Server& server)
 	: AChanMode(server)
 {
-	//Tenemos que suscribirnos a JOIN, PRIVMSG y NOTICE
-	//
-	//ban acepta un parámetro, por lo que tenemos que comunicarselo
-	//al servidor para que nos lo envíe.
-
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'b';
 	this->_chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE | CHANMODE_NICK;
@@ -54,7 +49,10 @@ void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& 
 		if (banInfo->mask == mask)
 		{
 			Numeric::insertField(channel->getName());
-			numeric = ERR_BANNEDFROMCHAN;
+			if (event & CHANMODE_NICK)
+				numeric = ERR_CANTCHANGENICK;
+			if (event & (CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE))
+				numeric = ERR_BANNEDFROMCHAN;
 			access = AChanMode::deny;
 			break ;
 		}
