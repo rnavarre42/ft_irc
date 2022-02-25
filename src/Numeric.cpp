@@ -34,6 +34,19 @@ std::string	Numeric::_toString()
 	return ss.str();
 }
 
+void	Numeric::clear(void)
+{
+	Numeric::_instance->_fieldVector.clear();
+}
+
+void	Numeric::insertField(size_t number)
+{
+	std::ostringstream	oss;
+
+   	oss << number;
+	Numeric::insertField(oss.str());
+}
+
 void	Numeric::insertField(std::string data)
 {
 	if (!Numeric::_instance)

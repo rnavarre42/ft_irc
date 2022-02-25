@@ -27,7 +27,7 @@ BanChanMode::BanChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'b';
-	this->_chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE | CHANMODE_NICK;
+	this->_chanModeConfig.events = COMMAND_JOIN | COMMAND_PRIVMSG | COMMAND_NOTICE | COMMAND_NICK;
 	this->_chanModeConfig.unique = false;
 }
 
@@ -49,11 +49,11 @@ void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& 
 		if (banInfo->mask == mask)
 		{
 			Numeric::insertField(channel->getName());
-			if (event & CHANMODE_NICK)
+			if (event & COMMAND_NICK)
 				numeric = ERR_CANTCHANGENICK;
-			if (event & CHANMODE_JOIN)
+			if (event & COMMAND_JOIN)
 				numeric = ERR_BANNEDFROMCHAN;
-			if (event & (CHANMODE_PRIVMSG | CHANMODE_NOTICE))
+			if (event & (COMMAND_PRIVMSG | COMMAND_NOTICE))
 				numeric = ERR_CANNOTSENDTOCHAN;
 			access = AChanMode::deny;
 			break ;

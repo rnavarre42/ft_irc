@@ -8,7 +8,7 @@ InviteChanMode::InviteChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::noParam;
 	this->_chanModeConfig.mode = 'i';
-	this->_chanModeConfig.events = CHANMODE_JOIN;
+	this->_chanModeConfig.events = COMMAND_JOIN;
 	this->_chanModeConfig.unique = true;
 }
 

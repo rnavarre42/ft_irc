@@ -11,7 +11,7 @@ OperChanMode::OperChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'o';
-	this->_chanModeConfig.events = CHANMODE_NICK | CHANMODE_KICK | CHANMODE_MODE | CHANMODE_INVITE;
+	this->_chanModeConfig.events = COMMAND_NICK | COMMAND_KICK | COMMAND_MODE | COMMAND_INVITE;
 	this->_chanModeConfig.unique = false;
 }
 
@@ -25,12 +25,12 @@ void	OperChanMode::onChanEvent(Access& access, int event, Message& message, int&
 	// modo +o puesto al nick
 	if (this->isSetMode(*channel, message.getSender()))
 	{
-//		if (event == CHANMODE_KICK)
+//		if (event == COMMAND_KICK)
 		access = AChanMode::allow;
 	}
 	else if (access != AChanMode::deny)
 	{
-		if (event != CHANMODE_NICK)
+		if (event != COMMAND_NICK)
 		{
 			Numeric::insertField(channel->getName());
 			numeric = ERR_CHANOPRIVSNEEDED;

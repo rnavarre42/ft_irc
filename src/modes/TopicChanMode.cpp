@@ -10,7 +10,7 @@ TopicChanMode::TopicChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::noParam;
 	this->_chanModeConfig.mode = 't';
-	this->_chanModeConfig.events = CHANMODE_TOPIC;
+	this->_chanModeConfig.events = COMMAND_TOPIC;
 	this->_chanModeConfig.unique = true;
 }
 

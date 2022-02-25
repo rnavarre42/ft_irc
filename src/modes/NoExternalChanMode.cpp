@@ -10,7 +10,7 @@ NoExternalChanMode::NoExternalChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::noParam;
 	this->_chanModeConfig.mode = 'n';
-	this->_chanModeConfig.events = CHANMODE_PRIVMSG | CHANMODE_PRIVMSG;
+	this->_chanModeConfig.events = COMMAND_PRIVMSG | COMMAND_PRIVMSG;
 	this->_chanModeConfig.unique = true;
 }
 

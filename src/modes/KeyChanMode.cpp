@@ -9,7 +9,7 @@ KeyChanMode::KeyChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'k';
-	this->_chanModeConfig.events = CHANMODE_JOIN;
+	this->_chanModeConfig.events = COMMAND_JOIN;
 	this->_chanModeConfig.unique = true;
 }
 

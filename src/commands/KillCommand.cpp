@@ -28,7 +28,7 @@ bool KillCommand::_recvUser(Message& message)
 	(void)user;
 
 	if ((userKillIt = server.userFind(message[0])) != server.getUserMap().end())
-		server.deleteUser(user, message[1]);
+		server.deleteUser(*userKillIt->second, "Killed by " + user.getName() + ": " + message[1]);
 	else
 	{
 		Numeric::insertField(userKillIt->second->getName());

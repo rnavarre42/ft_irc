@@ -75,7 +75,7 @@ bool NickCommand::_recvUser(Message& message)
 			for (Server::channelMap_iterator it = user.begin(); it != user.end(); ++it)
 			{
 				message.setChannel(it->second);
-				if (!server.checkChannelMode(message, CHANMODE_NICK))
+				if (!server.checkChannelMode(message, COMMAND_NICK))
 					return true;
 			}
 			userMap.erase(strToUpper(oldName));

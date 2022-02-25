@@ -15,7 +15,7 @@ LimitChanMode::LimitChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam;
 	this->_chanModeConfig.mode = 'l';
-	this->_chanModeConfig.events = CHANMODE_JOIN;
+	this->_chanModeConfig.events = COMMAND_JOIN;
 	this->_chanModeConfig.unique = true;
 }
 

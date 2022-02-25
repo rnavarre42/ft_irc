@@ -44,7 +44,7 @@ bool KickCommand::_recvUser(Message& message)
 	{
 		channel = channelIt->second;
 		message.setChannel(channel);
-		if (!this->server.checkChannelMode(message, CHANMODE_KICK))
+		if (!this->server.checkChannelMode(message, COMMAND_KICK))
 			return true;
 		message.setReceiver(channel);
 		message.setReceiver(message.getSender());

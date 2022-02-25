@@ -58,7 +58,7 @@ bool TopicCommand::_recvUser(Message& message)
 		}
 		else
 		{
-			if (!server.checkChannelMode(message, CHANMODE_TOPIC))
+			if (!server.checkChannelMode(message, COMMAND_TOPIC))
 				return true;
 			if (topicInfo.topic != message[1])
 			{

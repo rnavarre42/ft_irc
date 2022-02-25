@@ -10,7 +10,7 @@ VoiceChanMode::VoiceChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'v';
-	this->_chanModeConfig.events = CHANMODE_PRIVMSG | CHANMODE_NOTICE;
+	this->_chanModeConfig.events = COMMAND_PRIVMSG | COMMAND_NOTICE;
 	this->_chanModeConfig.unique = false;
 }
 

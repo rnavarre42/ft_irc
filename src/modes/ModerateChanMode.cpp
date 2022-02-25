@@ -10,7 +10,7 @@ ModerateChanMode::ModerateChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::noParam;
 	this->_chanModeConfig.mode = 'm';
-	this->_chanModeConfig.events = CHANMODE_PRIVMSG | CHANMODE_NOTICE;
+	this->_chanModeConfig.events = COMMAND_PRIVMSG | COMMAND_NOTICE;
 	this->_chanModeConfig.unique = true;
 }
 

@@ -39,7 +39,7 @@ bool PrivmsgCommand::_recvUser(Message& message)
 			return true;
 		}
 		message.setChannel(chanIt->second);
-		if (!server.checkChannelMode(message, CHANMODE_PRIVMSG))
+		if (!server.checkChannelMode(message, COMMAND_PRIVMSG))
 			return true;
 		message.setReceiver(chanIt->second);
 		message.limitMaxParam(2);

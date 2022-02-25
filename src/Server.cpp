@@ -89,7 +89,8 @@ void	Server::_loadCommands(void)
 	this->_commandMap["USER"]		= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
 
 //	this->_commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["KILL"]		= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
+	this->_commandMap["KILL"]		= new KillCommand	(*this, LEVEL_REGISTERED, 2);
+//	this->_commandMap["KILL"]		= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
 	this->_commandMap["LIST"]		= new ListCommand	(*this, LEVEL_REGISTERED, 0);
 //	this->_commandMap["WHOIS"]		= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["WHOWAS"]		= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
@@ -135,7 +136,7 @@ void	Server::_unloadChanModes(void)
 	for (Server::aChanModeMap_iterator it = this->_chanModeMap.begin(); it !=  this->_chanModeMap.end();)
 	{
 		currentIt = it;
-		it++;
+		++it;
 		this->_unloadChanMode(currentIt);
 	}
 }
@@ -468,6 +469,8 @@ bool	Server::checkChannelMode(Message& message, int commandEvent)
 	}
 	if (access == AChanMode::deny)
 		message.replyNumeric(numeric);
+	else
+		Numeric::clear();
 	return access != AChanMode::deny;
 }
 
@@ -494,8 +497,9 @@ void	Server::deleteUser(User& user, const std::string& text)
 	Server::channelMap_iterator	currentIt;
 	Server::userVector_type*	userVector = user.getUniqueVector();
 
+	this->_message.clear();
 	this->_message.setSender(&user);
-	this->_message.setReceiver(&user);	
+	this->_message.setReceiver(&user);
 	this->_message.insertField(text);
 	this->_eventHandler.raise(DELUSEREVENT, this->_message);
 	if (user.getStatus() == LEVEL_REGISTERED) //Si está registrado se verifica que esté en más canales
@@ -558,7 +562,7 @@ void	Server::addToChannel(Message& message)
 				this->_eventHandler.raise(ALREADYEVENT, this->_message);
 			else
 			{
-				if (!this->checkChannelMode(message, CHANMODE_JOIN))
+				if (!this->checkChannelMode(message, COMMAND_JOIN))
 					return ;
 				channel->insert(&user);
 				//eliminamos la invitación, si existiera.

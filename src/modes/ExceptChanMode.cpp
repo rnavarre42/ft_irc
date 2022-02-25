@@ -13,7 +13,7 @@ ExceptChanMode::ExceptChanMode(Server &server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'e';
-	this->_chanModeConfig.events = CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE | CHANMODE_NICK;
+	this->_chanModeConfig.events = COMMAND_JOIN | COMMAND_PRIVMSG | COMMAND_NOTICE | COMMAND_NICK;
 	this->_chanModeConfig.unique = false;
 }
 
@@ -49,6 +49,9 @@ void	ExceptChanMode::onChanEvent(Access& access, int event, Message& message, in
 	BanInfo		*banInfo;
 
 	(void)event;
+
+	if (event & (COMMAND_PRIVMSG | COMMAND_NOTICE) && channel->mode.isSet('m'))
+		return ;
 	for (; pairList.first != pairList.second; ++pairList.first)
 	{
 		banInfo = reinterpret_cast<BanInfo*>(pairList.first->second);
