@@ -29,8 +29,8 @@ void	ModerateChanMode::onChanEvent(Access& access, int event, Message& message, 
 		numeric = ERR_CANNOTSENDTOCHAN;
 		access = AChanMode::deny;
 	}
-	else
-		access = AChanMode::allow;
+//	else
+//		access = AChanMode::allow;
 }
 
 bool	ModerateChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )

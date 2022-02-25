@@ -37,13 +37,13 @@ void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& 
 {
 	Channel*	channel = message.getChannel();
 	std::string	mask = message.getSender()->getMask();
-	Channel::Mode::rangePairMultimap_type	pairList = channel->mode.getList('b');
 	BanInfo		*banInfo;
 
-	(void)event;
 	if (access == AChanMode::deny)
 		return ;
-	for (; pairList.first != pairList.second; ++pairList.first)
+	for (Channel::Mode::rangePairMultimap_type pairList = channel->mode.getList('b')
+			; pairList.first != pairList.second
+			; ++pairList.first)
 	{
 		banInfo = reinterpret_cast<BanInfo*>(pairList.first->second);
 		if (banInfo->mask == mask)
@@ -51,8 +51,10 @@ void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& 
 			Numeric::insertField(channel->getName());
 			if (event & CHANMODE_NICK)
 				numeric = ERR_CANTCHANGENICK;
-			if (event & (CHANMODE_JOIN | CHANMODE_PRIVMSG | CHANMODE_NOTICE))
+			if (event & CHANMODE_JOIN)
 				numeric = ERR_BANNEDFROMCHAN;
+			if (event & (CHANMODE_PRIVMSG | CHANMODE_NOTICE))
+				numeric = ERR_CANNOTSENDTOCHAN;
 			access = AChanMode::deny;
 			break ;
 		}

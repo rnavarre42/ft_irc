@@ -10,7 +10,7 @@ VoiceChanMode::VoiceChanMode(Server& server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
 	this->_chanModeConfig.mode = 'v';
-	this->_chanModeConfig.events = 0;
+	this->_chanModeConfig.events = CHANMODE_PRIVMSG | CHANMODE_NOTICE;
 	this->_chanModeConfig.unique = false;
 }
 
@@ -19,10 +19,13 @@ VoiceChanMode::~VoiceChanMode(void)
 
 void	VoiceChanMode::onChanEvent(Access& access, int event, Message &message, int& numeric)
 {
-	(void)access;
+	Channel*	channel = message.getChannel();
+
 	(void)event;
-	(void)message;
 	(void)numeric;
+
+	if (channel->isOper(message.getSender()) || channel->isVoice(message.getSender()))
+		access = AChanMode::allow;
 }
 
 bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)

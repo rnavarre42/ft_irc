@@ -20,8 +20,7 @@ OperChanMode::~OperChanMode(void)
 
 void	OperChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
-	Channel*					channel = message.getChannel();
-	Server::userMap_iterator	kickUserIt;
+	Channel*	channel = message.getChannel();
 
 	// modo +o puesto al nick
 	if (this->isSetMode(*channel, message.getSender()))
