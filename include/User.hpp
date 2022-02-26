@@ -72,6 +72,7 @@ public:
 	bool				isUser(void);
 	bool				isServer(void);
 	bool				isOper(void);
+	void				enableOper(void);
 	bool				isOnChannel(const Channel& channel);
 	bool				isOnChannel(const std::string& channel);
 
@@ -156,6 +157,7 @@ private:
 	int							_pollIndex;
 	int							_fd;
 	int							_type;
+	bool						_oper;
 
 	std::string					_getLine(size_t pos);
 };

@@ -136,8 +136,12 @@ bool	User::isServer(void)
 
 bool	User::isOper(void)
 {
-	//TODO hay que extraer el modo de usuario +O
-	return false;
+	return this->_oper;
+}
+
+void	User::enableOper(void)
+{
+	this->_oper = true;
 }
 
 int		User::getType(void)

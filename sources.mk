@@ -40,6 +40,7 @@ COMMAND_SRCS	=	\
 					NamesCommand.cpp			\
 					NickCommand.cpp				\
 					NoticeCommand.cpp			\
+					OperCommand.cpp				\
 					PartCommand.cpp				\
 					PassCommand.cpp				\
 					PingCommand.cpp				\

@@ -22,6 +22,9 @@
 # define VERSION			"ircServ 0.1"
 # define SHUTDOWN_STRING	"Server shutting down"
 
+# define OPERPASSWORD		"1234"
+# define OPERLOGIN			"laura"
+
 # define MAXNICK			9
 # define MAXCHANNEL			3
 # define MAXSERVER			63

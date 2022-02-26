@@ -155,4 +155,7 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_CANTCHANGENICK]	= ":Cannot change nickname while on $ (you're banned)";
 	Numeric::_numericMap[RPL_LIST]				= "$ $ :$";
 	Numeric::_numericMap[RPL_LISTEND]			= ":End of LIST";
+	Numeric::_numericMap[ERR_PASSWDMISMATCH]	= ":Password incorrect";
+	Numeric::_numericMap[RPL_YOUREOPER]			= ":You are now an IRC operator";
+	Numeric::_numericMap[ERR_NOOPERHOST]		= "No O-lines for your host";
 }

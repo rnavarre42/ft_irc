@@ -23,11 +23,8 @@ bool ShutdownCommand::_recvUser(Message& message)
 {
 	User&	user = *this->userSender;
 
-	if (message.size())
-		message[0].insert(0, "Quit: ");
-	message.setCmd("QUIT");
-	message.setReceiver(&user);
-	message.process();
+	(void)user;
+	server.quit("Server shutdown: reason (" + message[0] + ")");
 	return true;
 }
 
@@ -44,10 +41,9 @@ bool ShutdownCommand::_sendUser(Message& message)
 {
 	User&	user = *this->userReceiver;
 	
-	if (!message.size())
-		message.insertField("Client exited");
-	this->server.deleteUser(user, message[0]);
-	return true;
+	(void)user;
+	(void)message;
+	return false;
 }
 
 bool ShutdownCommand::_sendServer(Message& message)

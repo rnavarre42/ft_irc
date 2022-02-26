@@ -70,31 +70,31 @@ Server::~Server(void)
 void	Server::_loadCommands(void)
 {
 
-	this->_commandMap["AWAY"]		= new AwayCommand	(*this, LEVEL_REGISTERED, 0);
-	this->_commandMap["INVITE"]		= new InviteCommand	(*this, LEVEL_REGISTERED, 2);
-	this->_commandMap["JOIN"]		= new JoinCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["KICK"]		= new KickCommand	(*this, LEVEL_REGISTERED, 2);
-	this->_commandMap["MODE"]		= new ModeCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["MOTD"]		= new MotdCommand	(*this, LEVEL_REGISTERED, 0);
-	this->_commandMap["NICK"]		= new NickCommand	(*this, LEVEL_ALL, 1);
-	this->_commandMap["NOTICE"]		= new NoticeCommand	(*this, LEVEL_REGISTERED, 2);
-	this->_commandMap["PART"]		= new PartCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["PASS"]		= new PassCommand	(*this, LEVEL_UNREGISTERED, 1);
-	this->_commandMap["PING"]		= new PingCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["PONG"]		= new PongCommand	(*this, LEVEL_NEGOTIATING | LEVEL_REGISTERED, 1);
-	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["QUIT"]		= new QuitCommand	(*this, LEVEL_ALL, 0);
-//	this->_commandMap["SHUTDOWN"]	= new ShutdownCommand	(*this, LEVEL_IRCOPERATOR, 0);
-	this->_commandMap["TOPIC"]		= new TopicCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["USER"]		= new UserCommand	(*this, LEVEL_UNREGISTERED, 4);
+	this->_commandMap["AWAY"]		= new AwayCommand	  (*this, LEVEL_REGISTERED, 0);
+	this->_commandMap["INVITE"]		= new InviteCommand	  (*this, LEVEL_REGISTERED, 2);
+	this->_commandMap["JOIN"]		= new JoinCommand	  (*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["KICK"]		= new KickCommand	  (*this, LEVEL_REGISTERED, 2);
+	this->_commandMap["KILL"]		= new KillCommand	  (*this, LEVEL_IRCOPERATOR, 2);
+	this->_commandMap["LIST"]		= new ListCommand	  (*this, LEVEL_REGISTERED, 0);
+	this->_commandMap["MODE"]		= new ModeCommand	  (*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["MOTD"]		= new MotdCommand	  (*this, LEVEL_REGISTERED, 0);
+	this->_commandMap["NAMES"]		= new NamesCommand	  (*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["NICK"]		= new NickCommand	  (*this, LEVEL_ALL, 1);
+	this->_commandMap["NOTICE"]		= new NoticeCommand	  (*this, LEVEL_REGISTERED, 2);
+	this->_commandMap["OPER"]		= new OperCommand	  (*this, LEVEL_REGISTERED, 2);
+	this->_commandMap["PART"]		= new PartCommand	  (*this, LEVEL_REGISTERED, 1);
+//	this->_commandMap["PASS"]		= new PassCommand	  (*this, LEVEL_UNREGISTERED, 1);
+	this->_commandMap["PING"]		= new PingCommand	  (*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["PONG"]		= new PongCommand	  (*this, LEVEL_NEGOTIATING | LEVEL_REGISTERED, 1);
+	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand  (*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["QUIT"]		= new QuitCommand	  (*this, LEVEL_ALL, 0);
+	this->_commandMap["SHUTDOWN"]	= new ShutdownCommand (*this, LEVEL_IRCOPERATOR, 0);
+	this->_commandMap["TOPIC"]		= new TopicCommand	  (*this, LEVEL_REGISTERED, 1);
+	this->_commandMap["USER"]		= new UserCommand	  (*this, LEVEL_UNREGISTERED, 4);
 
 //	this->_commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["KILL"]		= new KillCommand	(*this, LEVEL_REGISTERED, 2);
-//	this->_commandMap["KILL"]		= new KillCommand	(*this, LEVEL_IRCOPERATOR, 2);
-	this->_commandMap["LIST"]		= new ListCommand	(*this, LEVEL_REGISTERED, 0);
 //	this->_commandMap["WHOIS"]		= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["WHOWAS"]		= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
-	this->_commandMap["NAMES"]		= new NamesCommand	(*this, LEVEL_REGISTERED, 1);
 
 	Server::aCommandMap_iterator	it;
 
