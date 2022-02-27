@@ -19,3 +19,18 @@ bool	wildcardComp(std::string::const_iterator pattern, std::string::const_iterat
 				|| (*str != '\0' && wildcardComp(pattern, 1 + str));
 	return false;
 }
+
+bool	isSpecialLetter(const char chr)
+{
+	return chr >= 'A' && chr <= '~';
+}
+
+bool	isValidNick(const std::string& value)
+{
+	for (std::string::const_iterator it = value.begin(); it != value.end(); ++it)
+	{
+		if (!std::isdigit(*it) && !isSpecialLetter(*it) && *it != '-')
+			return false;
+	}
+	return true;
+}
