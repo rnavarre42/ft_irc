@@ -24,13 +24,17 @@ void KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 
 bool KickCommand::_recvUser(Message& message)
 {
-	User*						user = this->userSender;
+//	User*						user = this->userSender;
 	Server::channelMap_iterator	channelIt;
 	Channel*					channel;
 	Server::userMap_iterator	userKickIt;
 
-	(void)user;
-	if ((channelIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
+	if (!isValidChanName(message[0]))
+	{
+		Numeric::insertField(message[0]);
+		message.replyNumeric(ERR_BADCHANMASK);
+	}
+	else if ((channelIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
 	{
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
@@ -54,7 +58,6 @@ bool KickCommand::_recvUser(Message& message)
 		message.send();
 		server.removeUserFromChannel(*channel, *userKickIt->second);
 	}
-	
 	return true;
 }
 
