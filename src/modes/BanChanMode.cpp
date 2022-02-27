@@ -36,7 +36,7 @@ void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& 
 			; ++pairList.first)
 	{
 		banInfo = reinterpret_cast<BanInfo*>(pairList.first->second);
-		if (banInfo->mask == mask)
+		if (*banInfo == mask)
 		{
 			Numeric::insertField(channel->getName());
 			if (event & COMMAND_NICK)

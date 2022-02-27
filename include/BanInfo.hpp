@@ -1,6 +1,8 @@
 #ifndef BANINFO_HPP
 # define BANINFO_HPP
 
+# include "utils.hpp"
+
 # include <string>
 # include <ctime>
 
@@ -13,15 +15,11 @@ struct BanInfo
 	std::string	mask;
 	std::string	nick;
 	time_t		time;
-/*
+
 	bool	operator==(const std::string& rhs)
 	{
-		std::string::iterator	 = mask.begin();
-		std::string::iterator	rhsIt = rhs.begin();
-
-		return false;
+		return wildcardComp(this->mask.begin(), rhs.begin());
 	}
-*/
 };
 
 #endif

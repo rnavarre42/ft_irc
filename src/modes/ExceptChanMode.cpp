@@ -45,7 +45,7 @@ void	ExceptChanMode::onChanEvent(Access& access, int event, Message& message, in
 	for (; pairList.first != pairList.second; ++pairList.first)
 	{
 		banInfo = reinterpret_cast<BanInfo*>(pairList.first->second);
-		if (banInfo->mask == mask)
+		if (*banInfo == mask)
 		{
 			access = AChanMode::allow;
 			break ;
