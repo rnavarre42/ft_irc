@@ -8,6 +8,7 @@
 #include "commands.hpp"
 #include "Numeric.hpp"
 #include "ChanModeConfig.hpp"
+#include "utils.hpp"
 
 #include <set>
 #include <string>
@@ -539,7 +540,12 @@ void	Server::addToChannel(Message& message)
 
 	if (this->isChannel(channelName))
 	{
-		if (user.size() == MAXCHANNEL)
+		if (!isValidChanName(channelName))
+		{
+			Numeric::insertField(channelName);
+			message.replyNumeric(ERR_BADCHANMASK);
+		}
+		else if (user.size() == MAXCHANNEL)
 			this->_eventHandler.raise(MAXCHANEVENT, this->_message);
 		// el canal no existe, se ha de crear
 		else if ((it = this->channelFind(channelName)) == this->_channelMap.end())
