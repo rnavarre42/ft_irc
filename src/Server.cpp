@@ -1,6 +1,5 @@
 #include "Server.hpp"
 #include "User.hpp"
-#include <cerrno>
 #include "Channel.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
@@ -10,6 +9,7 @@
 #include "ChanModeConfig.hpp"
 #include "utils.hpp"
 
+#include <cerrno>
 #include <set>
 #include <string>
 #include <cstring>
@@ -43,22 +43,20 @@ void	Server::signalHandler(int sig)
 Server::Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password)
 	: _ip(listenIp)
 	, _port(listenPort)
+	, _pollTimeout(1000)
 	, _message(*new Message(*this))
+	, _status(0)
+	, _stop(false)
 	, _pass(password)
 	, _name(name)
 	, _type(TYPE_SERVER)
 {
 	this->_loadCommands();
 	this->_loadChanModes();
-//	this->_logger();
 	this->_setSignals();
 	std::memset(this->_pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
-	this->_stop = false;
 	this->_initSocket();
-	this->_pollTimeout = 1000;
-	this->_status = 0;
 	this->_bind();
-//	this->_source.server = this;
 }
 
 Server::~Server(void)
@@ -133,7 +131,7 @@ void	Server::_loadChanModes(void)
 
 void	Server::_unloadChanModes(void)
 {
-	Server::aChanModeMap_iterator currentIt;
+	Server::aChanModeMap_iterator	currentIt;
 
 	for (Server::aChanModeMap_iterator it = this->_chanModeMap.begin(); it !=  this->_chanModeMap.end();)
 	{
@@ -146,6 +144,7 @@ void	Server::_unloadChanModes(void)
 void	Server::_loadChanMode(AChanMode* newChanMode)
 {
 	const ChanModeConfig&	chanModeConfig = newChanMode->getConfig();
+
 	this->_chanModeMap[chanModeConfig.mode] = newChanMode;
 }
 
@@ -323,7 +322,7 @@ void	Server::_initSocket(void)
 	}
 }
 
-inline int Server::_freePollIndexFind(void)
+int	Server::_freePollIndexFind(void)
 {
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
@@ -368,7 +367,7 @@ void	Server::setIdleTime(time_t value)
 	this->_idleTime = value;
 }
 
-User	*Server::_accept(void)
+User*	Server::_accept(void)
 {
 	User*				user;
 	int					newFd;
@@ -399,6 +398,7 @@ User	*Server::_accept(void)
 void	Server::_bind(void)
 {
 	std::ostringstream	ss;
+
 	this->_address.sin_family = AF_INET;
 	this->_address.sin_addr.s_addr = INADDR_ANY;
 	this->_address.sin_port = htons(this->_port);
@@ -426,7 +426,7 @@ void	Server::_listen(void)
 	this->_pollfds[1].events = POLLIN;
 }
 
-int		Server::_poll(void)
+int	Server::_poll(void)
 {
 	return poll(this->_pollfds, MAXUSERS + 2, this->_pollTimeout);
 }
@@ -440,7 +440,7 @@ void	Server::eraseChannel(Channel& channel)
 Channel*	Server::insertChannel(const std::string& name, const User& user)
 {
 	Channel	*channel = new Channel(name, user, *this);
-//	this->_channelMap[strToUpper(channelName)] = channel;
+
 	this->_channelMap.insert(std::make_pair(strToUpper(name), channel));
 	return channel;
 }
@@ -532,11 +532,11 @@ void	Server::deleteUser(User& user, const std::string& text)
 
 void	Server::addToChannel(Message& message)
 {
-	Channel*										channel = NULL;
-	const std::string&								channelName = message[0];
-	User&											user = static_cast<User& >(*message.getSender());
-	Server::channelMap_iterator						it;
-	Server::userMap_insert							retUser;
+	Channel*					channel = NULL;
+	const std::string&			channelName = message[0];
+	User*						user = static_cast<User*>(message.getSender());
+	Server::channelMap_iterator	it;
+	Server::userMap_insert		retUser;
 
 	if (this->isChannel(channelName))
 	{
@@ -545,15 +545,15 @@ void	Server::addToChannel(Message& message)
 			Numeric::insertField(channelName);
 			message.replyNumeric(ERR_BADCHANMASK);
 		}
-		else if (user.size() == MAXCHANNEL)
+		else if (user->size() == MAXCHANNEL)
 			this->_eventHandler.raise(MAXCHANEVENT, this->_message);
 		// el canal no existe, se ha de crear
 		else if ((it = this->channelFind(channelName)) == this->_channelMap.end())
 		{
-			channel = insertChannel(channelName, user);
+			channel = insertChannel(channelName, *user);
 			// añade el canal al usuario y el usuario al canal
-			channel->insert(&user);
-			user.insert(channel);
+			channel->insert(user);
+			user->insert(channel);
 			channel->mode.insert('o', &user);
 			message.setChannel(channel);
 			this->_eventHandler.raise(NEWCHANEVENT, this->_message);
@@ -564,25 +564,25 @@ void	Server::addToChannel(Message& message)
 			channel = it->second;
 			message.setChannel(channel);
 			//if (retUser.second == true)  //El nick no está en el canal
-			if (user.isOnChannel(*channel))
+			if (user->isOnChannel(*channel))
 				this->_eventHandler.raise(ALREADYEVENT, this->_message);
 			else
 			{
 				if (!this->checkChannelMode(message, COMMAND_JOIN))
 					return ;
-				channel->insert(&user);
+				channel->insert(user);
 				//eliminamos la invitación, si existiera.
-				if (this->_invite.erase(&user, channel))
+				if (this->_invite.erase(user, channel))
 				{
-					Console::log(LOG_INFO, user.getName() + " ha hecho efectiva su invitacion");
+					Console::log(LOG_INFO, user->getName() + " ha hecho efectiva su invitacion");
 				}
 				else
 				{
-					Console::log(LOG_INFO, user.getName() + " no tenia invitacion");
+					Console::log(LOG_INFO, user->getName() + " no tenia invitacion");
 				}
 				// añade el canal al usuario y el usuario al canal
-				channel->insert(&user);
-				user.insert(channel);
+				channel->insert(user);
+				user->insert(channel);
 				this->_eventHandler.raise(JOINEVENT, this->_message);
 			}
 			//TODO falta por gestionar +l +i +k
@@ -594,10 +594,10 @@ void	Server::addToChannel(Message& message)
 
 void	Server::delFromChannel(Message& message)
 {
-	Channel*						channel = NULL;
-	User&							user = static_cast<User&>(*message.getSender());
-	const std::string&				channelName = message[0];
-	Server::channelMap_iterator		it;	
+	Channel*					channel = NULL;
+	User*						user = static_cast<User*>(message.getSender());
+	const std::string&			channelName = message[0];
+	Server::channelMap_iterator	it;
 	
 	if (this->isChannel(channelName))
 	{
@@ -607,12 +607,12 @@ void	Server::delFromChannel(Message& message)
 		{
 			channel = it->second;
 			message.setChannel(channel);
-			if ((it = user.find(channelName)) == user.end())
+			if ((it = user->find(channelName)) == user->end())
 				this->_eventHandler.raise(NOTINCHANEVENT, this->_message);
 			else
 			{
 				this->_eventHandler.raise(PARTEVENT, this->_message);
-				this->removeUserFromChannel(*channel, user);
+				this->removeUserFromChannel(*channel, *user);
 			}
 		}
 	}
@@ -666,8 +666,8 @@ void	Server::names(Channel& channel)
 
 void	Server::_checkUserIO(void)
 {
-	User	*user;
-	size_t	size;
+	User*		user;
+	std::size_t	size;
 
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
@@ -681,7 +681,6 @@ void	Server::_checkUserIO(void)
 		else if (this->_pollfds[i].revents & POLLOUT)
 		{
 			user = this->_fdMap[this->_pollfds[i].fd];
-		//	std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
 			if (user->checkOutput(this->_pollfds[i].fd))
 				this->_pollfds[i].events ^= POLLOUT;
 		}
@@ -721,32 +720,13 @@ bool	Server::sendCommand(Message& message)
 }
 void	Server::_checkConsoleInput(void)
 {
-//	std::ssize_t	size;
-//	char	buffer[BUFFERSIZE + 1];
-//	std::string	str = "console> ";
 	std::string		buffer;
 
 	if (this->_pollfds[1].revents & POLLIN)
 	{
-
-	//	size = read(0, buffer, BUFFERSIZE);
-	//	buffer[size] = '\0';
-	//	if (size > 0)
 		std::getline(std::cin, buffer);
-		if (std::cin)
-		{
-			if (buffer == "quit")
-		//	if (!strcmp(buffer, "quit\n"))
-				this->quit(SHUTDOWN_STRING);
-/*			if (!strcmp(buffer, "invite\n"))
-			{
-				std::cout << "Nick     Channel" << std::endl;
-				for (Invite::inviteVector_iterator it = _invite.begin(); it != _invite.end(); it++)
-				{
-					std::cout << it->first->getName() << "\t" << it->second->getName() << std::endl;
-				}
-			}*/
-		}
+		if (std::cin && buffer == "quit")
+			this->quit(SHUTDOWN_STRING);
 	}
 }
 

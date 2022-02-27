@@ -14,26 +14,21 @@ SecretChanMode::~SecretChanMode(void)
 {}
 
 void	SecretChanMode::onChanEvent(Access&, int, Message&, int&)
-{
-}
+{}
 
-bool	SecretChanMode::onChanModeEvent(int pos, int sign, Channel &channel, Message& )
+bool	SecretChanMode::onChanModeEvent(int, int sign, Channel& channel, Message&)
 {
-	(void)pos;
-
 	return (sign && this->setMode(channel, NULL))
 				|| (!sign && this->unsetMode(channel, NULL));
 }
 
 void	SecretChanMode::onShowChanModeEvent(void)
-{
-}
+{}
 
-void	SecretChanMode::onDelete(void* )
-{
-}
+void	SecretChanMode::onDelete(void*)
+{}
 
-std::string SecretChanMode::toString(void* )
+std::string	SecretChanMode::toString(void*)
 {
 	return "";
 }

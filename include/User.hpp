@@ -16,7 +16,7 @@ class ISender;
 class User : public ISender
 {
 public:
-	User(int fd, Server &server);
+	User(int fd, Server& server);
 	~User(void);
 
 	void				setHost(const std::string& value);
@@ -62,22 +62,22 @@ public:
 		return this->_channelMap.find(strToUpper(value));
 	}
 
-	Channel	*&operator[](const std::string& channelName)
+	Channel*&	operator[](const std::string& channelName)
 	{
 		return this->_channelMap.at(strToUpper(channelName));
 	}
 
-	std::string &getInputBuffer(void);
-	std::string &getOutputBuffer(void);
+	std::string&	getInputBuffer(void);
+	std::string&	getOutputBuffer(void);
 
-	bool				isUser(void);
-	bool				isServer(void);
-	bool				isOper(void);
-	void				enableOper(void);
-	bool				isOnChannel(const Channel& channel);
-	bool				isOnChannel(const std::string& channel);
+	bool	isUser(void);
+	bool	isServer(void);
+	bool	isOper(void);
+	void	enableOper(void);
+	bool	isOnChannel(const Channel& channel);
+	bool	isOnChannel(const std::string& channel);
 
-	int					getType(void);
+	int	getType(void);
 
 	void				clearPingChallenge();
 	void				setPingChallenge(const std::string& value);
@@ -87,43 +87,44 @@ public:
 	const std::string&	getAwayMsg(void) const;
 	const time_t&		getAwayTime(void) const;
 
-	const Server&		getServer(void) const;
+	const Server&	getServer(void) const;
 
 
-	void 				setNextTimeout(time_t value);
-	const time_t&		getNextTimeout(void) const;
+	void 			setNextTimeout(time_t value);
+	const time_t&	getNextTimeout(void) const;
 
-	void				setIdleTime(time_t value);
-	const time_t&		getIdleTime(void) const;
+	void			setIdleTime(time_t value);
+	const time_t&	getIdleTime(void) const;
 
-	void				setStatus(int value);
-	int					getStatus(void);
+	void	setStatus(int value);
+	int		getStatus(void);
 
-	void				setPollIndex(int value);
-	const int&			getPollIndex(void) const;
+	void		setPollIndex(int value);
+	const int&	getPollIndex(void) const;
 
-	void				setFd(int value);
-	const int&			getFd(void) const;
+	void		setFd(int value);
+	const int&	getFd(void) const;
 
-	bool				isPingSended(void);
-	bool				isAway(void);
+	bool	isPingSended(void);
+	bool	isAway(void);
 
-	void				setMode(AUserMode* userMode);
-	void				unsetMode(AUserMode* userMode);
-	bool				isSetMode(AUserMode* userMode);
+	void	setMode(AUserMode* userMode);
+	void	unsetMode(AUserMode* userMode);
+	bool	isSetMode(AUserMode* userMode);
 
-	void				sendPing(void);
-	ssize_t				send(void);
-	ssize_t				send(const std::string& text);
-	ssize_t				send(const Message& message);
-	void				sendToBuffer(std::string msg);
-	void				sendToBuffer(const Message& message);
+	void	sendPing(void);
+	ssize_t	send(void);
+	ssize_t	send(const std::string& text);
+	ssize_t	send(const Message& message);
+	void	sendToBuffer(std::string msg);
+	void	sendToBuffer(const Message& message);
 
 	size_t	recv(int fd);
 
-	Message*			buildMessage(std::string &buff);
-	size_t				checkInput(int fd, Message &message);
-	bool				checkOutput(int fd);
+	Message*	buildMessage(std::string& buff);
+
+	std::size_t	checkInput(int fd, Message& message);
+	bool		checkOutput(int fd);
 
 	Server::userVector_type*	getUniqueVector(void);
 	Channel*					findFullestChannel(void);
@@ -140,31 +141,34 @@ public:
 
 private:
 	User(void);
-	User(User const &src);
-	User &operator=(User const &rhs);
+	User(const User& src);
+	User&	operator=(const User& rhs);
 
-	std::string					_name;
-	std::string					_host;
-	std::string					_ident;
-	std::string					_real;
-	std::string					_pass;
-	std::string					_inputBuffer;
-	std::string					_outputBuffer;
-	std::string 				_awayMsg;
-	std::string					_pingChallenge;
-	Server&						_server;
-	Server::channelMap_type		_channelMap;
-	int							_status;
-	time_t						_signTime;
-	time_t						_awayTime;
-	time_t						_nextTimeout;
-	time_t						_idleTime;
-	int							_pollIndex;
-	int							_fd;
-	int							_type;
-	bool						_oper;
-	uint64_t					_modes;
+	Server&					_server;
 
-	std::string					_getLine(size_t pos);
+	Server::channelMap_type	_channelMap;
+
+	std::string	_name;
+	std::string	_host;
+	std::string	_ident;
+	std::string	_real;
+	std::string	_pass;
+	std::string	_inputBuffer;
+	std::string	_outputBuffer;
+	std::string _awayMsg;
+	std::string	_pingChallenge;
+
+	int			_status;
+	std::time_t	_signTime;
+	std::time_t	_awayTime;
+	std::time_t	_nextTimeout;
+	std::time_t	_idleTime;
+	int			_pollIndex;
+	int			_fd;
+	int			_type;
+	bool		_oper;
+	uint64_t	_modes;
+
+	std::string	_getLine(size_t pos);
 };
 #endif

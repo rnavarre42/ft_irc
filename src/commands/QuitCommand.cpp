@@ -9,69 +9,62 @@ QuitCommand::QuitCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void QuitCommand::loadEvents(Server::eventHandler_type& eventHandler)
+QuitCommand::~QuitCommand(void)
+{}
+
+void	QuitCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
-	eventHandler.add(QUITEVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::QuitEvent));
-	eventHandler.add(DELUSEREVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::DelUserEvent));
+	eventHandler.add(QUITEVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::quitEvent));
+	eventHandler.add(DELUSEREVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::delUserEvent));
 }
 
-void QuitCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	QuitCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
-void QuitCommand::DelUserEvent(Message& message)
+void	QuitCommand::delUserEvent(Message& message)
 {
-	User&	user	= static_cast<User& >(*message.getSender());
+	User*	user = reinterpret_cast<User*>(message.getSender());
 	
-	if (user.getName().empty())
+	if (user->getName().empty())
 		Console::log(LOG_INFO, "User <anonymous> disconnected (" + message[0] + ")");
 	else
-		Console::log(LOG_INFO, "User <" + user.getName() + "> disconnected" + " (" + message[0] + ")");
-	message.send("ERROR :Closing link: (" + user.getIdent() + "@" + user.getHost() + ") [" + message[0] + "]");
+		Console::log(LOG_INFO, "User <" + user->getName() + "> disconnected" + " (" + message[0] + ")");
+	message.send("ERROR :Closing link: (" + user->getIdent() + "@" + user->getHost() + ") [" + message[0] + "]");
 }
 
-void QuitCommand::QuitEvent(Message& message)
+void	QuitCommand::quitEvent(Message& message)
 {
 	message.send();
 }
 
-bool QuitCommand::_recvUser(Message& message)
+bool	QuitCommand::_recvUser(Message& message)
 {
-	User&	user = *this->userSender;
+	User*	user = this->userSender;
 
 	if (message.size())
 		message[0].insert(0, "Quit: ");
 	message.setCmd("QUIT");
-	message.setReceiver(&user);
+	message.setReceiver(user);
 	message.process();
 	return true;
 }
 
-bool QuitCommand::_recvServer(Message& message)
+bool	QuitCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool QuitCommand::_sendUser(Message& message)
+bool	QuitCommand::_sendUser(Message& message)
 {
-	User&	user = *this->userReceiver;
+	User*	user = this->userReceiver;
 	
 	if (!message.size())
 		message.insertField("Client exited");
-	this->server.deleteUser(user, message[0]);
+	this->server.deleteUser(*user, message[0]);
 	return true;
 }
 
-bool QuitCommand::_sendServer(Message& message)
+bool	QuitCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

@@ -13,17 +13,16 @@ TopicCommand::TopicCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void	TopicCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+TopicCommand::~TopicCommand(void)
+{}
 
-void	TopicCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	TopicCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-bool TopicCommand::_recvUser(Message& message)
+void	TopicCommand::unloadEvents(Server::eventHandler_type&)
+{}
+
+bool	TopicCommand::_recvUser(Message& message)
 {
 	User*						user = this->userSender;
 	Server::channelMap_iterator	chanIt = server.channelFind(message[0]);
@@ -72,29 +71,17 @@ bool TopicCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool TopicCommand::_recvServer(Message& message)
+bool	TopicCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool TopicCommand::_sendUser(Message& message)
+bool	TopicCommand::_sendUser(Message&)
 {
-	User&	user = *this->userSender;
-
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool TopicCommand::_sendServer(Message& message)
+bool	TopicCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }

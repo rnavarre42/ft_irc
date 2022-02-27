@@ -62,12 +62,10 @@ bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message&
 }
 
 void	OperChanMode::onShowChanModeEvent(void)
-{
-}
+{}
 
-void	OperChanMode::onDelete(void* )
-{
-}
+void	OperChanMode::onDelete(void*)
+{}
 
 std::string OperChanMode::toString(void* pointer)
 {

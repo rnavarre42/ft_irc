@@ -1,6 +1,8 @@
+#include "utils.hpp"
+
 #include <string>
 
-std::string strToUpper(std::string data)
+std::string	strToUpper(std::string data)
 {
 	for (size_t i = 0; i < data.size(); i++)
 		if (data[i] >= 'a' && data[i] <= '~')
@@ -49,7 +51,7 @@ bool	isValidNick(const std::string& value)
 	return true;
 }
 
-bool	isChanNameSymbol(const unsigned char chr)
+inline bool	isChanNameSymbol(const unsigned char chr)
 {
 	return (chr >= 0x01 && chr <= 0x09)
 		|| (chr >= 0x0B && chr <= 0x0C)

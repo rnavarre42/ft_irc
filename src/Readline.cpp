@@ -14,9 +14,6 @@ Readline::Readline(void)
     this->new_tio = this->old_tio;
     this->new_tio.c_lflag &= ~(ICANON | ECHO);
     tcsetattr(STDOUT_FILENO, TCSAFLUSH, &this->new_tio);
-
-//	eventVector.push_back(std::make_pair(LF_CHR, &Readline::_newLine));
-//	eventVector.push_back(std::make_pair(DEL, &Readline::_backSpace));
 }
 
 Readline::~Readline(void)
@@ -24,7 +21,7 @@ Readline::~Readline(void)
 	tcsetattr(STDOUT_FILENO, TCSANOW, &this->old_tio);
 }
 
-void Readline::_newLine(std::string const &data)
+void	Readline::_newLine(std::string const &data)
 {
 	std::cout << data << std::endl;
 	this->copy = this->line;
@@ -32,7 +29,7 @@ void Readline::_newLine(std::string const &data)
 	index = 0;
 }
 
-void Readline::_backSpace(std::string const &)
+void	Readline::_backSpace(std::string const &)
 {
 	std::cout << "\033[D \033[D" << std::endl;
 	if (this->index)
@@ -42,7 +39,7 @@ void Readline::_backSpace(std::string const &)
 	}
 }
 
-std::string &Readline::operator()(void)
+std::string&	Readline::operator()(void)
 {
 	char		data[9];
 	std::string	buffer;

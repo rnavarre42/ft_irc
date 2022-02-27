@@ -13,15 +13,18 @@ PrivmsgCommand::PrivmsgCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void PrivmsgCommand::loadEvents(Server::eventHandler_type&)
+PrivmsgCommand::~PrivmsgCommand(void)
 {}
 
-void PrivmsgCommand::unloadEvents(Server::eventHandler_type&)
+void	PrivmsgCommand::loadEvents(Server::eventHandler_type&)
 {}
 
-bool PrivmsgCommand::_recvUser(Message& message)
+void	PrivmsgCommand::unloadEvents(Server::eventHandler_type&)
+{}
+
+bool	PrivmsgCommand::_recvUser(Message& message)
 {
-	User&						user = *this->userSender;
+	User*						user = this->userSender;
 	Server::userMap_iterator 	userIt;
 	Server::channelMap_iterator	chanIt;
 
@@ -57,33 +60,21 @@ bool PrivmsgCommand::_recvUser(Message& message)
 		message.setReceiver(userIt->second);
 		message.limitMaxParam(1);
 	}
-	message.setSender(&user);
+	message.setSender(user);
 	message.send();
 	return true;
 }
 
-bool PrivmsgCommand::_recvServer(Message& message)
+bool	PrivmsgCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
-bool PrivmsgCommand::_sendUser(Message&	message)
+bool	PrivmsgCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool PrivmsgCommand::_sendServer(Message&	message)
+bool	PrivmsgCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }
