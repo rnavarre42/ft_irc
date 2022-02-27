@@ -21,7 +21,7 @@ void leaks(void)
 
 int main(void)
 {
-	Server&	server = Server::createInstance("0.0.0.0", 6667, "irc.42born2code.com");
+	Server&	server = Server::createInstance("0.0.0.0", 6667, "irc.castela.es");
 
 	atexit(leaks);
 	server.run();
