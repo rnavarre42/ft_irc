@@ -20,6 +20,20 @@ bool	wildcardComp(std::string::const_iterator pattern, std::string::const_iterat
 	return false;
 }
 
+std::string	addWildcard(std::string value)
+{
+	if (value.find('!') != std::string::npos)
+	{
+		if (value.find('@') != std::string::npos)
+			return value;
+		else
+			return value + "@*";
+	}
+	if (value.find('@') != std::string::npos)
+		return "*!" + value;
+	return value + "!*@*";
+}
+
 bool	isSpecialLetter(const char chr)
 {
 	return chr >= 'A' && chr <= '~';

@@ -9,7 +9,9 @@
 struct BanInfo
 {
 	BanInfo(std::string mask, std::string nick)
-		: mask(mask), nick(nick), time(std::time(NULL))
+		: mask(mask)
+		, nick(nick)
+		, time(std::time(NULL))
 	{}
 
 	std::string	mask;

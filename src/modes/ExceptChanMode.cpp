@@ -5,6 +5,7 @@
 #include "Channel.hpp"
 #include "User.hpp"
 #include "BanInfo.hpp"
+#include "utils.hpp"
 
 #include <ctime>
 #include <sstream>
@@ -58,18 +59,22 @@ bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Messag
 	BanInfo*								banInfo;
 	Channel::Mode::rangePairMultimap_type	rangePair;
 	Channel::Mode::multimap_iterator		maskIt;
+	std::string								newMask;
 
 	//TODO: verificar y completar mascara
+	newMask = addWildcard(message[pos]);
 	rangePair = channel.mode.getList(this->_chanModeConfig.mode);
-	maskIt = findMask(rangePair, message[pos]);
+	maskIt = findMask(rangePair, newMask);
 	if (sign && maskIt == rangePair.second)
 	{
-		banInfo = new BanInfo(message[pos], message.getSender()->getName());
+		banInfo = new BanInfo(newMask, message.getSender()->getName());
+		message[pos] = newMask;
 		this->setMode(channel, banInfo);
 		return true;
 	}
 	else if (!sign && maskIt != rangePair.second)
 	{
+		message[pos] = newMask;
 		this->unsetMode(channel, maskIt->second);
 		return true;
 	}
