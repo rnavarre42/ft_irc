@@ -113,6 +113,21 @@ void	User::setPass(const std::string& value)
 	this->_pass = value;
 }
 
+void	User::setMode(UserMode*	userMode)
+{
+	this->_modes |= userMode.flag;
+}
+
+void	User::unsetMode(UserMode* userMode)
+{
+	this->_modes &= ^userMode.flag;
+}
+
+bool	User::isSetMode(UserMode* userMode)
+{
+	return this->_modes & userMode.flag;
+}
+
 //TODO: Mismo mensaje que en Server, hay que determinar si almacenamos esta información y no la generamos constantemente.
 std::string	User::getMask(void)
 {

@@ -106,6 +106,10 @@ public:
 	bool				isPingSended(void);
 	bool				isAway(void);
 
+	void				setMode(UserMode* userMode);
+	void				unsetMode(UserMode* userMode);
+	bool				isSetMode(UserMode* userMode);
+
 	void				sendPing(void);
 	ssize_t				send(void);
 	ssize_t				send(const std::string& text);
@@ -156,6 +160,7 @@ private:
 	int							_pollIndex;
 	int							_fd;
 	int							_type;
+	uint64_t					_modes;
 
 	std::string					_getLine(size_t pos);
 };
