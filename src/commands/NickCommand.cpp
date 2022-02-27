@@ -68,6 +68,14 @@ bool NickCommand::_recvUser(Message& message)
 	{
 		if (oldName.empty() && user.getIdent() != "anonymous")
 		{
+			if (user.getPass() != this->server.getPass())
+			{
+				message.limitMaxParam(1);
+				message.setCmd("QUIT");
+				message[0] = "Password incorrect";
+				message.process();
+				return true;
+			}
 			user.setStatus(LEVEL_NEGOTIATING);
 			user.setPingChallenge("challenge-string");
 			user.send("PING :" + user.getPingChallenge());

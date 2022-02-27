@@ -14,7 +14,7 @@
 # include "NoticeCommand.hpp"
 # include "OperCommand.hpp"
 # include "PartCommand.hpp"
-//# include "PassCommand.hpp"
+# include "PassCommand.hpp"
 # include "PingCommand.hpp"
 # include "PongCommand.hpp"
 # include "PrivmsgCommand.hpp"

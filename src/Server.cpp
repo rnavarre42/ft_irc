@@ -40,10 +40,11 @@ void	Server::signalHandler(int sig)
 		server.quit(SHUTDOWN_STRING);
 }
 
-Server::Server(const std::string& listenIp, int listenPort, const std::string& name)
+Server::Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password)
 	: _ip(listenIp)
 	, _port(listenPort)
 	, _message(*new Message(*this))
+	, _pass(password)
 	, _name(name)
 	, _type(TYPE_SERVER)
 {
@@ -84,7 +85,7 @@ void	Server::_loadCommands(void)
 	this->_commandMap["NOTICE"]		= new NoticeCommand	  (*this, LEVEL_REGISTERED, 2);
 	this->_commandMap["OPER"]		= new OperCommand	  (*this, LEVEL_REGISTERED, 2);
 	this->_commandMap["PART"]		= new PartCommand	  (*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["PASS"]		= new PassCommand	  (*this, LEVEL_UNREGISTERED, 1);
+	this->_commandMap["PASS"]		= new PassCommand	  (*this, LEVEL_UNREGISTERED, 1);
 	this->_commandMap["PING"]		= new PingCommand	  (*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["PONG"]		= new PongCommand	  (*this, LEVEL_NEGOTIATING | LEVEL_REGISTERED, 1);
 	this->_commandMap["PRIVMSG"]	= new PrivmsgCommand  (*this, LEVEL_REGISTERED, 1);
@@ -178,11 +179,11 @@ Server&	Server::getInstance(void)
 {
 	return *Server::_instance;
 }
-Server&	Server::createInstance(const std::string& listenIp, int listenPort, const std::string& name)
+Server*	Server::createInstance(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password)
 {
 	if (Server::_instance == NULL)
-		Server::_instance = new Server(listenIp, listenPort, name);
-	return *Server::_instance;
+		Server::_instance = new Server(listenIp, listenPort, name, password);
+	return Server::_instance;
 }
 
 void	Server::deleteInstance(void)
@@ -529,7 +530,6 @@ void	Server::deleteUser(User& user, const std::string& text)
 	delete userVector;
 }
 
-// :masksource JOIN #CHAN :Pass
 void	Server::addToChannel(Message& message)
 {
 	Channel*										channel = NULL;

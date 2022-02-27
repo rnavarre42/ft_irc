@@ -38,8 +38,8 @@ void PongCommand::registerUserEvent(Message& message)
 	message.send(Numeric::builder(message, RPL_CREATED));
 	
 	Numeric::insertField(this->server.getName());
-	Numeric::insertField("i");
-	Numeric::insertField("iknst");
+	Numeric::insertField("iO");
+	Numeric::insertField("beiklmnostv");
 	message.send(Numeric::builder(message, RPL_MYINFO));
 
 	Numeric::insertField("AWAYLEN=200 CASEMAPPING=ascii CHANLIMIT=#:3 CHANMODES=be,k,inst CHANNELLEN=64 CHANTYPES=# EXCEPTS=e HOSTLEN=64 KEYLEN=32");

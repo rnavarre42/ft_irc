@@ -107,7 +107,7 @@ public:
 
 	static void						signalHandler(int sig);
 	static Server&					getInstance(void);
-	static Server&					createInstance(const std::string& listenIp, int listenPort, const std::string& name);
+	static Server*					createInstance(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password);
 	static void						deleteInstance(void);
 	const std::string&				getName(void) const;
 	userMap_type&					getUserMap(void);
@@ -196,7 +196,7 @@ public:
 	};
 
 private:
-	Server(const std::string& listenIp, int listenPort, const std::string& name);
+	Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password);
 	Server(void);
 
 	std::string			_ip;

@@ -21,7 +21,7 @@ void KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
-
+// kick #canal nick :motivo
 bool KickCommand::_recvUser(Message& message)
 {
 //	User*						user = this->userSender;
@@ -46,6 +46,7 @@ bool KickCommand::_recvUser(Message& message)
 	}
 	else
 	{
+		std::cout << message.toString() << std::endl;
 		channel = channelIt->second;
 		message.setChannel(channel);
 		if (!this->server.checkChannelMode(message, COMMAND_KICK))
@@ -55,6 +56,8 @@ bool KickCommand::_recvUser(Message& message)
 		message[0] = channel->getName();
 		message[1] = userKickIt->second->getName();
 		message.limitMaxParam(3);
+		message.hideReceiver();
+		std::cout << message.toString() << std::endl;
 		message.send();
 		server.removeUserFromChannel(*channel, *userKickIt->second);
 	}
