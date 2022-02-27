@@ -59,7 +59,7 @@ Channel::Mode::rangePairMultimap_type Channel::Mode::getList(const char modeName
 	return this->_modeMultimap.equal_range(modeName);
 }
 
-bool Channel::Mode::insert(char modeName, void *value)
+bool Channel::Mode::insert(char modeName, void* value)
 {
 	bool	ret = !this->isSet(modeName, value);
 
@@ -83,7 +83,7 @@ Channel::Mode::multimap_iterator	Channel::Mode::findUnique(const char modeName, 
 	return this->_modeMultimap.end();
 }
 
-bool	Channel::Mode::erase(const char modeName, void *value)
+bool	Channel::Mode::erase(const char modeName, const void* value)
 {
 	Channel::Mode::multimap_iterator	pos = this->findUnique(modeName, value);
 	   
@@ -100,7 +100,7 @@ bool	Channel::Mode::erase(const char modeName)
 	return this->_modeMultimap.erase(modeName) > 0;
 }
 
-void	Channel::Mode::erase(const Channel::Mode::multimap_iterator pos)
+void	Channel::Mode::erase(Channel::Mode::multimap_const_iterator pos)
 {
 	this->_modeMultimap.erase(pos);
 }
@@ -110,12 +110,12 @@ bool Channel::isOper(const ISender* sender)
 	return (this->mode.isSet('o', sender));
 }
 
-bool Channel::isVoice(const ISender *sender)
+bool Channel::isVoice(const ISender* sender)
 {
 	return (this->mode.isSet('v', sender));
 }
 
-std::string const	&Channel::getName(void) const
+const std::string&	Channel::getName(void) const
 {
 	return this->_name;
 }
@@ -125,7 +125,7 @@ Server::userMap_insert	Channel::insert(User* user)
 	return this->_userMap.insert(std::make_pair(strToUpper(user->getName()), user));
 }
 
-Server::userMap_insert	Channel::insert(const std::string &userName, User* user)
+Server::userMap_insert	Channel::insert(const std::string& userName, User* user)
 {
 	return this->_userMap.insert(std::make_pair(strToUpper(userName), user));
 }
@@ -150,7 +150,7 @@ void Channel::setOwner(const std::string& value)
 	this->_owner = value;
 }
 
-std::string const	&Channel::getOwner(void) const
+const std::string&	Channel::getOwner(void) const
 {
 	return this->_owner;
 }
@@ -160,7 +160,7 @@ void Channel::setTopicInfo(const std::string& own, const std::string& topic)
 	this->_topicInfo.setTopic(own, topic);
 }
 
-Channel::TopicInfo const	&Channel::getTopicInfo(void) const
+const Channel::TopicInfo&	Channel::getTopicInfo(void) const
 {
 	return this->_topicInfo;
 }

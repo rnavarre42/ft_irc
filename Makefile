@@ -91,7 +91,7 @@ tag:
 
 PHONY += run
 run:		all
-	./$(SERVER)
+	./$(SERVER) 6667 1234
 
 PHONY += own
 own:	$(CLIENT)

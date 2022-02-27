@@ -18,7 +18,7 @@ KeyChanMode::~KeyChanMode(void)
 
 void	KeyChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
-	Channel* channel = message.getChannel();
+	Channel*	channel = message.getChannel();
 
 	if (this->isSetMode(*channel))
 	{
@@ -39,7 +39,7 @@ bool	KeyChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& 
 	{
 		if (this->isSetMode(channel))
 		{
-			if (*(password = static_cast<std::string* >(channel.mode[this->_chanModeConfig.mode])) == message[pos])
+			if (*(password = static_cast<std::string*>(channel.mode[this->_chanModeConfig.mode])) == message[pos])
 				return false;
 			*password = message[pos];
 		}
@@ -48,7 +48,7 @@ bool	KeyChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& 
 	}
 	else if (this->isSetMode(channel))
 	{
-		if (*(password = static_cast<std::string* >(channel.mode[this->_chanModeConfig.mode])) != message[pos])
+		if (*(password = static_cast<std::string*>(channel.mode[this->_chanModeConfig.mode])) != message[pos])
 			return false;
 		else
 			this->unsetMode(channel, password);
@@ -68,7 +68,7 @@ void	KeyChanMode::onDelete(void* pointer)
 	delete reinterpret_cast<std::string* >(pointer);
 }
 
-std::string KeyChanMode::toString(void *pointer)
+std::string KeyChanMode::toString(void* pointer)
 {
 	return *reinterpret_cast<std::string* >(pointer);
 }

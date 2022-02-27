@@ -572,7 +572,6 @@ void	Server::addToChannel(Message& message)
 					return ;
 				channel->insert(&user);
 				//eliminamos la invitación, si existiera.
-				//
 				if (this->_invite.erase(&user, channel))
 				{
 					Console::log(LOG_INFO, user.getName() + " ha hecho efectiva su invitacion");
@@ -722,26 +721,31 @@ bool	Server::sendCommand(Message& message)
 }
 void	Server::_checkConsoleInput(void)
 {
-	int		size;
-	char	buffer[BUFFERSIZE + 1];
-	std::string	str = "console> ";
+//	std::ssize_t	size;
+//	char	buffer[BUFFERSIZE + 1];
+//	std::string	str = "console> ";
+	std::string		buffer;
 
 	if (this->_pollfds[1].revents & POLLIN)
 	{
-		size = read(0, buffer, BUFFERSIZE);
-		buffer[size] = '\0';
-		if (size > 0)
+
+	//	size = read(0, buffer, BUFFERSIZE);
+	//	buffer[size] = '\0';
+	//	if (size > 0)
+		std::getline(std::cin, buffer);
+		if (std::cin)
 		{
-			if (!strcmp(buffer, "quit\n"))
+			if (buffer == "quit")
+		//	if (!strcmp(buffer, "quit\n"))
 				this->quit(SHUTDOWN_STRING);
-			if (!strcmp(buffer, "invite\n"))
+/*			if (!strcmp(buffer, "invite\n"))
 			{
 				std::cout << "Nick     Channel" << std::endl;
 				for (Invite::inviteVector_iterator it = _invite.begin(); it != _invite.end(); it++)
 				{
 					std::cout << it->first->getName() << "\t" << it->second->getName() << std::endl;
 				}
-			}
+			}*/
 		}
 	}
 }
@@ -773,7 +777,7 @@ void	Server::_loop(void)
 {
 	int	rv;
 
-	Console::log(LOG_INFO, "Waiting connect clients...");
+	Console::log(LOG_INFO, "Waiting to connect clients...");
 	while (!this->_stop)
 	{
 		rv = this->_poll();

@@ -13,7 +13,8 @@ class Message;
 class ISender
 {
 public:
-	virtual ~ISender(void) {}
+	virtual ~ISender(void)
+	{}
 
 	virtual const std::string&	getName(void) const = 0;
 	virtual const int&			getFd(void) const = 0;
@@ -21,7 +22,7 @@ public:
 	virtual void				setPass(const std::string& value) = 0;
 	virtual ssize_t				send(void) = 0;
 	virtual ssize_t				send(const std::string& data) = 0;
-	virtual ssize_t				send(const Message &message) = 0;
+	virtual ssize_t				send(const Message& message) = 0;
 	virtual void				setStatus(int value) = 0;
 	virtual int					getStatus(void) = 0;
 	virtual bool				isServer(void) = 0;

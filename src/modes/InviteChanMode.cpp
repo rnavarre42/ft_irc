@@ -15,10 +15,9 @@ InviteChanMode::InviteChanMode(Server& server)
 InviteChanMode::~InviteChanMode(void)
 {}
 
-void	InviteChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
+void	InviteChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
 	Channel*	channel = message.getChannel();
-	(void)event;
 
 	if (this->isSetMode(*channel))
 	{
@@ -38,10 +37,8 @@ void	InviteChanMode::onChanEvent(Access& access, int event, Message& message, in
 		access = AChanMode::allow;
 }
 
-bool	InviteChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& )
+bool	InviteChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )
 {
-	(void)pos;
-
 	return (sign && this->setMode(channel, NULL))
 				|| (!sign && this->unsetMode(channel, NULL));
 }
@@ -50,11 +47,11 @@ void	InviteChanMode::onShowChanModeEvent(void)
 {
 }
 
-void	InviteChanMode::onDelete(void* )
+void	InviteChanMode::onDelete(void*)
 {
 }
 
-std::string InviteChanMode::toString(void* )
+std::string InviteChanMode::toString(void*)
 {
 	return "";
 }

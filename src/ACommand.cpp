@@ -6,7 +6,7 @@
 #include <string>
 #include <iostream>
 
-ACommand::ACommand(Server &server, int levelAccess, int minParam)
+ACommand::ACommand(Server& server, int levelAccess, int minParam)
 	: server(server)
 	, levelAccess(levelAccess)
 	, minParam(minParam)
@@ -15,7 +15,7 @@ ACommand::ACommand(Server &server, int levelAccess, int minParam)
 ACommand::~ACommand(void)
 {}
 
-void ACommand::recv(Message &message)
+void ACommand::recv(Message& message)
 {
 	bool	ret = true;
 
@@ -62,7 +62,7 @@ void ACommand::recv(Message &message)
 	}
 }
 
-void ACommand::send(Message &message)
+void ACommand::send(Message& message)
 {
 	if (message.getReceiver()->isUser())
 	{

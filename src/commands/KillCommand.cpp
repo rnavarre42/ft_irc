@@ -10,6 +10,9 @@ KillCommand::KillCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
+KillCommand::~KillCommand(void)
+{}
+
 void KillCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;

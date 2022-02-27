@@ -17,11 +17,10 @@ ModerateChanMode::ModerateChanMode(Server& server)
 ModerateChanMode::~ModerateChanMode(void)
 {}
 
-void	ModerateChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
+void	ModerateChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
 	Channel*	channel = message.getChannel();
 	ISender*	user = message.getSender();
-	(void)event;
 
 	if (access != AChanMode::deny && this->isSetMode(*channel) && !(channel->isVoice(user) || channel->isOper(user)))
 	{
@@ -29,25 +28,21 @@ void	ModerateChanMode::onChanEvent(Access& access, int event, Message& message, 
 		numeric = ERR_CANNOTSENDTOCHAN;
 		access = AChanMode::deny;
 	}
-//	else
-//		access = AChanMode::allow;
 }
 
-bool	ModerateChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )
+bool	ModerateChanMode::onChanModeEvent(int, int sign, Channel& channel, Message&)
 {
 	return (sign && this->setMode(channel, NULL))
 				|| (!sign && this->unsetMode(channel, NULL));
 }
 
 void	ModerateChanMode::onShowChanModeEvent(void)
-{
-}
+{}
 
-void	ModerateChanMode::onDelete(void* )
-{
-}
+void	ModerateChanMode::onDelete(void*)
+{}
 
-std::string ModerateChanMode::toString(void* )
+std::string ModerateChanMode::toString(void*)
 {
 	return "";
 }

@@ -14,12 +14,15 @@ ModeCommand::ModeCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void ModeCommand::loadEvents(Server::eventHandler_type& eventHandler)
+ModeCommand::~ModeCommand(void)
+{}
+
+void	ModeCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void ModeCommand::unloadEvents(Server::eventHandler_type& eventHandler)
+void	ModeCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
@@ -57,7 +60,7 @@ void	cleanSignModes(std::string& modes)
  *	Funcion que verifica si el modo de canal existe, la sintaxis es correcta y tiene privilegios para
  *	ejecutarlo.
  */
-void ModeCommand::_checkChanModes(Message& message)
+void	ModeCommand::_checkChanModes(Message& message)
 {
 	unsigned long					pos = 2;
 	bool							set = true;
@@ -146,7 +149,7 @@ void ModeCommand::_checkChanModes(Message& message)
  *	ejecutarlo.
  */ 
 
-void ModeCommand::_checkUserModes(Message& message)
+void	ModeCommand::_checkUserModes(Message& message)
 {
 	Server::userMap_iterator	it = server.userFind(message[0]);
 
@@ -164,7 +167,7 @@ void ModeCommand::_checkUserModes(Message& message)
 	}
 }
 
-bool ModeCommand::_recvUser(Message& message)
+bool	ModeCommand::_recvUser(Message& message)
 {
 	User&	user = *this->userSender;
 
@@ -178,7 +181,7 @@ bool ModeCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool ModeCommand::_recvServer(Message& message)
+bool	ModeCommand::_recvServer(Message& message)
 {
 	Server&	server = *this->serverSender;
 
@@ -187,7 +190,7 @@ bool ModeCommand::_recvServer(Message& message)
 	return false;
 }
 
-bool ModeCommand::_sendUser(Message& message)
+bool	ModeCommand::_sendUser(Message& message)
 {
 	User&	user = *this->userReceiver;
 	
@@ -196,7 +199,7 @@ bool ModeCommand::_sendUser(Message& message)
 	return false;
 }
 
-bool ModeCommand::_sendServer(Message& message)
+bool	ModeCommand::_sendServer(Message& message)
 {
 	Server&	server = *this->serverReceiver;
 

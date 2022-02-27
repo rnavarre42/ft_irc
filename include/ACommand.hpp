@@ -21,32 +21,33 @@ class EventHandler;
 class ACommand
 {
 public:
-	ACommand(Server &server, int levelAccess, int minParam);
+	ACommand(Server& server, int levelAccess, int minParam);
 	virtual ~ACommand(void);
-	virtual void loadEvents(Server::eventHandler_type &eventHandler) = 0;
-	virtual void unloadEvents(Server::eventHandler_type &eventHandler) = 0;
+
+	virtual void	loadEvents(Server::eventHandler_type& eventHandler) = 0;
+	virtual void	unloadEvents(Server::eventHandler_type& eventHandler) = 0;
 
 	void	recv(Message &msg);
 	void	send(Message &msg);
 
 private:
-	ACommand(void);
-	ACommand(ACommand const &src);
-	ACommand &operator=(ACommand const &rhs);
+	virtual bool	_recvUser(Message& message) = 0;
+	virtual bool	_recvServer(Message& message) = 0;
+	virtual bool	_sendUser(Message& message) = 0;
+	virtual bool	_sendServer(Message& message) = 0;
 
-	virtual bool	_recvUser(Message &message) = 0;
-	virtual bool	_recvServer(Message &message) = 0;
-	virtual bool	_sendUser(Message &message) = 0;
-	virtual bool	_sendServer(Message &message) = 0;
+	ACommand(void);
+	ACommand(const ACommand& src);
+	ACommand&	operator=(const ACommand& rhs);
 
 protected:
-	Server		&server;
+	Server&		server;
 	int			levelAccess;
 	size_t		minParam;
-	Server		*serverSender;
-	User		*userSender;
-	Server		*serverReceiver;
-	User		*userReceiver;
+	Server*		serverSender;
+	User*		userSender;
+	Server*		serverReceiver;
+	User*		userReceiver;
 };
 
 #endif

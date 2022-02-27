@@ -12,19 +12,21 @@ KickCommand::KickCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void KickCommand::loadEvents(Server::eventHandler_type& eventHandler)
+KickCommand::~KickCommand(void)
+{}
+
+void	KickCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
 
-void KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
+void	KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
-// kick #canal nick :motivo
-bool KickCommand::_recvUser(Message& message)
+
+bool	KickCommand::_recvUser(Message& message)
 {
-//	User*						user = this->userSender;
 	Server::channelMap_iterator	channelIt;
 	Channel*					channel;
 	Server::userMap_iterator	userKickIt;
@@ -64,7 +66,7 @@ bool KickCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool KickCommand::_recvServer(Message& message)
+bool	KickCommand::_recvServer(Message& message)
 {
 	Server&	server = *this->serverSender;
 
@@ -73,7 +75,7 @@ bool KickCommand::_recvServer(Message& message)
 	return false;
 }
 
-bool KickCommand::_sendUser(Message& message)
+bool	KickCommand::_sendUser(Message& message)
 {
 	User&	user = *this->userReceiver;
 	
@@ -82,7 +84,7 @@ bool KickCommand::_sendUser(Message& message)
 	return false;
 }
 
-bool KickCommand::_sendServer(Message& message)
+bool	KickCommand::_sendServer(Message& message)
 {
 	Server&	server = *this->serverReceiver;
 

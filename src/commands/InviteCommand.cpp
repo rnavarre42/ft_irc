@@ -5,10 +5,14 @@
 #include "Server.hpp"
 #include "Console.hpp"
 #include "Numeric.hpp"
+
 #include <iostream>
 
 InviteCommand::InviteCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
+{}
+
+InviteCommand::~InviteCommand(void)
 {}
 
 void InviteCommand::loadEvents(Server::eventHandler_type& eventHandler)
@@ -23,7 +27,7 @@ void InviteCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 
 bool InviteCommand::_recvUser(Message& message)
 {
-	User&						user = *this->userSender;
+	User*						user = this->userSender;
 	Server::channelMap_iterator	channelIt;
 	Server::userMap_iterator	invitedUserIt;
 	Channel*					channel;
@@ -47,7 +51,7 @@ bool InviteCommand::_recvUser(Message& message)
 	}
 	channel = channelIt->second;
 	channelName = channel->getName();
-	if (!user.isOnChannel(*channel))
+	if (!user->isOnChannel(*channel))
 	{
 		Numeric::insertField(channelName);
 		message.sendNumeric(ERR_NOTONCHANNEL);
@@ -60,19 +64,19 @@ bool InviteCommand::_recvUser(Message& message)
 	else
 	{
 		server.invite().insert(invitedUser, channel);
-		Console::log(LOG_INFO, user.getName() + " ha invitado a " + invitedName + " a " + channelName);
+		Console::log(LOG_INFO, user->getName() + " ha invitado a " + invitedName + " a " + channelName);
 		message.sendNumeric(RPL_INVITING);
 		message.clearReceiver();
 		message.eraseAt(0);
 		message[0] = channelName;
-		message.setSender(&user);
+		message.setSender(user);
 		message.setReceiver(invitedUser);
 		message.send();
 	}
 	return true;
 }
 
-bool InviteCommand::_recvServer(Message &message)
+bool	InviteCommand::_recvServer(Message& message)
 {
 	Server&	server = *this->serverSender;
 
@@ -81,7 +85,7 @@ bool InviteCommand::_recvServer(Message &message)
 	return false;
 }
 
-bool InviteCommand::_sendUser(Message &message)
+bool	InviteCommand::_sendUser(Message& message)
 {
 	User&	user = *this->userReceiver;
 	
@@ -90,7 +94,7 @@ bool InviteCommand::_sendUser(Message &message)
 	return false;
 }
 
-bool InviteCommand::_sendServer(Message &message)
+bool	InviteCommand::_sendServer(Message& message)
 {
 	Server&	server = *this->serverReceiver;
 

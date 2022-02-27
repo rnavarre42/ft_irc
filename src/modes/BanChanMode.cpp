@@ -22,13 +22,14 @@ BanChanMode::BanChanMode(Server& server)
 	this->_chanModeConfig.unique = false;
 }
 
-BanChanMode::~BanChanMode(void) {}
+BanChanMode::~BanChanMode(void)
+{}
 
 void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
 	Channel*	channel = message.getChannel();
 	std::string	mask = message.getSender()->getMask();
-	BanInfo		*banInfo;
+	BanInfo*	banInfo;
 
 	if (access == AChanMode::deny)
 		return ;
@@ -52,7 +53,7 @@ void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& 
 	}
 }
 
-inline static Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type& rangePair, const std::string& mask)
+Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type& rangePair, const std::string& mask)
 {
 	for (; rangePair.first != rangePair.second; ++rangePair.first)
 	{

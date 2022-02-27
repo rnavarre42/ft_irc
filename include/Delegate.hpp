@@ -4,22 +4,28 @@
 class IDelegate
 {
 public:
-	virtual ~IDelegate(void) {}
-	virtual void invoke(void* data) = 0;
+	virtual ~IDelegate(void)
+	{}
+
+	virtual void	invoke(void* data) = 0;
 };
 
 template <class KeyT, class ValueT>
 class Delegate : public IDelegate
 {
 public:
-	typedef void (KeyT::*fn)(ValueT& );
+	typedef void (KeyT::*fn)(ValueT&);
 
-	Delegate(KeyT& target, fn prototype) : _target(target), _prototype(prototype) {}
-	~Delegate(void) {}
+	Delegate(KeyT& target, fn prototype)
+		: _target(target), _prototype(prototype)
+	{}
+
+	~Delegate(void)
+	{}
 
 	void invoke(void* data)
 	{
-		(_target.*_prototype)(*(static_cast<ValueT* >(data)));
+		(_target.*_prototype)(*(static_cast<ValueT*>(data)));
 	}
 
 private:

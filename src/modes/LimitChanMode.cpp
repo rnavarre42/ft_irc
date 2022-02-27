@@ -22,11 +22,10 @@ LimitChanMode::LimitChanMode(Server& server)
 LimitChanMode::~LimitChanMode(void)
 {}
 
-void	LimitChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
+void	LimitChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
 	Channel*	channel = message.getChannel();
 	size_t		limit = reinterpret_cast<size_t>(this->getMode(*channel));
-	(void)event;
 
 	if (limit && limit <= channel->size() && access != AChanMode::deny)
 	{
@@ -34,7 +33,7 @@ void	LimitChanMode::onChanEvent(Access& access, int event, Message& message, int
 		numeric = ERR_CHANNELISFULL;
 		access = AChanMode::deny;
 	}
-	std::cout << "users: joined " << channel->size() << " : limit " << limit << std::endl;
+//	std::cout << "users: joined " << channel->size() << " : limit " << limit << std::endl;
 }
 
 inline bool	isValidLimit(unsigned long limit, Channel& channel, char chanMode)
@@ -43,9 +42,9 @@ inline bool	isValidLimit(unsigned long limit, Channel& channel, char chanMode)
 			|| limit == reinterpret_cast<unsigned long>(channel.mode[chanMode]));
 }
 
-bool	isNumber(std::string& str)
+bool	isNumber(const std::string& str)
 {
-	for (std::string::iterator it = str.begin(); it != str.end(); ++it)
+	for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
 	{
 		if (!std::isdigit(*it))
 			return false;
@@ -55,7 +54,7 @@ bool	isNumber(std::string& str)
 
 bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& message)
 {
-	unsigned long						limit;
+	unsigned long	limit;
 
 	if (sign)
 	{
@@ -78,7 +77,7 @@ bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message
 void	LimitChanMode::onShowChanModeEvent(void)
 {}
 
-void	LimitChanMode::onDelete(void* )
+void	LimitChanMode::onDelete(void*)
 {}
 
 std::string LimitChanMode::toString(void* pointer)

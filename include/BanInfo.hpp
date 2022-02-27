@@ -8,7 +8,7 @@
 
 struct BanInfo
 {
-	BanInfo(std::string mask, std::string nick)
+	BanInfo(const std::string& mask, const std::string& nick)
 		: mask(mask)
 		, nick(nick)
 		, time(std::time(NULL))

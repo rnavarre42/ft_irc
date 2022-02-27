@@ -10,15 +10,18 @@ template <class KeyT, class ValueT>
 class EventHandler
 {
 public:
-	typedef typename std::multimap<KeyT, IDelegate &>	delegateMultimap_type;
-	typedef typename delegateMultimap_type::iterator		delegateMultimap_iterator;
+	typedef typename std::multimap<KeyT, IDelegate&>	delegateMultimap_type;
+	typedef typename delegateMultimap_type::iterator	delegateMultimap_iterator;
 
-	EventHandler(void) {}
-	~EventHandler(void) {}
+	EventHandler(void)
+	{}
 
-	void	add(KeyT key, IDelegate &delegate)
+	~EventHandler(void)
+	{}
+
+	void	add(KeyT key, IDelegate& delegate)
 	{
-		this->_delegateMultimap.insert(typename std::pair<KeyT, IDelegate &>(key, delegate));
+		this->_delegateMultimap.insert(typename std::pair<KeyT, IDelegate&>(key, delegate));
 	}
 
 	void	clear(void)
@@ -37,7 +40,7 @@ public:
 		return this->_delegateMultimap.end();
 	}
 
-	void	removeByValue(IDelegate &delegate)
+	void	removeByValue(IDelegate& delegate)
 	{
 		delegateMultimap_type	currentIt;
 
@@ -53,7 +56,7 @@ public:
 		}
 	}
 
-	void	raise(KeyT key, ValueT &value)
+	void	raise(KeyT key, ValueT& value)
 	{
 		std::pair<delegateMultimap_iterator, delegateMultimap_iterator> ret;
 
@@ -63,8 +66,8 @@ public:
 	}
 
 private:
-	EventHandler(EventHandler const &src);
-	EventHandler &operator=(EventHandler const &rhs);
+	EventHandler(const EventHandler& src);
+	EventHandler&	operator=(const EventHandler& rhs);
 
 	delegateMultimap_type	_delegateMultimap;
 };

@@ -10,15 +10,18 @@ NoticeCommand::NoticeCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void NoticeCommand::loadEvents(Server::eventHandler_type& )
+NoticeCommand::~NoticeCommand(void)
 {}
 
-void NoticeCommand::unloadEvents(Server::eventHandler_type& )
+void	NoticeCommand::loadEvents(Server::eventHandler_type& )
 {}
 
-bool NoticeCommand::_recvUser(Message& message)
+void	NoticeCommand::unloadEvents(Server::eventHandler_type& )
+{}
+
+bool	NoticeCommand::_recvUser(Message& message)
 {
-	User&						user = *this->userSender;
+	User*						user = this->userSender;
 	Server::userMap_iterator 	userIt;
 	Server::channelMap_iterator	chanIt;
 
@@ -51,12 +54,12 @@ bool NoticeCommand::_recvUser(Message& message)
 		message.setReceiver(userIt->second);
 		message.limitMaxParam(1);
 	}
-	message.setSender(&user);
+	message.setSender(user);
 	message.send();
 	return true;
 }
 
-bool NoticeCommand::_recvServer(Message& message)
+bool	NoticeCommand::_recvServer(Message& message)
 {
 	Server&	server = *this->serverSender;
 
@@ -65,7 +68,7 @@ bool NoticeCommand::_recvServer(Message& message)
 	return false;
 }
 
-bool NoticeCommand::_sendUser(Message& message)
+bool	NoticeCommand::_sendUser(Message& message)
 {
 	User&	user = *this->userReceiver;
 
@@ -74,7 +77,7 @@ bool NoticeCommand::_sendUser(Message& message)
 	return false;
 }
 
-bool NoticeCommand::_sendServer(Message& message)
+bool	NoticeCommand::_sendServer(Message& message)
 {
 	Server&	server = *this->serverReceiver;
 

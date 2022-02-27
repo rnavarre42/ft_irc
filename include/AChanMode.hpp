@@ -1,10 +1,10 @@
 #ifndef ICHANMODE_HPP
 # define ICHANMODE_HPP
  
-#include "ChanModeConfig.hpp"
-#include "Channel.hpp"
+# include "ChanModeConfig.hpp"
+# include "Channel.hpp"
 
-#include <string>
+# include <string>
 
 class Server;
 class Message;
@@ -20,13 +20,18 @@ public:
 		allow
 	};
 
-	AChanMode(Server& server) : _server(server) {}
-	virtual ~AChanMode(void) {}
+	AChanMode(Server& server)
+		: _server(server)
+	{}
 
-	virtual void		onChanEvent(Access& access, int event, Message& message, int& numeric) = 0;
-	virtual bool		onChanModeEvent(int pos, int sign, Channel& channel, Message& message) = 0;
-	virtual void 		onShowChanModeEvent(void) = 0;
-	virtual void 		onDelete(void* pointer) = 0;
+	virtual ~AChanMode(void)
+	{}
+
+	virtual void	onChanEvent(Access& access, int event, Message& message, int& numeric) = 0;
+	virtual bool	onChanModeEvent(int pos, int sign, Channel& channel, Message& message) = 0;
+	virtual void	onShowChanModeEvent(void) = 0;
+
+	virtual void		onDelete(void* pointer) = 0;
 	virtual std::string	toString(void* pointer) = 0;
 
 	const ChanModeConfig&	getConfig(void) const
@@ -37,7 +42,7 @@ public:
 private:
 	AChanMode(void);
 	AChanMode(const AChanMode& src);
-	AChanMode &operator=(const AChanMode& rhs);
+	AChanMode&	operator=(const AChanMode& rhs);
 
 protected:
 	Server&			_server;
