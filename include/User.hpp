@@ -9,6 +9,7 @@
 # include <string>
 # include <map>
 
+class AUserMode;
 class Message;
 class ISender;
 
@@ -107,6 +108,10 @@ public:
 	bool				isPingSended(void);
 	bool				isAway(void);
 
+	void				setMode(AUserMode* userMode);
+	void				unsetMode(AUserMode* userMode);
+	bool				isSetMode(AUserMode* userMode);
+
 	void				sendPing(void);
 	ssize_t				send(void);
 	ssize_t				send(const std::string& text);
@@ -158,6 +163,7 @@ private:
 	int							_fd;
 	int							_type;
 	bool						_oper;
+	uint64_t					_modes;
 
 	std::string					_getLine(size_t pos);
 };

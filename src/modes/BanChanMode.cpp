@@ -4,23 +4,13 @@
 #include "Numeric.hpp"
 #include "Channel.hpp"
 #include "User.hpp"
+#include "BanInfo.hpp"
 
 #include <ctime>
 #include <sstream>
 
 class User;
 class Channel;
-
-struct BanInfo
-{
-	BanInfo(const std::string& mask, const std::string& nick)
-		: mask(mask), nick(nick), time(std::time(NULL))
-	{}
-
-	std::string	mask;
-	std::string	nick;
-	time_t		time;
-};
 
 BanChanMode::BanChanMode(Server& server)
 	: AChanMode(server)
@@ -46,7 +36,7 @@ void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& 
 			; ++pairList.first)
 	{
 		banInfo = reinterpret_cast<BanInfo*>(pairList.first->second);
-		if (banInfo->mask == mask)
+		if (*banInfo == mask)
 		{
 			Numeric::insertField(channel->getName());
 			if (event & COMMAND_NICK)
@@ -101,7 +91,6 @@ void	BanChanMode::onShowChanModeEvent(void)
 void	BanChanMode::onDelete(void* pointer)
 {
 	delete &*reinterpret_cast<BanInfo* >(pointer);
-
 }
 
 std::string BanChanMode::toString(void* pointer)

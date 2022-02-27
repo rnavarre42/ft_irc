@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <map>
+#include <cctype>
 
 NickCommand::NickCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
@@ -32,6 +33,21 @@ void NickCommand::nickEvent(Message& message)
 	std::cout << "<" << message.getSender()->getName() << "> papa" << std::endl; 
 }
 
+bool	isSpecialLetter(const char chr)
+{
+	return chr >= 'a' && chr <= '~';
+}
+
+bool	isValidNick(const std::string& value)
+{
+	for (std::string::const_iterator it = value.begin(); it != value.end(); ++it)
+	{
+		if (!std::isdigit(*it) && !isSpecialLetter(*it) && *it != '-')
+			return false;
+	}
+	return true;
+}
+
 bool NickCommand::_recvUser(Message& message)
 {
 	User&									user = *this->userSender;
@@ -42,7 +58,8 @@ bool NickCommand::_recvUser(Message& message)
 	Server::userVector_type*				uniqueUsers;
 
 	message.setReceiver(message.getSender());
-	if (newName.size() > MAXNICK)
+	// valida nick
+	if (newName.size() > MAXNICK || !isValidNick(newName))
 	{
 		Numeric::insertField(newName);
 		message.send(Numeric::builder(message, ERR_ERRONEUSNICKNAME));

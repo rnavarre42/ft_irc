@@ -4,6 +4,8 @@
 #include "Console.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
+#include "AUserMode.hpp"
+
 #include <map>
 #include <iostream>
 #include <string>
@@ -111,6 +113,21 @@ const std::string&	User::getName(void) const
 void	User::setPass(const std::string& value)
 {
 	this->_pass = value;
+}
+
+void	User::setMode(AUserMode* userMode)
+{
+	this->_modes |= userMode->getFlag();
+}
+
+void	User::unsetMode(AUserMode* userMode)
+{
+	this->_modes &= ~userMode->getFlag();
+}
+
+bool	User::isSetMode(AUserMode* userMode)
+{
+	return this->_modes & userMode->getFlag();
 }
 
 //TODO: Mismo mensaje que en Server, hay que determinar si almacenamos esta información y no la generamos constantemente.
