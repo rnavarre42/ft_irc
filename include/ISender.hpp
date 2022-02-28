@@ -4,8 +4,10 @@
 # include <string>
 # include <sys/types.h>
 
-# define TYPE_SERVER		0x00
-# define TYPE_USER			0x01
+# define TYPE_UNKNOWN		0x00
+# define TYPE_SERVER		0x01
+# define TYPE_USER			0x02
+
 
 class Server;
 class Message;
@@ -31,7 +33,7 @@ public:
 	virtual int					getType(void) = 0;
 	//La máscara no la tenemos almacenada, devolver una referencia no tiene sentido, a no ser que hagamos
 	//lo que propuso Miki, actualizar la máscara de cada usuario / servidor que ya tenemos en memoria.
-	virtual std::string			getMask(void) = 0;
+	virtual const std::string&	getMask(void) const = 0;
 	virtual void				setIdleTime(time_t value) = 0;
 };
 

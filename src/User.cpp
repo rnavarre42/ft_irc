@@ -5,6 +5,7 @@
 #include "Message.hpp"
 #include "Numeric.hpp"
 #include "AUserMode.hpp"
+#include "Unknown.hpp"
 
 #include <map>
 #include <iostream>
@@ -12,7 +13,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
-User::User(int fd, Server&	server)
+User::User(int fd, Server& server)
 	: _server(server)
 	, _ident("anonymous")
 	, _status(1)
@@ -29,9 +30,20 @@ User::~User(void)
 	this->_fd = 0;
 }
 
+User::User(const Unknown& src)
+	: _server(src._server)
+	, _ident(src._ident)
+	, _status(1)
+	, _signTime(src._signTime)
+	, _nextTimeout(src._nextTimeout)
+	, _fd(src._fd)
+	, _type(TYPE_USER)
+{}
+
 void	User::setHost(const std::string& value)
 {
 	this->_host = value;
+	this->_updateMask();
 }
 
 const std::string&	User::getHost(void) const
@@ -52,6 +64,7 @@ const std::string&	User::getIdent(void) const
 void	User::setReal(const std::string& value)
 {
 	this->_real = value;
+	this->_updateMask();
 }
 
 const std::string&	User::getReal(void) const
@@ -64,24 +77,16 @@ std::string&	User::getInputBuffer(void)
 	return this->_inputBuffer;
 }
 
-bool	User::isOnChannel(const std::string& channel)
+bool	User::isOnChannel(const std::string& channelName)
 {
-	return (this->find(channel) != this->_channelMap.end());
+	return (this->find(channelName) != this->_channelMap.end());
 }
 
 bool	User::isOnChannel(const Channel& channel)
 {
 	return (this->find(channel.getName()) != this->_channelMap.end());
 }
-/*
-bool	User::isOnChannel(Channel &channel)
-{
-	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
-		if (it->second == &channel)
-			return true;
-	return false;
-}
-*/
+
 std::string&	User::getOutputBuffer(void)
 {
 	return this->_outputBuffer;
@@ -100,6 +105,7 @@ const time_t&	User::getSignTime(void) const
 void	User::setName(const std::string& value)
 {
 	this->_name = value;
+	this->_updateMask();
 }
 
 const std::string&	User::getName(void) const
@@ -127,10 +133,9 @@ bool	User::isSetMode(AUserMode* userMode)
 	return this->_modes & userMode->getFlag();
 }
 
-//TODO: Mismo mensaje que en Server, hay que determinar si almacenamos esta información y no la generamos constantemente.
-std::string	User::getMask(void)
+const std::string&	User::getMask(void) const
 {
-	return this->_name + "!" + this->_ident + "@" + this->_host;
+	return this->_mask;
 }
 
 const std::string&	User::getPass(void) const
@@ -262,6 +267,11 @@ const Server&	User::getServer(void) const
 bool	User::isAway(void)
 {
 	return !this->_awayMsg.empty();
+}
+
+void	User::_updateMask(void)
+{
+	this->_mask = this->_name + "!" + this->_ident + "@" + this->_host;
 }
 
 void	User::sendToBuffer(const Message& message)

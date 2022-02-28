@@ -25,17 +25,18 @@ void	NamesCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 }
 bool	NamesCommand::_recvUser(Message& message)
 {
-	Server::channelMap_iterator	it;
+	Channel* 		channel;
+	std::string&	target = message[0];
 //	User*						user = this->userSender;
 
 	message.setReceiver(message.getSender());
-	if ((it = message.getServer()->channelFind(message[0])) != message.getServer()->getChannelMap().end())
+	if ((channel = this->server.channelAt(target)))
 	{
-		message.setChannel(it->second);
-		message.getServer()->names(*message.getChannel());
+		message.setChannel(channel);
+		message.getServer()->names(*channel);
 		message.sendNumeric(RPL_NAMREPLY);
 	}
-	Numeric::insertField(message[0]);
+	Numeric::insertField(target);
 	message.sendNumeric(RPL_ENDOFNAMES);
 	return true;
 }

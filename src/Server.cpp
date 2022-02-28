@@ -91,9 +91,9 @@ void	Server::_loadCommands(void)
 	this->_commandMap["SHUTDOWN"]	= new ShutdownCommand (*this, LEVEL_IRCOPERATOR, 0);
 	this->_commandMap["TOPIC"]		= new TopicCommand	  (*this, LEVEL_REGISTERED, 1);
 	this->_commandMap["USER"]		= new UserCommand	  (*this, LEVEL_UNREGISTERED, 4);
+	this->_commandMap["WHOIS"]		= new WhoisCommand	  (*this, LEVEL_REGISTERED, 1);
 
 //	this->_commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
-//	this->_commandMap["WHOIS"]		= new WhoisCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["WHOWAS"]		= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
 
 	Server::aCommandMap_iterator	it;
@@ -337,7 +337,7 @@ const std::string&	Server::getName(void) const
 	return this->_name;
 }
 
-std::string	Server::getMask(void)
+const std::string&	Server::getMask(void) const
 {
 //	throw Server::NotImplementedException();
 	return this->_name;
@@ -535,7 +535,6 @@ void	Server::addToChannel(Message& message)
 	Channel*					channel = NULL;
 	const std::string&			channelName = message[0];
 	User*						user = static_cast<User*>(message.getSender());
-	Server::channelMap_iterator	it;
 	Server::userMap_insert		retUser;
 
 	if (this->isChannel(channelName))
@@ -548,7 +547,7 @@ void	Server::addToChannel(Message& message)
 		else if (user->size() == MAXCHANNEL)
 			this->_eventHandler.raise(MAXCHANEVENT, this->_message);
 		// el canal no existe, se ha de crear
-		else if ((it = this->channelFind(channelName)) == this->_channelMap.end())
+		else if (!(channel = this->channelAt(channelName)))
 		{
 			channel = insertChannel(channelName, *user);
 			// añade el canal al usuario y el usuario al canal
@@ -561,9 +560,7 @@ void	Server::addToChannel(Message& message)
 		else
 		{
 			//TODO hay que limpiar este código y tratar de hacerlo más compacto
-			channel = it->second;
 			message.setChannel(channel);
-			//if (retUser.second == true)  //El nick no está en el canal
 			if (user->isOnChannel(*channel))
 				this->_eventHandler.raise(ALREADYEVENT, this->_message);
 			else
@@ -573,19 +570,14 @@ void	Server::addToChannel(Message& message)
 				channel->insert(user);
 				//eliminamos la invitación, si existiera.
 				if (this->_invite.erase(user, channel))
-				{
 					Console::log(LOG_INFO, user->getName() + " ha hecho efectiva su invitacion");
-				}
 				else
-				{
 					Console::log(LOG_INFO, user->getName() + " no tenia invitacion");
-				}
 				// añade el canal al usuario y el usuario al canal
 				channel->insert(user);
 				user->insert(channel);
 				this->_eventHandler.raise(JOINEVENT, this->_message);
 			}
-			//TODO falta por gestionar +l +i +k
 		}
 	}
 	else
@@ -601,11 +593,8 @@ void	Server::delFromChannel(Message& message)
 	
 	if (this->isChannel(channelName))
 	{
-		if ((it = this->channelFind(channelName)) == this->_channelMap.end())
-			this->_eventHandler.raise(NOTCHANEVENT, this->_message);
-		else
+		if ((channel = this->channelAt(channelName)))
 		{
-			channel = it->second;
 			message.setChannel(channel);
 			if ((it = user->find(channelName)) == user->end())
 				this->_eventHandler.raise(NOTINCHANEVENT, this->_message);
@@ -615,6 +604,8 @@ void	Server::delFromChannel(Message& message)
 				this->removeUserFromChannel(*channel, *user);
 			}
 		}
+		else
+			this->_eventHandler.raise(NOTCHANEVENT, this->_message);
 	}
 	else
 		this->_eventHandler.raise(ERRCHANEVENT, this->_message);

@@ -25,21 +25,25 @@ void	TopicCommand::unloadEvents(Server::eventHandler_type&)
 bool	TopicCommand::_recvUser(Message& message)
 {
 	User*						user = this->userSender;
-	Server::channelMap_iterator	chanIt = server.channelFind(message[0]);
-	Channel*					channel = chanIt->second;
-	const Channel::TopicInfo&	topicInfo = channel->getTopicInfo();
+	std::string					target;
+	std::string					newTopic;
+	Channel*					channel;
+	const Channel::TopicInfo*	topicInfo;
 
-	if (chanIt == server.getChannelMap().end())
+	target = message[0];
+	if (!(channel = server.channelAt(target)))
 	{
-		Numeric::insertField(message[0]);
+		Numeric::insertField(target);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
 	}
 	else
 	{
+		topicInfo = &channel->getTopicInfo();
+		newTopic = message[1];
 		message.setChannel(channel);
 		if (message.size() == 1)
 		{
-			if (topicInfo.topic.empty())
+			if (topicInfo->topic.empty())
 			{
 				Numeric::insertField(channel->getName());
 				message.replyNumeric(RPL_NOTOPIC);
@@ -47,11 +51,11 @@ bool	TopicCommand::_recvUser(Message& message)
 			else
 			{
 				Numeric::insertField(channel->getName());
-				Numeric::insertField(topicInfo.topic);
+				Numeric::insertField(topicInfo->topic);
 				message.replyNumeric(RPL_TOPIC);
 				Numeric::insertField(channel->getName());
-				Numeric::insertField(topicInfo.own);
-				Numeric::insertField(topicInfo.time);
+				Numeric::insertField(topicInfo->own);
+				Numeric::insertField(topicInfo->time);
 				message.replyNumeric(RPL_TOPICTIME);
 			}
 		}
@@ -59,9 +63,9 @@ bool	TopicCommand::_recvUser(Message& message)
 		{
 			if (!server.checkChannelMode(message, COMMAND_TOPIC))
 				return true;
-			if (topicInfo.topic != message[1])
+			if (topicInfo->topic != newTopic)
 			{
-				channel->setTopicInfo(user->getName(), message[1]);
+				channel->setTopicInfo(user->getName(), newTopic);
 				message.setReceiver(channel);
 				message.setReceiver(user);
 				message.send();

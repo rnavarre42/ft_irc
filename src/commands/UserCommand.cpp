@@ -26,6 +26,14 @@ bool	UserCommand::_recvUser(Message& message)
 
 	if (user->getIdent() == "anonymous")
 	{
+		if (!this->server.getPass().empty() && user->getPass() != this->server.getPass())
+		{
+			message.limitMaxParam(1);
+			message.setCmd("QUIT");
+			message[0] = "Password incorret";
+			message.process();
+			return true;
+		}
 		user->setIdent(message[0]);
 		user->setReal(message[3]);
 		if (!user->getName().empty())
@@ -36,7 +44,7 @@ bool	UserCommand::_recvUser(Message& message)
 		}
 	}
 	else
-		user->send(Numeric::builder(this->server, *user, ERR_ALREADYREGISTERED));
+		message.sendNumeric(ERR_ALREADYREGISTERED);
 	return true;
 }
 

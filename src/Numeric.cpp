@@ -158,4 +158,8 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_PASSWDMISMATCH]	= ":Password incorrect";
 	Numeric::_numericMap[RPL_YOUREOPER]			= ":You are now an IRC operator";
 	Numeric::_numericMap[ERR_NOOPERHOST]		= "No O-lines for your host";
+	Numeric::_numericMap[RPL_ENDOFWHOIS]		= "$ :End of WHOIS list";
+	Numeric::_numericMap[RPL_WHOISUSER]			= "$ $ $ * :$";
+	Numeric::_numericMap[RPL_WHOISHOST]			= "$ :is connection from $ $";
+	Numeric::_numericMap[RPL_WHOISCHANNELS]		= "$ :%";
 }

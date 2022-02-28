@@ -12,11 +12,13 @@
 class AUserMode;
 class Message;
 class ISender;
+class Unknown;
 
 class User : public ISender
 {
 public:
 	User(int fd, Server& server);
+	User(const Unknown& src);
 	~User(void);
 
 	void				setHost(const std::string& value);
@@ -27,7 +29,7 @@ public:
 
 	void				setReal(const std::string& value);
 	const std::string&	getReal(void) const;
-	std::string			getMask(void);
+	const std::string&	getMask(void) const;
 
 	void				setPass(const std::string& value);
 	const std::string&	getPass(void) const;
@@ -67,6 +69,16 @@ public:
 		return this->_channelMap.at(strToUpper(channelName));
 	}
 
+	bool	operator==(std::string& rhs)
+	{
+		return (strToUpper(this->_name) == strToUpper(rhs));
+	}
+
+	bool	operator!=(std::string& rhs)
+	{
+		return !operator==(rhs);
+	}
+
 	std::string&	getInputBuffer(void);
 	std::string&	getOutputBuffer(void);
 
@@ -88,7 +100,6 @@ public:
 	const time_t&		getAwayTime(void) const;
 
 	const Server&	getServer(void) const;
-
 
 	void 			setNextTimeout(time_t value);
 	const time_t&	getNextTimeout(void) const;
@@ -123,21 +134,12 @@ public:
 
 	Message*	buildMessage(std::string& buff);
 
+
 	std::size_t	checkInput(int fd, Message& message);
 	bool		checkOutput(int fd);
 
 	Server::userVector_type*	getUniqueVector(void);
 	Channel*					findFullestChannel(void);
-
-	bool	operator==(std::string& rhs)
-	{
-		return (strToUpper(this->_name) == strToUpper(rhs));
-	}
-
-	bool	operator!=(std::string& rhs)
-	{
-		return !operator==(rhs);
-	}
 
 private:
 	User(void);
@@ -157,6 +159,7 @@ private:
 	std::string	_outputBuffer;
 	std::string _awayMsg;
 	std::string	_pingChallenge;
+	std::string	_mask;
 
 	int			_status;
 	std::time_t	_signTime;
@@ -170,5 +173,6 @@ private:
 	uint64_t	_modes;
 
 	std::string	_getLine(size_t pos);
+	void		_updateMask(void);
 };
 #endif

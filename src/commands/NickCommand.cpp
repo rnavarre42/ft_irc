@@ -41,7 +41,7 @@ bool	NickCommand::_recvUser(Message& message)
 	User*									user = this->userSender;
 	std::string								oldName = user->getName();
 	std::string								newName = message[0];
-	std::map<std::string, User* >::iterator	it;
+	User*									newUser;
 	std::map<std::string, User* >&			userMap = this->server.getUserMap();
 	Server::userVector_type*				uniqueUsers;
 
@@ -53,7 +53,6 @@ bool	NickCommand::_recvUser(Message& message)
 		message.send(Numeric::builder(message, ERR_ERRONEUSNICKNAME));
 		return true;
 	}
-	// si el nick coincide respetando las mayusculas/minusculas, se ignora.
 	if (oldName == newName)
 		return true;
 	// si el nick coincide sin respetar mayusculas/misnusculas
@@ -66,12 +65,11 @@ bool	NickCommand::_recvUser(Message& message)
 		user->setName(newName);
 		return true;
 	}
-	it = this->server.userFind(newName);
-	if (it == userMap.end())
+	if (!(newUser = this->server.userAt(newName)))
 	{
 		if (oldName.empty() && user->getIdent() != "anonymous")
 		{
-			if (user->getPass() != this->server.getPass())
+			if (!this->server.getPass().empty() && user->getPass() != this->server.getPass())
 			{
 				message.limitMaxParam(1);
 				message.setCmd("QUIT");
@@ -111,8 +109,8 @@ bool	NickCommand::_recvUser(Message& message)
 	}
 	else
 	{
-		Numeric::insertField(message[0]);
-		user->send(Numeric::builder(this->server, *user, ERR_NICKNAMEINUSE));
+		Numeric::insertField(newName);
+		message.replyNumeric(ERR_NICKNAMEINUSE);
 	}
 	return true;	
 }

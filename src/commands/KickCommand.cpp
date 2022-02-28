@@ -27,21 +27,22 @@ void	KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 
 bool	KickCommand::_recvUser(Message& message)
 {
-	Server::channelMap_iterator	channelIt;
+//	Server::channelMap_iterator	channelIt;
 	Channel*					channel;
-	Server::userMap_iterator	userKickIt;
+	User*						userKick;
+//	Server::userMap_iterator	userKickIt;
 
 	if (!isValidChanName(message[0]))
 	{
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_BADCHANMASK);
 	}
-	else if ((channelIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
+	else if (!(channel = this->server.channelAt(message[0])))
 	{
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
 	}
-	else if ((userKickIt = channelIt->second->find(message[1])) == channelIt->second->end())
+	else if (!(userKick = channel->at(message[1])))
 	{
 		Numeric::insertField(message[1]);
 		message.replyNumeric(ERR_NOSUCHNICK);
@@ -49,19 +50,19 @@ bool	KickCommand::_recvUser(Message& message)
 	else
 	{
 		std::cout << message.toString() << std::endl;
-		channel = channelIt->second;
+//		channel = channelIt->second;
 		message.setChannel(channel);
 		if (!this->server.checkChannelMode(message, COMMAND_KICK))
 			return true;
 		message.setReceiver(channel);
 		message.setReceiver(message.getSender());
 		message[0] = channel->getName();
-		message[1] = userKickIt->second->getName();
+		message[1] = userKick->getName();
 		message.limitMaxParam(3);
 		message.hideReceiver();
 		std::cout << message.toString() << std::endl;
 		message.send();
-		server.removeUserFromChannel(*channel, *userKickIt->second);
+		server.removeUserFromChannel(*channel, *userKick);
 	}
 	return true;
 }

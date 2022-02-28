@@ -10,7 +10,7 @@ BASE_SRCS		=	\
 					Numeric.cpp					\
 					Server.cpp					\
 					User.cpp					\
-#					Unknown.cpp					\
+					Unknown.cpp					\
 
 MODES_PATH		=	modes/
 MODES_SRCS		=	\
@@ -50,9 +50,9 @@ COMMAND_SRCS	=	\
 					ShutdownCommand.cpp			\
 					TopicCommand.cpp			\
 					UserCommand.cpp				\
+					WhoisCommand.cpp			\
 
 #					WhoCommand.cpp				\
-#					WhoisCommand.cpp			\
 #					WhowasCommand.cpp			\
 
 SRCS			=	$(addprefix $(BASE_PATH), $(BASE_SRCS)				\

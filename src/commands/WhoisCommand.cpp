@@ -1,6 +1,8 @@
 #include "WhoisCommand.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
+#include "Numeric.hpp"
+#include "User.hpp"
 
 #include <iostream>
 
@@ -11,18 +13,93 @@ WhoisCommand::WhoisCommand(Server& server, int accessLevel, int paramCount)
 WhoisCommand::~WhoisCommand(void)
 {}
 
-bool	WhoisCommand::_execUser(Message& message)
+void	WhoisCommand::loadEvents(Server::eventHandler_type& eventHandler)
 {
-	User&	user = *this->userSender;
+	(void)eventHandler;
+}
+
+void	WhoisCommand::unloadEvents(Server::eventHandler_type& eventHandler)
+{
+	(void)eventHandler;
+}
+// RPL_WHOISUSER		311 <nick> <ident> <host> * :<realname>
+// RPL_WHOISHOST		378 <nick> :is connecting from <user mask encrypted> <real ip>
+// RPL_WHOISCHANNELS	319 <nick> :<@+#channel>			(condicion)
+// RPL_WHOISSERVER		312 <nick> <server> :<name>
+// RPL_AWAY				301 <nick> <away message>			(condicion)
+// RPL_WHOISMODES		379 <nick> :is using modes +xxx
+// RPL_WHOISIDLE		317 <nick> idle signon :seconds idle, signon time
+// RPL_WHOISOPERATOR	313 <nick> :is an IRC Operator		(condicion)
+// RPL_WHOISREGNICK		307 <nick> :es un nick registrado	(condicion)
+// RPL_ENDOFWHOIS		318 <nick> :End of /WHOIS list.
+//
+bool	WhoisCommand::_recvUser(Message& message)
+{
+	User&			user = *this->userSender;
+	User*			targetUser;
+	std::string&	target = message[0];
+
+	(void)message;
+	(void)user;
+
+	if ((targetUser = server.userAt(target)))
+	{		
+		Numeric::insertField(targetUser->getName());
+		Numeric::insertField(targetUser->getIdent());
+		Numeric::insertField(targetUser->getHost());	//should be encrypted host but... not implemented.
+		Numeric::insertField(targetUser->getReal());
+		message.replyNumeric(RPL_WHOISUSER);
+
+		Numeric::insertField(targetUser->getName());
+		Numeric::insertField(targetUser->getMask());
+		Numeric::insertField(targetUser->getHost()); //real host/ip (unencrypted)
+		message.replyNumeric(RPL_WHOISHOST);
+
+		Numeric::insertField(targetUser->getName());
+		if (targetUser->size())
+		{
+			for (Server::channelMap_iterator chanIt = targetUser->begin()
+					; chanIt != targetUser->end()
+					; ++chanIt)
+				Numeric::insertField(chanIt->second->getName());
+			message.replyNumeric(RPL_WHOISCHANNELS);
+		}
+
+		Numeric::insertField(targetUser->getName());
+		message.replyNumeric(RPL_ENDOFWHOIS);
+	}
+	else
+	{
+		Numeric::insertField(target);
+		message.replyNumeric(ERR_NOSUCHNICK);
+		Numeric::insertField(target);
+		message.replyNumeric(RPL_ENDOFWHOIS);
+	}
+
+	return true;
+}
+
+bool	WhoisCommand::_recvServer(Message& message)
+{
+	Server&	server = *this->serverSender;
+
+	(void)message;
+	(void)server;
+	return false;
+}
+
+bool	WhoisCommand::_sendUser(Message& message)
+{
+	User*	user = this->userReceiver;
 
 	(void)message;
 	(void)user;
 	return false;
 }
 
-bool	WhoisCommand::_execServer(Message& message)
+bool	WhoisCommand::_sendServer(Message& message)
 {
-	Server&	server = *this->serverSender;
+	Server*	server = this->serverReceiver;
 
 	(void)message;
 	(void)server;

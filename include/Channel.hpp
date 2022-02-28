@@ -151,6 +151,14 @@ public:
 	{
 		return this->_userMap.at(strToUpper(userName));
 	}
+	User*	at(const std::string& userName)
+	{
+		Server::userMap_iterator	it;
+
+		if ((it = this->find(userName)) == this->_userMap.end())
+			return NULL;
+		return it->second;
+	}
 
 	void send(std::string msg);
 	void join(User user);

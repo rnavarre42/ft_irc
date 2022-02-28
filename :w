@@ -78,7 +78,7 @@ int	Unknown::getType(void)
 	return this->_type;
 }
 
-const std::string&	Unknown::getMask(void) const
+const std::string&	Unknown::getMask(void)
 {
 	return this->_mask;
 }

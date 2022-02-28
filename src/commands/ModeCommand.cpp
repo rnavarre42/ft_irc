@@ -64,8 +64,8 @@ void	ModeCommand::_checkChanModes(Message& message)
 {
 	unsigned long					pos = 2;
 	bool							set = true;
+	std::string&					target = message[0];
 	Channel*						channel;
-	Channel::channelMap_iterator	it = server.channelFind(message[0]);
 	AChanMode*						chanMode;
 	std::string::iterator 			currentIt;
 
@@ -73,13 +73,12 @@ void	ModeCommand::_checkChanModes(Message& message)
 		//TODO Mostrar raw 324 (modes) 329 (creation time)
 		return ;
 	// Si el canal no existe...
-	if (it == server.getChannelMap().end())
+	if (!(channel = server.channelAt(target)))
 	{
-		Numeric::insertField(message[0]);
+		Numeric::insertField(target);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
 		return ;
 	}
-	channel = it->second;
 	message.setChannel(channel);
 	for (std::string::iterator strIt = message[1].begin(); strIt != message[1].end(); )
 	{
@@ -99,10 +98,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 				--strIt;
 			}
 			else if (!server.checkChannelMode(message, COMMAND_MODE)) // Si el usuario no es operador...
-			//else if (!channel->isOper(this->userSender)) // Si el usuario no es operador...
 			{
-//				Numeric::insertField(channel->getName());
-//				message.replyNumeric(ERR_CHANOPRIVSNEEDED);
 				message[1].erase(currentIt);
 				--strIt;
 				if (hasParamMode(set, chanMode) && message.size() > pos)

@@ -112,7 +112,7 @@ public:
 	const std::string&	getName(void) const;
 	userMap_type&		getUserMap(void);
 	channelMap_type&	getChannelMap(void);
-	std::string			getMask(void);
+	const std::string&	getMask(void) const;
 	AChanMode*			findChanMode(char modeChar);
 
 	Invite&	invite(void)
@@ -185,6 +185,24 @@ public:
 	channelMap_iterator	channelFind(const std::string& channelName)
 	{
 		return this->_channelMap.find(strToUpper(channelName));
+	}
+
+	Channel*			channelAt(const std::string& channelName)
+	{
+		Server::channelMap_iterator	it;
+
+		if ((it = this->channelFind(channelName)) == this->_channelMap.end())
+			return 0;
+		return it->second;
+	}
+
+	User*				userAt(const std::string& userName)
+	{
+		Server::userMap_iterator it;
+
+		if ((it = this->userFind(userName)) == this->_userMap.end())
+			return 0;
+		return it->second;
 	}
 
 	struct	NotImplementedException : public std::exception
