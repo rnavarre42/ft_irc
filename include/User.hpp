@@ -134,9 +134,8 @@ public:
 
 	Message*	buildMessage(std::string& buff);
 
-
-	std::size_t	checkInput(int fd, Message& message);
-	bool		checkOutput(int fd);
+	size_t	checkInput(int fd, Message& message);
+	bool	checkOutput(int fd);
 
 	Server::userVector_type*	getUniqueVector(void);
 	Channel*					findFullestChannel(void);

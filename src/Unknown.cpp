@@ -48,9 +48,27 @@ ssize_t	Unknown::send(const Message&)
 	return 0;
 }
 
+void	Unknown::setIdleTime(time_t)
+{}
+
+void	Unknown::setHost(const std::string& value)
+{
+	this->_host = value;
+}
+
+void	Unknown::setPollIndex(int value)
+{
+	this->_pollIndex = value;
+}
+
 void	Unknown::setStatus(int value)
 {
 	this->_status = value;
+}
+
+time_t	Unknown::getPollIndex(void)
+{
+	return this->_pollIndex;
 }
 
 int	Unknown::getStatus(void)

@@ -8,6 +8,7 @@
 #include "Numeric.hpp"
 #include "ChanModeConfig.hpp"
 #include "utils.hpp"
+#include "Unknown.hpp"
 
 #include <cerrno>
 #include <set>
@@ -367,15 +368,17 @@ void	Server::setIdleTime(time_t value)
 	this->_idleTime = value;
 }
 
-User*	Server::_accept(void)
+Unknown*	Server::_accept(void)
 {
-	User*				user;
+	Unknown*			unknown;
 	int					newFd;
-	struct sockaddr_in	user_addr;
-	int					user_addrlen;
+	struct sockaddr_in	newAddress;
+	int					newAddressLen;
 
-	user_addrlen = sizeof(struct sockaddr_in);
-	newFd = accept(this->_fd, reinterpret_cast<struct sockaddr* >(&user_addr), reinterpret_cast<socklen_t* >(&user_addrlen));
+	newAddressLen = sizeof(struct sockaddr_in);
+	newFd = ::accept(this->_fd,
+			reinterpret_cast<struct sockaddr*>(&newAddress),
+			reinterpret_cast<socklen_t*>(&newAddressLen));
 	if (newFd < 0)
 	{
 		Console::log(LOG_ERROR, "Server::accept function accept() failed");
@@ -387,12 +390,12 @@ User*	Server::_accept(void)
 		close(newFd);
 		return NULL;
 	}
-	user = new User(newFd, *this);
-	user->setHost(inet_ntoa(user_addr.sin_addr));
-	user->setPollIndex(this->_freePollIndexFind());
-	this->_pollfds[user->getPollIndex()].fd = newFd;
-	this->_pollfds[user->getPollIndex()].events = POLLIN;
-	return user;
+	unknown = new Unknown(newFd, *this);
+	unknown->setHost(inet_ntoa(newAddress.sin_addr));
+	unknown->setPollIndex(this->_freePollIndexFind());
+	this->_pollfds[unknown->getPollIndex()].fd = newFd;
+	this->_pollfds[unknown->getPollIndex()].events = POLLIN;
+	return unknown;
 }
 
 void	Server::_bind(void)
@@ -449,7 +452,14 @@ void	Server::insertUser(User* user)
 {
 	this->_message.setReceiver(user);
 	this->_fdMap.insert(std::make_pair(user->getFd(), user));
-	this->_eventHandler.raise(NEWUSEREVENT, this->_message);
+	this->_eventHandler.raise(NEWCONNECTIONEVENT, this->_message);
+}
+
+void	Server::insertUnknown(Unknown* unknown)
+{
+	this->_message.setReceiver(unknown);
+	this->_fdMap.insert(std::make_pair(unknown->getFd(), unknown));
+	this->_eventHandler.raise(NEWCONNECTIONEVENT, this->_message);
 }
 
 void	Server::eraseUser(User& user)
@@ -494,10 +504,11 @@ void	Server::removeUserFromChannel(Channel& channel, User& user)
 	}
 }
 
-void	Server::deleteUser(User& user, const std::string& text)
+void	Server::deleteUser(ISender& sender, const std::string& text)
 {
-	Server::channelMap_iterator	currentIt;
+	User&						user = static_cast<User&>(sender);
 	Server::userVector_type*	userVector = user.getUniqueVector();
+	Server::channelMap_iterator	currentIt;
 
 	this->_message.clear();
 	this->_message.setSender(&user);
@@ -611,30 +622,23 @@ void	Server::delFromChannel(Message& message)
 		this->_eventHandler.raise(ERRCHANEVENT, this->_message);
 }
 
-int	Server::_checkUserConnection(void)
+int	Server::_checkNewConnection(void)
 {
-	User*	user;
+	Unknown*	unknown;
 
 	if (this->_pollfds[0].revents & POLLIN)
 	{
-		user = this->_accept();
-		if (!user)
+		unknown = this->_accept();
+		if (!unknown)
 		{
 			Console::log(LOG_WARNING, "Server full, rejecting new connection");
-			return 1;
+			return true;
 		}
-/*
- 		if (user->send("Hello\r\n") <= 0)
-		{
-			Console::log(LOG_ERROR, "Server::checkUserConnection function user->sendTo() failed");
-			exit(EXIT_FAILURE);
-		}
-*/
-		this->insertUser(user);
-		Console::log(LOG_INFO, "User <anonymous> connected");
-		return 1;
+		this->insertUnknown(unknown);
+		Console::log(LOG_INFO, "New <anonymous> connection");
+		return true;
 	}
-	return 0;
+	return false;
 }
 
 void	Server::names(Channel& channel)
@@ -657,28 +661,28 @@ void	Server::names(Channel& channel)
 
 void	Server::_checkUserIO(void)
 {
-	User*		user;
+	ISender*	sender;
 	std::size_t	size;
 
 	for (int i = 2; i < MAXUSERS + 2; i++)
 	{
 		if (this->_pollfds[i].revents & POLLIN)
 		{
-			user = this->_fdMap[this->_pollfds[i].fd];
-			size = user->checkInput(this->_pollfds[i].fd, this->_message);
+			sender = this->_fdMap[this->_pollfds[i].fd];
+			size = sender->checkInput(this->_pollfds[i].fd, this->_message);
 			if (size <= 0) // ctrl+c
-				this->deleteUser(*user, "Client exited");
+				this->deleteUser(*sender, "Client exited");
 		}
 		else if (this->_pollfds[i].revents & POLLOUT)
 		{
-			user = this->_fdMap[this->_pollfds[i].fd];
-			if (user->checkOutput(this->_pollfds[i].fd))
+			sender = this->_fdMap[this->_pollfds[i].fd];
+			if (sender->checkOutput(this->_pollfds[i].fd))
 				this->_pollfds[i].events ^= POLLOUT;
 		}
 		else if (this->_pollfds[i].fd > 0)
 		{
-			user = this->_fdMap[this->_pollfds[i].fd];
-			this->_checkUserTimeout(*user);
+			sender = this->_fdMap[this->_pollfds[i].fd];
+			this->_checkUserTimeout(*sender);
 		}
 	}
 }

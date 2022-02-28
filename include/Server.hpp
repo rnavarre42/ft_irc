@@ -43,7 +43,7 @@
 # define MAXUSERS			10
 # define MAXLISTEN			5
 
-# define NEWUSEREVENT		0x000001
+# define NEWCONNECTIONEVENT	0x000001
 # define DELUSEREVENT		0x000002
 # define REGUSEREVENT		0x000004
 # define NICKEVENT			0x000008
@@ -76,6 +76,7 @@ class Channel;
 class ACommand;
 class AChanMode;
 class User;
+class Unknown;
 class Channel;
 
 class Server : public ISender
@@ -94,7 +95,7 @@ public:
 	typedef std::pair<std::string, User *>			stringUserPair_type;
 	typedef std::map<std::string, Server* >			serverMap_type;
 	typedef userMap_type::iterator					serverMap_iterator;
-	typedef std::map<int, User* >					fdMap_type;
+	typedef std::map<int, ISender* >				fdMap_type;
 	typedef fdMap_type::iterator					fdMap_iterator;
 	typedef std::map<std::string, ACommand* >		aCommandMap_type;
 	typedef aCommandMap_type::iterator				aCommandMap_iterator;
@@ -127,6 +128,7 @@ public:
 
 	void	eraseUser(User& user);
 	void	insertUser(User* user);
+	void	insertUnknown(Unknown* unknown);
 
 	void				 setPass(const std::string& value);
 	const std::string&	getPass(void) const;
@@ -156,7 +158,7 @@ public:
 	void	quit(const std::string& msg);
 	
 	void	createUser(User& user);
-	void	deleteUser(User& user, const std::string& text);
+	void	deleteUser(ISender& sender, const std::string& text);
 	
 	int	count(void);
 
@@ -164,6 +166,9 @@ public:
 	bool	sendCommand(Message& msg);
 
 	void	setPollout(User& user);
+	
+	size_t	checkInput(int fd, Message& message);
+	bool	checkOutput(int fd);
 
 	bool	isChannel(const std::string& channelName)
 	{
@@ -249,9 +254,9 @@ private:
 	aChanModeMap_type	_chanModeMap;
 	Invite				_invite;
 	
-	int		_freePollIndexFind(void);
-	int		_poll(void);
-	int		_checkUserConnection(void);
+	int	_freePollIndexFind(void);
+	int	_poll(void);
+	int	_checkNewConnection(void);
 	void	_setSignals(void);
 	void	_loadCommands(void);
 	void	_unloadCommands(void);
@@ -269,7 +274,7 @@ private:
 	void	_initSocket(void);
 	void	_bind(void);
 	void	_listen(void);
-	User*	_accept();
+	Unknown*	_accept();
 };
 
 #endif

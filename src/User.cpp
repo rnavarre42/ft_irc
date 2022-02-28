@@ -32,12 +32,15 @@ User::~User(void)
 
 User::User(const Unknown& src)
 	: _server(src._server)
+	, _pass(src._pass)
 	, _ident(src._ident)
-	, _status(1)
+	, _host(src._host)
 	, _signTime(src._signTime)
 	, _nextTimeout(src._nextTimeout)
+	, _status(1)
 	, _fd(src._fd)
 	, _type(TYPE_USER)
+	, _pollIndex(src._pollIndex)
 {}
 
 void	User::setHost(const std::string& value)

@@ -35,6 +35,8 @@ public:
 	//lo que propuso Miki, actualizar la máscara de cada usuario / servidor que ya tenemos en memoria.
 	virtual const std::string&	getMask(void) const = 0;
 	virtual void				setIdleTime(time_t value) = 0;
+	virtual size_t				checkInput(int fd, Message& message) = 0;
+	virtual bool				checkOutput(int fd) = 0;
 };
 
 #endif
