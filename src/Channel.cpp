@@ -8,7 +8,7 @@
 #include <map>
 #include <ctime>
 
-Channel::Channel(const std::string& name, const User &user, Server &server)
+Channel::Channel(const std::string& name, const User& user, Server& server)
 	: _name(name)
 	, _owner(user.getName())
 	, _server(server)
@@ -59,7 +59,7 @@ Channel::Mode::rangePairMultimap_type Channel::Mode::getList(const char modeName
 	return this->_modeMultimap.equal_range(modeName);
 }
 
-bool Channel::Mode::insert(char modeName, void *value)
+bool Channel::Mode::insert(char modeName, void* value)
 {
 	bool	ret = !this->isSet(modeName, value);
 
@@ -83,7 +83,7 @@ Channel::Mode::multimap_iterator	Channel::Mode::findUnique(const char modeName, 
 	return this->_modeMultimap.end();
 }
 
-bool	Channel::Mode::erase(const char modeName, void *value)
+bool	Channel::Mode::erase(const char modeName, const void* value)
 {
 	Channel::Mode::multimap_iterator	pos = this->findUnique(modeName, value);
 	   
@@ -100,7 +100,7 @@ bool	Channel::Mode::erase(const char modeName)
 	return this->_modeMultimap.erase(modeName) > 0;
 }
 
-void	Channel::Mode::erase(const Channel::Mode::multimap_iterator pos)
+void	Channel::Mode::erase(Channel::Mode::multimap_iterator pos)
 {
 	this->_modeMultimap.erase(pos);
 }
@@ -110,12 +110,12 @@ bool Channel::isOper(const ISender* sender)
 	return (this->mode.isSet('o', sender));
 }
 
-bool Channel::isVoice(const ISender *sender)
+bool Channel::isVoice(const ISender* sender)
 {
 	return (this->mode.isSet('v', sender));
 }
 
-std::string const	&Channel::getName(void) const
+const std::string&	Channel::getName(void) const
 {
 	return this->_name;
 }
@@ -125,7 +125,7 @@ Server::userMap_insert	Channel::insert(User* user)
 	return this->_userMap.insert(std::make_pair(strToUpper(user->getName()), user));
 }
 
-Server::userMap_insert	Channel::insert(const std::string &userName, User* user)
+Server::userMap_insert	Channel::insert(const std::string& userName, User* user)
 {
 	return this->_userMap.insert(std::make_pair(strToUpper(userName), user));
 }
@@ -150,7 +150,7 @@ void Channel::setOwner(const std::string& value)
 	this->_owner = value;
 }
 
-std::string const	&Channel::getOwner(void) const
+const std::string&	Channel::getOwner(void) const
 {
 	return this->_owner;
 }
@@ -160,7 +160,7 @@ void Channel::setTopicInfo(const std::string& own, const std::string& topic)
 	this->_topicInfo.setTopic(own, topic);
 }
 
-Channel::TopicInfo const	&Channel::getTopicInfo(void) const
+const Channel::TopicInfo&	Channel::getTopicInfo(void) const
 {
 	return this->_topicInfo;
 }
@@ -170,37 +170,3 @@ void Channel::send(std::string msg)
 	for (Server::userMap_iterator it = this->_userMap.begin(); it != this->_userMap.end(); it++)
 		it->second->send(msg);
 }
-
-/*
-void Channel::join(User user)
-{
-	Server::userMap_iterator	it;
-
-	it = this->_userMap.find(user.getName());
-	if (it == this->_userMap.end())
-	{
-		this->send(user.getName() + " ha entrado al canal " + this->_name + "\r\n");
-		this->_userMap.insert(std::make_pair(user.getName(), &user));
-		user.insert(this);
-		user.send("Has entrado al canal " + this->_name + "\r\n");
-	}
-	else
-		user.send("Ya estas dentro de " + this->_name + "\r\n");
-}
-
-void Channel::part(User user)
-{
-	Server::userMap_iterator	it;
-
-	it = this->_userMap.find(user.getName());
-	if (it == this->_userMap.end())
-		user.send("No estas dentro de " + this->_name + "\r\n");
-	else
-	{
-		user.send("Has salido de " + this->_name + "\r\n");
-		this->_userMap.erase(it);
-		user.erase(this);
-		this->send(user.getName() + " ha salido de " + this->_name + "\r\n");
-	}
-}
-*/

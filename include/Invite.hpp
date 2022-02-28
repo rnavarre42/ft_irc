@@ -10,33 +10,32 @@ class Channel;
 
 class Invite
 {
-	public:
-		typedef std::pair<User *, Channel *>		userChannelPair_type;
-		typedef std::vector<userChannelPair_type>	inviteVector_type;
-		typedef inviteVector_type::iterator			inviteVector_iterator;
+public:
+	typedef std::pair<User*, Channel*>			userChannelPair_type;
+	typedef std::vector<userChannelPair_type>	inviteVector_type;
+	typedef inviteVector_type::iterator			inviteVector_iterator;
 
-		Invite(void);
-		~Invite(void);
+	Invite(void);
+	~Invite(void);
 
-		bool					insert(User *user, Channel *channel);
-		inviteVector_iterator	find(ISender *sender, Channel *channel);
-		bool					erase(User *user, Channel *channel);
-		void					erase(Channel *channel);
-		void					erase(User *user);
+	bool					insert(User* user, Channel* channel);
+	inviteVector_iterator	find(ISender* sender, Channel* channel);
+	bool					erase(User* user, Channel* channel);
+	void					erase(Channel* channel);
+	void					erase(User* user);
 
-		inviteVector_iterator	begin(void)
-		{
-			return this->_inviteVector.begin();
-		}
+	inviteVector_iterator	begin(void)
+	{
+		return this->_inviteVector.begin();
+	}
 
-		inviteVector_iterator	end(void)
-		{
-			return this->_inviteVector.end();
-		}
+	inviteVector_iterator	end(void)
+	{
+		return this->_inviteVector.end();
+	}
 
-	private:
-		inviteVector_type					_inviteVector;
-
+private:
+	inviteVector_type					_inviteVector;
 };
 
 #endif

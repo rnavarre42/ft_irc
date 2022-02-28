@@ -8,16 +8,16 @@
 class Console
 {
 public:
-	Console(Server &server);
+	Console(Server& server);
 	~Console(void);
 		
 	static void	log(int logLevel, std::string str);
 
 private:
-	Console(Console const &src);
-	Console &operator=(Console const &rhs);
+	Console(const Console& src);
+	Console&	operator=(const Console& rhs);
 
-	Server	&_server;
+	Server&	_server;
 };
 
 #endif

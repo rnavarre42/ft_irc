@@ -3,54 +3,39 @@
 #include "Message.hpp"
 #include "Server.hpp"
 #include "Console.hpp"
+
 #include <iostream>
 
 ShutdownCommand::ShutdownCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void ShutdownCommand::loadEvents(Server::eventHandler_type& )
-{
-//	eventHandler.add(QUITEVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::QuitEvent));
-//	eventHandler.add(DELUSEREVENT, *new Delegate<QuitCommand, Message>(*this, &QuitCommand::DelUserEvent));
-}
+ShutdownCommand::~ShutdownCommand(void)
+{}
 
-void ShutdownCommand::unloadEvents(Server::eventHandler_type& )
-{
-}
+void	ShutdownCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-bool ShutdownCommand::_recvUser(Message& message)
-{
-	User&	user = *this->userSender;
+void	ShutdownCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
-	(void)user;
+bool	ShutdownCommand::_recvUser(Message& message)
+{
 	server.quit("Server shutdown: reason (" + message[0] + ")");
 	return true;
 }
 
-bool ShutdownCommand::_recvServer(Message& message)
+bool	ShutdownCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool ShutdownCommand::_sendUser(Message& message)
+bool	ShutdownCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)user;
-	(void)message;
 	return false;
 }
 
-bool ShutdownCommand::_sendServer(Message& message)
+bool	ShutdownCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

@@ -4,65 +4,61 @@
 #include "User.hpp"
 #include "Numeric.hpp"
 #include "numerics.hpp"
+
 #include <iostream>
 
 UserCommand::UserCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void	UserCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+UserCommand::~UserCommand(void)
+{}
 
-void	UserCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	UserCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-bool UserCommand::_recvUser(Message& message)
-{
-	User&	user = *this->userSender;
+void	UserCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
-	if (user.getIdent() == "anonymous")
+bool	UserCommand::_recvUser(Message& message)
+{
+	User*	user = this->userSender;
+
+	if (user->getIdent() == "anonymous")
 	{
-		user.setIdent(message[0]);
-		user.setReal(message[3]);
-		if (!user.getName().empty())
+		if (!this->server.getPass().empty() && user->getPass() != this->server.getPass())
 		{
-			user.setStatus(LEVEL_NEGOTIATING);
-			user.setPingChallenge("challenge-string");
-			user.send("PING :" + user.getPingChallenge());
+			message.limitMaxParam(1);
+			message.setCmd("QUIT");
+			message[0] = "Password incorret";
+			message.process();
+			return true;
+		}
+		user->setIdent(message[0]);
+		user->setReal(message[3]);
+		if (!user->getName().empty())
+		{
+			user->setStatus(LEVEL_NEGOTIATING);
+			user->setPingChallenge("challenge-string");
+			user->send("PING :" + user->getPingChallenge());
 		}
 	}
 	else
-		user.send(Numeric::builder(this->server, user, ERR_ALREADYREGISTERED));
+		message.sendNumeric(ERR_ALREADYREGISTERED);
 	return true;
 }
 
-bool UserCommand::_recvServer(Message& message)
+bool	UserCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)server;
-	(void)message;
 	return false;
 }
 
-bool UserCommand::_sendUser(Message& message)
+bool	UserCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool UserCommand::_sendServer(Message& message)
+bool	UserCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

@@ -15,11 +15,8 @@
 
 void	signalHandler(int sig)
 {
-//	Client*	client = Client::getInstance();
-
 	if (sig == SIGINT)
 		std::cout << std::endl;
-//	tcsetattr(STDOUT_FILENO, TCSANOW, &client->readline.getOldTermios());
 	exit(0);
 }
 
@@ -30,7 +27,7 @@ Client*	Client::getInstance(void)
 	return Client::_instance;
 }
 
-Client*	Client::createInstance(std::string host, std::string port, std::string nick, std::string ident)
+Client*	Client::createInstance(const std::string host, const std::string port, const std::string nick, const std::string ident)
 {
 	if (Client::_instance == 0)
 		Client::_instance = new Client(host, port, nick, ident);
@@ -69,12 +66,12 @@ void	Client::start(void)
 
 void	Client::_doAutoIdent(void)
 {
-	std::string	registerLine("USER " + this->_ident + " 0 * :the last param\r\nNICK " + this->_nick);
+	std::string	registerLine("PASS 1234\r\nUSER " + this->_ident + " 0 * :the last param\r\nNICK " + this->_nick);
 
 	this->_sendLine(registerLine);
 }
 
-bool	Client::_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0)
+bool	Client::_getAddrInfoList(struct addrinfo* hints, struct addrinfo** res0)
 {
 	int	error;
 
@@ -90,7 +87,7 @@ bool	Client::_getAddrInfoList(struct addrinfo *hints, struct addrinfo **res0)
 	return true;
 }
 
-void	Client::_displayIpAddress(struct addrinfo *res)
+void	Client::_displayIpAddress(struct addrinfo* res)
 {
 	char		dst[INET_ADDRSTRLEN];
 
@@ -133,7 +130,7 @@ bool	Client::_connectToSocket(void)
 	return true;
 }
 
-void	Client::_sendLine(std::string &data)
+void	Client::_sendLine(std::string& data)
 {
 	data += "\r\n";
 	send(this->_fd, data.c_str(), data.size(), 0);
@@ -157,7 +154,7 @@ void	Client::_checkConsoleInput(void)
 	}
 }
 
-void	Client::_doAutoPong(std::string str)
+void	Client::_doAutoPong(std::string& str)
 {
 	if (!str.compare(0, 4, "PING"))
 	{
@@ -167,7 +164,7 @@ void	Client::_doAutoPong(std::string str)
 	}
 }
 
-void	Client::_displayLine(std::string &line)
+void	Client::_displayLine(std::string& line)
 {
 	std::cout << line << std::endl;
 }

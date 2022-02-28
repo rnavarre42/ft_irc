@@ -10,7 +10,7 @@
 #include <ctime>
 #include <sstream>
 
-ExceptChanMode::ExceptChanMode(Server &server)
+ExceptChanMode::ExceptChanMode(Server& server)
 	: AChanMode(server)
 {
 	this->_chanModeConfig.type = ChanModeConfig::enableParam | ChanModeConfig::disableParam;
@@ -22,7 +22,7 @@ ExceptChanMode::ExceptChanMode(Server &server)
 ExceptChanMode::~ExceptChanMode(void)
 {}
 
-inline static Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type rangePair, const std::string& mask)
+Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type rangePair, const std::string& mask)
 {
 	for (; rangePair.first != rangePair.second; ++rangePair.first)
 	{
@@ -34,12 +34,10 @@ inline static Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePair
 
 void	ExceptChanMode::onChanEvent(Access& access, int event, Message& message, int&)
 {
-	Channel*	channel = message.getChannel();
-	std::string	mask = message.getSender()->getMask();
+	Channel*								channel = message.getChannel();
+	std::string								mask = message.getSender()->getMask();
 	Channel::Mode::rangePairMultimap_type	pairList = channel->mode.getList('e');
-	BanInfo		*banInfo;
-
-	(void)event;
+	BanInfo*								banInfo;
 
 	if (event & (COMMAND_PRIVMSG | COMMAND_NOTICE) && channel->mode.isSet('m'))
 		return ;

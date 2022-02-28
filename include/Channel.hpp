@@ -27,7 +27,7 @@
 class Channel
 {
 public:
-	typedef std::map<std::string, Channel* >	channelMap_type;
+	typedef std::map<std::string, Channel*>		channelMap_type;
 	typedef channelMap_type::iterator			channelMap_iterator;
 
 	Channel(const std::string& name, const User& user, Server& server);
@@ -37,7 +37,7 @@ public:
 	{
 		TopicInfo(void)
 		{
-			this->setTopic("", "");
+			this->setTopic();
 		}
 
 		TopicInfo(const std::string& own, const std::string& topic)
@@ -48,7 +48,7 @@ public:
 		~TopicInfo()
 		{}
 
-		void setTopic(const std::string& own, const std::string& topic)
+		void setTopic(const std::string& own = "", const std::string& topic = "")
 		{
 			std::ostringstream	oss;
 
@@ -63,20 +63,23 @@ public:
 		std::string	time;
 
 	private:
-		TopicInfo(TopicInfo const &src);
-		TopicInfo &operator=(TopicInfo const &rhs);
+		TopicInfo(const TopicInfo& src);
+		TopicInfo &operator=(const TopicInfo& rhs);
 	};
 
 	class Mode
 	{
 	public:
-		typedef std::multimap<char, void *>						multimap_type;
+		typedef std::multimap<char, void*>						multimap_type;
 		typedef multimap_type::iterator							multimap_iterator;
 		typedef multimap_type::const_iterator					multimap_const_iterator;
 		typedef std::pair<multimap_iterator, multimap_iterator>	rangePairMultimap_type;
 
-		Mode(void) {}
-		~Mode(void) {}
+		Mode(void)
+		{}
+
+		~Mode(void)
+		{}
 
 		void*&				operator[](char chr);
 		multimap_iterator	find(char chr);
@@ -95,14 +98,14 @@ public:
 		bool					isSet(const char modeName, const void* value) ;
 		rangePairMultimap_type	getList(const char modeName);
 		bool					insert(char modeName, void* value);
-		bool					erase(const char modeName, void* value);
+		bool					erase(const char modeName, const void* value);
 		bool					erase(const char modeName);
-		void					erase(const multimap_iterator pos);
+		void					erase(multimap_iterator pos);
 		multimap_iterator		findUnique(const char modeName, const void* value);
 
 	private:
 		Mode(Mode const &src);
-		Mode &operator=(Mode const &rhs);
+		Mode&	operator=(Mode const &rhs);
 
 		multimap_type				_modeMultimap;
 
@@ -124,12 +127,12 @@ public:
 	void							erase(const User* user);
 	void							erase(const std::string& userName);
 	
-	Server::userMap_iterator		begin(void)
+	Server::userMap_iterator	begin(void)
 	{
 		return this->_userMap.begin();
 	}
 
-	Server::userMap_iterator		end(void)
+	Server::userMap_iterator	end(void)
 	{
 		return this->_userMap.end();
 	}
@@ -139,14 +142,22 @@ public:
 		return this->_userMap.size();
 	}
 
-	Server::userMap_iterator	find(std::string &userName)
+	Server::userMap_iterator	find(const std::string& userName)
 	{
 		return this->_userMap.find(strToUpper(userName));
 	}
 
-	User	*&operator[](std::string userName)
+	User*&	operator[](const std::string& userName)
 	{
 		return this->_userMap.at(strToUpper(userName));
+	}
+	User*	at(const std::string& userName)
+	{
+		Server::userMap_iterator	it;
+
+		if ((it = this->find(userName)) == this->_userMap.end())
+			return NULL;
+		return it->second;
 	}
 
 	void send(std::string msg);
@@ -155,8 +166,8 @@ public:
 
 private:
 	Channel(void);
-	Channel(Channel const &src);
-	Channel &operator=(Channel const &rhs);
+	Channel(const Channel& src);
+	Channel&	operator=(const Channel& rhs);
 
 	std::string						_name;
 	TopicInfo						_topicInfo;	

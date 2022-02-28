@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <string>
 
-Console::Console(Server &server)
+Console::Console(Server& server)
 	: _server(server)
 {}
 

@@ -13,77 +13,69 @@ PrivmsgCommand::PrivmsgCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void PrivmsgCommand::loadEvents(Server::eventHandler_type&)
+PrivmsgCommand::~PrivmsgCommand(void)
 {}
 
-void PrivmsgCommand::unloadEvents(Server::eventHandler_type&)
+void	PrivmsgCommand::loadEvents(Server::eventHandler_type&)
 {}
 
-bool PrivmsgCommand::_recvUser(Message& message)
+void	PrivmsgCommand::unloadEvents(Server::eventHandler_type&)
+{}
+
+bool	PrivmsgCommand::_recvUser(Message& message)
 {
-	User&						user = *this->userSender;
-	Server::userMap_iterator 	userIt;
-	Server::channelMap_iterator	chanIt;
+	User*			user = this->userSender;
+	std::string&	target = message[0];
+	Channel*		channel;
+	User*		 	targetUser;
 
 	if (message.size() < 2)
 	{
 		message.replyNumeric(ERR_NOTEXTTOSEND);
 		return true;
 	}
-	if (this->server.isChannel(message[0]))
+	if (this->server.isChannel(target))
 	{
-		if ((chanIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
+		if (!(channel = this->server.channelAt(target)))
 		{	
-			Numeric::insertField(message[0]);
+			Numeric::insertField(target);
 			message.replyNumeric(ERR_NOSUCHCHANNEL);
 			return true;
 		}
-		message.setChannel(chanIt->second);
+		message.setChannel(channel);
 		if (!server.checkChannelMode(message, COMMAND_PRIVMSG))
 			return true;
-		message.setReceiver(chanIt->second);
+		message.setReceiver(channel);
 		message.limitMaxParam(2);
 		message.hideReceiver();
 	}
 	else
 	{
-		if ((userIt = this->server.userFind(message[0])) == this->server.getUserMap().end())
+		if (!(targetUser = this->server.userAt(target)))
 		{
-			Numeric::insertField(message[0]);
+			Numeric::insertField(target);
 			message.replyNumeric(ERR_NOSUCHNICK);
 			return true;
 		}
 		message.eraseAt(0);
-		message.setReceiver(userIt->second);
+		message.setReceiver(targetUser);
 		message.limitMaxParam(1);
 	}
-	message.setSender(&user);
+	message.setSender(user);
 	message.send();
 	return true;
 }
 
-bool PrivmsgCommand::_recvServer(Message& message)
+bool	PrivmsgCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
-bool PrivmsgCommand::_sendUser(Message&	message)
+bool	PrivmsgCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool PrivmsgCommand::_sendServer(Message&	message)
+bool	PrivmsgCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

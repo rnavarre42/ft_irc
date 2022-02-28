@@ -12,34 +12,33 @@ KickCommand::KickCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void KickCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+KickCommand::~KickCommand(void)
+{}
 
-void KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
+void	KickCommand::loadEvents(Server::eventHandler_type&)
+{}
+
+void	KickCommand::unloadEvents(Server::eventHandler_type&)
+{}
+
+bool	KickCommand::_recvUser(Message& message)
 {
-	(void)eventHandler;
-}
-// kick #canal nick :motivo
-bool KickCommand::_recvUser(Message& message)
-{
-//	User*						user = this->userSender;
-	Server::channelMap_iterator	channelIt;
+//	Server::channelMap_iterator	channelIt;
 	Channel*					channel;
-	Server::userMap_iterator	userKickIt;
+	User*						userKick;
+//	Server::userMap_iterator	userKickIt;
 
 	if (!isValidChanName(message[0]))
 	{
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_BADCHANMASK);
 	}
-	else if ((channelIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
+	else if (!(channel = this->server.channelAt(message[0])))
 	{
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
 	}
-	else if ((userKickIt = channelIt->second->find(message[1])) == channelIt->second->end())
+	else if (!(userKick = channel->at(message[1])))
 	{
 		Numeric::insertField(message[1]);
 		message.replyNumeric(ERR_NOSUCHNICK);
@@ -47,46 +46,34 @@ bool KickCommand::_recvUser(Message& message)
 	else
 	{
 		std::cout << message.toString() << std::endl;
-		channel = channelIt->second;
+//		channel = channelIt->second;
 		message.setChannel(channel);
 		if (!this->server.checkChannelMode(message, COMMAND_KICK))
 			return true;
 		message.setReceiver(channel);
 		message.setReceiver(message.getSender());
 		message[0] = channel->getName();
-		message[1] = userKickIt->second->getName();
+		message[1] = userKick->getName();
 		message.limitMaxParam(3);
 		message.hideReceiver();
 		std::cout << message.toString() << std::endl;
 		message.send();
-		server.removeUserFromChannel(*channel, *userKickIt->second);
+		server.removeUserFromChannel(*channel, *userKick);
 	}
 	return true;
 }
 
-bool KickCommand::_recvServer(Message& message)
+bool	KickCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool KickCommand::_sendUser(Message& message)
+bool	KickCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool KickCommand::_sendServer(Message& message)
+bool	KickCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

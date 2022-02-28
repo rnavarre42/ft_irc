@@ -23,7 +23,7 @@
 # include "TopicCommand.hpp"
 # include "UserCommand.hpp"
 //# include "WhoCommand.hpp"
-//# include "WhoisCommand.hpp"
+# include "WhoisCommand.hpp"
 //# include "WhowasCommand.hpp"
 
 #endif

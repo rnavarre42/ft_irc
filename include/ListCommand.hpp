@@ -8,8 +8,10 @@ class ListCommand : public ACommand
 {
 public:
 	ListCommand(Server& server, int accessLevel, int paramCount);
-	void loadEvents(Server::eventHandler_type& eventHandler);
-	void unloadEvents(Server::eventHandler_type& eventHandler);
+	~ListCommand(void);
+
+	void	loadEvents(Server::eventHandler_type& eventHandler);
+	void	unloadEvents(Server::eventHandler_type& eventHandler);
 
 private:
 	bool	_recvUser(Message& message);

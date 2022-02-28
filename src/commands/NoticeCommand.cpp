@@ -10,75 +10,68 @@ NoticeCommand::NoticeCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void NoticeCommand::loadEvents(Server::eventHandler_type& )
+NoticeCommand::~NoticeCommand(void)
 {}
 
-void NoticeCommand::unloadEvents(Server::eventHandler_type& )
+void	NoticeCommand::loadEvents(Server::eventHandler_type&)
 {}
 
-bool NoticeCommand::_recvUser(Message& message)
+void	NoticeCommand::unloadEvents(Server::eventHandler_type&)
+{}
+
+bool	NoticeCommand::_recvUser(Message& message)
 {
-	User&						user = *this->userSender;
-	Server::userMap_iterator 	userIt;
-	Server::channelMap_iterator	chanIt;
+	User*						user = this->userSender;
+	User*						targetUser;
+	std::string					target;
+	Channel*					targetChannel;
 
 	if (message.size() < 2)
 	{
 		message.replyNumeric(ERR_NOTEXTTOSEND);
 		return true;
 	}
-	if (this->server.isChannel(message[0]))
+	target = message[0]; 
+	if (this->server.isChannel(target))
 	{
-		if ((chanIt = this->server.channelFind(message[0])) == this->server.getChannelMap().end())
+		if (!(targetChannel = this->server.channelAt(target)))
 		{	
-			Numeric::insertField(message[0]);
+			Numeric::insertField(target);
 			message.replyNumeric(ERR_NOSUCHCHANNEL);
 			return true;
 		}
-		message.setReceiver(chanIt->second);
+		message.setReceiver(targetChannel);
 		message.limitMaxParam(2);
 		message.hideReceiver();
 	}
 	else
 	{
-		if ((userIt = this->server.userFind(message[0])) == this->server.getUserMap().end())
+		if (!(targetUser = this->server.userAt(target)))
 		{
-			Numeric::insertField(message[0]);
+			Numeric::insertField(target);
 			message.replyNumeric(ERR_NOSUCHNICK);
 			return true;
 		}
 		message.eraseAt(0);
-		message.setReceiver(userIt->second);
+		message.setReceiver(targetUser);
 		message.limitMaxParam(1);
 	}
-	message.setSender(&user);
+	message.setSender(user);
 	message.send();
 	return true;
 }
 
-bool NoticeCommand::_recvServer(Message& message)
+bool	NoticeCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool NoticeCommand::_sendUser(Message& message)
+bool	NoticeCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-
-	(void)user;
-	(void)message;
 	return false;
 }
 
-bool NoticeCommand::_sendServer(Message& message)
+bool	NoticeCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)server;
-	(void)message;
 	return false;
 }

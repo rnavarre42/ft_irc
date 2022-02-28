@@ -5,49 +5,45 @@
 #include "Server.hpp"
 #include "Console.hpp"
 #include "Numeric.hpp"
+
 #include <iostream>
 
 InviteCommand::InviteCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void InviteCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+InviteCommand::~InviteCommand(void)
+{}
 
-void InviteCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	InviteCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-bool InviteCommand::_recvUser(Message& message)
+void	InviteCommand::unloadEvents(Server::eventHandler_type&)
+{}
+
+bool	InviteCommand::_recvUser(Message& message)
 {
-	User&						user = *this->userSender;
-	Server::channelMap_iterator	channelIt;
-	Server::userMap_iterator	invitedUserIt;
-	Channel*					channel;
-	User*						invitedUser;
-	std::string					channelName, invitedName;
+	User*			user = this->userSender;
+	Channel*		channel;
+	User*			invitedUser;
+	std::string		channelName, invitedName;
 
 	message.setReceiver(message.getSender());
-	if ((invitedUserIt = server.userFind(message[0])) == server.getUserMap().end())
+	if (!(invitedUser = server.userAt(message[0])))
 	{
 		Numeric::insertField(message[0]);
 		message.sendNumeric(ERR_NOSUCHNICK);
 		return true;
 	}
-	invitedUser = invitedUserIt->second;
 	invitedName = invitedUser->getName();
-	if ((channelIt = server.channelFind(message[1])) == server.getChannelMap().end())
+	if (!(channel = server.channelAt(message[1])))
 	{
 		Numeric::insertField(message[1]);
 		message.sendNumeric(ERR_NOSUCHCHANNEL);
 		return true;
 	}
-	channel = channelIt->second;
 	channelName = channel->getName();
-	if (!user.isOnChannel(*channel))
+	if (!user->isOnChannel(*channel))
 	{
 		Numeric::insertField(channelName);
 		message.sendNumeric(ERR_NOTONCHANNEL);
@@ -60,41 +56,29 @@ bool InviteCommand::_recvUser(Message& message)
 	else
 	{
 		server.invite().insert(invitedUser, channel);
-		Console::log(LOG_INFO, user.getName() + " ha invitado a " + invitedName + " a " + channelName);
+		Console::log(LOG_INFO, "<" + user->getName() + "> has invited " + invitedName + " to <" + channelName + ">");
 		message.sendNumeric(RPL_INVITING);
 		message.clearReceiver();
 		message.eraseAt(0);
 		message[0] = channelName;
-		message.setSender(&user);
+		message.setSender(user);
 		message.setReceiver(invitedUser);
 		message.send();
 	}
 	return true;
 }
 
-bool InviteCommand::_recvServer(Message &message)
+bool	InviteCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool InviteCommand::_sendUser(Message &message)
+bool	InviteCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool InviteCommand::_sendServer(Message &message)
+bool	InviteCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

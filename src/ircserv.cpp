@@ -14,21 +14,22 @@ int main(int argc, char** argv)
 {
 	Server*			server;
 	unsigned int	serverPort;
+	std::string		serverPass;
 
 	if (argc != 3)
 	{
 		std::cerr << "Usage:" << std::endl
 				  << "./" << argv[0] << " <port> <password>" << std::endl;
 		return 1;
-	}	
+	}
 	serverPort = atoi(argv[1]);
+	serverPass = argv[2];
 	if (!serverPort && serverPort >= 65536)
 	{
 		std::cerr << "Error: Invalid port number" << std::endl;
 		return 1;
 	}
-
-	server = Server::createInstance("0.0.0.0", serverPort, "irc.castela.es", argv[2]);
+	server = Server::createInstance("0.0.0.0", serverPort, "irc.castela.es", serverPass);
 
 	atexit(leaks);
 	server->run();

@@ -91,7 +91,7 @@ tag:
 
 PHONY += run
 run:		all
-	./$(SERVER)
+	./$(SERVER) 6667 ""
 
 PHONY += own
 own:	$(CLIENT)
@@ -99,7 +99,7 @@ own:	$(CLIENT)
 
 PHONY += cli
 cli:
-	make -C client run non NoSoyNadie 127.0.0.1 6667
+	make -C client run non NoSoyNadie 127.0.0.1 6667 1234
 	reset
 
 PHONY += hispano

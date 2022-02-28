@@ -17,11 +17,10 @@ NoExternalChanMode::NoExternalChanMode(Server& server)
 NoExternalChanMode::~NoExternalChanMode(void)
 {}
 
-void	NoExternalChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
+void	NoExternalChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
 	Channel*	channel = message.getChannel();
 	User*		user  = static_cast<User*>(message.getSender());
-	(void)event;
 
 	if (access != AChanMode::deny && this->isSetMode(*channel) && !user->isOnChannel(*channel))
 	{
@@ -31,21 +30,19 @@ void	NoExternalChanMode::onChanEvent(Access& access, int event, Message& message
 	}
 }
 
-bool	NoExternalChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )
+bool	NoExternalChanMode::onChanModeEvent(int, int sign, Channel& channel, Message&)
 {
 	return (sign && this->setMode(channel, NULL))
 				|| (!sign && this->unsetMode(channel, NULL));
 }
 
 void	NoExternalChanMode::onShowChanModeEvent(void)
-{
-}
+{}
 
-void	NoExternalChanMode::onDelete(void* )
-{
-}
+void	NoExternalChanMode::onDelete(void*)
+{}
 
-std::string NoExternalChanMode::toString(void* )
+std::string	NoExternalChanMode::toString(void*)
 {
 	return "";
 }

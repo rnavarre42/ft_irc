@@ -5,6 +5,7 @@
 #include "Message.hpp"
 #include "Numeric.hpp"
 #include "AUserMode.hpp"
+#include "Unknown.hpp"
 
 #include <map>
 #include <iostream>
@@ -12,29 +13,37 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
-User::User(int fd, Server&	server) :
-	_ident("anonymous"),
-	_server(server), 
-	_status(1), 
-	_signTime(time(NULL)), 
-	_nextTimeout(this->_signTime + REGTIMEOUT), 
-	_fd(fd), 
-	_type(TYPE_USER)
+User::User(int fd, Server& server)
+	: _server(server)
+	, _ident("anonymous")
+	, _status(1)
+	, _signTime(time(NULL))
+	, _nextTimeout(this->_signTime + REGTIMEOUT)
+	, _fd(fd)
+	, _type(TYPE_USER)
 {}
 
 User::~User(void)
 {
 	close(this->_fd);
-//	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
-//		it->second->getUserMap().erase(strToUpper(this->_name));
 	this->_channelMap.clear();
-	//this->setRegistered(false);
 	this->_fd = 0;
 }
+
+User::User(const Unknown& src)
+	: _server(src._server)
+	, _ident(src._ident)
+	, _status(1)
+	, _signTime(src._signTime)
+	, _nextTimeout(src._nextTimeout)
+	, _fd(src._fd)
+	, _type(TYPE_USER)
+{}
 
 void	User::setHost(const std::string& value)
 {
 	this->_host = value;
+	this->_updateMask();
 }
 
 const std::string&	User::getHost(void) const
@@ -55,6 +64,7 @@ const std::string&	User::getIdent(void) const
 void	User::setReal(const std::string& value)
 {
 	this->_real = value;
+	this->_updateMask();
 }
 
 const std::string&	User::getReal(void) const
@@ -67,24 +77,16 @@ std::string&	User::getInputBuffer(void)
 	return this->_inputBuffer;
 }
 
-bool	User::isOnChannel(const std::string& channel)
+bool	User::isOnChannel(const std::string& channelName)
 {
-	return (this->find(channel) != this->_channelMap.end());
+	return (this->find(channelName) != this->_channelMap.end());
 }
 
 bool	User::isOnChannel(const Channel& channel)
 {
 	return (this->find(channel.getName()) != this->_channelMap.end());
 }
-/*
-bool	User::isOnChannel(Channel &channel)
-{
-	for (Server::channelMap_iterator it = this->_channelMap.begin(); it != this->_channelMap.end(); it++)
-		if (it->second == &channel)
-			return true;
-	return false;
-}
-*/
+
 std::string&	User::getOutputBuffer(void)
 {
 	return this->_outputBuffer;
@@ -103,6 +105,7 @@ const time_t&	User::getSignTime(void) const
 void	User::setName(const std::string& value)
 {
 	this->_name = value;
+	this->_updateMask();
 }
 
 const std::string&	User::getName(void) const
@@ -130,10 +133,9 @@ bool	User::isSetMode(AUserMode* userMode)
 	return this->_modes & userMode->getFlag();
 }
 
-//TODO: Mismo mensaje que en Server, hay que determinar si almacenamos esta información y no la generamos constantemente.
-std::string	User::getMask(void)
+const std::string&	User::getMask(void) const
 {
-	return this->_name + "!" + this->_ident + "@" + this->_host;
+	return this->_mask;
 }
 
 const std::string&	User::getPass(void) const
@@ -209,7 +211,6 @@ void	User::setNextTimeout(time_t value)
 
 const time_t&	User::getNextTimeout(void) const
 {
-//	std::cout << "User::getNextTimeout = " << this->nextTimeout << " - " << time(NULL) << " used" << std::endl;
 	return this->_nextTimeout;
 }
 
@@ -240,7 +241,6 @@ const std::string&	User::getPingChallenge(void) const
 
 void	User::setStatus(int value)
 {
-//	std::cout << "User::setRegisterd used" << std::endl;
 	this->_status = value;
 }
 
@@ -248,13 +248,6 @@ int	User::getStatus(void)
 {
 	return this->_status;
 }
-
-/*
-std::map<std::string, Channel *> &User::getChannelMap(void)
-{
-	return this->_channelMap;
-}
-*/
 
 void	User::insert(Channel* channel)
 {
@@ -266,7 +259,7 @@ void	User::erase(Channel* channel)
 	this->_channelMap.erase(strToUpper(channel->getName()));
 }
 
-Server const	&User::getServer(void) const
+const Server&	User::getServer(void) const
 {
 	return this->_server;
 }
@@ -274,6 +267,11 @@ Server const	&User::getServer(void) const
 bool	User::isAway(void)
 {
 	return !this->_awayMsg.empty();
+}
+
+void	User::_updateMask(void)
+{
+	this->_mask = this->_name + "!" + this->_ident + "@" + this->_host;
 }
 
 void	User::sendToBuffer(const Message& message)
@@ -328,14 +326,6 @@ size_t	User::recv(int fd)
 	return size;
 }
 
-Message*	User::buildMessage(std::string& buff)
-{
-	(void)buff;
-	std::cout << "huh";
-	exit(0);
-//	return &Message::builder(*this, buff);
-}
-
 std::string	User::_getLine(size_t pos)
 {
 	std::string	line;
@@ -364,7 +354,6 @@ size_t	User::checkInput(int fd, Message& message)
 			this->send(Numeric::builder(this->_server, *this, ERR_UNKNOWNCOMMAND));
 		}
 		message.clear();
-//		delete msg;
 	}
 	return size;
 }
@@ -399,19 +388,17 @@ Channel*	User::findFullestChannel(void)
 Server::userVector_type*	User::getUniqueVector(void)
 {
 	//aloca memoria para el nuevo vector
-	Server::userVector_type*							userVector;
-	Server::channelSet_type								checkChannelSet;
-	Channel*											currentChannel;
-	std::pair<Server::channelSet_iterator, bool>		ret;
-	Server::userVector_iterator							vectorIt;
+	Server::userVector_type*						userVector;
+	Server::channelSet_type							checkChannelSet;
+	Channel*										currentChannel;
+	std::pair<Server::channelSet_iterator, bool>	ret;
+	Server::userVector_iterator						vectorIt;
 
 	userVector = new Server::userVector_type;
 	if (!this->_channelMap.size())
 		return userVector;
 	//buscar el canal que tiene mas usuarios
 	currentChannel = findFullestChannel();
-	//std::cout << "channel name = " << currentChannel->getName() << std::endl;
-
 	//añadir los usuarios del canal mas grande al vector
 	checkChannelSet.insert(currentChannel);
 	for (Server::userMap_iterator it = currentChannel->begin(); it != currentChannel->end(); it++)
@@ -429,6 +416,5 @@ Server::userVector_type*	User::getUniqueVector(void)
 					userVector->push_back(it->second);
 			}
 	}
-//	for_each(userVector->begin(), userVector->end(), displayUserName);
 	return userVector;
 }

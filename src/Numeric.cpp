@@ -89,7 +89,7 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 		{
 //			std::cout << "line =" << line << " offset = " << offset <<  std::endl;
 //			std::cout << "names = " << *it2 << std::endl;
-			if ((line.size() + it2->size()) > 52 - 2 )// si hemos llenado
+			if ((line.size() + it2->size()) > MAXLINE - 2 )// si hemos llenado
 			{
 				data.append(line);
 				line = base;
@@ -158,4 +158,8 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_PASSWDMISMATCH]	= ":Password incorrect";
 	Numeric::_numericMap[RPL_YOUREOPER]			= ":You are now an IRC operator";
 	Numeric::_numericMap[ERR_NOOPERHOST]		= "No O-lines for your host";
+	Numeric::_numericMap[RPL_ENDOFWHOIS]		= "$ :End of WHOIS list";
+	Numeric::_numericMap[RPL_WHOISUSER]			= "$ $ $ * :$";
+	Numeric::_numericMap[RPL_WHOISHOST]			= "$ :is connection from $ $";
+	Numeric::_numericMap[RPL_WHOISCHANNELS]		= "$ :%";
 }

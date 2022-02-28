@@ -3,13 +3,14 @@
 #include "User.hpp"
 #include "utils.hpp"
 #include "ISender.hpp"
+
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <vector>
 #include <stdio.h>
 
-void	leftTrim(std::string &data)
+void	leftTrim(std::string& data)
 {
 	size_t i = 0;
 	while (data[i] && data[i] == ' ')
@@ -17,9 +18,9 @@ void	leftTrim(std::string &data)
 	data.erase(0, i);
 }
 
-std::string	extractWord(std::string &data)
+std::string	extractWord(std::string& data)
 {
-	size_t 		pos;
+	std::size_t	pos;
 	std::string	newStr;
 
 	pos = data.find(' ');
@@ -34,7 +35,7 @@ std::string	extractWord(std::string &data)
 	return newStr;
 }
 
-std::string extractPhrase(std::string &data)
+std::string	extractPhrase(std::string& data)
 {
 	std::string newStr;
 
@@ -49,10 +50,18 @@ std::string extractPhrase(std::string &data)
 		return extractWord(data);
 }
 
-Message::Message(Server &server) : _server(server), _sender(NULL), _channel(NULL), _command(NULL), _hideReceiver(false)
+Message::Message(Server &server)
+	: _server(server)
+	, _sender(NULL)
+	, _channel(NULL)
+	, _command(NULL)
+	, _hideReceiver(false)
 {}
 
-void Message::set(ISender &sender, std::string data)
+Message::~Message(void)
+{}
+
+void	Message::set(ISender& sender, std::string data)
 {
 	this->_sender = &sender;
 	leftTrim(data);
@@ -72,15 +81,9 @@ void Message::set(ISender &sender, std::string data)
 		this->_paramVector.push_back(extractPhrase(data));
 		leftTrim(data);
 	}
-//	std::cout << "prefix = '" << this->prefix << "' cmd = '" << this->cmd << "' fd = " << this->sender.getFd() << std::endl;
-//	for (int i = 0; i < 15 && !this->param[i].empty(); i++)
-//		std::cout << "param[" << i << "] = '" << this->param[i] << "'" << std::endl;
 }
 
-//Message::Message(ISender &sender) : _sender(&sender), _channel(NULL), _broadcast(false)
-//{}
-
-void		Message::setReceiver(Channel *channel)
+void	Message::setReceiver(Channel* channel)
 {
 	for (Server::userMap_iterator it = channel->begin(); it != channel->end(); it++)
 		if (it->second != this->_sender)
@@ -88,20 +91,19 @@ void		Message::setReceiver(Channel *channel)
 }
 
 
-void		Message::setReceiver(Server::userVector_type &userVector)
+void	Message::setReceiver(Server::userVector_type& userVector)
 {
 	for (Server::userVector_iterator it = userVector.begin(); it != userVector.end(); it++)
 		if (*it != this->_sender)
 			this->_receiverVector.push_back(*it);
 }
 
-void		Message::setReceiver(ISender *value)
+void	Message::setReceiver(ISender* value)
 {
-//	this->_receiverVector.clear();
 	this->_receiverVector.push_back(value);
 }
 
-ISender		*Message::getReceiver(void)
+ISender*	Message::getReceiver(void)
 {
 	if (this->_receiverVector.size())
 		return this->_receiverVector[0];
@@ -127,15 +129,12 @@ std::string		Message::toString(void) const
 	return ss.str();
 }
 
-Message::~Message(void)
-{}
-
-std::string	&Message::operator[](size_t index)
+std::string&	Message::operator[](size_t index)
 {
 	return this->_paramVector[index];
 }
 
-bool Message::empty(void)
+bool	Message::empty(void)
 {
 	return this->_prefix.empty() && this->_cmd.empty() && !this->_paramVector.size();
 }
@@ -158,7 +157,7 @@ void	Message::setCmd(const std::string& value)
 	this->_cmd = value;
 }
 
-std::string const &Message::getCmd(void) const
+const std::string&	Message::getCmd(void) const
 {
 	return this->_cmd;
 }
@@ -187,32 +186,32 @@ void	Message::swapField(size_t first, size_t second)
 	this->_paramVector[second] = field;
 }
 
-void	Message::setSender(ISender *value)
+void	Message::setSender(ISender* value)
 {
 	this->_sender = value;
 }
 
-ISender *Message::getSender(void)
+ISender*	Message::getSender(void)
 {
 	return this->_sender;
 }
 
-Server *Message::getServer(void)
+Server*	Message::getServer(void)
 {
 	return &this->_server;
 }
 
-void	Message::setChannel(Channel *value)
+void	Message::setChannel(Channel* value)
 {
 	this->_channel = value;
 }
 
-Channel	*Message::getChannel(void)
+Channel*	Message::getChannel(void)
 {
 	return this->_channel;
 }
 
-size_t	Message::size(void)
+std::size_t	Message::size(void)
 {
 	return this->_paramVector.size();
 }

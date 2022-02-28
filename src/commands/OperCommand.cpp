@@ -10,22 +10,18 @@ OperCommand::OperCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-void OperCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+OperCommand::~OperCommand(void)
+{}
 
-void OperCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	OperCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-bool OperCommand::_recvUser(Message& message)
-{
-	User&						user = *this->userSender;
+void	OperCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
-	(void)message;
-	(void)user;
+bool	OperCommand::_recvUser(Message& message)
+{
+	User*	user = this->userSender;
 
 	if (message[0] != OPERLOGIN)
 		message.replyNumeric(ERR_NOOPERHOST);
@@ -33,35 +29,23 @@ bool OperCommand::_recvUser(Message& message)
 		message.replyNumeric(ERR_PASSWDMISMATCH);
 	else
 	{
-		user.enableOper();
+		user->enableOper();
 		message.replyNumeric(RPL_YOUREOPER);
 	}
 	return true;
 }
 
-bool OperCommand::_recvServer(Message& message)
+bool	OperCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool OperCommand::_sendUser(Message& message)
+bool	OperCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool OperCommand::_sendServer(Message& message)
+bool	OperCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

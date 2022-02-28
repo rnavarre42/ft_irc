@@ -63,6 +63,9 @@ enum
 	RPL_MOTD				= 372,	// ":- <text>
 	RPL_ENDOFMOTD			= 376,	// ":End of MOTD command"
 
+	RPL_WHOISHOST			= 378,	// "<nick> :is connection from <user mask> <real host>"
+	RPL_WHOISMODES			= 379,	// "<nick> :is using modes +<modes>
+
 	RPL_YOUREOPER			= 381,	// ":You are now an IRC operator"
 	RPL_REHASHING			= 382,	// "<config file> :Rehashing"
 	//RPL_YOURESERVICE		= 383,	// "

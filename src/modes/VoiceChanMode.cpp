@@ -17,12 +17,9 @@ VoiceChanMode::VoiceChanMode(Server& server)
 VoiceChanMode::~VoiceChanMode(void)
 {}
 
-void	VoiceChanMode::onChanEvent(Access& access, int event, Message &message, int& numeric)
+void	VoiceChanMode::onChanEvent(Access& access, int, Message& message, int&)
 {
 	Channel*	channel = message.getChannel();
-
-	(void)event;
-	(void)numeric;
 
 	if (channel->isOper(message.getSender()) || channel->isVoice(message.getSender()))
 		access = AChanMode::allow;
@@ -53,10 +50,10 @@ bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message
 void	VoiceChanMode::onShowChanModeEvent(void)
 {}
 
-void	VoiceChanMode::onDelete(void* )
+void	VoiceChanMode::onDelete(void*)
 {}
 
 std::string VoiceChanMode::toString(void* pointer)
 {
-	return reinterpret_cast<User* >(pointer)->getName();
+	return reinterpret_cast<User*>(pointer)->getName();
 }

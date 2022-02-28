@@ -17,10 +17,10 @@ TopicChanMode::TopicChanMode(Server& server)
 TopicChanMode::~TopicChanMode(void)
 {}
 
-void	TopicChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
+void	TopicChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
 	Channel*	channel = message.getChannel();
-	(void)event;
+
 	if (!this->isSetMode(*channel))
 		return ;
 	if (message.getChannel()->isOper(message.getSender()))
@@ -42,10 +42,10 @@ bool	TopicChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )
 void	TopicChanMode::onShowChanModeEvent(void)
 {}
 
-void	TopicChanMode::onDelete(void* )
+void	TopicChanMode::onDelete(void*)
 {}
 
-std::string TopicChanMode::toString(void* )
+std::string TopicChanMode::toString(void*)
 {
 	return "";
 }

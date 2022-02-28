@@ -4,34 +4,37 @@
 #include <vector>
 #include <iostream>
 
-Invite::Invite(void) {}
-Invite::~Invite(void) {}
+Invite::Invite(void)
+{}
 
-bool	Invite::insert(User *user, Channel *channel)
+Invite::~Invite(void)
+{}
+
+bool	Invite::insert(User* user, Channel* channel)
 {
 	inviteVector_iterator	it;
 
 	if ((it = this->find(user, channel)) == this->_inviteVector.end())
 	{
 		this->_inviteVector.push_back(std::make_pair(user, channel));
-		return (true);
+		return true;
 	}
-	return (false);
+	return false;
 }
 
-bool	Invite::erase(User *user, Channel *channel)
+bool	Invite::erase(User* user, Channel* channel)
 {
 	inviteVector_iterator	it;
 
 	if ((it = this->find(user, channel)) != this->_inviteVector.end())
 	{
 		this->_inviteVector.erase(it);
-		return (true);
+		return true;
 	}
-	return (false);
+	return false;
 }
 
-Invite::inviteVector_iterator	Invite::find(ISender* sender, Channel *channel)
+Invite::inviteVector_iterator	Invite::find(ISender* sender, Channel* channel)
 {
 	for (inviteVector_iterator it = this->_inviteVector.begin(); it != this->_inviteVector.end(); it++)
 		if (it->first == sender && it->second == channel)
@@ -39,7 +42,7 @@ Invite::inviteVector_iterator	Invite::find(ISender* sender, Channel *channel)
 	return this->_inviteVector.end();
 }
 
-void	Invite::erase(User *user)
+void	Invite::erase(User* user)
 {
 	for (inviteVector_iterator it = this->_inviteVector.begin(); it != this->_inviteVector.end(); )
 	{
@@ -50,7 +53,7 @@ void	Invite::erase(User *user)
 	}
 }
 
-void	Invite::erase(Channel *channel)
+void	Invite::erase(Channel* channel)
 {
 	for (inviteVector_iterator it = this->_inviteVector.begin(); it != this->_inviteVector.end(); )
 	{
