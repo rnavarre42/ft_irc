@@ -89,7 +89,7 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 		{
 //			std::cout << "line =" << line << " offset = " << offset <<  std::endl;
 //			std::cout << "names = " << *it2 << std::endl;
-			if ((line.size() + it2->size()) > 52 - 2 )// si hemos llenado
+			if ((line.size() + it2->size()) > MAXLINE - 2 )// si hemos llenado
 			{
 				data.append(line);
 				line = base;
