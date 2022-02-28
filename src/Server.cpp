@@ -25,20 +25,7 @@
 #include <cstdlib>
 #include <sstream>
 
-//	socket, setsockopt, getsockname, getprotobyname, gethostbyname, getaddrinfo, freeaddrinfo, bind, connect
-//	listen, accept, htons, htonl, ntohs, ntohl, inet_addr, inet_htoa, send, recv, signal, lseek, fstat, fcntl
-//	poll
-
 Server*	Server::_instance = NULL;
-
-void	Server::signalHandler(int sig)
-{
-	Server &server = Server::getInstance();
-
-	std::cout << std::endl;
-	if (sig == SIGINT)
-		server.quit(SHUTDOWN_STRING);
-}
 
 Server::Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password)
 	: _ip(listenIp)
@@ -50,7 +37,6 @@ Server::Server(const std::string& listenIp, int listenPort, const std::string& n
 {
 	this->_loadCommands();
 	this->_loadChanModes();
-//	this->_logger();
 	this->_setSignals();
 	std::memset(this->_pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
 	this->_stop = false;
@@ -58,7 +44,6 @@ Server::Server(const std::string& listenIp, int listenPort, const std::string& n
 	this->_pollTimeout = 1000;
 	this->_status = 0;
 	this->_bind();
-//	this->_source.server = this;
 }
 
 Server::~Server(void)
@@ -67,6 +52,15 @@ Server::~Server(void)
 	this->_unloadChanModes();
 	delete &this->_message;
 	Console::log(LOG_INFO, "Server destroyed");
+}
+
+void	Server::signalHandler(int sig)
+{
+	Server &server = Server::getInstance();
+
+	std::cout << std::endl;
+	if (sig == SIGINT)
+		server.quit(SHUTDOWN_STRING);
 }
 
 void	Server::_loadCommands(void)
@@ -240,24 +234,10 @@ ssize_t	Server::send(void)
 
 ssize_t	Server::send(const std::string& data)
 {
-	//int usersLeft;
 	Server::fdMap_iterator	it;
 
-	//usersLeft = this->fdMap.size();
 	for (it = this->_fdMap.begin(); it != this->_fdMap.end(); it++)
 		it->second->send(data);
-/*
-	for (size_t i = 1; usersLeft; i++)
-	{
-		if (this->pollfds[i].fd)
-		{
-			this->fdMap[this->pollfds[i].fd]->send(data);
-			usersLeft--;
-		}
-	}
-*/
-//	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
-//		it->sendTo(data);
 	return 0;
 }
 
@@ -340,7 +320,6 @@ const std::string&	Server::getName(void) const
 
 std::string	Server::getMask(void)
 {
-//	throw Server::NotImplementedException();
 	return this->_name;
 }
 
@@ -440,7 +419,6 @@ void	Server::eraseChannel(Channel& channel)
 Channel*	Server::insertChannel(const std::string& name, const User& user)
 {
 	Channel	*channel = new Channel(name, user, *this);
-//	this->_channelMap[strToUpper(channelName)] = channel;
 	this->_channelMap.insert(std::make_pair(strToUpper(name), channel));
 	return channel;
 }
@@ -462,6 +440,8 @@ bool	Server::checkChannelMode(Message& message, int commandEvent)
 	AChanMode::Access	access = AChanMode::def;
 	int					numeric = 0;
 
+	if (message.getSender()->isOper())
+		return true;
 	for (aChanModeMap_iterator it = this->_chanModeMap.begin();
 			it != this->_chanModeMap.end() && access != AChanMode::allow;
 			++it)
@@ -571,8 +551,6 @@ void	Server::addToChannel(Message& message)
 				if (!this->checkChannelMode(message, COMMAND_JOIN))
 					return ;
 				channel->insert(&user);
-				//eliminamos la invitación, si existiera.
-				//
 				if (this->_invite.erase(&user, channel))
 				{
 					Console::log(LOG_INFO, user.getName() + " ha hecho efectiva su invitacion");
@@ -581,12 +559,10 @@ void	Server::addToChannel(Message& message)
 				{
 					Console::log(LOG_INFO, user.getName() + " no tenia invitacion");
 				}
-				// añade el canal al usuario y el usuario al canal
 				channel->insert(&user);
 				user.insert(channel);
 				this->_eventHandler.raise(JOINEVENT, this->_message);
 			}
-			//TODO falta por gestionar +l +i +k
 		}
 	}
 	else
@@ -682,7 +658,6 @@ void	Server::_checkUserIO(void)
 		else if (this->_pollfds[i].revents & POLLOUT)
 		{
 			user = this->_fdMap[this->_pollfds[i].fd];
-		//	std::cout << "El usuario " << user->getName() << " ya acepta mensajes" << std::endl;
 			if (user->checkOutput(this->_pollfds[i].fd))
 				this->_pollfds[i].events ^= POLLOUT;
 		}
@@ -728,7 +703,7 @@ void	Server::_checkConsoleInput(void)
 
 	if (this->_pollfds[1].revents & POLLIN)
 	{
-		size = read(0, buffer, BUFFERSIZE);
+		size = ::read(0, buffer, BUFFERSIZE);
 		buffer[size] = '\0';
 		if (size > 0)
 		{
@@ -737,7 +712,7 @@ void	Server::_checkConsoleInput(void)
 			if (!strcmp(buffer, "invite\n"))
 			{
 				std::cout << "Nick     Channel" << std::endl;
-				for (Invite::inviteVector_iterator it = _invite.begin(); it != _invite.end(); it++)
+				for (Invite::inviteVector_iterator it = this->_invite.begin(); it != this->_invite.end(); it++)
 				{
 					std::cout << it->first->getName() << "\t" << it->second->getName() << std::endl;
 				}
@@ -748,9 +723,9 @@ void	Server::_checkConsoleInput(void)
 
 void	Server::_checkUserTimeout(User& user)
 {
-	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
+	if (user.getNextTimeout() && user.getNextTimeout() < std::time(NULL))
 		this->deleteUser(user, "Registration timeout");
-	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < time(NULL)))
+	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < std::time(NULL)))
 	{
 		if (user.getStatus() == LEVEL_REGISTERED)
 		{
