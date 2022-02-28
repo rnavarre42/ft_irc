@@ -28,7 +28,7 @@ void	PartCommand::partChannelEvent(Message& message)
 {
 	Channel*	channel = message.getChannel();
 
-	Console::log(LOG_INFO, message.getSender()->getName() + " ha salido de " + message.getChannel()->getName());
+	Console::log(LOG_INFO, "User <" + message.getSender()->getName() + "> has left channel <" + message.getChannel()->getName() + ">");
 	message.setReceiver(channel);
 	message.setReceiver(message.getSender());
 	message.limitMaxParam(2);

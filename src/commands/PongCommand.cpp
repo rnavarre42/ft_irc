@@ -24,7 +24,7 @@ void	PongCommand::unloadEvents(Server::eventHandler_type&)
 
 void	PongCommand::registerUserEvent(Message& message)
 {
-	Console::log(LOG_INFO, "El usuario " + message.getSender()->getName() + " se ha registrado");	
+	Console::log(LOG_INFO, "User <" + message.getSender()->getName() + "> is now registered");	
 	message.limitMaxParam(0);
 	message.setReceiver(this->userSender);
 	message.insertField("");

@@ -570,9 +570,9 @@ void	Server::addToChannel(Message& message)
 				channel->insert(user);
 				//eliminamos la invitación, si existiera.
 				if (this->_invite.erase(user, channel))
-					Console::log(LOG_INFO, user->getName() + " ha hecho efectiva su invitacion");
-				else
-					Console::log(LOG_INFO, user->getName() + " no tenia invitacion");
+					Console::log(LOG_INFO, "User <" + user->getName() + "> has accepted its invitation");
+		//		else
+		//			Console::log(LOG_INFO, user->getName() + " has no invitation");
 				// añade el canal al usuario y el usuario al canal
 				channel->insert(user);
 				user->insert(channel);

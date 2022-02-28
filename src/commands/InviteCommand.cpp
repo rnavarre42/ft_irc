@@ -23,12 +23,10 @@ void	InviteCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	InviteCommand::_recvUser(Message& message)
 {
-	User*						user = this->userSender;
-//	Server::channelMap_iterator	channelIt;
-//	Server::userMap_iterator	invitedUserIt;
-	Channel*					channel;
-	User*						invitedUser;
-	std::string					channelName, invitedName;
+	User*			user = this->userSender;
+	Channel*		channel;
+	User*			invitedUser;
+	std::string		channelName, invitedName;
 
 	message.setReceiver(message.getSender());
 	if (!(invitedUser = server.userAt(message[0])))
@@ -58,7 +56,7 @@ bool	InviteCommand::_recvUser(Message& message)
 	else
 	{
 		server.invite().insert(invitedUser, channel);
-		Console::log(LOG_INFO, user->getName() + " ha invitado a " + invitedName + " a " + channelName);
+		Console::log(LOG_INFO, "<" + user->getName() + "> has invited " + invitedName + " to <" + channelName + ">");
 		message.sendNumeric(RPL_INVITING);
 		message.clearReceiver();
 		message.eraseAt(0);
