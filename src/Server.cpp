@@ -227,7 +227,7 @@ const std::string&	Server::getPass(void) const
 	return this->_pass;
 }
 
-void	Server::setPollout(User &user)
+void	Server::setPollout(User& user)
 {
 	this->_pollfds[user.getPollIndex()].events |= POLLOUT;
 }
@@ -445,10 +445,10 @@ Channel*	Server::insertChannel(const std::string& name, const User& user)
 	return channel;
 }
 
-void	Server::insertUser(User& user)
+void	Server::insertUser(User* user)
 {
-	this->_message.setReceiver(&user);
-	this->_fdMap.insert(std::make_pair(user.getFd(), &user));
+	this->_message.setReceiver(user);
+	this->_fdMap.insert(std::make_pair(user->getFd(), user));
 	this->_eventHandler.raise(NEWUSEREVENT, this->_message);
 }
 
@@ -639,7 +639,7 @@ int	Server::_checkUserConnection(void)
 			exit(EXIT_FAILURE);
 		}
 */
-		this->insertUser(*user);
+		this->insertUser(user);
 		Console::log(LOG_INFO, "User <anonymous> connected");
 		return 1;
 	}

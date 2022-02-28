@@ -126,9 +126,9 @@ public:
 	Channel*	insertChannel(const std::string& channelName, const User& owner);
 
 	void	eraseUser(User& user);
-	void	insertUser(User& user);
+	void	insertUser(User* user);
 
-	void				setPass(const std::string& value);
+	void				 setPass(const std::string& value);
 	const std::string&	getPass(void) const;
 
 	void	names(Channel& channel);
@@ -163,7 +163,7 @@ public:
 	bool	recvCommand(Message& msg);
 	bool	sendCommand(Message& msg);
 
-	void	setPollout(User &user);
+	void	setPollout(User& user);
 
 	bool	isChannel(const std::string& channelName)
 	{

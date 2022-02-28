@@ -8,7 +8,7 @@
 #include <map>
 #include <ctime>
 
-Channel::Channel(const std::string& name, const User &user, Server &server)
+Channel::Channel(const std::string& name, const User& user, Server& server)
 	: _name(name)
 	, _owner(user.getName())
 	, _server(server)
