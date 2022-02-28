@@ -100,7 +100,7 @@ bool	Channel::Mode::erase(const char modeName)
 	return this->_modeMultimap.erase(modeName) > 0;
 }
 
-void	Channel::Mode::erase(Channel::Mode::multimap_const_iterator pos)
+void	Channel::Mode::erase(Channel::Mode::multimap_iterator pos)
 {
 	this->_modeMultimap.erase(pos);
 }

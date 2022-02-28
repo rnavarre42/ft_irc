@@ -554,7 +554,7 @@ void	Server::addToChannel(Message& message)
 			// añade el canal al usuario y el usuario al canal
 			channel->insert(user);
 			user->insert(channel);
-			channel->mode.insert('o', &user);
+			channel->mode.insert('o', user);
 			message.setChannel(channel);
 			this->_eventHandler.raise(NEWCHANEVENT, this->_message);
 		}

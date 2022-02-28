@@ -100,7 +100,7 @@ public:
 		bool					insert(char modeName, void* value);
 		bool					erase(const char modeName, const void* value);
 		bool					erase(const char modeName);
-		void					erase(multimap_const_iterator pos);
+		void					erase(multimap_iterator pos);
 		multimap_iterator		findUnique(const char modeName, const void* value);
 
 	private:

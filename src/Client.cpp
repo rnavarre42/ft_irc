@@ -66,7 +66,7 @@ void	Client::start(void)
 
 void	Client::_doAutoIdent(void)
 {
-	std::string	registerLine("USER " + this->_ident + " 0 * :the last param\r\nNICK " + this->_nick);
+	std::string	registerLine("PASS 1234\r\nUSER " + this->_ident + " 0 * :the last param\r\nNICK " + this->_nick);
 
 	this->_sendLine(registerLine);
 }
