@@ -170,37 +170,3 @@ void Channel::send(std::string msg)
 	for (Server::userMap_iterator it = this->_userMap.begin(); it != this->_userMap.end(); it++)
 		it->second->send(msg);
 }
-
-/*
-void Channel::join(User user)
-{
-	Server::userMap_iterator	it;
-
-	it = this->_userMap.find(user.getName());
-	if (it == this->_userMap.end())
-	{
-		this->send(user.getName() + " ha entrado al canal " + this->_name + "\r\n");
-		this->_userMap.insert(std::make_pair(user.getName(), &user));
-		user.insert(this);
-		user.send("Has entrado al canal " + this->_name + "\r\n");
-	}
-	else
-		user.send("Ya estas dentro de " + this->_name + "\r\n");
-}
-
-void Channel::part(User user)
-{
-	Server::userMap_iterator	it;
-
-	it = this->_userMap.find(user.getName());
-	if (it == this->_userMap.end())
-		user.send("No estas dentro de " + this->_name + "\r\n");
-	else
-	{
-		user.send("Has salido de " + this->_name + "\r\n");
-		this->_userMap.erase(it);
-		user.erase(this);
-		this->send(user.getName() + " ha salido de " + this->_name + "\r\n");
-	}
-}
-*/

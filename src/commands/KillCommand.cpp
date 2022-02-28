@@ -13,25 +13,19 @@ KillCommand::KillCommand(Server& server, int accessLevel, int paramCount)
 KillCommand::~KillCommand(void)
 {}
 
-void KillCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	KillCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-void KillCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	KillCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
-bool KillCommand::_recvUser(Message& message)
+bool	KillCommand::_recvUser(Message& message)
 {
-	User&						user = *this->userSender;
+	User*						user = this->userSender;
 	Server::userMap_iterator	userKillIt;
 
-	(void)user;
-
 	if ((userKillIt = server.userFind(message[0])) != server.getUserMap().end())
-		server.deleteUser(*userKillIt->second, "Killed by " + user.getName() + ": " + message[1]);
+		server.deleteUser(*userKillIt->second, "Killed by " + user->getName() + ": " + message[1]);
 	else
 	{
 		Numeric::insertField(userKillIt->second->getName());
@@ -40,29 +34,17 @@ bool KillCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool KillCommand::_recvServer(Message& message)
+bool	KillCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool KillCommand::_sendUser(Message& message)
+bool	KillCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool KillCommand::_sendServer(Message& message)
+bool	KillCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

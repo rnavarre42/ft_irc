@@ -15,15 +15,11 @@ KickCommand::KickCommand(Server& server, int accessLevel, int paramCount)
 KickCommand::~KickCommand(void)
 {}
 
-void	KickCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	KickCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-void	KickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	KickCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
 bool	KickCommand::_recvUser(Message& message)
 {
@@ -66,29 +62,17 @@ bool	KickCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool	KickCommand::_recvServer(Message& message)
+bool	KickCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool	KickCommand::_sendUser(Message& message)
+bool	KickCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool	KickCommand::_sendServer(Message& message)
+bool	KickCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }
