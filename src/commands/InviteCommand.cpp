@@ -15,17 +15,13 @@ InviteCommand::InviteCommand(Server& server, int accessLevel, int paramCount)
 InviteCommand::~InviteCommand(void)
 {}
 
-void InviteCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	InviteCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-void InviteCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	InviteCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
-bool InviteCommand::_recvUser(Message& message)
+bool	InviteCommand::_recvUser(Message& message)
 {
 	User*						user = this->userSender;
 //	Server::channelMap_iterator	channelIt;
@@ -74,29 +70,17 @@ bool InviteCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool	InviteCommand::_recvServer(Message& message)
+bool	InviteCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool	InviteCommand::_sendUser(Message& message)
+bool	InviteCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool	InviteCommand::_sendServer(Message& message)
+bool	InviteCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

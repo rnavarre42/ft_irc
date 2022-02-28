@@ -26,15 +26,11 @@ void	NickCommand::loadEvents(Server::eventHandler_type& eventHandler)
 	eventHandler.add(NICKEVENT, *nickDelegate);
 }
 
-void	NickCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	NickCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
-void	NickCommand::nickEvent(Message& message)
-{
-	std::cout << "<" << message.getSender()->getName() << "> papa" << std::endl; 
-}
+void	NickCommand::nickEvent(Message&)
+{}
 
 bool	NickCommand::_recvUser(Message& message)
 {
@@ -115,25 +111,16 @@ bool	NickCommand::_recvUser(Message& message)
 	return true;	
 }
 
-bool	NickCommand::_recvServer(Message& message)
+bool	NickCommand::_recvServer(Message&)
 {
-	(void)message;
 	return false;
 }
-bool	NickCommand::_sendUser(Message& message)
+bool	NickCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool	NickCommand::_sendServer(Message& message)
+bool	NickCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

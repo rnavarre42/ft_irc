@@ -14,15 +14,12 @@ NamesCommand::NamesCommand(Server& server, int accessLevel, int paramCount)
 NamesCommand::~NamesCommand(void)
 {}
 
-void	NamesCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	NamesCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-void	NamesCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	NamesCommand::unloadEvents(Server::eventHandler_type&)
+{}
+
 bool	NamesCommand::_recvUser(Message& message)
 {
 	Channel* 		channel;
@@ -41,30 +38,18 @@ bool	NamesCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool	NamesCommand::_recvServer(Message& message)
+bool	NamesCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
 bool	NamesCommand::_sendUser(Message& message)
 {
-	User&	user = *this->userReceiver;
-
-	(void)message;
-	(void)user;
 	this->_recvUser(message);
 	return false;
 }
 
-bool	NamesCommand::_sendServer(Message& message)
+bool	NamesCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

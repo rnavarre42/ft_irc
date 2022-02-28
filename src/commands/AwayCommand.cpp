@@ -3,6 +3,7 @@
 #include "Numeric.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
+
 #include <iostream>
 
 AwayCommand::AwayCommand(Server& server, int accessLevel, int paramCount)
@@ -12,17 +13,13 @@ AwayCommand::AwayCommand(Server& server, int accessLevel, int paramCount)
 AwayCommand::~AwayCommand(void)
 {}
 
-void AwayCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	AwayCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-void AwayCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	AwayCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
-bool AwayCommand::_recvUser(Message& message)
+bool	AwayCommand::_recvUser(Message& message)
 {
 	User*	user = this->userSender;
 
@@ -39,29 +36,17 @@ bool AwayCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool AwayCommand::_recvServer(Message& message)
+bool	AwayCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool AwayCommand::_sendUser(Message& message)
+bool	AwayCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool AwayCommand::_sendServer(Message& message)
+bool	AwayCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

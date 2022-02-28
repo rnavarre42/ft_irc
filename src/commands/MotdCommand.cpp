@@ -3,6 +3,7 @@
 #include "Message.hpp"
 #include "Server.hpp"
 #include "Numeric.hpp"
+
 #include <iostream>
 #include <fstream>
 
@@ -13,31 +14,19 @@ MotdCommand::MotdCommand(Server& server, int accessLevel, int paramCount)
 MotdCommand::~MotdCommand(void)
 {}
 
-void	MotdCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	MotdCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-void	MotdCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	MotdCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
-bool	MotdCommand::_recvUser(Message& message)
+bool	MotdCommand::_recvUser(Message&)
 {
-	User&	user = *this->userSender;
-
-	message.setReceiver(&user);
-	message.process();
 	return true;
 }
 
-bool	MotdCommand::_recvServer(Message& message)
+bool	MotdCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
@@ -65,11 +54,7 @@ bool	MotdCommand::_sendUser(Message& message)
 	return true;
 }
 
-bool	MotdCommand::_sendServer(Message& message)
+bool	MotdCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

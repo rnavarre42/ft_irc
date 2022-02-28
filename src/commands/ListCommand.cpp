@@ -13,20 +13,15 @@ ListCommand::ListCommand(Server& server, int accessLevel, int paramCount)
 ListCommand::~ListCommand(void)
 {}
 
-void	ListCommand::loadEvents(Server::eventHandler_type& eventHandler)
+void	ListCommand::loadEvents(Server::eventHandler_type&)
 {
-	(void)eventHandler;
 }
 
-void	ListCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	ListCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
 bool	ListCommand::_recvUser(Message& message)
 {
-//	User&	user = *this->userSender;
-
 	for (Server::channelMap_iterator it = this->server.getChannelMap().begin()
 			;it != this->server.getChannelMap().end()
 			;++it)
@@ -37,33 +32,20 @@ bool	ListCommand::_recvUser(Message& message)
 		message.replyNumeric(RPL_LIST);
 	}
 	message.replyNumeric(RPL_LISTEND);
-	
 	return true;
 }
 
-bool	ListCommand::_recvServer(Message& message)
+bool	ListCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool	ListCommand::_sendUser(Message& message)
+bool	ListCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool	ListCommand::_sendServer(Message& message)
+bool	ListCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

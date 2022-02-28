@@ -17,15 +17,11 @@ ModeCommand::ModeCommand(Server& server, int accessLevel, int paramCount)
 ModeCommand::~ModeCommand(void)
 {}
 
-void	ModeCommand::loadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	ModeCommand::loadEvents(Server::eventHandler_type&)
+{}
 
-void	ModeCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	ModeCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
 inline int	isSignMode(char c)
 {
@@ -177,29 +173,17 @@ bool	ModeCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool	ModeCommand::_recvServer(Message& message)
+bool	ModeCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool	ModeCommand::_sendUser(Message& message)
+bool	ModeCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-	
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool	ModeCommand::_sendServer(Message& message)
+bool	ModeCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }

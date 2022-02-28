@@ -24,10 +24,8 @@ void	JoinCommand::loadEvents(Server::eventHandler_type& eventHandler)
 	eventHandler.add(DELCHANEVENT, *new Delegate<JoinCommand, Message>(*this, &JoinCommand::delChannelEvent));
 }
 
-void	JoinCommand::unloadEvents(Server::eventHandler_type& eventHandler)
-{
-	(void)eventHandler;
-}
+void	JoinCommand::unloadEvents(Server::eventHandler_type&)
+{}
 
 void	JoinCommand::createChannelEvent(Message& message)
 {
@@ -80,7 +78,7 @@ void	JoinCommand::errChannelEvent(Message& message)
 
 bool	JoinCommand::_recvUser(Message& message)
 {
-	User&						user = *this->userSender;
+	User*						user = this->userSender;
 	Server::channelMap_iterator	currentIt;
 
 	if (message[0] == "0")
@@ -88,7 +86,7 @@ bool	JoinCommand::_recvUser(Message& message)
 		if (message.size() == 1)
 			message.insertField("exit from all channels");
 		message.setCmd("PART");
-		for (Server::channelMap_iterator it = user.begin(); it != user.end();)
+		for (Server::channelMap_iterator it = user->begin(); it != user->end();)
 		{
 			currentIt = it;
 			++it;
@@ -102,29 +100,17 @@ bool	JoinCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool	JoinCommand::_recvServer(Message& message)
+bool	JoinCommand::_recvServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }
 
-bool	JoinCommand::_sendUser(Message& message)
+bool	JoinCommand::_sendUser(Message&)
 {
-	User&	user = *this->userReceiver;
-
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool	JoinCommand::_sendServer(Message& message)
+bool	JoinCommand::_sendServer(Message&)
 {
-	Server&	server = *this->serverReceiver;
-
-	(void)message;
-	(void)server;
 	return false;
 }
