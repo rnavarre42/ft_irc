@@ -26,9 +26,11 @@
 # define OPERLOGIN			"laura"
 
 # define MAXNICK			9
+# define MAXUSER			9
 # define MAXCHANNEL			10
 # define CHANNELLEN			64
 # define MAXSERVER			63
+# define MAXKEY				32
 # define MAXTOPIC			307
 # define MAXLINE			512
 # define MAXHOST			63

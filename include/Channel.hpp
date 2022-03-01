@@ -48,13 +48,15 @@ public:
 		~TopicInfo()
 		{}
 
-		void setTopic(const std::string& own = "", const std::string& topic = "")
+		void	setTopic(const std::string& own = "", const std::string& topic = "")
 		{
 			std::ostringstream	oss;
 
 			oss << std::time(NULL);
 			this->own = own;
 			this->topic = topic;
+			if (this->topic.size() > MAXTOPIC)
+				this->topic.resize(MAXTOPIC);
 			this->time = oss.str();
 		}
 

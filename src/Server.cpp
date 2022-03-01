@@ -83,15 +83,13 @@ void	Server::_loadSupport(void)
 	this->_supportMap["CHANMODES"]	= "be,k,inst";
 	this->_supportMap["CHANNELLEN"]	= "64";
 	this->_supportMap["EXCEPTS"]	= "e";
-	this->_supportMap["HOSTLEN"]	= "64";
 	this->_supportMap["KEYLEN"]		= "32";
 	this->_supportMap["LINELEN"]	= "512";
-	this->_supportMap["NAMELEN"]	= "64";
 	this->_supportMap["NETWORK"]	= "IRC-Castela";
-	this->_supportMap["NICKLEN"]	= "30";
+	this->_supportMap["NICKLEN"]	= "9";
 	this->_supportMap["PREFIX"]		= "(ov)@+";
 	this->_supportMap["TOPICLEN"]	= "307";
-	this->_supportMap["USERLEN"]	= "10";
+	this->_supportMap["USERLEN"]	= "9";
 }
 
 void	Server::_loadCommands(void)
@@ -496,7 +494,6 @@ void	Server::removeUserFromChannel(Channel& channel, User& user)
 	channel.erase(&user);	// se elimina al usuario del canal
 	if (channel.empty())	// si no quedan usuarios en el canal
 	{
-//		this->_source.message->setChannel(&channel);
 		this->_eventHandler.raise(DELCHANEVENT, this->_message);
 		this->_invite.erase(&channel);
 		this->eraseChannel(channel);	// se elimina
@@ -586,8 +583,6 @@ void	Server::addToChannel(Message& message)
 				//eliminamos la invitación, si existiera.
 				if (this->_invite.erase(user, channel))
 					Console::log(LOG_INFO, "User <" + user->getName() + "> has accepted its invitation");
-		//		else
-		//			Console::log(LOG_INFO, user->getName() + " has no invitation");
 				// añade el canal al usuario y el usuario al canal
 				channel->insert(user);
 				user->insert(channel);
@@ -638,13 +633,6 @@ int	Server::_checkUserConnection(void)
 			Console::log(LOG_WARNING, "Server full, rejecting new connection");
 			return 1;
 		}
-/*
- 		if (user->send("Hello\r\n") <= 0)
-		{
-			Console::log(LOG_ERROR, "Server::checkUserConnection function user->sendTo() failed");
-			exit(EXIT_FAILURE);
-		}
-*/
 		this->insertUser(user);
 		Console::log(LOG_INFO, "User <anonymous> connected");
 		return 1;

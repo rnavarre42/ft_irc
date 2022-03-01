@@ -181,6 +181,8 @@ const int&	User::getPollIndex(void) const
 void	User::setAwayMsg(const std::string& value)
 {
 	this->_awayMsg = value;
+	if (this->_awayMsg.size() > MAXAWAY)
+		this->_awayMsg.resize(MAXAWAY);
 	this->_awayTime = time(NULL);
 }
 
