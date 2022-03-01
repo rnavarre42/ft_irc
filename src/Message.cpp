@@ -56,6 +56,7 @@ Message::Message(Server &server)
 	, _channel(NULL)
 	, _command(NULL)
 	, _hideReceiver(false)
+	, _hideSemicolon(false)
 {}
 
 Message::~Message(void)
@@ -120,7 +121,7 @@ std::string		Message::toString(void) const
 		ss << ' ' << this->_receiverVector[0]->getName();
 	for (size_t i = 0; i < this->_paramVector.size(); i++)
 	{
-		if (i == this->_paramVector.size() - 1)
+		if (i == this->_paramVector.size() - 1 && !this->_hideSemicolon)
 			ss << " :";
 		else
 			ss << ' ';
@@ -142,6 +143,11 @@ bool	Message::empty(void)
 void	Message::hideReceiver(void)
 {
 	this->_hideReceiver = true;
+}
+
+void	Message::hideSemicolon(void)
+{
+	this->_hideSemicolon = true;
 }
 
 void	Message::limitMaxParam(size_t limit)
@@ -224,6 +230,7 @@ void	Message::clear(void)
 	this->_cmd.clear();
 	this->_channel = NULL;
 	this->_hideReceiver = false;
+	this->_hideSemicolon = false;
 }
 
 void	Message::clearReceiver(void)

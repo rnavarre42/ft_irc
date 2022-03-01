@@ -199,7 +199,6 @@ const time_t&	User::getAwayTime(void) const
 
 void	User::setIdleTime(time_t value)
 {
-	std::cout << "setIdleTime" << std::endl;
 	this->_idleTime = value;
 }
 

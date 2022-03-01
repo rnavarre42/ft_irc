@@ -123,6 +123,7 @@ public:
 
 	void							setOwner(const std::string& value);
 	const std::string&				getOwner(void) const;
+	const time_t&					getCreationTime(void) const;
 
 	Server::userMap_insert			insert(User* user);
 	Server::userMap_insert			insert(const std::string& userName, User* user);
@@ -176,6 +177,7 @@ private:
 	std::string						_owner;
 	std::string						_topicOwn;
 	time_t							_topicTime;
+	time_t							_creationTime;
 	Server::userMap_type			_userMap;
 	Server&							_server;
 };

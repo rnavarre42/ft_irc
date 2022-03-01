@@ -25,28 +25,33 @@ void	PongCommand::unloadEvents(Server::eventHandler_type&)
 void	PongCommand::registerUserEvent(Message& message)
 {
 	Console::log(LOG_INFO, "User <" + message.getSender()->getName() + "> is now registered");	
+	Numeric::insertField(this->userSender->getHost());
+	message.replyNumeric(RPL_VISIBLEHOST);
+
 	message.limitMaxParam(0);
+	message.setSender(message.getServer());
 	message.setReceiver(this->userSender);
 	message.insertField("");
 	message.setCmd("MODE");
 	message.send();
 
+	message.setSender(message.getReceiver());
 	Numeric::insertField(this->userSender->getMask());
-	message.send(Numeric::builder(message, RPL_WELCOME));
+	message.replyNumeric(RPL_WELCOME);
 	
-	Numeric::insertField(message.getSender()->getMask());
-	message.send(Numeric::builder(message, RPL_YOURHOST));
+	Numeric::insertField(message.getServer()->getMask());
+	message.replyNumeric(RPL_YOURHOST);
 	
-	message.send(Numeric::builder(message, RPL_CREATED));
+	message.replyNumeric(RPL_CREATED);
 	
 	Numeric::insertField(this->server.getName());
-	Numeric::insertField("iO");
+	Numeric::insertField("io");
 	Numeric::insertField("beiklmnostv");
-	message.send(Numeric::builder(message, RPL_MYINFO));
+	Numeric::insertField("beklov");
+	message.replyNumeric(RPL_MYINFO);
 
 	this->server.supportNames();
-//	Numeric::insertField("AWAYLEN=200 CASEMAPPING=ascii CHANLIMIT=#:3 CHANMODES=be,k,inst CHANNELLEN=64 CHANTYPES=# EXCEPTS=e HOSTLEN=64 KEYLEN=32");
-	message.send(Numeric::builder(message, RPL_ISUPPORT));
+	message.replyNumeric(RPL_ISUPPORT);
 
 	message.setCmd("MOTD");
 	message.process();
@@ -70,6 +75,7 @@ bool	PongCommand::_recvUser(Message& message)
 		message[0] = "Incorrect ping reply for registration";
 		message.process();
 	}
+	message.getSender()->setIdleTime(time(NULL));
 	return true;
 }
 

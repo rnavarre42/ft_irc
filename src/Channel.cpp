@@ -11,6 +11,7 @@
 Channel::Channel(const std::string& name, const User& user, Server& server)
 	: _name(name)
 	, _owner(user.getName())
+	, _creationTime(time(NULL))
 	, _server(server)
 {}
 
@@ -153,6 +154,11 @@ void Channel::setOwner(const std::string& value)
 const std::string&	Channel::getOwner(void) const
 {
 	return this->_owner;
+}
+
+const time_t&	Channel::getCreationTime(void) const
+{
+	return this->_creationTime;
 }
 
 void Channel::setTopicInfo(const std::string& own, const std::string& topic)

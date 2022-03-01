@@ -6,7 +6,7 @@
 /*   By: rnavarre <rnavarre@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 20:53:18 by rnavarre          #+#    #+#             */
-/*   Updated: 2022/03/01 16:33:51 by rnavarre         ###   ########.fr       */
+/*   Updated: 2022/03/01 18:23:47 by rnavarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ void	Server::_loadSupport(void)
 {
 	this->_supportMap["AWAYLEN"]	= "200";
 	this->_supportMap["CHANLIMIT"]	= "10";
-	this->_supportMap["CHANMODES"]	= "be,k,inst";
+	this->_supportMap["CHANMODES"]	= "be,k,,inst";
 	this->_supportMap["CHANNELLEN"]	= "64";
 	this->_supportMap["EXCEPTS"]	= "e";
 	this->_supportMap["KEYLEN"]		= "32";
@@ -89,7 +89,10 @@ void	Server::_loadSupport(void)
 	this->_supportMap["NETWORK"]	= "IRC-Castela";
 	this->_supportMap["NICKLEN"]	= "9";
 	this->_supportMap["PREFIX"]		= "(ov)@+";
+	this->_supportMap["STATUSMSG"]	= "@+";
 	this->_supportMap["TOPICLEN"]	= "307";
+	this->_supportMap["USERMODES"]	= "io";
+	this->_supportMap["MODES"]		= "6";
 	this->_supportMap["USERLEN"]	= "9";
 }
 

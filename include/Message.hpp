@@ -27,6 +27,7 @@ public:
 	void		setReceiver(Server::userVector_type& userVector);
 	void		setReceiver(ISender* value);
 	void		hideReceiver(void);
+	void		hideSemicolon(void);
 	ISender*	getReceiver(void);
 
 	void		clear(void);
@@ -77,6 +78,7 @@ private:
 	ACommand*					_command;
 	std::vector<std::string>	_paramVector;
 	bool						_hideReceiver;
+	bool						_hideSemicolon;
 };
 
 #endif

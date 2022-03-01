@@ -31,8 +31,9 @@ enum
 	RPL_LIST				= 322,	// "<channel> <# visible> :<topic>"
 	RPL_LISTEND				= 323,	// ":End of LIST"
 
-	RPL_UNIQOPIS			= 325,	// "<channel> <nickname>"
 	RPL_CHANNELMODEIS		= 324,	// "<channel> <mode> <mode params>"
+	RPL_UNIQOPIS			= 325,	// "<channel> <nickname>"
+	RPL_CREATIONTIME		= 329,	// "<channel> :<creation time>"
 	RPL_NOTOPIC				= 331,	// "<channel> :No topic is set"
 	RPL_TOPIC				= 332,	// "<channel> :<topic>"
 	RPL_TOPICTIME			= 333,	// "<channel> :<own> <time>"
@@ -68,7 +69,8 @@ enum
 
 	RPL_YOUREOPER			= 381,	// ":You are now an IRC operator"
 	RPL_REHASHING			= 382,	// "<config file> :Rehashing"
-	//RPL_YOURESERVICE		= 383,	// "
+
+	RPL_VISIBLEHOST			= 396,  // "<client> <hostname> :is now your visible host"
 
 	ERR_TRYAGAIN			= 263,	// "<command> :Please wait a while and try again"
 

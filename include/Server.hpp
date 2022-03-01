@@ -19,7 +19,7 @@
 
 # define LOG_LEVEL LOG_INFO | LOG_WARNING | LOG_ERROR | LOG_FATAL
 
-# define VERSION			"ircServ 0.1"
+# define VERSION			"ircServ-0.1"
 # define SHUTDOWN_STRING	"Server shutting down"
 
 # define OPERPASSWORD		"1234"

@@ -194,10 +194,10 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[ERR_NOSUCHCHANNEL]		= "$ :No such channel";
 	Numeric::_numericMap[ERR_USERNOTINCHANNEL]	= "$ :They aren't on that channel";
 	Numeric::_numericMap[ERR_NOTONCHANNEL]		= "$ :You're not on that channel";
-	Numeric::_numericMap[RPL_WELCOME]			=  "Welcome to the Internet Relay Network $";
-	Numeric::_numericMap[RPL_YOURHOST]			= "Your host is $, running version " VERSION;
-	Numeric::_numericMap[RPL_CREATED]			= "This server was created " __TIME__ " " __DATE__;
-	Numeric::_numericMap[RPL_MYINFO]			= "$ " VERSION " $ $";
+	Numeric::_numericMap[RPL_WELCOME]			= ":Welcome to the Internet Relay Network $";
+	Numeric::_numericMap[RPL_YOURHOST]			= ":Your host is $, running version " VERSION;
+	Numeric::_numericMap[RPL_CREATED]			= ":This server was created " __TIME__ " " __DATE__;
+	Numeric::_numericMap[RPL_MYINFO]			= "$ " VERSION " $ $ :$";
 	Numeric::_numericMap[RPL_ISUPPORT]			= "% :are supported by this server";
 	Numeric::_numericMap[ERR_ERRONEUSNICKNAME]	= "$ :Erroneus nickname";
 	Numeric::_numericMap[RPL_NAMREPLY]			= "$ $ :%";
@@ -222,6 +222,9 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_WHOISCHANNELS]		= "$ :%";
 	Numeric::_numericMap[RPL_WHOISSERVER]		= "$ $ :$";
 	Numeric::_numericMap[RPL_WHOISIDLE]			= "$ $ $ :seconds idle, signon time";
-	Numeric::_numericMap[RPL_WHOISOPERATOR]		="$ :is an IRC operator";
-	Numeric::_numericMap[RPL_WHOISMODES]		="$ :is using modes +$";
+	Numeric::_numericMap[RPL_WHOISOPERATOR]		= "$ :is an IRC operator";
+	Numeric::_numericMap[RPL_WHOISMODES]		= "$ :is using modes +$";
+	Numeric::_numericMap[RPL_VISIBLEHOST]		= "$ :is now your visible host";
+	Numeric::_numericMap[RPL_CHANNELMODEIS]		= "$ $ %";
+	Numeric::_numericMap[RPL_CREATIONTIME]		= "$ :$";
 }

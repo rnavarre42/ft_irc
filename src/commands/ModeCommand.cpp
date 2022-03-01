@@ -65,14 +65,23 @@ void	ModeCommand::_checkChanModes(Message& message)
 	AChanMode*						chanMode;
 	std::string::iterator 			currentIt;
 
-	if (message.size() < 2)
-		//TODO Mostrar raw 324 (modes) 329 (creation time)
-		return ;
-	// Si el canal no existe...
 	if (!(channel = server.channelAt(target)))
 	{
 		Numeric::insertField(target);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
+		return ;
+	}
+	if (message.size() < 2)
+	{
+		//TODO Mostrar raw 324 (modes) 329 (creation time)
+
+		Numeric::insertField(target);
+		Numeric::insertField(target);
+		Numeric::insertField(target);
+		message.replyNumeric(RPL_CHANNELMODEIS);
+		Numeric::insertField(target);
+		Numeric::insertField(std::to_string(channel->getCreationTime()));
+		message.replyNumeric(RPL_CREATIONTIME);
 		return ;
 	}
 	message.setChannel(channel);
@@ -132,6 +141,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 		message.setReceiver(channel);
 		message.setReceiver(this->userSender);
 		message.hideReceiver();
+		message.hideSemicolon();
 		message.send();
 	}
 }

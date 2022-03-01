@@ -38,6 +38,7 @@ bool	WhoisCommand::_recvUser(Message& message)
 	User&			user = *this->userSender;
 	User*			targetUser;
 	std::string&	target = message[0];
+	std::string		prefix;
 
 	(void)message;
 	(void)user;
@@ -61,7 +62,14 @@ bool	WhoisCommand::_recvUser(Message& message)
 			for (Server::channelMap_iterator chanIt = targetUser->begin()
 					; chanIt != targetUser->end()
 					; ++chanIt)
-				Numeric::insertField(chanIt->second->getName());
+			{
+				if (chanIt->second->isOper(targetUser))
+					prefix += "@";
+				if (chanIt->second->isVoice(targetUser))
+					prefix += "+";
+				Numeric::insertField(prefix + chanIt->second->getName());
+				prefix.clear();
+			}
 			message.replyNumeric(RPL_WHOISCHANNELS);
 		}
 
