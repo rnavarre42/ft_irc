@@ -2,7 +2,7 @@
 #include "Numeric.hpp"
 #include "User.hpp"
 #include "utils.hpp"
-#include "ISender.hpp"
+#include "ASender.hpp"
 
 #include <string>
 #include <sstream>
@@ -61,7 +61,7 @@ Message::Message(Server &server)
 Message::~Message(void)
 {}
 
-void	Message::set(ISender& sender, std::string data)
+void	Message::set(ASender& sender, std::string data)
 {
 	this->_sender = &sender;
 	leftTrim(data);
@@ -98,12 +98,12 @@ void	Message::setReceiver(Server::userVector_type& userVector)
 			this->_receiverVector.push_back(*it);
 }
 
-void	Message::setReceiver(ISender* value)
+void	Message::setReceiver(ASender* value)
 {
 	this->_receiverVector.push_back(value);
 }
 
-ISender*	Message::getReceiver(void)
+ASender*	Message::getReceiver(void)
 {
 	if (this->_receiverVector.size())
 		return this->_receiverVector[0];
@@ -186,12 +186,12 @@ void	Message::swapField(size_t first, size_t second)
 	this->_paramVector[second] = field;
 }
 
-void	Message::setSender(ISender* value)
+void	Message::setSender(ASender* value)
 {
 	this->_sender = value;
 }
 
-ISender*	Message::getSender(void)
+ASender*	Message::getSender(void)
 {
 	return this->_sender;
 }
@@ -257,7 +257,7 @@ void	Message::send(void)
 
 	if (this->_receiverVector.size() > 1)
 		this->_hideReceiver = true;
-	for (std::vector<ISender *>::iterator it = this->_receiverVector.begin(); it != this->_receiverVector.end(); it++)
+	for (std::vector<ASender *>::iterator it = this->_receiverVector.begin(); it != this->_receiverVector.end(); it++)
 			(*it)->send(data);
 }
 

@@ -2,7 +2,7 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include "ISender.hpp"
+# include "ASender.hpp"
 # include "EventHandler.hpp"
 # include "utils.hpp"
 # include "log.hpp"
@@ -79,31 +79,31 @@ class User;
 class Unknown;
 class Channel;
 
-class Server : public ISender
+class Server : public ASender
 {
 public:
 	~Server(void);
 
 	typedef EventHandler<int, Message>				eventHandler_type;
-	typedef std::map<std::string, Channel* >		channelMap_type;
+	typedef std::map<std::string, Channel*>			channelMap_type;
 	typedef channelMap_type::iterator				channelMap_iterator;
 	typedef std::pair<channelMap_iterator, bool>	channelMap_insert;
-	typedef std::pair<std::string, Channel* >		stringChannelPair_type;
-	typedef std::map<std::string, User* >			userMap_type;
+	typedef std::pair<std::string, Channel*>		stringChannelPair_type;
+	typedef std::map<std::string, User*>			userMap_type;
 	typedef userMap_type::iterator					userMap_iterator;
 	typedef std::pair<userMap_iterator, bool>		userMap_insert;
-	typedef std::pair<std::string, User *>			stringUserPair_type;
-	typedef std::map<std::string, Server* >			serverMap_type;
+	typedef std::pair<std::string, User*>			stringUserPair_type;
+	typedef std::map<std::string, Server*>			serverMap_type;
 	typedef userMap_type::iterator					serverMap_iterator;
-	typedef std::map<int, ISender* >				fdMap_type;
+	typedef std::map<int, ASender*>					fdMap_type;
 	typedef fdMap_type::iterator					fdMap_iterator;
-	typedef std::map<std::string, ACommand* >		aCommandMap_type;
+	typedef std::map<std::string, ACommand*>		aCommandMap_type;
 	typedef aCommandMap_type::iterator				aCommandMap_iterator;
-	typedef std::vector<ISender* >					userVector_type;
+	typedef std::vector<ASender*>					userVector_type;
 	typedef userVector_type::iterator				userVector_iterator;
-	typedef std::set<Channel* >						channelSet_type;
+	typedef std::set<Channel*>						channelSet_type;
 	typedef channelSet_type::iterator				channelSet_iterator;
-	typedef std::map<char, AChanMode* >				aChanModeMap_type;
+	typedef std::map<char, AChanMode*>				aChanModeMap_type;
 	typedef aChanModeMap_type::iterator				aChanModeMap_iterator;
 
 	static void			signalHandler(int sig);
@@ -130,7 +130,7 @@ public:
 	void	insertUser(User* user);
 	void	insertUnknown(Unknown* unknown);
 
-	void				 setPass(const std::string& value);
+	void				setPass(const std::string& value);
 	const std::string&	getPass(void) const;
 
 	void	names(Channel& channel);
@@ -143,8 +143,13 @@ public:
 	const int&	getFd(void) const;
 	int			getStatus(void);
 	void		setStatus(int value);
-	void		setSenderStatus(ISender& sender, int value);
+	void		setSenderStatus(ASender& sender, int value);
 	void		setIdleTime(time_t value);
+	const time_t&	getIdleTime(void) const;
+	void		setNextTimeout(time_t value);
+	const time_t&	getNextTimeout(void) const;
+	void		setPingChallenge(const std::string& value);
+	const std::string&	getPingChallenge(void) const;
 
 	void	run(void);
 	ssize_t	send(void);
@@ -158,7 +163,7 @@ public:
 	void	quit(const std::string& msg);
 	
 	void	createUser(User& user);
-	void	deleteUser(ISender& sender, const std::string& text);
+	void	deleteUser(ASender& sender, const std::string& text);
 	
 	int	count(void);
 
@@ -268,7 +273,7 @@ private:
 	void	_checkConsoleInput(void);
 	void	_checkUserIO(void);
 	void	_checkTimeout(void);
-	void	_checkUserTimeout(User& user);
+	void	_checkSenderTimeout(ASender& sender);
 	void	_closeClients(const std::string& msg);
 	void	_loop(void);
 	void	_initSocket(void);

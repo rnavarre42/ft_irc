@@ -1,7 +1,7 @@
 #ifndef USER_HPP
 # define USER_HPP
 
-# include "ISender.hpp"
+# include "ASender.hpp"
 # include "Server.hpp"
 # include "utils.hpp"
 # include "Channel.hpp"
@@ -11,10 +11,10 @@
 
 class AUserMode;
 class Message;
-class ISender;
+class ASender;
 class Unknown;
 
-class User : public ISender
+class User : public ASender
 {
 public:
 	User(int fd, Server& server);

@@ -7,7 +7,7 @@
 # include <vector>
 
 class ACommand;
-class ISender;
+class ASender;
 class User;
 class Server;
 
@@ -22,18 +22,18 @@ public:
 	void				setCmd(const std::string& value);
 	const std::string&	getCmd(void) const;
 
-	void		set(ISender& sender, std::string data);
+	void		set(ASender& sender, std::string data);
 	void		setReceiver(Channel* channel);
 	void		setReceiver(Server::userVector_type& userVector);
-	void		setReceiver(ISender* value);
+	void		setReceiver(ASender* value);
 	void		hideReceiver(void);
-	ISender*	getReceiver(void);
+	ASender*	getReceiver(void);
 
 	void		clear(void);
 	void		clearReceiver(void);
 
-	void		setSender(ISender* value);
-	ISender*	getSender(void);
+	void		setSender(ASender* value);
+	ASender*	getSender(void);
 	Server*		getServer(void);
 
 	void		setChannel(Channel* value);
@@ -61,17 +61,17 @@ public:
 	void		insertField(std::string field);
 	std::string	toString(void) const;
 
-//	static Message		&builder(ISender &sender, std::string data);
-//	static Message		&builder(ISender &sender);
+//	static Message		&builder(ASender &sender, std::string data);
+//	static Message		&builder(ASender &sender);
 
 private:
-	Message(ISender& sender, std::string data);
-	Message(ISender& sender);
+	Message(ASender& sender, std::string data);
+	Message(ASender& sender);
 
 	Server&						_server;
-	ISender*					_sender;
+	ASender*					_sender;
 	Channel*					_channel;
-	std::vector<ISender*>		_receiverVector;
+	std::vector<ASender*>		_receiverVector;
 	std::string 				_prefix;
 	std::string 				_cmd;
 	ACommand*					_command;

@@ -16,7 +16,7 @@ std::string	Numeric::_toString()
 	 *	Si esta registrado se usa el nick!ident@host,
 	 *	si no se usa la del servidor que procesa el mensaje
 	 *
-	 *	Podemos tener un getMask pure virtual de ISender
+	 *	Podemos tener un getMask pure virtual de ASender
 	 *	implementada en user o server para esto
 	*/
 
@@ -59,7 +59,7 @@ void	Numeric::insertField(char chr)
 	Numeric::insertField(std::string(1, chr));
 }
 
-std::string	Numeric::builder(Server &server, ISender &sender, int num)
+std::string	Numeric::builder(Server &server, ASender &sender, int num)
 {
 	size_t					replacePos, offset = 0;
 	stringVector_iterator	it1, it2;

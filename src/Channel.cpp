@@ -105,12 +105,12 @@ void	Channel::Mode::erase(Channel::Mode::multimap_iterator pos)
 	this->_modeMultimap.erase(pos);
 }
 
-bool Channel::isOper(const ISender* sender)
+bool Channel::isOper(const ASender* sender)
 {
 	return (this->mode.isSet('o', sender));
 }
 
-bool Channel::isVoice(const ISender* sender)
+bool Channel::isVoice(const ASender* sender)
 {
 	return (this->mode.isSet('v', sender));
 }

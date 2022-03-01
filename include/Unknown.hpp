@@ -1,7 +1,7 @@
 #ifndef UNKNOWN_HPP
 # define UNKNOWN_HPP
 
-# include "ISender.hpp"
+# include "ASender.hpp"
 # include "User.hpp"
 
 # include <string>
@@ -9,7 +9,7 @@
 
 class Server;
 
-class Unknown : public ISender
+class Unknown : public ASender
 {
 public:
 	Unknown(int fd, Server& server);
@@ -24,10 +24,13 @@ public:
 	ssize_t				send(void);
 	ssize_t				send(const std::string& data);
 	ssize_t				send(const Message& message);
-	void				setIdleTime(time_t value);
 	time_t				getPollIndex(void);
 	void				setStatus(int value);
 	int					getStatus(void);
+	void				setIdleTime(time_t value);
+	void				setNextTimeout(time_t value);
+	const time_t&	getIdleTime(void) const;
+	const time_t&	getNextTimeout(void) const;
 	bool				isServer(void);
 	bool				isUser(void);
 	bool				isOper(void);
@@ -35,6 +38,8 @@ public:
 	const std::string&	getMask(void) const;
 	size_t				checkInput(int fd, Message& message);
 	bool				checkOutput(int fd);
+	void				setPingChallenge(const std::string& value);
+	const std::string&	getPingChallenge(void) const;
 
 	friend 				User::User(const Unknown& src);
 

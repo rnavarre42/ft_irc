@@ -18,7 +18,7 @@ public:
 
 	~Numeric(void);
 
-	static std::string	builder(Server& server, ISender& sender, int num);
+	static std::string	builder(Server& server, ASender& sender, int num);
 	static void			insertField(size_t number);
 	static void			insertField(std::string data);
 	static void			insertField(char chr);
@@ -35,7 +35,7 @@ private:
 	
 	int							_num;
 	Server*						_server;
-	ISender*					_sender;
+	ASender*					_sender;
 	std::string					_numericStr;	
 	std::vector<std::string>	_fieldVector;
 

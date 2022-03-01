@@ -275,7 +275,7 @@ int		Server::getStatus(void)
 {
 	return this->_status;
 }
-void	Server::setSenderStatus(ISender& sender, int value)
+void	Server::setSenderStatus(ASender& sender, int value)
 {
 	sender.setStatus(value);
 	if (value == LEVEL_REGISTERED)
@@ -504,7 +504,7 @@ void	Server::removeUserFromChannel(Channel& channel, User& user)
 	}
 }
 
-void	Server::deleteUser(ISender& sender, const std::string& text)
+void	Server::deleteUser(ASender& sender, const std::string& text)
 {
 	User&						user = static_cast<User&>(sender);
 	Server::userVector_type*	userVector = user.getUniqueVector();
@@ -661,7 +661,7 @@ void	Server::names(Channel& channel)
 
 void	Server::_checkUserIO(void)
 {
-	ISender*	sender;
+	ASender*	sender;
 	std::size_t	size;
 
 	for (int i = 2; i < MAXUSERS + 2; i++)
@@ -682,7 +682,7 @@ void	Server::_checkUserIO(void)
 		else if (this->_pollfds[i].fd > 0)
 		{
 			sender = this->_fdMap[this->_pollfds[i].fd];
-			this->_checkUserTimeout(*sender);
+			this->_checkSenderTimeout(*sender);
 		}
 	}
 }
@@ -725,18 +725,18 @@ void	Server::_checkConsoleInput(void)
 	}
 }
 
-void	Server::_checkUserTimeout(User& user)
+void	Server::_checkSenderTimeout(ASender& sender)
 {
-	if (user.getNextTimeout() && user.getNextTimeout() < time(NULL))
-		this->deleteUser(user, "Registration timeout");
-	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < time(NULL)))
+	if (sender.getNextTimeout() && sender.getNextTimeout() < time(NULL))
+		this->deleteUser(sender, "Registration timeout");
+	else if (!sender.getNextTimeout() && (sender.getIdleTime() + IDLETIMEOUT < time(NULL)))
 	{
-		if (user.getStatus() == LEVEL_REGISTERED)
+		if (sender.getStatus() == LEVEL_REGISTERED)
 		{
-			user.setNextTimeout(time(NULL) + NEXTTIMEOUT);
-			user.setPingChallenge(this->_name);
+			sender.setNextTimeout(time(NULL) + NEXTTIMEOUT);
+			sender.setPingChallenge(this->_name);
 		}
-		user.send("PING :" + user.getPingChallenge());
+		sender.send("PING :" + sender.getPingChallenge());
 	}
 }
 
@@ -745,7 +745,7 @@ void	Server::_checkTimeout(void)
 	Server::fdMap_iterator	it;
 
 	for (it = this->_fdMap.begin(); it != this->_fdMap.end();)
-		this->_checkUserTimeout(*(it++)->second);
+		this->_checkSenderTimeout(*(it++)->second);
 }
 
 void	Server::_loop(void)
@@ -770,7 +770,7 @@ void	Server::_loop(void)
 			this->_checkTimeout();
 		else
 		{
-			if (!this->_checkUserConnection())
+			if (!this->_checkNewConnection())
 				this->_checkUserIO();
 			this->_checkConsoleInput();
 		}

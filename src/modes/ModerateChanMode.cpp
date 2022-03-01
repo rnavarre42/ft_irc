@@ -20,7 +20,7 @@ ModerateChanMode::~ModerateChanMode(void)
 void	ModerateChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
 	Channel*	channel = message.getChannel();
-	ISender*	user = message.getSender();
+	ASender*	user = message.getSender();
 
 	if (access != AChanMode::deny && this->isSetMode(*channel) && !(channel->isVoice(user) || channel->isOper(user)))
 	{
