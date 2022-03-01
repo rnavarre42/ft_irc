@@ -70,11 +70,6 @@
 # define NOTINCHANEVENT		0x200000
 # define NOTCHANEVENT		0x400000
 
-//hispano:
-//	registerTimeout	 30s
-//	idleTimeout		120s
-//	pingTimeout		120s
-
 class Channel;
 class ACommand;
 class AChanMode;
@@ -138,6 +133,7 @@ public:
 	void				 setPass(const std::string& value);
 	const std::string&	getPass(void) const;
 
+	void	chanModeNames(Channel& channel);
 	void	supportNames(void);
 	void	names(Channel& channel);
 	void	removeUserFromChannel(Channel& channel, User& user);

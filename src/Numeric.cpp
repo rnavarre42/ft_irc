@@ -85,6 +85,8 @@ offset, stringVector_iterator& initialPos)
 	if (replacePos != std::string::npos)
 	{
 		base.erase(replacePos, 1);
+		if (initialPos == Numeric::_instance->_fieldVector.end())
+			return false;
 		line = base;
 		for (current = initialPos
 				; current != Numeric::_instance->_fieldVector.end()

@@ -76,8 +76,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 		//TODO Mostrar raw 324 (modes) 329 (creation time)
 
 		Numeric::insertField(target);
-		Numeric::insertField(target);
-		Numeric::insertField(target);
+		this->server.chanModeNames(*channel);
 		message.replyNumeric(RPL_CHANNELMODEIS);
 		Numeric::insertField(target);
 		Numeric::insertField(std::to_string(channel->getCreationTime()));

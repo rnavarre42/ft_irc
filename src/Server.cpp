@@ -6,7 +6,7 @@
 /*   By: rnavarre <rnavarre@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 20:53:18 by rnavarre          #+#    #+#             */
-/*   Updated: 2022/03/01 18:23:47 by rnavarre         ###   ########.fr       */
+/*   Updated: 2022/03/01 20:08:08 by tsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include "utils.hpp"
 
 #include <cerrno>
+#include <deque>
 #include <set>
 #include <string>
 #include <cstring>
@@ -652,6 +653,33 @@ int	Server::_checkUserConnection(void)
 		return 1;
 	}
 	return 0;
+}
+
+void	Server::chanModeNames(Channel& channel)
+{
+	const ChanModeConfig*				modeConfig;
+	Channel::Mode::multimap_iterator	modeIt;
+	std::string							modeStr("+");
+	std::deque<std::string>				strDeque;
+
+	for (Server::aChanModeMap_iterator it = this->_chanModeMap.begin()
+			; it != this->_chanModeMap.end()
+			; ++it)
+	{
+		modeConfig = &it->second->getConfig();
+		if (modeConfig->unique
+				&& (modeIt = channel.mode.find(modeConfig->mode)) != channel.mode.end())
+		{
+			modeStr += modeConfig->mode;
+			if (modeConfig->mode & ~ChanModeConfig::noParam)
+				strDeque.push_front(it->second->toString(modeIt->second));
+		}
+	}
+	Numeric::insertField(modeStr);
+	for (std::deque<std::string>::iterator it = strDeque.begin()
+			; it != strDeque.end()
+			; ++it)
+		Numeric::insertField(*it);
 }
 
 void	Server::supportNames(void)
