@@ -26,7 +26,8 @@
 # define OPERLOGIN			"laura"
 
 # define MAXNICK			9
-# define MAXCHANNEL			3
+# define MAXCHANNEL			10
+# define CHANNELLEN			64
 # define MAXSERVER			63
 # define MAXTOPIC			307
 # define MAXLINE			512
@@ -104,6 +105,8 @@ public:
 	typedef channelSet_type::iterator				channelSet_iterator;
 	typedef std::map<char, AChanMode* >				aChanModeMap_type;
 	typedef aChanModeMap_type::iterator				aChanModeMap_iterator;
+	typedef std::map<std::string, std::string>		supportMap_type;
+	typedef supportMap_type::iterator				supportMap_iterator;
 
 	static void			signalHandler(int sig);
 	static Server&		getInstance(void);
@@ -131,6 +134,7 @@ public:
 	void				 setPass(const std::string& value);
 	const std::string&	getPass(void) const;
 
+	void	supportNames(void);
 	void	names(Channel& channel);
 	void	removeUserFromChannel(Channel& channel, User& user);
 
@@ -248,11 +252,13 @@ private:
 	eventHandler_type	_eventHandler;
 	aChanModeMap_type	_chanModeMap;
 	Invite				_invite;
+	supportMap_type		_supportMap;
 	
 	int		_freePollIndexFind(void);
 	int		_poll(void);
 	int		_checkUserConnection(void);
 	void	_setSignals(void);
+	void	_loadSupport(void);
 	void	_loadCommands(void);
 	void	_unloadCommands(void);
 	void	_unloadChanModes(void);

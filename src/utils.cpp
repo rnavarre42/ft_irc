@@ -1,3 +1,4 @@
+#include "Server.hpp"
 #include "utils.hpp"
 
 #include <string>
@@ -63,6 +64,8 @@ inline bool	isChanNameSymbol(const unsigned char chr)
 
 bool	isValidChanName(const std::string& value)
 {
+	if (value.size() > CHANNELLEN)
+		return false;
 	for (std::string::const_iterator it = value.begin(); it != value.end(); ++it)
 	{
 		if (!isChanNameSymbol(*it))

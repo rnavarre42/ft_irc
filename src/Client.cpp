@@ -16,7 +16,7 @@
 void	signalHandler(int sig)
 {
 	if (sig == SIGINT)
-		std::cout << std::endl;
+		std::cout << std::endl << "irclient :stopped by user" << std::endl;
 	exit(0);
 }
 
@@ -81,7 +81,7 @@ bool	Client::_getAddrInfoList(struct addrinfo* hints, struct addrinfo** res0)
 	error = getaddrinfo(this->_hostname.c_str(), this->_port.c_str(), hints, res0);
 	if (error)
 	{
-		std::cerr << "client: getaddrinfo failed: " << gai_strerror(error) << std::endl;
+		std::cerr << "irclient :getaddrinfo failed: " << gai_strerror(error) << std::endl;
 		return false;
 	}
 	return true;
@@ -121,7 +121,7 @@ bool	Client::_connectToSocket(void)
 	}
 	if (this->_fd < 0 || !res)
 	{
-		std::cerr << "client: " << strError << std::endl;
+		std::cerr << "irclient :" << strError << std::endl;
 		freeaddrinfo(res0);
 		return false;
 	}
@@ -146,7 +146,7 @@ void	Client::_checkConsoleInput(void)
 		std::getline(std::cin, buffer);
 		if (!std::cin)
 		{
-			std::cout << "client: getline failed" << std::endl;
+			std::cout << "irclient :getline failed" << std::endl;
 			this->_running = 0;
 			return ;
 		}
@@ -181,7 +181,7 @@ void	Client::_checkNetworkInput(void)
 		size = recv(this->_fd, buffer, BUFFERSIZE, 0);
 		if (size == -1)
 		{
-			std::cout << "client: recv failed" << std::endl;
+			std::cout << "irclient :recv failed" << std::endl;
 			this->_running = 0;
 			return ;
 		}
@@ -199,7 +199,7 @@ void	Client::_checkNetworkInput(void)
 	}
 	if (this->_pollfds[1].revents & POLLHUP)
 	{
-		std::cout << "Socket has been disconnected, goodbye!" << std::endl;
+		std::cout << "irclient :socket has been disconnected, client exit" << std::endl;
 		this->_running = 0;
 	}
 }
@@ -223,7 +223,7 @@ void	Client::_loop(void)
 		ret = poll(this->_pollfds, FDNUM, this->_pollTimeout);
 		if (ret == -1)
 		{
-			std::cerr << "client: poll failed" << std::endl;
+			std::cerr << "irclient :poll failed" << std::endl;
 			break ;
 		}
 		this->_checkConsoleInput();

@@ -50,6 +50,7 @@ Server::Server(const std::string& listenIp, int listenPort, const std::string& n
 	, _name(name)
 	, _type(TYPE_SERVER)
 {
+	this->_loadSupport();
 	this->_loadCommands();
 	this->_loadChanModes();
 	this->_setSignals();
@@ -73,6 +74,24 @@ void	Server::signalHandler(int sig)
 	std::cout << std::endl;
 	if (sig == SIGINT)
 		server.quit(SHUTDOWN_STRING);
+}
+
+void	Server::_loadSupport(void)
+{
+	this->_supportMap["AWAYLEN"]	= "200";
+	this->_supportMap["CHANLIMIT"]	= "10";
+	this->_supportMap["CHANMODES"]	= "be,k,inst";
+	this->_supportMap["CHANNELLEN"]	= "64";
+	this->_supportMap["EXCEPTS"]	= "e";
+	this->_supportMap["HOSTLEN"]	= "64";
+	this->_supportMap["KEYLEN"]		= "32";
+	this->_supportMap["LINELEN"]	= "512";
+	this->_supportMap["NAMELEN"]	= "64";
+	this->_supportMap["NETWORK"]	= "IRC-Castela";
+	this->_supportMap["NICKLEN"]	= "30";
+	this->_supportMap["PREFIX"]		= "(ov)@+";
+	this->_supportMap["TOPICLEN"]	= "307";
+	this->_supportMap["USERLEN"]	= "10";
 }
 
 void	Server::_loadCommands(void)
@@ -538,6 +557,7 @@ void	Server::addToChannel(Message& message)
 		{
 			Numeric::insertField(channelName);
 			message.replyNumeric(ERR_BADCHANMASK);
+			return ;
 		}
 		else if (user->size() == MAXCHANNEL)
 			this->_eventHandler.raise(MAXCHANEVENT, this->_message);
@@ -630,6 +650,14 @@ int	Server::_checkUserConnection(void)
 		return 1;
 	}
 	return 0;
+}
+
+void	Server::supportNames(void)
+{
+	for (supportMap_iterator it = this->_supportMap.begin()
+			; it != this->_supportMap.end()
+			; ++it)
+		Numeric::insertField(it->first + "=" + it->second);
 }
 
 void	Server::names(Channel& channel)

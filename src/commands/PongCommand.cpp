@@ -44,7 +44,8 @@ void	PongCommand::registerUserEvent(Message& message)
 	Numeric::insertField("beiklmnostv");
 	message.send(Numeric::builder(message, RPL_MYINFO));
 
-	Numeric::insertField("AWAYLEN=200 CASEMAPPING=ascii CHANLIMIT=#:3 CHANMODES=be,k,inst CHANNELLEN=64 CHANTYPES=# EXCEPTS=e HOSTLEN=64 KEYLEN=32");
+	this->server.supportNames();
+//	Numeric::insertField("AWAYLEN=200 CASEMAPPING=ascii CHANLIMIT=#:3 CHANMODES=be,k,inst CHANNELLEN=64 CHANTYPES=# EXCEPTS=e HOSTLEN=64 KEYLEN=32");
 	message.send(Numeric::builder(message, RPL_ISUPPORT));
 
 	message.setCmd("MOTD");

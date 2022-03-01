@@ -15,9 +15,9 @@ ACommand::ACommand(Server& server, int levelAccess, int minParam)
 ACommand::~ACommand(void)
 {}
 
-void ACommand::recv(Message& message)
+void	ACommand::recv(Message& message)
 {
-	bool	ret = true;
+	bool	ret;
 
 	if (message.getSender()->getStatus() & this->levelAccess || message.getSender()->isOper())
 	{
@@ -28,6 +28,7 @@ void ACommand::recv(Message& message)
 		}
 		else
 		{
+			ret = true;
 			if (message.getSender()->isUser())
 			{
 				this->userSender = static_cast<User *>(message.getSender());
@@ -62,7 +63,7 @@ void ACommand::recv(Message& message)
 	}
 }
 
-void ACommand::send(Message& message)
+void	ACommand::send(Message& message)
 {
 	if (message.getReceiver()->isUser())
 	{

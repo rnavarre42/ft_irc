@@ -59,37 +59,95 @@ void	Numeric::insertField(char chr)
 	Numeric::insertField(std::string(1, chr));
 }
 
-std::string	Numeric::builder(Server &server, ISender &sender, int num)
+void	Numeric::_initInstance(Server& server, ISender& sender, int num)
 {
-	size_t					replacePos, offset = 0;
-	stringVector_iterator	it1, it2;
-	std::string				base, line, data;
-
 	if (!Numeric::_instance)
-		_instance = new Numeric();
+		Numeric::_instance = new Numeric();
 	Numeric::_instance->_server = &server;
 	Numeric::_instance->_sender = &sender;
 	Numeric::_instance->_num = num;
 	Numeric::_instance->_numericStr = Numeric::_numericMap[num];
-	for (it1 = _instance->_fieldVector.begin(); it1 != _instance->_fieldVector.end(); it1++)
+}
+
+inline bool	isLineFull(std::size_t lineSize)
+{
+	return  lineSize > MAXLINE - 2;
+}
+
+bool	Numeric::_buildMulti(std::string& data, std::string& base, size_t
+offset, stringVector_iterator& initialPos)
+{
+	std::string				line;
+	size_t					replacePos;
+	stringVector_iterator	current;
+
+	replacePos = base.find('%', offset);
+	if (replacePos != std::string::npos)
+	{
+		base.erase(replacePos, 1);
+		line = base;
+		for (current = initialPos
+				; current != Numeric::_instance->_fieldVector.end()
+				; ++current)
+		{
+			if (isLineFull(line.size() + current->size()))
+			{
+				data.append(line);
+				line = base;
+			}
+			if (line == base && current != initialPos)
+				data.append("\r\n");
+			if (current != initialPos)
+				line.insert(replacePos, " ");
+			line.insert(replacePos, *current);
+		}
+		if (line != base)
+			data.append(line);
+		return true;
+	}
+	return false;
+}
+
+std::string	Numeric::builder(Server& server, ISender& sender, int num)
+{
+	size_t					replacePos, offset = 0;
+//	stringVector_iterator	it1, it2;
+	stringVector_iterator	current;
+//	size_t					pos = 0;
+	std::string				base, data;
+
+	Numeric::_initInstance(server, sender, num);
+/*	if (!Numeric::_instance)
+		Numeric::_instance = new Numeric();
+	Numeric::_instance->_server = &server;
+	Numeric::_instance->_sender = &sender;
+	Numeric::_instance->_num = num;
+	Numeric::_instance->_numericStr = Numeric::_numericMap[num];*/
+	for (current = Numeric::_instance->_fieldVector.begin()
+			; current != Numeric::_instance->_fieldVector.end()
+			; ++current)
+//	for (it1 = _instance->_fieldVector.begin(); it1 != _instance->_fieldVector.end(); it1++)
 	{
 		replacePos = Numeric::_instance->_numericStr.find('$', offset);
 		if (replacePos == std::string::npos)
 			break;
-		Numeric::_instance->_numericStr.replace(replacePos, 1, *it1);
-		offset = replacePos + it1->size();
+		Numeric::_instance->_numericStr.replace(replacePos, 1, *current);
+	//	Numeric::_instance->_numericStr.replace(replacePos, 1, *it1);
+		offset = replacePos + current->size();
+	//	offset = replacePos + it1->size();
 	}
 	base = Numeric::_instance->_toString();
 	offset += base.size() - Numeric::_instance->_numericStr.size();
+	if (!Numeric::_buildMulti(data, base, offset, current))
+/*	replacePos = base.find('%', offset);
+	if (replacePos != std::string::npos)
 	if ((replacePos = base.find('%', offset)) != std::string::npos)
 	{
 		base.erase(replacePos, 1);
 		line = base;
 		for (it2 = it1; it2 != _instance->_fieldVector.end(); it2++)
 		{
-//			std::cout << "line =" << line << " offset = " << offset <<  std::endl;
-//			std::cout << "names = " << *it2 << std::endl;
-			if ((line.size() + it2->size()) > MAXLINE - 2 )// si hemos llenado
+			if (isLineFull(line.size() + it2->size()))
 			{
 				data.append(line);
 				line = base;
@@ -103,7 +161,7 @@ std::string	Numeric::builder(Server &server, ISender &sender, int num)
 		if (line != base)
 			data.append(line);
 	}
-	else
+	else*/
 		data = base;
 	Numeric::_instance->_fieldVector.clear();
 	return data;
@@ -140,7 +198,7 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_YOURHOST]			= "Your host is $, running version " VERSION;
 	Numeric::_numericMap[RPL_CREATED]			= "This server was created " __TIME__ " " __DATE__;
 	Numeric::_numericMap[RPL_MYINFO]			= "$ " VERSION " $ $";
-	Numeric::_numericMap[RPL_ISUPPORT]			= "$ :are supported by this server";
+	Numeric::_numericMap[RPL_ISUPPORT]			= "% :are supported by this server";
 	Numeric::_numericMap[ERR_ERRONEUSNICKNAME]	= "$ :Erroneus nickname";
 	Numeric::_numericMap[RPL_NAMREPLY]			= "$ $ :%";
 	Numeric::_numericMap[RPL_ENDOFNAMES]		= "$ :End of NAMES list";
