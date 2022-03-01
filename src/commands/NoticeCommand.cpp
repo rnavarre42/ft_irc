@@ -58,6 +58,7 @@ bool	NoticeCommand::_recvUser(Message& message)
 	}
 	message.setSender(user);
 	message.send();
+	message.getSender()->setIdleTime(time(NULL));
 	return true;
 }
 

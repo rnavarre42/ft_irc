@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 		std::cerr << "Error: Invalid port number" << std::endl;
 		return 1;
 	}
-	server = Server::createInstance("0.0.0.0", serverPort, "irc.castela.es", serverPass);
+	server = Server::createInstance("0.0.0.0", serverPort, "irc.castela.es", serverPass, "Un servidor muy discreto");
 
 	atexit(leaks);
 	server->run();

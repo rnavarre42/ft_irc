@@ -220,4 +220,8 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_WHOISUSER]			= "$ $ $ * :$";
 	Numeric::_numericMap[RPL_WHOISHOST]			= "$ :is connection from $ $";
 	Numeric::_numericMap[RPL_WHOISCHANNELS]		= "$ :%";
+	Numeric::_numericMap[RPL_WHOISSERVER]		= "$ $ :$";
+	Numeric::_numericMap[RPL_WHOISIDLE]			= "$ $ $ :seconds idle, signon time";
+	Numeric::_numericMap[RPL_WHOISOPERATOR]		="$ :is an IRC operator";
+	Numeric::_numericMap[RPL_WHOISMODES]		="$ :is using modes +$";
 }

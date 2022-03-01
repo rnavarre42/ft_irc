@@ -55,14 +55,44 @@ bool	WhoisCommand::_recvUser(Message& message)
 		Numeric::insertField(targetUser->getHost()); //real host/ip (unencrypted)
 		message.replyNumeric(RPL_WHOISHOST);
 
-		Numeric::insertField(targetUser->getName());
 		if (targetUser->size())
 		{
+			Numeric::insertField(targetUser->getName());
 			for (Server::channelMap_iterator chanIt = targetUser->begin()
 					; chanIt != targetUser->end()
 					; ++chanIt)
 				Numeric::insertField(chanIt->second->getName());
 			message.replyNumeric(RPL_WHOISCHANNELS);
+		}
+
+		Numeric::insertField(targetUser->getName());
+		Numeric::insertField(server.getName());
+		Numeric::insertField(server.getReal());
+		message.replyNumeric(RPL_WHOISSERVER);
+		
+		if (targetUser->isAway())
+		{
+			Numeric::insertField(targetUser->getName());
+			Numeric::insertField(targetUser->getAwayMsg());
+			message.replyNumeric(RPL_AWAY);
+		}
+
+		if (targetUser->isOper())
+		{
+			Numeric::insertField(targetUser->getName());
+			Numeric::insertField("O");
+			message.replyNumeric(RPL_WHOISMODES);
+		}
+
+		Numeric::insertField(targetUser->getName());
+		Numeric::insertField(std::to_string(std::time(NULL) - targetUser->getIdleTime()));
+		Numeric::insertField(std::to_string(targetUser->getSignTime()));
+		message.replyNumeric(RPL_WHOISIDLE);
+
+		if (targetUser->isOper())
+		{
+			Numeric::insertField(targetUser->getName());
+			message.replyNumeric(RPL_WHOISOPERATOR);
 		}
 
 		Numeric::insertField(targetUser->getName());

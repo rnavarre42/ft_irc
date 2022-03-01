@@ -112,10 +112,12 @@ public:
 
 	static void			signalHandler(int sig);
 	static Server&		getInstance(void);
-	static Server*		createInstance(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password);
+	static Server*		createInstance(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password, const std::string& realName);
 	static void			deleteInstance(void);
 	const std::string&	getName(void) const;
 	userMap_type&		getUserMap(void);
+	void				setReal(const std::string& value);
+	const std::string&	getReal(void) const;
 	channelMap_type&	getChannelMap(void);
 	const std::string&	getMask(void) const;
 	AChanMode*			findChanMode(char modeChar);
@@ -220,7 +222,7 @@ public:
 	};
 
 private:
-	Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password);
+	Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password, const std::string& realName);
 	Server(void);
 
 	std::string	_ip;
@@ -236,6 +238,7 @@ private:
 
 	std::string	_pass;
 	std::string	_name;
+	std::string	_real;
 	int			_type;
 	time_t		_idleTime;
 

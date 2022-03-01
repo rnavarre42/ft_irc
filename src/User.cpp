@@ -19,6 +19,7 @@ User::User(int fd, Server& server)
 	, _status(1)
 	, _signTime(time(NULL))
 	, _nextTimeout(this->_signTime + REGTIMEOUT)
+	, _idleTime(time(NULL))
 	, _fd(fd)
 	, _type(TYPE_USER)
 {}
@@ -198,6 +199,7 @@ const time_t&	User::getAwayTime(void) const
 
 void	User::setIdleTime(time_t value)
 {
+	std::cout << "setIdleTime" << std::endl;
 	this->_idleTime = value;
 }
 

@@ -6,7 +6,7 @@
 /*   By: rnavarre <rnavarre@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 20:53:18 by rnavarre          #+#    #+#             */
-/*   Updated: 2022/02/28 20:53:58 by rnavarre         ###   ########.fr       */
+/*   Updated: 2022/03/01 16:33:51 by rnavarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 
 Server*	Server::_instance = NULL;
 
-Server::Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password)
+Server::Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password, const std::string& realName)
 	: _ip(listenIp)
 	, _port(listenPort)
 	, _pollTimeout(1000)
@@ -48,6 +48,7 @@ Server::Server(const std::string& listenIp, int listenPort, const std::string& n
 	, _stop(false)
 	, _pass(password)
 	, _name(name)
+	, _real(realName)
 	, _type(TYPE_SERVER)
 {
 	this->_loadSupport();
@@ -203,10 +204,10 @@ Server&	Server::getInstance(void)
 {
 	return *Server::_instance;
 }
-Server*	Server::createInstance(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password)
+Server*	Server::createInstance(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password, const std::string& realName)
 {
 	if (Server::_instance == NULL)
-		Server::_instance = new Server(listenIp, listenPort, name, password);
+		Server::_instance = new Server(listenIp, listenPort, name, password, realName);
 	return Server::_instance;
 }
 
@@ -341,6 +342,16 @@ int	Server::_freePollIndexFind(void)
 			return i;
 	}
 	return 0;
+}
+
+void	Server::setReal(const std::string& value)
+{
+	this->_real = value;
+}
+
+const std::string&	Server::getReal(void) const
+{
+	return this->_real;
 }
 
 const std::string&	Server::getName(void) const
@@ -698,7 +709,6 @@ bool	Server::recvCommand(Message& message)
 {
 	ACommand*	command;
 
-	message.getSender()->setIdleTime(time(NULL));
 	if ((command = this->commandFind(message.getCmd())))
 	{
 		command->recv(message);
