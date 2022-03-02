@@ -24,7 +24,6 @@ bool	NamesCommand::_recvUser(Message& message)
 {
 	Channel* 		channel;
 	std::string&	target = message[0];
-//	User*						user = this->userSender;
 
 	message.setReceiver(message.getSender());
 	if ((channel = this->server.channelAt(target)))

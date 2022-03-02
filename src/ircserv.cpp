@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	}
 	server = Server::createInstance("0.0.0.0", serverPort, "irc.castela.es", serverPass, "Un servidor muy discreto");
 
-	atexit(leaks);
+//	atexit(leaks);
 	server->run();
 	Server::deleteInstance();;
 	return 0;

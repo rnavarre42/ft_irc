@@ -11,20 +11,12 @@ WhoCommand::WhoCommand(Server& server, int accessLevel, int paramCount)
 WhoCommand::~WhoCommand(void)
 {}
 
-bool WhoCommand::_execUser(Message& message)
+bool	WhoCommand::_execUser(Message&)
 {
-	User&	user = *this->userSender;
-
-	(void)message;
-	(void)user;
 	return false;
 }
 
-bool WhoCommand::_execServer(Message& message)
+bool	WhoCommand::_execServer(Message&)
 {
-	Server&	server = *this->serverSender;
-
-	(void)message;
-	(void)server;
 	return false;
 }

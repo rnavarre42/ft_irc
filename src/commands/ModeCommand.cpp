@@ -57,6 +57,7 @@ void	cleanSignModes(std::string& modes)
  *	Funcion que verifica si el modo de canal existe, la sintaxis es correcta y tiene privilegios para
  *	ejecutarlo.
  */
+
 void	ModeCommand::_checkChanModes(Message& message)
 {
 	unsigned long					pos = 2;
@@ -66,7 +67,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 	Channel*						channel;
 	AChanMode*						chanMode;
 	std::string::iterator 			charIt;
-	size_t							initialSize = modes.size();
+	size_t							initialSize;
 
 	if (!(channel = server.channelAt(target)))
 	{
@@ -84,6 +85,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 		message.replyNumeric(RPL_CREATIONTIME);
 		return ;
 	}
+	initialSize = modes.size();
 	message.setChannel(channel);
 	for (std::string::iterator stringIt = modes.begin(); stringIt != modes.end(); )
 	{

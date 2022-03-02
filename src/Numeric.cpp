@@ -1,4 +1,5 @@
 #include "Numeric.hpp"
+
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -27,10 +28,7 @@ std::string	Numeric::_toString()
 		ss << " * ";
 	else
 		ss << " " << Numeric::_instance->_sender->getName() << " ";
-//	ss << _instance->message->getCmd() << _instance->numericStr;
 	ss << Numeric::_instance->_numericStr;
-//	std::cout << msg.getSender().getName() << " " << num << " * " << msg.getCmd() << " " << str << std::endl;
-
 	return ss.str();
 }
 
@@ -113,57 +111,23 @@ offset, stringVector_iterator& initialPos)
 std::string	Numeric::builder(Server& server, ISender& sender, int num)
 {
 	size_t					replacePos, offset = 0;
-//	stringVector_iterator	it1, it2;
 	stringVector_iterator	current;
-//	size_t					pos = 0;
 	std::string				base, data;
 
 	Numeric::_initInstance(server, sender, num);
-/*	if (!Numeric::_instance)
-		Numeric::_instance = new Numeric();
-	Numeric::_instance->_server = &server;
-	Numeric::_instance->_sender = &sender;
-	Numeric::_instance->_num = num;
-	Numeric::_instance->_numericStr = Numeric::_numericMap[num];*/
 	for (current = Numeric::_instance->_fieldVector.begin()
 			; current != Numeric::_instance->_fieldVector.end()
 			; ++current)
-//	for (it1 = _instance->_fieldVector.begin(); it1 != _instance->_fieldVector.end(); it1++)
 	{
 		replacePos = Numeric::_instance->_numericStr.find('$', offset);
 		if (replacePos == std::string::npos)
 			break;
 		Numeric::_instance->_numericStr.replace(replacePos, 1, *current);
-	//	Numeric::_instance->_numericStr.replace(replacePos, 1, *it1);
 		offset = replacePos + current->size();
-	//	offset = replacePos + it1->size();
 	}
 	base = Numeric::_instance->_toString();
 	offset += base.size() - Numeric::_instance->_numericStr.size();
 	if (!Numeric::_buildMulti(data, base, offset, current))
-/*	replacePos = base.find('%', offset);
-	if (replacePos != std::string::npos)
-	if ((replacePos = base.find('%', offset)) != std::string::npos)
-	{
-		base.erase(replacePos, 1);
-		line = base;
-		for (it2 = it1; it2 != _instance->_fieldVector.end(); it2++)
-		{
-			if (isLineFull(line.size() + it2->size()))
-			{
-				data.append(line);
-				line = base;
-			}
-			if (line == base && it1 != it2)
-				data.append("\r\n");
-			if (it1 != it2)
-				line.insert(replacePos, " ");
-			line.insert(replacePos, *it2);
-		}
-		if (line != base)
-			data.append(line);
-	}
-	else*/
 		data = base;
 	Numeric::_instance->_fieldVector.clear();
 	return data;

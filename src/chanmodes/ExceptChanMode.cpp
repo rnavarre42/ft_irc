@@ -59,7 +59,6 @@ bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Messag
 	Channel::Mode::multimap_iterator		maskIt;
 	std::string								newMask;
 
-	//TODO: verificar y completar mascara
 	newMask = addWildcard(message[pos]);
 	rangePair = channel.mode.getList(this->_chanModeConfig.mode);
 	maskIt = findMask(rangePair, newMask);

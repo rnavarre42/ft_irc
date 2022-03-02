@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rnavarre <rnavarre@student.42madrid.com>   +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/28 20:53:18 by rnavarre          #+#    #+#             */
-/*   Updated: 2022/03/02 14:36:59 by rnavarre         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Server.hpp"
 #include "User.hpp"
 #include "Channel.hpp"
@@ -605,7 +593,6 @@ void	Server::addToChannel(Message& message)
 		}
 		else
 		{
-			//TODO hay que limpiar este código y tratar de hacerlo más compacto
 			message.setChannel(channel);
 			if (user->isOnChannel(*channel))
 				this->_eventHandler.raise(ALREADYEVENT, this->_message);

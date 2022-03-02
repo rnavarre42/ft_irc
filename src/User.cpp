@@ -385,13 +385,13 @@ Channel*	User::findFullestChannel(void)
 
 Server::userVector_type*	User::getUniqueVector(void)
 {
-	//aloca memoria para el nuevo vector
 	Server::userVector_type*						userVector;
 	Server::channelSet_type							checkChannelSet;
 	Channel*										currentChannel;
 	std::pair<Server::channelSet_iterator, bool>	ret;
 	Server::userVector_iterator						vectorIt;
 
+	//aloca memoria para el nuevo vector
 	userVector = new Server::userVector_type;
 	if (!this->_channelMap.size())
 		return userVector;

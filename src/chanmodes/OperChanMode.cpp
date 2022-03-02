@@ -22,12 +22,8 @@ void	OperChanMode::onChanEvent(Access& access, int event, Message& message, int&
 {
 	Channel*	channel = message.getChannel();
 
-	// modo +o puesto al nick
 	if (this->isSetMode(*channel, message.getSender()))
-	{
-//		if (event == COMMAND_KICK)
 		access = AChanMode::allow;
-	}
 	else if (access != AChanMode::deny)
 	{
 		if (event != COMMAND_NICK)
@@ -49,7 +45,7 @@ bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message&
 		Numeric::insertField(message[pos]);
 		message.replyNumeric(ERR_NOSUCHNICK);
 	}
-	else	// Aquí se añade el modo a la lista del canal
+	else
 	{
 		if ((sign && this->setMode(channel, targetIt->second))
 				|| (!sign && this->unsetMode(channel, targetIt->second)))
