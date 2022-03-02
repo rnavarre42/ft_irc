@@ -1,20 +1,5 @@
 #ifndef AUSERMODE_HPP
 # define AUSERMODE_HPP
-// Necesitamos una clase para controlar los modos de usuario
-//
-// +i invisible
-// en who no aparece. Names oculta su nick si no se
-// comparte canal. whois muestra su modo
-// 
-// +o ircop
-// en who aparece remarcado con una o en sus modos
-// whois muestra su modo y un numeric específico
-//
-// AUserMode debe almacenar un flag y un modo
-// 
-
-//class User;
-//class Message;
 
 # include <cstdint>
 # include <iostream>
