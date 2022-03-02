@@ -671,7 +671,7 @@ void	Server::chanModeNames(Channel& channel)
 				&& (modeIt = channel.mode.find(modeConfig->mode)) != channel.mode.end())
 		{
 			modeStr += modeConfig->mode;
-			if (modeConfig->mode & ~ChanModeConfig::noParam)
+			if (modeConfig->type & ChanModeConfig::enableParam)
 				strDeque.push_front(it->second->toString(modeIt->second));
 		}
 	}
