@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	if (argc != 3)
 	{
 		std::cerr << "Usage:" << std::endl
-				  << "./" << argv[0] << " <port> <password>" << std::endl;
+				  << argv[0] << " <port> <password>" << std::endl;
 		return 1;
 	}
 	serverPort = atoi(argv[1]);
