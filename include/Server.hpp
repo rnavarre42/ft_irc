@@ -39,7 +39,7 @@
 # define MAXKICK			255
 # define MAXREAL			100
 
-# define IDLETIMEOUT		30
+# define IDLETIMEOUT		60
 # define REGTIMEOUT			30
 # define NEXTTIMEOUT		120
 # define BUFFERSIZE			512
@@ -213,14 +213,6 @@ public:
 		return it->second;
 	}
 
-	struct	NotImplementedException : public std::exception
-	{
-		const char*	what(void) const throw()
-		{
-			return "Functionality not implemented yet";
-		}
-	};
-
 private:
 	Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password, const std::string& realName);
 	Server(void);
@@ -243,9 +235,6 @@ private:
 	time_t		_idleTime;
 
 	struct sockaddr_in	_address;
-	// El motivo de usar una estructura de tamaño fijo es porque en user almacenamos el indice donde se encuentra registrado el fd en pollfds
-	// Si usamos un vector y eliminamos cualquier posición, nos obligaría a hacer un cambio a todos los usuarios que tengan un indice superior
-	// en pollIndex. Dado que la estructura pollfds consta de tres campos, creo que no es necesario hacer ningun cambio.
 	struct pollfd	_pollfds[MAXUSERS + 2];
 
 	static Server*	_instance;

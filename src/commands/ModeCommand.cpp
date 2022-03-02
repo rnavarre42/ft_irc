@@ -51,6 +51,8 @@ void	cleanSignModes(std::string& modes)
 			++it;
 		}
 	}
+	if (modes[0] != '+' && modes[0] != '-')
+		modes.insert(modes.begin(), '+');
 }
 
 /*
@@ -143,7 +145,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 	}
 	cleanSignModes(modes);
 	message.limitMaxParam(pos);
-	if (!modes.empty())
+	if (modes.size() > 1)
 	{
 		message.setReceiver(channel);
 		message.setReceiver(this->userSender);
@@ -167,22 +169,23 @@ void	ModeCommand::_checkUserModes(Message& message)
 	AUserMode*				userMode;
 	std::string::iterator	charIt;
 
-	if (!(user = server.userAt(target)))
+	if (!server.userAt(target))
 	{
 		Numeric::insertField(target);
-		message.replyNumeric(ERR_NOSUCHCHANNEL);
+		message.replyNumeric(ERR_NOSUCHNICK);
 		return ;
 	}
 	if (*user != target)
 	{
 		Numeric::insertField(user->getName());
+		message.hideReceiver();
 		message.replyNumeric(ERR_USERSDONTMATCH);
 		return ;
 	}
 	if (message.size() < 2)
 	{
 		this->server.userModeNames(*user);
-		message.sendNumeric(RPL_UMODEIS);
+		message.replyNumeric(RPL_UMODEIS);
 		return ;
 	}
 	for (std::string::iterator stringIt = modes.begin(); stringIt != modes.end(); )
@@ -232,15 +235,15 @@ void	ModeCommand::_checkUserModes(Message& message)
 	}
 	cleanSignModes(modes);
 	message.limitMaxParam(2);
-	if (!modes.empty())
+	if (modes.size() > 1)
 		message.reply();
 }
 
 bool	ModeCommand::_recvUser(Message& message)
 {
-	std::string&	channelName = message[0];
+	std::string&	target = message[0];
 
-	if (server.isChannel((channelName)))
+	if (server.isChannel(target))
 		this->_checkChanModes(message);
 	else
 		this->_checkUserModes(message);

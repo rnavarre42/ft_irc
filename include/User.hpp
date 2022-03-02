@@ -76,7 +76,7 @@ public:
 
 	bool	operator!=(const std::string& rhs)
 	{
-		return (!operator==(rhs));
+		return (!this->operator==(rhs));
 	}
 
 	bool	operator==(const User& rhs)
@@ -115,6 +115,9 @@ public:
 
 	void			setIdleTime(time_t value);
 	const time_t&	getIdleTime(void) const;
+
+	void			setIdleInner(time_t value);
+	const time_t&	getIdleInner(void) const;
 
 	void	setStatus(int value);
 	int		getStatus(void);
@@ -171,10 +174,11 @@ private:
 	std::string	_mask;
 
 	int			_status;
-	std::time_t	_signTime;
-	std::time_t	_awayTime;
-	std::time_t	_nextTimeout;
-	std::time_t	_idleTime;
+	time_t		_signTime;
+	time_t		_awayTime;
+	time_t		_nextTimeout;
+	time_t		_idleTime;
+	time_t		_idleInner;	
 	int			_pollIndex;
 	int			_fd;
 	int			_type;

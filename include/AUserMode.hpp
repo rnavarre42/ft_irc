@@ -54,8 +54,6 @@ protected:
 		this->_mode = mode;
 		this->_type = type;
 		this->_flag = AUserMode::_flagCount;
-		std::cout << "flag = " << AUserMode::_flagCount << std::endl;
-		std::cout << "type = " << type << std::endl;
 		AUserMode::_flagCount <<= 1;
 	}
 

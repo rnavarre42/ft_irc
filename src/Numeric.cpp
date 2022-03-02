@@ -114,6 +114,7 @@ std::string	Numeric::builder(Server& server, ISender& sender, int num)
 	stringVector_iterator	current;
 	std::string				base, data;
 
+
 	Numeric::_initInstance(server, sender, num);
 	for (current = Numeric::_instance->_fieldVector.begin()
 			; current != Numeric::_instance->_fieldVector.end()
@@ -197,5 +198,6 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_ENDOFEXCEPTLIST]	= "$ :End of channel exception list";
 	Numeric::_numericMap[RPL_BANLIST]			= "$ $";
 	Numeric::_numericMap[RPL_ENDOFBANLIST]		= "$ :End of channel ban list";
-	Numeric::_numericMap[RPL_UMODEIS]			= "$ %";
+	Numeric::_numericMap[RPL_UMODEIS]			= ":$";
+	Numeric::_numericMap[RPL_AWAY]				= "$ :$";
 }

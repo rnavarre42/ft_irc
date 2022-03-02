@@ -37,7 +37,7 @@ void send_ident(int server_fd, char* nick, char* ident, char* pass)
 		irc_send(server_fd, data);
 		free(data);
 	}
-    asprintf(&data, "USER %s %s * * *", ident, ident);
+    asprintf(&data, "USER %s %i * * *", ident, 3);
     irc_send(server_fd, data);
     free(data);
     asprintf(&data, "NICK %s", nick);

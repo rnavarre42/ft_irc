@@ -651,7 +651,7 @@ int	Server::_checkUserConnection(void)
 		user = this->_accept();
 		if (!user)
 		{
-			Console::log(LOG_WARNING, "Server full, rejecting new connection");
+			Console::log(LOG_WARNING, "Server full, rejecting new connection: MAXUSERS = " + to_string(MAXUSERS));
 			return 1;
 		}
 		this->insertUser(user);
@@ -764,6 +764,7 @@ bool	Server::recvCommand(Message& message)
 {
 	ACommand*	command;
 
+	static_cast<User*>(message.getSender())->setIdleInner(time(NULL));
 	if ((command = this->commandFind(message.getCmd())))
 	{
 		command->recv(message);
@@ -801,7 +802,7 @@ void	Server::_checkUserTimeout(User& user)
 {
 	if (user.getNextTimeout() && user.getNextTimeout() < std::time(NULL))
 		this->deleteUser(user, "Registration timeout");
-	else if (!user.getNextTimeout() && (user.getIdleTime() + IDLETIMEOUT < std::time(NULL)))
+	else if (!user.getNextTimeout() && (user.getIdleInner() + IDLETIMEOUT < std::time(NULL)))
 	{
 		if (user.getStatus() == LEVEL_REGISTERED)
 		{

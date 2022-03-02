@@ -18,7 +18,6 @@ RM			=	rm -Rf
 -include	sources.mk
 
 all:	$(SERVER) $(CLIENT)
-#all:	$(SERVER)
 
 PHONY += server
 server: $(SERVER)

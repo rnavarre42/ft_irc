@@ -20,8 +20,10 @@ User::User(int fd, Server& server)
 	, _signTime(time(NULL))
 	, _nextTimeout(this->_signTime + REGTIMEOUT)
 	, _idleTime(time(NULL))
+	, _idleInner(time(NULL))
 	, _fd(fd)
 	, _type(TYPE_USER)
+	, _modeFlags(0)
 {}
 
 User::~User(void)
@@ -200,6 +202,16 @@ void	User::setIdleTime(time_t value)
 const time_t&	User::getIdleTime(void) const
 {
 	return this->_idleTime;
+}
+
+void	User::setIdleInner(time_t value)
+{
+	this->_idleInner = value;
+}
+
+const time_t&	User::getIdleInner(void) const
+{
+	return this->_idleInner;
 }
 
 void	User::setNextTimeout(time_t value)

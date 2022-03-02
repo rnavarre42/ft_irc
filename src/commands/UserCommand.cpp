@@ -6,6 +6,7 @@
 #include "numerics.hpp"
 
 #include <iostream>
+#include <string>
 
 UserCommand::UserCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
@@ -22,7 +23,7 @@ void	UserCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	UserCommand::_recvUser(Message& message)
 {
-	User*	user = this->userSender;
+	User*			user = this->userSender;
 
 	if (user->getIdent() == "anonymous")
 	{
@@ -35,6 +36,8 @@ bool	UserCommand::_recvUser(Message& message)
 			return true;
 		}
 		user->setIdent(message[0]);
+		if (atoi(message[1].c_str()) & 3)
+			user->setMode(this->server.userModeFind('i'));
 		user->setReal(message[3]);
 		if (!user->getName().empty())
 		{
