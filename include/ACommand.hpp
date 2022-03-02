@@ -11,7 +11,6 @@
 # define LEVEL_IRCOPERATOR	0x08
 # define LEVEL_ALL			LEVEL_UNREGISTERED | LEVEL_NEGOTIATING | LEVEL_REGISTERED | LEVEL_IRCOPERATOR
 
-//class Server;
 class Message;
 class User;
 

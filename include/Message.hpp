@@ -62,9 +62,6 @@ public:
 	void		insertField(std::string field);
 	std::string	toString(void) const;
 
-//	static Message		&builder(ISender &sender, std::string data);
-//	static Message		&builder(ISender &sender);
-
 private:
 	Message(ISender& sender, std::string data);
 	Message(ISender& sender);
