@@ -52,7 +52,6 @@ bool	KickCommand::_recvUser(Message& message)
 		message[1] = userKick->getName();
 		message.limitMaxParam(3);
 		message.hideReceiver();
-		std::cout << message.toString() << std::endl;
 		message.send();
 		server.removeUserFromChannel(*channel, *userKick);
 	}
