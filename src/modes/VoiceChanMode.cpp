@@ -47,7 +47,7 @@ bool	VoiceChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message
 	return false;
 }
 
-void	VoiceChanMode::onShowChanModeEvent(void)
+void	VoiceChanMode::onShowChanModeEvent(Channel&, Message&)
 {}
 
 void	VoiceChanMode::onDelete(void*)

@@ -59,7 +59,7 @@ bool	KeyChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& 
 	return true;
 }
 
-void	KeyChanMode::onShowChanModeEvent(void)
+void	KeyChanMode::onShowChanModeEvent(Channel&, Message&)
 {
 }
 

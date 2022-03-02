@@ -36,7 +36,7 @@ bool	ModerateChanMode::onChanModeEvent(int, int sign, Channel& channel, Message&
 				|| (!sign && this->unsetMode(channel, NULL));
 }
 
-void	ModerateChanMode::onShowChanModeEvent(void)
+void	ModerateChanMode::onShowChanModeEvent(Channel&, Message&)
 {}
 
 void	ModerateChanMode::onDelete(void*)

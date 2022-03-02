@@ -42,7 +42,8 @@ enum
 	RPL_SUMMONING			= 342,	// "<user> :Summoning user to IRC"
 	RPL_INVITELIST			= 346,	// "<channel> <invitemask>"
 	RPL_ENDOFINVITELIST		= 347,	// "<channel> :End of channel invite list"
-	RPL_EXCEPTLIST			= 348,	// "<channel> :End of channel exception list"
+	RPL_EXCEPTLIST			= 348,  // "<channel> <excepmask>
+	RPL_ENDOFEXCEPTLIST		= 349,	// "<channel> :End of channel exception list"
 
 	RPL_VERSION				= 351,	// "<version>,<debuglevel> <server> :<comments>"
 	RPL_WHOREPLY			= 352,	// "<channel> <user> <server> <nick> ( 'H' / 'G' > ['*'] [ ( '@' / '+' ) ] :<hopcount> <real name>"

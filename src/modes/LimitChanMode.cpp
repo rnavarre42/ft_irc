@@ -74,7 +74,7 @@ bool	LimitChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message
 	return false;
 }
 
-void	LimitChanMode::onShowChanModeEvent(void)
+void	LimitChanMode::onShowChanModeEvent(Channel&, Message&)
 {}
 
 void	LimitChanMode::onDelete(void*)

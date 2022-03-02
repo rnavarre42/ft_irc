@@ -6,7 +6,7 @@
 /*   By: rnavarre <rnavarre@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 20:53:18 by rnavarre          #+#    #+#             */
-/*   Updated: 2022/03/01 20:08:08 by tsierra-         ###   ########.fr       */
+/*   Updated: 2022/03/02 05:28:15 by rnavarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -520,7 +520,7 @@ void	Server::removeUserFromChannel(Channel& channel, User& user)
 	}
 }
 
-void	Server::deleteUser(User& user, const std::string& text)
+void	Server::deleteUser(User& user, std::string text)
 {
 	Server::channelMap_iterator	currentIt;
 	Server::userVector_type*	userVector = user.getUniqueVector();

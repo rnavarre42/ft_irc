@@ -12,4 +12,6 @@ bool	isValidNick(const std::string& value);
 bool	isSpecialLetter(const char chr);
 bool	isValidChanName(const std::string& value);
 
+std::string	to_string(long nb);
+
 #endif

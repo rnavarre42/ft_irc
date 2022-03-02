@@ -20,8 +20,9 @@ void	MotdCommand::loadEvents(Server::eventHandler_type&)
 void	MotdCommand::unloadEvents(Server::eventHandler_type&)
 {}
 
-bool	MotdCommand::_recvUser(Message&)
+bool	MotdCommand::_recvUser(Message& message)
 {
+	message.process();
 	return true;
 }
 

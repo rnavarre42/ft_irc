@@ -36,7 +36,7 @@ bool	NoExternalChanMode::onChanModeEvent(int, int sign, Channel& channel, Messag
 				|| (!sign && this->unsetMode(channel, NULL));
 }
 
-void	NoExternalChanMode::onShowChanModeEvent(void)
+void	NoExternalChanMode::onShowChanModeEvent(Channel&, Message&)
 {}
 
 void	NoExternalChanMode::onDelete(void*)

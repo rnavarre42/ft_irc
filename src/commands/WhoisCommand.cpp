@@ -93,8 +93,8 @@ bool	WhoisCommand::_recvUser(Message& message)
 		}
 
 		Numeric::insertField(targetUser->getName());
-		Numeric::insertField(std::to_string(std::time(NULL) - targetUser->getIdleTime()));
-		Numeric::insertField(std::to_string(targetUser->getSignTime()));
+		Numeric::insertField(to_string(std::time(NULL) - targetUser->getIdleTime()));
+		Numeric::insertField(to_string(targetUser->getSignTime()));
 		message.replyNumeric(RPL_WHOISIDLE);
 
 		if (targetUser->isOper())

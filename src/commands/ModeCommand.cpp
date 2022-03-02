@@ -61,9 +61,11 @@ void	ModeCommand::_checkChanModes(Message& message)
 	unsigned long					pos = 2;
 	bool							set = true;
 	std::string&					target = message[0];
+	std::string&					modes = message[1];
 	Channel*						channel;
 	AChanMode*						chanMode;
 	std::string::iterator 			currentIt;
+	size_t							initialSize = modes.size();
 
 	if (!(channel = server.channelAt(target)))
 	{
@@ -73,18 +75,16 @@ void	ModeCommand::_checkChanModes(Message& message)
 	}
 	if (message.size() < 2)
 	{
-		//TODO Mostrar raw 324 (modes) 329 (creation time)
-
 		Numeric::insertField(target);
 		this->server.chanModeNames(*channel);
 		message.replyNumeric(RPL_CHANNELMODEIS);
 		Numeric::insertField(target);
-		Numeric::insertField(std::to_string(channel->getCreationTime()));
+		Numeric::insertField(to_string(channel->getCreationTime()));
 		message.replyNumeric(RPL_CREATIONTIME);
 		return ;
 	}
 	message.setChannel(channel);
-	for (std::string::iterator strIt = message[1].begin(); strIt != message[1].end(); )
+	for (std::string::iterator strIt = modes.begin(); strIt != modes.end(); )
 	{
 		currentIt = strIt;
 		++strIt;
@@ -94,16 +94,21 @@ void	ModeCommand::_checkChanModes(Message& message)
 			set = false;
 		else if ((chanMode = server.findChanMode(*currentIt)))
 		{
-			if (hasParamMode(set, chanMode) && message.size() <= pos)
+			if (!chanMode->getConfig().unique && initialSize == 1 && message.size() <= pos)
+			{
+				chanMode->onShowChanModeEvent(*channel, message);
+				return ;
+			}
+			else if (hasParamMode(set, chanMode) && message.size() <= pos)
 			{
 				Numeric::insertField(message.getCmd());
 				message.replyNumeric(ERR_NEEDMOREPARAMS);
-				message[1].erase(currentIt);
+				modes.erase(currentIt);
 				--strIt;
 			}
 			else if (!server.checkChannelMode(message, COMMAND_MODE)) // Si el usuario no es operador...
 			{
-				message[1].erase(currentIt);
+				modes.erase(currentIt);
 				--strIt;
 				if (hasParamMode(set, chanMode) && message.size() > pos)
 					message.eraseAt(pos);
@@ -117,7 +122,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 				}
 				else
 				{
-					message[1].erase(currentIt);
+					modes.erase(currentIt);
 					--strIt;
 					if (hasParamMode(set, chanMode) && message.size() > pos)
 						message.eraseAt(pos);
@@ -129,13 +134,13 @@ void	ModeCommand::_checkChanModes(Message& message)
 			Numeric::insertField(*currentIt);
 			Numeric::insertField(channel->getName());
 			message.replyNumeric(ERR_UNKNOWNMODE);
-			message[1].erase(currentIt);
+			modes.erase(currentIt);
 			--strIt;
 		}
 	}
-	cleanSignModes(message[1]);
+	cleanSignModes(modes);
 	message.limitMaxParam(pos);
-	if (!message[1].empty())
+	if (!modes.empty())
 	{
 		message.setReceiver(channel);
 		message.setReceiver(this->userSender);
@@ -152,32 +157,37 @@ void	ModeCommand::_checkChanModes(Message& message)
 
 void	ModeCommand::_checkUserModes(Message& message)
 {
-	Server::userMap_iterator	it = server.userFind(message[0]);
+	std::string&	modeUserName = message[0];
+	std::string&	modes = message[1];
+	User*			modeUser = server.userAt(modeUserName);
 
-	if (it == this->server.getUserMap().end())
+	if (!(modeUser = server.userAt(modeUserName)))
 	{
-		Numeric::insertField(message[0]);
+		Numeric::insertField(modeUserName);
 		message.replyNumeric(ERR_NOSUCHNICK);
 		return ;
 	}	  
-	if (*this->userSender != message[0])
+	if (*this->userSender != *modeUser)
 	{
-		Numeric::insertField(message[0]);
+		Numeric::insertField(modeUser->getName());
 		message.replyNumeric(ERR_USERSDONTMATCH);
 		return ;
+	}
+	if (modes == "-o" && modeUser->isOper())
+	{
+		modeUser->setOper(false);
+		modeUserName = modeUser->getName();
+		message.reply();
 	}
 }
 
 bool	ModeCommand::_recvUser(Message& message)
 {
-	User&	user = *this->userSender;
+	std::string&	channelName = message[0];
 
-	(void)user;
-
-	// El mensaje va destinado a un canal
-	if (server.isChannel((message[0])))
+	if (server.isChannel((channelName)))
 		this->_checkChanModes(message);
-	else // El mensaje va destinado al propio cliente.
+	else
 		this->_checkUserModes(message);
 	return true;
 }

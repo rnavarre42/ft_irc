@@ -159,9 +159,9 @@ bool	User::isOper(void)
 	return this->_oper;
 }
 
-void	User::enableOper(void)
+void	User::setOper(bool value)
 {
-	this->_oper = true;
+	this->_oper = value;
 }
 
 int		User::getType(void)

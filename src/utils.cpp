@@ -2,6 +2,7 @@
 #include "utils.hpp"
 
 #include <string>
+#include <sstream>
 
 std::string	strToUpper(std::string data)
 {
@@ -72,4 +73,12 @@ bool	isValidChanName(const std::string& value)
 			return false;
 	}
 	return true;
+}
+
+std::string	to_string(long nb)
+{
+	std::ostringstream	oss;
+
+	oss << nb;
+	return oss.str();
 }

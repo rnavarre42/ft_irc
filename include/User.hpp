@@ -69,14 +69,24 @@ public:
 		return this->_channelMap.at(strToUpper(channelName));
 	}
 
-	bool	operator==(std::string& rhs)
+	bool	operator==(const std::string& rhs)
 	{
 		return (strToUpper(this->_name) == strToUpper(rhs));
 	}
 
-	bool	operator!=(std::string& rhs)
+	bool	operator!=(const std::string& rhs)
 	{
-		return !operator==(rhs);
+		return (!operator==(rhs));
+	}
+
+	bool	operator==(const User& rhs)
+	{
+		return (*this == rhs._name);
+	}
+
+	bool	operator!=(const User& rhs)
+	{
+		return (!operator==(rhs));
 	}
 
 	std::string&	getInputBuffer(void);
@@ -85,7 +95,7 @@ public:
 	bool	isUser(void);
 	bool	isServer(void);
 	bool	isOper(void);
-	void	enableOper(void);
+	void	setOper(bool value);
 	bool	isOnChannel(const Channel& channel);
 	bool	isOnChannel(const std::string& channel);
 

@@ -61,7 +61,7 @@ bool	OperChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message&
 	return false;
 }
 
-void	OperChanMode::onShowChanModeEvent(void)
+void	OperChanMode::onShowChanModeEvent(Channel&, Message&)
 {}
 
 void	OperChanMode::onDelete(void*)

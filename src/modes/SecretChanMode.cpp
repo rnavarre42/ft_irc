@@ -22,7 +22,7 @@ bool	SecretChanMode::onChanModeEvent(int, int sign, Channel& channel, Message&)
 				|| (!sign && this->unsetMode(channel, NULL));
 }
 
-void	SecretChanMode::onShowChanModeEvent(void)
+void	SecretChanMode::onShowChanModeEvent(Channel&, Message&)
 {}
 
 void	SecretChanMode::onDelete(void*)

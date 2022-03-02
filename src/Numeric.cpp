@@ -227,6 +227,10 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_WHOISOPERATOR]		= "$ :is an IRC operator";
 	Numeric::_numericMap[RPL_WHOISMODES]		= "$ :is using modes +$";
 	Numeric::_numericMap[RPL_VISIBLEHOST]		= "$ :is now your visible host";
-	Numeric::_numericMap[RPL_CHANNELMODEIS]		= "$ $ %";
+	Numeric::_numericMap[RPL_CHANNELMODEIS]		= "$ :$ %";
 	Numeric::_numericMap[RPL_CREATIONTIME]		= "$ :$";
+	Numeric::_numericMap[RPL_EXCEPTLIST]		= "$ $";
+	Numeric::_numericMap[RPL_ENDOFEXCEPTLIST]	= "$ :End of channel exception list";
+	Numeric::_numericMap[RPL_BANLIST]			= "$ $";
+	Numeric::_numericMap[RPL_ENDOFBANLIST]		= "$ :End of channel ban list";
 }

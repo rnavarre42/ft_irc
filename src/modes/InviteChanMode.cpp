@@ -43,7 +43,7 @@ bool	InviteChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )
 				|| (!sign && this->unsetMode(channel, NULL));
 }
 
-void	InviteChanMode::onShowChanModeEvent(void)
+void	InviteChanMode::onShowChanModeEvent(Channel&, Message&)
 {
 }
 

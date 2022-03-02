@@ -39,7 +39,7 @@ bool	TopicChanMode::onChanModeEvent(int, int sign, Channel& channel, Message& )
 				|| (!sign && this->unsetMode(channel, NULL));
 }
 
-void	TopicChanMode::onShowChanModeEvent(void)
+void	TopicChanMode::onShowChanModeEvent(Channel&, Message&)
 {}
 
 void	TopicChanMode::onDelete(void*)

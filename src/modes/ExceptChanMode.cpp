@@ -79,8 +79,20 @@ bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Messag
 	return false;
 }
 
-void	ExceptChanMode::onShowChanModeEvent(void)
+void	ExceptChanMode::onShowChanModeEvent(Channel& channel, Message& message)
 {
+	Channel::Mode::rangePairMultimap_type	it = channel.mode.getList(this->_chanModeConfig.mode);
+
+	for ((it = channel.mode.getList(this->_chanModeConfig.mode))
+			; it.first != it.second
+			; ++it.first)
+	{
+		Numeric::insertField(channel.getName());
+		Numeric::insertField(this->toString(it.first->second));
+		message.replyNumeric(RPL_EXCEPTLIST);
+	}
+	Numeric::insertField(channel.getName());
+	message.replyNumeric(RPL_ENDOFEXCEPTLIST);
 }
 
 void	ExceptChanMode::onDelete(void* pointer)

@@ -160,7 +160,7 @@ public:
 	void	quit(const std::string& msg);
 	
 	void	createUser(User& user);
-	void	deleteUser(User& user, const std::string& text);
+	void	deleteUser(User& user, std::string text);
 	
 	int	count(void);
 

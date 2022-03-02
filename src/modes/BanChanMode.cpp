@@ -53,7 +53,7 @@ void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& 
 	}
 }
 
-Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type& rangePair, const std::string& mask)
+Channel::Mode::multimap_iterator	filterMask(Channel::Mode::rangePairMultimap_type& rangePair, const std::string& mask)
 {
 	for (; rangePair.first != rangePair.second; ++rangePair.first)
 	{
@@ -70,10 +70,9 @@ bool	BanChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& 
 	Channel::Mode::multimap_iterator		maskIt;
 	std::string								newMask;
 
-	//TODO: verificar y completar mascara
 	newMask = addWildcard(message[pos]);
 	rangePair = channel.mode.getList(this->_chanModeConfig.mode);
-	maskIt = findMask(rangePair, newMask);
+	maskIt = filterMask(rangePair, newMask);
 	if (sign && maskIt == rangePair.second)
 	{
 		banInfo = new BanInfo(newMask, message.getSender()->getName());
@@ -90,13 +89,25 @@ bool	BanChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& 
 	return false;
 }
 
-void	BanChanMode::onShowChanModeEvent(void)
+void	BanChanMode::onShowChanModeEvent(Channel& channel, Message& message)
 {
+	Channel::Mode::rangePairMultimap_type	it = channel.mode.getList(this->_chanModeConfig.mode);
+
+	for ((it = channel.mode.getList(this->_chanModeConfig.mode))
+			; it.first != it.second
+			; ++it.first)
+	{
+		Numeric::insertField(channel.getName());
+		Numeric::insertField(this->toString(it.first->second));
+		message.replyNumeric(RPL_BANLIST);
+	}
+	Numeric::insertField(channel.getName());
+	message.replyNumeric(RPL_ENDOFBANLIST);
 }
 
 void	BanChanMode::onDelete(void* pointer)
 {
-	delete &*reinterpret_cast<BanInfo* >(pointer);
+	delete &*static_cast<BanInfo* >(pointer);
 }
 
 std::string BanChanMode::toString(void* pointer)
@@ -104,7 +115,7 @@ std::string BanChanMode::toString(void* pointer)
 	std::ostringstream	oss;
 	BanInfo*			banInfo;
 
-	banInfo	= reinterpret_cast<BanInfo* >(pointer);
+	banInfo	= static_cast<BanInfo* >(pointer);
 	oss << banInfo->mask << " " << banInfo->nick << " :" << banInfo->time;
 	return oss.str();
 }
