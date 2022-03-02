@@ -65,7 +65,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 	Channel*						channel;
 	AChanMode*						chanMode;
 	std::string::iterator 			currentIt;
-	size_t							initialSize = modes.size();
+	size_t							initialSize;
 
 	if (!(channel = server.channelAt(target)))
 	{
@@ -83,6 +83,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 		message.replyNumeric(RPL_CREATIONTIME);
 		return ;
 	}
+	initialSize = modes.size();
 	message.setChannel(channel);
 	for (std::string::iterator strIt = modes.begin(); strIt != modes.end(); )
 	{
