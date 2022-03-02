@@ -82,6 +82,7 @@ bool	JoinCommand::_recvUser(Message& message)
 	User*						user = this->userSender;
 	Server::channelMap_iterator	currentIt;
 
+	message.limitMaxParam(1);
 	if (message[0] == "0")
 	{
 		if (message.size() == 1)

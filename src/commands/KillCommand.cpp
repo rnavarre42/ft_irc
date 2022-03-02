@@ -23,12 +23,14 @@ bool	KillCommand::_recvUser(Message& message)
 {
 	User*						user = this->userSender;
 	Server::userMap_iterator	userKillIt;
+	std::string					userName;
 
-	if ((userKillIt = server.userFind(message[0])) != server.getUserMap().end())
+	userName = message[0];
+	if ((userKillIt = server.userFind(userName)) != server.getUserMap().end())
 		server.deleteUser(*userKillIt->second, "Killed by " + user->getName() + ": " + message[1]);
 	else
 	{
-		Numeric::insertField(userKillIt->second->getName());
+		Numeric::insertField(userName);
 		message.replyNumeric(ERR_NOSUCHNICK);
 	}
 	return true;

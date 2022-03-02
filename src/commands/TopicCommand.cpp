@@ -39,7 +39,6 @@ bool	TopicCommand::_recvUser(Message& message)
 	else
 	{
 		topicInfo = &channel->getTopicInfo();
-		newTopic = message[1];
 		message.setChannel(channel);
 		if (message.size() == 1)
 		{
@@ -63,11 +62,13 @@ bool	TopicCommand::_recvUser(Message& message)
 		{
 			if (!server.checkChannelMode(message, COMMAND_TOPIC))
 				return true;
+			newTopic = message[1];
 			if (topicInfo->topic != newTopic)
 			{
 				channel->setTopicInfo(user->getName(), newTopic);
 				message.setReceiver(channel);
 				message.setReceiver(user);
+				message.hideReceiver();
 				message.send();
 			}
 		}
