@@ -3,6 +3,7 @@
 #include "Message.hpp"
 #include "Server.hpp"
 #include "Console.hpp"
+
 #include <iostream>
 
 QuitCommand::QuitCommand(Server& server, int accessLevel, int paramCount)

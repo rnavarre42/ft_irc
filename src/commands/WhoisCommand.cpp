@@ -22,17 +22,7 @@ void	WhoisCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 {
 	(void)eventHandler;
 }
-// RPL_WHOISUSER		311 <nick> <ident> <host> * :<realname>
-// RPL_WHOISHOST		378 <nick> :is connecting from <user mask encrypted> <real ip>
-// RPL_WHOISCHANNELS	319 <nick> :<@+#channel>			(condicion)
-// RPL_WHOISSERVER		312 <nick> <server> :<name>
-// RPL_AWAY				301 <nick> <away message>			(condicion)
-// RPL_WHOISMODES		379 <nick> :is using modes +xxx
-// RPL_WHOISIDLE		317 <nick> idle signon :seconds idle, signon time
-// RPL_WHOISOPERATOR	313 <nick> :is an IRC Operator		(condicion)
-// RPL_WHOISREGNICK		307 <nick> :es un nick registrado	(condicion)
-// RPL_ENDOFWHOIS		318 <nick> :End of /WHOIS list.
-//
+
 bool	WhoisCommand::_recvUser(Message& message)
 {
 	User&			user = *this->userSender;
@@ -53,7 +43,7 @@ bool	WhoisCommand::_recvUser(Message& message)
 
 		Numeric::insertField(targetUser->getName());
 		Numeric::insertField(targetUser->getMask());
-		Numeric::insertField(targetUser->getHost()); //real host/ip (unencrypted)
+		Numeric::insertField(targetUser->getHost());	//real host/ip (unencrypted)
 		message.replyNumeric(RPL_WHOISHOST);
 
 		if (targetUser->size())

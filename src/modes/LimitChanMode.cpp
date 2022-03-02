@@ -33,7 +33,6 @@ void	LimitChanMode::onChanEvent(Access& access, int, Message& message, int& nume
 		numeric = ERR_CHANNELISFULL;
 		access = AChanMode::deny;
 	}
-//	std::cout << "users: joined " << channel->size() << " : limit " << limit << std::endl;
 }
 
 inline bool	isValidLimit(unsigned long limit, Channel& channel, char chanMode)

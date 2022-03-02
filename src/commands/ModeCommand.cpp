@@ -56,6 +56,7 @@ void	cleanSignModes(std::string& modes)
  *	Funcion que verifica si el modo de canal existe, la sintaxis es correcta y tiene privilegios para
  *	ejecutarlo.
  */
+
 void	ModeCommand::_checkChanModes(Message& message)
 {
 	unsigned long					pos = 2;

@@ -23,10 +23,8 @@ void	KickCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	KickCommand::_recvUser(Message& message)
 {
-//	Server::channelMap_iterator	channelIt;
 	Channel*					channel;
 	User*						userKick;
-//	Server::userMap_iterator	userKickIt;
 
 	if (!isValidChanName(message[0]))
 	{
@@ -45,8 +43,6 @@ bool	KickCommand::_recvUser(Message& message)
 	}
 	else
 	{
-		std::cout << message.toString() << std::endl;
-//		channel = channelIt->second;
 		message.setChannel(channel);
 		if (!this->server.checkChannelMode(message, COMMAND_KICK))
 			return true;
