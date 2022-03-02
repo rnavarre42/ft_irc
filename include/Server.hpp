@@ -73,6 +73,7 @@
 class Channel;
 class ACommand;
 class AChanMode;
+class AUserMode;
 class User;
 class Channel;
 
@@ -82,28 +83,30 @@ public:
 	~Server(void);
 
 	typedef EventHandler<int, Message>				eventHandler_type;
-	typedef std::map<std::string, Channel* >		channelMap_type;
+	typedef std::map<std::string, Channel*>			channelMap_type;
 	typedef channelMap_type::iterator				channelMap_iterator;
 	typedef std::pair<channelMap_iterator, bool>	channelMap_insert;
-	typedef std::pair<std::string, Channel* >		stringChannelPair_type;
-	typedef std::map<std::string, User* >			userMap_type;
+	typedef std::pair<std::string, Channel*>		stringChannelPair_type;
+	typedef std::map<std::string, User*>			userMap_type;
 	typedef userMap_type::iterator					userMap_iterator;
 	typedef std::pair<userMap_iterator, bool>		userMap_insert;
 	typedef std::pair<std::string, User *>			stringUserPair_type;
-	typedef std::map<std::string, Server* >			serverMap_type;
+	typedef std::map<std::string, Server*>			serverMap_type;
 	typedef userMap_type::iterator					serverMap_iterator;
-	typedef std::map<int, User* >					fdMap_type;
+	typedef std::map<int, User*>					fdMap_type;
 	typedef fdMap_type::iterator					fdMap_iterator;
-	typedef std::map<std::string, ACommand* >		aCommandMap_type;
-	typedef aCommandMap_type::iterator				aCommandMap_iterator;
-	typedef std::vector<ISender* >					userVector_type;
+	typedef std::map<std::string, ACommand*>		commandMap_type;
+	typedef commandMap_type::iterator				commandMap_iterator;
+	typedef std::vector<ISender*>					userVector_type;
 	typedef userVector_type::iterator				userVector_iterator;
-	typedef std::set<Channel* >						channelSet_type;
+	typedef std::set<Channel*>						channelSet_type;
 	typedef channelSet_type::iterator				channelSet_iterator;
-	typedef std::map<char, AChanMode* >				aChanModeMap_type;
-	typedef aChanModeMap_type::iterator				aChanModeMap_iterator;
+	typedef std::map<char, AChanMode*>				chanModeMap_type;
+	typedef chanModeMap_type::iterator				chanModeMap_iterator;
 	typedef std::map<std::string, std::string>		supportMap_type;
 	typedef supportMap_type::iterator				supportMap_iterator;
+	typedef std::map<char, AUserMode*>				userModeMap_type;
+	typedef userModeMap_type::iterator				userModeMap_iterator;
 
 	static void			signalHandler(int sig);
 	static Server&		getInstance(void);
@@ -115,7 +118,8 @@ public:
 	const std::string&	getReal(void) const;
 	channelMap_type&	getChannelMap(void);
 	const std::string&	getMask(void) const;
-	AChanMode*			findChanMode(char modeChar);
+	AChanMode*			chanModeFind(char modeChar);
+	AUserMode*			userModeFind(char modeUser);
 
 	Invite&	invite(void)
 	{
@@ -134,13 +138,13 @@ public:
 	const std::string&	getPass(void) const;
 
 	void	chanModeNames(Channel& channel);
+	void	userModeNames(User& user);
 	void	supportNames(void);
 	void	names(Channel& channel);
 	void	removeUserFromChannel(Channel& channel, User& user);
 
 	bool		isUser(void);
 	bool		isServer(void);
-	bool		isOper(void);
 	int			getType(void);
 	const int&	getFd(void) const;
 	int			getStatus(void);
@@ -249,11 +253,12 @@ private:
 	fdMap_type			_fdMap;
 	userMap_type		_userMap;
 	channelMap_type		_channelMap;
-	aCommandMap_type	_commandMap;
+	commandMap_type		_commandMap;
 	eventHandler_type	_eventHandler;
-	aChanModeMap_type	_chanModeMap;
+	chanModeMap_type	_chanModeMap;
 	Invite				_invite;
 	supportMap_type		_supportMap;
+	userModeMap_type	_userModeMap;
 	
 	int		_freePollIndexFind(void);
 	int		_poll(void);
@@ -264,7 +269,9 @@ private:
 	void	_unloadCommands(void);
 	void	_unloadChanModes(void);
 	bool	_unloadChanMode(char modeName);
-	bool	_unloadChanMode(aChanModeMap_iterator it);
+	bool	_unloadChanMode(chanModeMap_iterator it);
+	void	_loadUserModes(void);
+	void	_loadUserMode(AUserMode* newUserMode);
 	void	_loadChanModes(void);
 	void	_loadChanMode(AChanMode* newChanMode);
 	void	_checkConsoleInput(void);

@@ -1,5 +1,5 @@
-#ifndef ICHANMODE_HPP
-# define ICHANMODE_HPP
+#ifndef ACHANMODE_HPP
+# define ACHANMODE_HPP
  
 # include "ChanModeConfig.hpp"
 # include "Channel.hpp"
@@ -24,8 +24,8 @@ public:
 		: _server(server)
 	{}
 
-	virtual ~AChanMode(void)
-	{}
+	virtual ~AChanMode(void) {} 
+	
 
 	virtual void	onChanEvent(Access& access, int event, Message& message, int& numeric) = 0;
 	virtual bool	onChanModeEvent(int pos, int sign, Channel& channel, Message& message) = 0;

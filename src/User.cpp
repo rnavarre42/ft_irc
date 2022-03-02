@@ -121,17 +121,17 @@ void	User::setPass(const std::string& value)
 
 void	User::setMode(AUserMode* userMode)
 {
-	this->_modes |= userMode->getFlag();
+	this->_modeFlags |= userMode->getFlag();
 }
 
 void	User::unsetMode(AUserMode* userMode)
 {
-	this->_modes &= ~userMode->getFlag();
+	this->_modeFlags &= ~userMode->getFlag();
 }
 
 bool	User::isSetMode(AUserMode* userMode)
 {
-	return this->_modes & userMode->getFlag();
+	return this->_modeFlags & userMode->getFlag();
 }
 
 const std::string&	User::getMask(void) const
@@ -156,12 +156,7 @@ bool	User::isServer(void)
 
 bool	User::isOper(void)
 {
-	return this->_oper;
-}
-
-void	User::setOper(bool value)
-{
-	this->_oper = value;
+	return this->isSetMode(this->_server.userModeFind('o'));
 }
 
 int		User::getType(void)

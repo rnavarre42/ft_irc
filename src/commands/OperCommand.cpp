@@ -29,7 +29,7 @@ bool	OperCommand::_recvUser(Message& message)
 		message.replyNumeric(ERR_PASSWDMISMATCH);
 	else
 	{
-		user->setOper(true);
+		user->setMode(server.userModeFind('o'));
 		message.replyNumeric(RPL_YOUREOPER);
 	}
 	return true;

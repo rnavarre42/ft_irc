@@ -3,6 +3,7 @@ BASE_SRCS		=	\
 					ircserv.cpp					\
 					utils.cpp					\
 					ACommand.cpp				\
+					AUserMode.cpp				\
 					Channel.cpp					\
 					Console.cpp					\
 					Invite.cpp					\
@@ -12,8 +13,8 @@ BASE_SRCS		=	\
 					User.cpp					\
 					Unknown.cpp					\
 
-MODES_PATH		=	modes/
-MODES_SRCS		=	\
+CHANMODES_PATH	=	chanmodes/
+CHANMODES_SRCS	=	\
 					BanChanMode.cpp				\
 					ExceptChanMode.cpp			\
 					InviteChanMode.cpp			\
@@ -25,6 +26,11 @@ MODES_SRCS		=	\
 					SecretChanMode.cpp			\
 					TopicChanMode.cpp			\
 					VoiceChanMode.cpp			\
+
+USERMODES_PATH	=	usermodes/
+USERMODES_SRCS	=	\
+					OperUserMode.cpp			\
+					InvisibleUserMode.cpp		\
 
 
 COMMAND_PATH	=	commands/
@@ -55,10 +61,11 @@ COMMAND_SRCS	=	\
 #					WhoCommand.cpp				\
 #					WhowasCommand.cpp			\
 
-SRCS			=	$(addprefix $(BASE_PATH), $(BASE_SRCS)				\
-						$(addprefix $(COMMAND_PATH), $(COMMAND_SRCS))	\
-						$(addprefix $(MODES_PATH), $(MODES_SRCS))		\
-					)													\
+SRCS			=	$(addprefix $(BASE_PATH), $(BASE_SRCS)					\
+						$(addprefix $(COMMAND_PATH), $(COMMAND_SRCS))		\
+						$(addprefix $(CHANMODES_PATH), $(CHANMODES_SRCS))	\
+						$(addprefix $(USERMODES_PATH), $(USERMODES_SRCS))	\
+					)														\
 
 
 CLIENT_PATH		=	src/

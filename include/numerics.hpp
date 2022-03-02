@@ -9,6 +9,8 @@ enum
 	RPL_MYINFO				=   4,	// "<servername> <version> <available user modes> <available channel modes>"
 	RPL_ISUPPORT			=   5,	// "$ :are supported by this server"
 
+	RPL_UMODEIS				= 221,	// "<client> <user_modes> [<user_modes_params>]
+
 	RPL_USERHOST			= 302,	// ":*1<reply> *( ' ' <reply> )"
 	RPL_ISON				= 303,	// ":*1<nick> *( ' ' <nick> )"
 

@@ -95,7 +95,6 @@ public:
 	bool	isUser(void);
 	bool	isServer(void);
 	bool	isOper(void);
-	void	setOper(bool value);
 	bool	isOnChannel(const Channel& channel);
 	bool	isOnChannel(const std::string& channel);
 
@@ -179,8 +178,7 @@ private:
 	int			_pollIndex;
 	int			_fd;
 	int			_type;
-	bool		_oper;
-	uint64_t	_modes;
+	uint64_t	_modeFlags;
 
 	std::string	_getLine(size_t pos);
 	void		_updateMask(void);

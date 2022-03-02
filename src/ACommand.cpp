@@ -19,7 +19,7 @@ void	ACommand::recv(Message& message)
 {
 	bool	ret;
 
-	if (message.getSender()->getStatus() & this->levelAccess || message.getSender()->isOper())
+	if (message.getSender()->getStatus() & this->levelAccess || static_cast<User *>(message.getSender())->isOper())
 	{
 		if (message.size() < this->minParam)
 		{

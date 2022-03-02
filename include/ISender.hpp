@@ -29,7 +29,6 @@ public:
 	virtual int					getStatus(void) = 0;
 	virtual bool				isServer(void) = 0;
 	virtual bool				isUser(void) = 0;
-	virtual bool				isOper(void) = 0;
 	virtual int					getType(void) = 0;
 	//La máscara no la tenemos almacenada, devolver una referencia no tiene sentido, a no ser que hagamos
 	//lo que propuso Miki, actualizar la máscara de cada usuario / servidor que ya tenemos en memoria.

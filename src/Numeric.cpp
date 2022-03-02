@@ -233,4 +233,5 @@ Numeric::Numeric(void)
 	Numeric::_numericMap[RPL_ENDOFEXCEPTLIST]	= "$ :End of channel exception list";
 	Numeric::_numericMap[RPL_BANLIST]			= "$ $";
 	Numeric::_numericMap[RPL_ENDOFBANLIST]		= "$ :End of channel ban list";
+	Numeric::_numericMap[RPL_UMODEIS]			= "$ %";
 }

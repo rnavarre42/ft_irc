@@ -18,7 +18,7 @@ Channel::Channel(const std::string& name, const User& user, Server& server)
 Channel::~Channel(void)
 {
 	for (Channel::Mode::multimap_iterator it = this->mode.begin(); it != this->mode.end(); ++it)
-		this->_server.findChanMode(it->first)->onDelete(it->second);
+		this->_server.chanModeFind(it->first)->onDelete(it->second);
 }
 
 void*&	Channel::Mode::operator[](char chr)

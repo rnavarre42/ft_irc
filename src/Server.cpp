@@ -6,7 +6,7 @@
 /*   By: rnavarre <rnavarre@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 20:53:18 by rnavarre          #+#    #+#             */
-/*   Updated: 2022/03/02 05:28:15 by rnavarre         ###   ########.fr       */
+/*   Updated: 2022/03/02 14:36:59 by rnavarre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Channel.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
+#include "usermodes.hpp"
 #include "chanmodes.hpp"
 #include "commands.hpp"
 #include "Numeric.hpp"
@@ -55,6 +56,7 @@ Server::Server(const std::string& listenIp, int listenPort, const std::string& n
 	this->_loadSupport();
 	this->_loadCommands();
 	this->_loadChanModes();
+	this->_loadUserModes();
 	this->_setSignals();
 	std::memset(this->_pollfds, '\0', sizeof(struct pollfd) * (MAXUSERS + 2));
 	this->_initSocket();
@@ -126,7 +128,7 @@ void	Server::_loadCommands(void)
 //	this->_commandMap["WHO"]		= new WhoCommand	(*this, LEVEL_REGISTERED, 1);
 //	this->_commandMap["WHOWAS"]		= new WhowasCommand	(*this, LEVEL_REGISTERED, 1);
 
-	Server::aCommandMap_iterator	it;
+	Server::commandMap_iterator	it;
 
 	for (it = this->_commandMap.begin(); it != this->_commandMap.end(); it++)
 		it->second->loadEvents(this->_eventHandler);
@@ -134,7 +136,7 @@ void	Server::_loadCommands(void)
 
 void	Server::_unloadCommands(void)
 {
-	for (Server::aCommandMap_iterator it = this->_commandMap.begin(); it != this->_commandMap.end(); it++)
+	for (Server::commandMap_iterator it = this->_commandMap.begin(); it != this->_commandMap.end(); it++)
 	{
 		it->second->unloadEvents(this->_eventHandler);
 		delete it->second;
@@ -159,18 +161,6 @@ void	Server::_loadChanModes(void)
 	this->_loadChanMode(new VoiceChanMode(*this));
 }
 
-void	Server::_unloadChanModes(void)
-{
-	Server::aChanModeMap_iterator	currentIt;
-
-	for (Server::aChanModeMap_iterator it = this->_chanModeMap.begin(); it !=  this->_chanModeMap.end();)
-	{
-		currentIt = it;
-		++it;
-		this->_unloadChanMode(currentIt);
-	}
-}
-
 void	Server::_loadChanMode(AChanMode* newChanMode)
 {
 	const ChanModeConfig&	chanModeConfig = newChanMode->getConfig();
@@ -178,7 +168,19 @@ void	Server::_loadChanMode(AChanMode* newChanMode)
 	this->_chanModeMap[chanModeConfig.mode] = newChanMode;
 }
 
-bool	Server::_unloadChanMode(Server::aChanModeMap_iterator it)
+void	Server::_unloadChanModes(void)
+{
+	Server::chanModeMap_iterator	currentIt;
+
+	for (Server::chanModeMap_iterator it = this->_chanModeMap.begin(); it !=  this->_chanModeMap.end();)
+	{
+		currentIt = it;
+		++it;
+		this->_unloadChanMode(currentIt);
+	}
+}
+
+bool	Server::_unloadChanMode(Server::chanModeMap_iterator it)
 {
 	if (it != this->_chanModeMap.end())
 	{
@@ -189,17 +191,39 @@ bool	Server::_unloadChanMode(Server::aChanModeMap_iterator it)
 	return false;
 }
 
+void	Server::_loadUserModes(void)
+{
+	this->_loadUserMode(new OperUserMode());
+	this->_loadUserMode(new InvisibleUserMode());
+}
+
+void	Server::_loadUserMode(AUserMode* newUserMode)
+{
+	this->_userModeMap.insert(std::make_pair(newUserMode->getMode(), newUserMode));
+}
+
+
 bool	Server::_unloadChanMode(char modeName)
 {
 	return this->_unloadChanMode(this->_chanModeMap.find(modeName));
 }
 
-AChanMode*	Server::findChanMode(char modeName)
+AChanMode*	Server::chanModeFind(char modeName)
 {
-	aChanModeMap_iterator	it;
+	chanModeMap_iterator	it;
 
 	it = this->_chanModeMap.find(modeName);
 	if (it == this->_chanModeMap.end())
+		return NULL;
+	return it->second;
+}
+
+AUserMode*	Server::userModeFind(char modeName)
+{
+	userModeMap_iterator	it;
+
+	it = this->_userModeMap.find(modeName);
+	if (it == this->_userModeMap.end())
 		return NULL;
 	return it->second;
 }
@@ -378,11 +402,6 @@ bool	Server::isServer(void)
 	return this->_type == TYPE_SERVER;
 }
 
-bool	Server::isOper(void)
-{
-	return false;
-}
-
 int	Server::getType(void)
 {
 	return this->_type;
@@ -487,9 +506,9 @@ bool	Server::checkChannelMode(Message& message, int commandEvent)
 	AChanMode::Access	access = AChanMode::def;
 	int					numeric = 0;
 
-	if (message.getSender()->isOper())
+	if (static_cast<User*>(message.getSender())->isOper())
 		return true;
-	for (aChanModeMap_iterator it = this->_chanModeMap.begin();
+	for (chanModeMap_iterator it = this->_chanModeMap.begin();
 			it != this->_chanModeMap.end() && access != AChanMode::allow;
 			++it)
 	{
@@ -662,7 +681,7 @@ void	Server::chanModeNames(Channel& channel)
 	std::string							modeStr("+");
 	std::deque<std::string>				strDeque;
 
-	for (Server::aChanModeMap_iterator it = this->_chanModeMap.begin()
+	for (Server::chanModeMap_iterator it = this->_chanModeMap.begin()
 			; it != this->_chanModeMap.end()
 			; ++it)
 	{
@@ -680,6 +699,24 @@ void	Server::chanModeNames(Channel& channel)
 			; it != strDeque.end()
 			; ++it)
 		Numeric::insertField(*it);
+}
+
+void	Server::userModeNames(User& user)
+{
+	AUserMode*		userMode;
+	std::string		modeStr("+");
+
+	for (Server::userModeMap_iterator it = this->_userModeMap.begin()
+			; it != this->_userModeMap.end()
+			; ++it)
+	{
+		userMode = it->second;
+		if (user.isSetMode(userMode))
+		{
+			modeStr += userMode->getMode();
+		}
+	}
+	Numeric::insertField(modeStr);
 }
 
 void	Server::supportNames(void)

@@ -1,5 +1,6 @@
 #include "ModeCommand.hpp"
 #include "AChanMode.hpp"
+#include "AUserMode.hpp"
 #include "User.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
@@ -64,7 +65,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 	std::string&					modes = message[1];
 	Channel*						channel;
 	AChanMode*						chanMode;
-	std::string::iterator 			currentIt;
+	std::string::iterator 			charIt;
 	size_t							initialSize = modes.size();
 
 	if (!(channel = server.channelAt(target)))
@@ -84,15 +85,15 @@ void	ModeCommand::_checkChanModes(Message& message)
 		return ;
 	}
 	message.setChannel(channel);
-	for (std::string::iterator strIt = modes.begin(); strIt != modes.end(); )
+	for (std::string::iterator stringIt = modes.begin(); stringIt != modes.end(); )
 	{
-		currentIt = strIt;
-		++strIt;
-		if (*currentIt == '+')
+		charIt = stringIt;
+		++stringIt;
+		if (*charIt == '+')
 			set = true;
-		else if (*currentIt == '-')
+		else if (*charIt == '-')
 			set = false;
-		else if ((chanMode = server.findChanMode(*currentIt)))
+		else if ((chanMode = server.chanModeFind(*charIt)))
 		{
 			if (!chanMode->getConfig().unique && initialSize == 1 && message.size() <= pos)
 			{
@@ -103,13 +104,13 @@ void	ModeCommand::_checkChanModes(Message& message)
 			{
 				Numeric::insertField(message.getCmd());
 				message.replyNumeric(ERR_NEEDMOREPARAMS);
-				modes.erase(currentIt);
-				--strIt;
+				modes.erase(charIt);
+				--stringIt;
 			}
 			else if (!server.checkChannelMode(message, COMMAND_MODE)) // Si el usuario no es operador...
 			{
-				modes.erase(currentIt);
-				--strIt;
+				modes.erase(charIt);
+				--stringIt;
 				if (hasParamMode(set, chanMode) && message.size() > pos)
 					message.eraseAt(pos);
 			}
@@ -122,8 +123,8 @@ void	ModeCommand::_checkChanModes(Message& message)
 				}
 				else
 				{
-					modes.erase(currentIt);
-					--strIt;
+					modes.erase(charIt);
+					--stringIt;
 					if (hasParamMode(set, chanMode) && message.size() > pos)
 						message.eraseAt(pos);
 				}
@@ -131,11 +132,11 @@ void	ModeCommand::_checkChanModes(Message& message)
 		}	
 		else
 		{
-			Numeric::insertField(*currentIt);
+			Numeric::insertField(*charIt);
 			Numeric::insertField(channel->getName());
 			message.replyNumeric(ERR_UNKNOWNMODE);
-			modes.erase(currentIt);
-			--strIt;
+			modes.erase(charIt);
+			--stringIt;
 		}
 	}
 	cleanSignModes(modes);
@@ -157,28 +158,80 @@ void	ModeCommand::_checkChanModes(Message& message)
 
 void	ModeCommand::_checkUserModes(Message& message)
 {
-	std::string&	modeUserName = message[0];
-	std::string&	modes = message[1];
-	User*			modeUser = server.userAt(modeUserName);
+	bool					set = true;
+	std::string&			target = message[0];
+	std::string&			modes = message[1];
+	User*					user = static_cast<User*>(message.getSender());
+	AUserMode*				userMode;
+	std::string::iterator	charIt;
 
-	if (!(modeUser = server.userAt(modeUserName)))
+	if (!(user = server.userAt(target)))
 	{
-		Numeric::insertField(modeUserName);
-		message.replyNumeric(ERR_NOSUCHNICK);
+		Numeric::insertField(target);
+		message.replyNumeric(ERR_NOSUCHCHANNEL);
 		return ;
-	}	  
-	if (*this->userSender != *modeUser)
+	}
+	if (*user != target)
 	{
-		Numeric::insertField(modeUser->getName());
+		Numeric::insertField(user->getName());
 		message.replyNumeric(ERR_USERSDONTMATCH);
 		return ;
 	}
-	if (modes == "-o" && modeUser->isOper())
+	if (message.size() < 2)
 	{
-		modeUser->setOper(false);
-		modeUserName = modeUser->getName();
-		message.reply();
+		this->server.userModeNames(*user);
+		message.sendNumeric(RPL_UMODEIS);
+		return ;
 	}
+	for (std::string::iterator stringIt = modes.begin(); stringIt != modes.end(); )
+	{
+		charIt = stringIt;
+		++stringIt;
+		if (*charIt == '+')
+			set = true;
+		else if (*charIt == '-')
+			set = false;
+		else if ((userMode = server.userModeFind(*charIt)))
+		{
+			if (set && (userMode->getType() & AUserMode::canSet))
+			{
+				if (user->isSetMode(userMode))
+				{
+					modes.erase(charIt);
+					--stringIt;
+				}
+				else
+					user->setMode(userMode);
+			}
+			else if (!set && (userMode->getType() & AUserMode::canUnset))
+			{
+				if (user->isSetMode(userMode))
+					user->unsetMode(userMode);
+				else
+				{
+					modes.erase(charIt);
+					--stringIt;
+				}
+			}
+			else
+			{
+				modes.erase(charIt);
+				--stringIt;
+			}
+		}
+		else
+		{
+			Numeric::insertField(*charIt);
+			Numeric::insertField(user->getName());
+			message.replyNumeric(ERR_UNKNOWNMODE);
+			modes.erase(charIt);
+			--stringIt;
+		}
+	}
+	cleanSignModes(modes);
+	message.limitMaxParam(2);
+	if (!modes.empty())
+		message.reply();
 }
 
 bool	ModeCommand::_recvUser(Message& message)
