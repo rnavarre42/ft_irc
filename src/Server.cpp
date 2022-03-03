@@ -482,6 +482,7 @@ void	Server::insertUser(User* user)
 	this->_message.setReceiver(user);
 	this->_fdMap.insert(std::make_pair(user->getFd(), user));
 	this->_eventHandler.raise(NEWUSEREVENT, this->_message);
+	this->_message.clear();
 }
 
 void	Server::eraseUser(User& user)
@@ -789,12 +790,25 @@ bool	Server::sendCommand(Message& message)
 void	Server::_checkConsoleInput(void)
 {
 	std::string		buffer;
+	ISender*		sender;
+	ISender*		receiver;
 
 	if (this->_pollfds[1].revents & POLLIN)
 	{
 		std::getline(std::cin, buffer);
 		if (std::cin && buffer == "quit")
 			this->quit(SHUTDOWN_STRING);
+		if (std::cin && buffer == "message")
+		{
+		//	std::cout << "message:" << std::endl;
+			sender = _message.getSender();
+			receiver = _message.getReceiver();
+			if (sender)
+				std::cout << "\tsender: " << sender->getName() << sender->getFd() << std::endl;
+			if (receiver)
+				std::cout << "\treceiver: " << receiver->getName() << receiver->getFd() << std::endl;
+			std::cout << "end" << std::endl;
+		}
 	}
 }
 
