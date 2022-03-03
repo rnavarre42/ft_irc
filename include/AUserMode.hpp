@@ -1,7 +1,7 @@
 #ifndef AUSERMODE_HPP
 # define AUSERMODE_HPP
 
-# include <cstdint>
+# include <stdint.h>
 # include <iostream>
 
 class AUserMode
