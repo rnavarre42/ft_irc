@@ -24,7 +24,7 @@ void	PrivmsgCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	PrivmsgCommand::_recvUser(Message& message)
 {
-	User*			user = this->userSender;
+	User*			user = this->senderUser;
 	std::string&	target = message[0];
 	Channel*		channel;
 	User*		 	targetUser;

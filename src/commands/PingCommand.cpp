@@ -20,7 +20,7 @@ void	PingCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	PingCommand::_recvUser(Message& message)
 {
-	User*		user = this->userSender;
+	User*		user = this->senderUser;
 	std::string	param;
 
 	message.setReceiver(message.getSender());

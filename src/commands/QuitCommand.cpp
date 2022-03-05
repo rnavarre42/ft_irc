@@ -39,13 +39,13 @@ void	QuitCommand::quitEvent(Message& message)
 
 bool	QuitCommand::_recvUser(Message& message)
 {
-	User*	user = this->userSender;
+	User*	user = this->senderUser;
 
 	if (message.size())
 		message[0].insert(0, "Quit: ");
 	message.setCmd("QUIT");
 	message.setReceiver(user);
-	message.process();
+	message.internal();
 	return true;
 }
 
@@ -56,7 +56,7 @@ bool	QuitCommand::_recvServer(Message&)
 
 bool	QuitCommand::_sendUser(Message& message)
 {
-	User*	user = this->userReceiver;
+	User*	user = this->receiverUser;
 	
 	if (!message.size())
 		message.insertField("Client exited");

@@ -3,6 +3,7 @@ BASE_SRCS		=	\
 					ircserv.cpp					\
 					utils.cpp					\
 					ACommand.cpp				\
+					ASender.cpp					\
 					Channel.cpp					\
 					Console.cpp					\
 					Invite.cpp					\

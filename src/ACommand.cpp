@@ -19,59 +19,53 @@ void ACommand::recv(Message& message)
 {
 	bool	ret = true;
 
-	if (message.getSender()->getStatus() & this->levelAccess || message.getSender()->isOper())
+	senderUser = dynamic_cast<User*>(message.getSender());
+	senderServer = dynamic_cast<Server*>(message.getSender());
+
+	if (senderUser->getLevel() & this->levelAccess || (senderUser && senderUser->isOper()))
 	{
 		if (message.size() < this->minParam)
 		{
 			Numeric::insertField(message.getCmd());
-			message.getSender()->send(Numeric::builder(this->server, *message.getSender(), ERR_NEEDMOREPARAMS));
+			message.replyNumeric(ERR_NEEDMOREPARAMS);
 		}
 		else
 		{
-			if (message.getSender()->isUser())
-			{
-				this->userSender = static_cast<User *>(message.getSender());
+			if (senderUser)
 				ret = this->_recvUser(message);
-			}
-			else if (message.getSender()->isServer())
-			{
-				this->serverSender = static_cast<Server *>(message.getSender());
+			else if (senderServer)
 				ret = this->_recvServer(message);
-			}
 			if (!ret)
 			{
 				Numeric::insertField(message.getCmd());
-				message.getSender()->send(Numeric::builder(this->server, *message.getSender(), ERR_NOTIMPLEMENTED));
+				message.replyNumeric(ERR_NOTIMPLEMENTED);
 			}
 		}
 	}
 	else if (this->levelAccess & (LEVEL_REGISTERED | LEVEL_NEGOTIATING))
 	{
 		Numeric::insertField(message.getCmd());
-		message.getSender()->send(Numeric::builder(this->server, *message.getSender(), ERR_NOTREGISTERED));
+		message.replyNumeric(ERR_NOTREGISTERED);
 	}
 	else if (this->levelAccess == LEVEL_UNREGISTERED)
 	{
 		Numeric::insertField(message.getCmd());
-		message.getSender()->send(Numeric::builder(this->server, *message.getSender(), ERR_ALREADYREGISTERED));
+		message.replyNumeric(ERR_ALREADYREGISTERED);
 	}
 	else if (this->levelAccess == LEVEL_IRCOPERATOR)
 	{
 		Numeric::insertField(message.getCmd());
-		message.getSender()->send(Numeric::builder(this->server, *message.getSender(), ERR_NOPRIVILEGES));
+		message.replyNumeric(ERR_NOPRIVILEGES);
 	}
 }
 
 void ACommand::send(Message& message)
 {
-	if (message.getReceiver()->isUser())
-	{
-		this->userReceiver = static_cast<User *>(message.getReceiver());
+	receiverUser = dynamic_cast<User*>(message.getReceiver());
+	receiverServer = dynamic_cast<Server*>(message.getReceiver());
+
+	if (receiverUser)
 		this->_sendUser(message);
-	}
-	else if (message.getReceiver()->isServer())
-	{
-		this->serverReceiver = static_cast<Server *>(message.getReceiver());
+	else if (receiverServer)
 		this->_sendServer(message);
-	}
 }

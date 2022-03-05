@@ -26,12 +26,12 @@ void	PongCommand::registerUserEvent(Message& message)
 {
 	Console::log(LOG_INFO, "El usuario " + message.getSender()->getName() + " se ha registrado");	
 	message.limitMaxParam(0);
-	message.setReceiver(this->userSender);
+	message.setReceiver(this->senderUser);
 	message.insertField("");
 	message.setCmd("MODE");
 	message.send();
 
-	Numeric::insertField(this->userSender->getMask());
+	Numeric::insertField(this->senderUser->getMask());
 	message.send(Numeric::builder(message, RPL_WELCOME));
 	
 	Numeric::insertField(message.getSender()->getMask());
@@ -48,26 +48,26 @@ void	PongCommand::registerUserEvent(Message& message)
 	message.send(Numeric::builder(message, RPL_ISUPPORT));
 
 	message.setCmd("MOTD");
-	message.process();
+	message.internal();
 }
 
 bool	PongCommand::_recvUser(Message& message)
 {
-	User*	user = this->userSender;
+	User*	user = this->senderUser;
 
 	if (message[0] == user->getPingChallenge())
 	{
-		if (user->getStatus() & ~LEVEL_REGISTERED)
-			this->server.setSenderStatus(*user, LEVEL_REGISTERED);
+		if (user->getLevel() & ~LEVEL_REGISTERED)
+			this->server.setSenderLevel(*user, LEVEL_REGISTERED);
 		user->clearPingChallenge();
 		user->setNextTimeout(0);
 	}
-	else if (user->getStatus() & ~LEVEL_REGISTERED)
+	else if (user->getLevel() & ~LEVEL_REGISTERED)
 	{
 		message.limitMaxParam(1);
 		message.setCmd("QUIT");
 		message[0] = "Incorrect ping reply for registration";
-		message.process();
+		message.internal();
 	}
 	return true;
 }

@@ -130,7 +130,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 	if (!message[1].empty())
 	{
 		message.setReceiver(channel);
-		message.setReceiver(this->userSender);
+		message.setReceiver(this->senderUser);
 		message.hideReceiver();
 		message.send();
 	}
@@ -151,7 +151,7 @@ void	ModeCommand::_checkUserModes(Message& message)
 		message.replyNumeric(ERR_NOSUCHNICK);
 		return ;
 	}	  
-	if (*this->userSender != message[0])
+	if (*this->senderUser != message[0])
 	{
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_USERSDONTMATCH);
@@ -161,7 +161,7 @@ void	ModeCommand::_checkUserModes(Message& message)
 
 bool	ModeCommand::_recvUser(Message& message)
 {
-	User&	user = *this->userSender;
+	User&	user = *this->senderUser;
 
 	(void)user;
 

@@ -34,7 +34,7 @@ void	NickCommand::nickEvent(Message&)
 
 bool	NickCommand::_recvUser(Message& message)
 {
-	User*									user = this->userSender;
+	User*									user = this->senderUser;
 	std::string								oldName = user->getName();
 	std::string								newName = message[0];
 	User*									newUser;
@@ -70,10 +70,10 @@ bool	NickCommand::_recvUser(Message& message)
 				message.limitMaxParam(1);
 				message.setCmd("QUIT");
 				message[0] = "Password incorrect";
-				message.process();
+				message.internal();
 				return true;
 			}
-			user->setStatus(LEVEL_NEGOTIATING);
+			user->setLevel(LEVEL_NEGOTIATING);
 			user->setPingChallenge("challenge-string");
 			user->send("PING :" + user->getPingChallenge());
 		}
@@ -86,7 +86,7 @@ bool	NickCommand::_recvUser(Message& message)
 					return true;
 			}
 			userMap.erase(strToUpper(oldName));
-			if ((user->getStatus() & (LEVEL_REGISTERED | LEVEL_IRCOPERATOR)))
+			if ((user->getLevel() & (LEVEL_REGISTERED | LEVEL_IRCOPERATOR)))
 			{
 				uniqueUsers = user->getUniqueVector();
 				message.setReceiver(*uniqueUsers);

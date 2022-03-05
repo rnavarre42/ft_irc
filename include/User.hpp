@@ -17,7 +17,8 @@ class Unknown;
 class User : public ASender
 {
 public:
-	User(int fd, Server& server);
+	User(Server& server, int fd);
+	User(Server& server, time_t signTime, const std::string& pass, const std::string& name, const std::string& ident, const std::string& host, const std::string& real);
 	User(const Unknown& src);
 	~User(void);
 
@@ -82,39 +83,19 @@ public:
 	std::string&	getInputBuffer(void);
 	std::string&	getOutputBuffer(void);
 
-	bool	isUser(void);
-	bool	isServer(void);
 	bool	isOper(void);
 	void	enableOper(void);
 	bool	isOnChannel(const Channel& channel);
 	bool	isOnChannel(const std::string& channel);
 
-	int	getType(void);
-
 	void				clearPingChallenge();
-	void				setPingChallenge(const std::string& value);
-	const std::string&	getPingChallenge(void) const;
 
 	void				setAwayMsg(const std::string& value);
 	const std::string&	getAwayMsg(void) const;
 	const time_t&		getAwayTime(void) const;
 
-	const Server&	getServer(void) const;
-
-	void 			setNextTimeout(time_t value);
-	const time_t&	getNextTimeout(void) const;
-
-	void			setIdleTime(time_t value);
-	const time_t&	getIdleTime(void) const;
-
-	void	setStatus(int value);
-	int		getStatus(void);
-
 	void		setPollIndex(int value);
 	const int&	getPollIndex(void) const;
-
-	void		setFd(int value);
-	const int&	getFd(void) const;
 
 	bool	isPingSended(void);
 	bool	isAway(void);
@@ -145,29 +126,13 @@ private:
 	User(const User& src);
 	User&	operator=(const User& rhs);
 
-	Server&					_server;
-
 	Server::channelMap_type	_channelMap;
 
-	std::string	_name;
-	std::string	_host;
 	std::string	_ident;
-	std::string	_real;
-	std::string	_pass;
-	std::string	_inputBuffer;
-	std::string	_outputBuffer;
 	std::string _awayMsg;
-	std::string	_pingChallenge;
-	std::string	_mask;
 
-	int			_status;
-	std::time_t	_signTime;
 	std::time_t	_awayTime;
-	std::time_t	_nextTimeout;
-	std::time_t	_idleTime;
 	int			_pollIndex;
-	int			_fd;
-	int			_type;
 	bool		_oper;
 	uint64_t	_modes;
 

@@ -20,7 +20,7 @@ void	PassCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	PassCommand::_recvUser(Message& message)
 {
-	User*	user = this->userSender;
+	User*	user = this->senderUser;
 
 	user->setPass(message[0]);
 	return true;

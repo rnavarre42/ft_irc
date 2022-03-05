@@ -22,7 +22,7 @@ void	UserCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	UserCommand::_recvUser(Message& message)
 {
-	User*	user = this->userSender;
+	User*	user = this->senderUser;
 
 	if (user->getIdent() == "anonymous")
 	{
@@ -31,20 +31,20 @@ bool	UserCommand::_recvUser(Message& message)
 			message.limitMaxParam(1);
 			message.setCmd("QUIT");
 			message[0] = "Password incorret";
-			message.process();
+			message.internal();
 			return true;
 		}
 		user->setIdent(message[0]);
 		user->setReal(message[3]);
 		if (!user->getName().empty())
 		{
-			user->setStatus(LEVEL_NEGOTIATING);
+			user->setLevel(LEVEL_NEGOTIATING);
 			user->setPingChallenge("challenge-string");
 			user->send("PING :" + user->getPingChallenge());
 		}
 	}
 	else
-		message.sendNumeric(ERR_ALREADYREGISTERED);
+		message.replyNumeric(ERR_ALREADYREGISTERED);
 	return true;
 }
 

@@ -41,16 +41,13 @@ void	Server::signalHandler(int sig)
 		server.quit(SHUTDOWN_STRING);
 }
 
-Server::Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password)
-	: _ip(listenIp)
+Server::Server(const std::string& listenIp, int listenPort, const std::string& pass, const std::string& name, const std::string& real)
+	: ASender(*this, -1, time(NULL), 0, TYPE_LOCALSERVER, pass, name, "", real)
+	, _ip(listenIp)
 	, _port(listenPort)
 	, _pollTimeout(1000)
 	, _message(*new Message(*this))
-	, _status(0)
 	, _stop(false)
-	, _pass(password)
-	, _name(name)
-	, _type(TYPE_SERVER)
 {
 	this->_loadCommands();
 	this->_loadChanModes();
@@ -60,12 +57,22 @@ Server::Server(const std::string& listenIp, int listenPort, const std::string& n
 	this->_bind();
 }
 
+Server::Server(Server& server, time_t signTime, int level, const std::string& pass, const std::string& name, const std::string& host, const std::string& real)
+	: ASender(server, -1, signTime, level, TYPE_REMOTESERVER, pass, name, host, real)
+	, _message(server._message)
+{}
+
 Server::~Server(void)
 {
-	this->_unloadCommands();
-	this->_unloadChanModes();
-	delete &this->_message;
-	Console::log(LOG_INFO, "Server destroyed");
+	if (this->_type == TYPE_LOCALSERVER)
+	{
+		this->_unloadCommands();
+		this->_unloadChanModes();
+		delete &this->_message;
+		Console::log(LOG_INFO, "LocalServer destroyed");
+	}
+	else
+		Console::log(LOG_INFO, "RemoteServer (" + this->_name + ") destroyed");
 }
 
 void	Server::_loadCommands(void)
@@ -179,10 +186,11 @@ Server&	Server::getInstance(void)
 {
 	return *Server::_instance;
 }
-Server*	Server::createInstance(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password)
+
+Server*	Server::createInstance(const std::string& listenIp, int listenPort, const std::string& pass, const std::string& name, const std::string& real)
 {
 	if (Server::_instance == NULL)
-		Server::_instance = new Server(listenIp, listenPort, name, password);
+		Server::_instance = new Server(listenIp, listenPort, pass, name, real);
 	return Server::_instance;
 }
 
@@ -266,18 +274,9 @@ ssize_t	Server::send(const Message& message)
 	return this->send(message.toString());
 }
 
-void	Server::setStatus(int value)
+void	Server::setSenderLevel(ASender& sender, int value)
 {
-	this->_status = value;
-}
-
-int		Server::getStatus(void)
-{
-	return this->_status;
-}
-void	Server::setSenderStatus(ASender& sender, int value)
-{
-	sender.setStatus(value);
+	sender.setLevel(value);
 	if (value == LEVEL_REGISTERED)
 		this->_eventHandler.raise(REGUSEREVENT, this->_message);
 }
@@ -331,41 +330,6 @@ int	Server::_freePollIndexFind(void)
 			return i;
 	}
 	return 0;
-}
-
-const std::string&	Server::getName(void) const
-{
-	return this->_name;
-}
-
-const std::string&	Server::getMask(void) const
-{
-//	throw Server::NotImplementedException();
-	return this->_name;
-}
-
-bool	Server::isUser(void)
-{
-	return this->_type == TYPE_USER;
-}
-
-bool	Server::isServer(void)
-{
-	return this->_type == TYPE_SERVER;
-}
-
-bool	Server::isOper(void)
-{
-	return false;
-}
-
-int	Server::getType(void)
-{
-	return this->_type;
-}
-void	Server::setIdleTime(time_t value)
-{
-	this->_idleTime = value;
 }
 
 Unknown*	Server::_accept(void)
@@ -515,10 +479,10 @@ void	Server::deleteUser(ASender& sender, const std::string& text)
 	this->_message.setReceiver(&user);
 	this->_message.insertField(text);
 	this->_eventHandler.raise(DELUSEREVENT, this->_message);
-	if (user.getStatus() == LEVEL_REGISTERED) //Si está registrado se verifica que esté en más canales
+	if (user.getLevel() == LEVEL_REGISTERED) //Si está registrado se verifica que esté en más canales
 	{
 		this->_message.setCmd("QUIT");
-		this->_message.clearReceiver();
+		this->_message.clearReceivers();
 		this->_message.setReceiver(*userVector);
 		this->_message.hideReceiver();
 		this->_eventHandler.raise(QUITEVENT, this->_message);
@@ -622,6 +586,11 @@ void	Server::delFromChannel(Message& message)
 		this->_eventHandler.raise(ERRCHANEVENT, this->_message);
 }
 
+static bool	serverIsFull(void *value)
+{
+	return (value == NULL);
+}
+
 int	Server::_checkNewConnection(void)
 {
 	Unknown*	unknown;
@@ -629,7 +598,7 @@ int	Server::_checkNewConnection(void)
 	if (this->_pollfds[0].revents & POLLIN)
 	{
 		unknown = this->_accept();
-		if (!unknown)
+		if (serverIsFull(unknown))
 		{
 			Console::log(LOG_WARNING, "Server full, rejecting new connection");
 			return true;
@@ -669,20 +638,20 @@ void	Server::_checkUserIO(void)
 		if (this->_pollfds[i].revents & POLLIN)
 		{
 			sender = this->_fdMap[this->_pollfds[i].fd];
-			size = sender->checkInput(this->_pollfds[i].fd, this->_message);
+			size = sender->checkInput(this->_message);
 			if (size <= 0) // ctrl+c
 				this->deleteUser(*sender, "Client exited");
 		}
 		else if (this->_pollfds[i].revents & POLLOUT)
 		{
 			sender = this->_fdMap[this->_pollfds[i].fd];
-			if (sender->checkOutput(this->_pollfds[i].fd))
+			if (sender->checkOutput())
 				this->_pollfds[i].events ^= POLLOUT;
 		}
 		else if (this->_pollfds[i].fd > 0)
 		{
 			sender = this->_fdMap[this->_pollfds[i].fd];
-			this->_checkSenderTimeout(*sender);
+			this->_checkConnectionTimeout(*sender);
 		}
 	}
 }
@@ -713,6 +682,7 @@ bool	Server::sendCommand(Message& message)
 	}
 	return false;
 }
+
 void	Server::_checkConsoleInput(void)
 {
 	std::string		buffer;
@@ -725,13 +695,13 @@ void	Server::_checkConsoleInput(void)
 	}
 }
 
-void	Server::_checkSenderTimeout(ASender& sender)
+void	Server::_checkConnectionTimeout(ASender& sender)
 {
 	if (sender.getNextTimeout() && sender.getNextTimeout() < time(NULL))
 		this->deleteUser(sender, "Registration timeout");
 	else if (!sender.getNextTimeout() && (sender.getIdleTime() + IDLETIMEOUT < time(NULL)))
 	{
-		if (sender.getStatus() == LEVEL_REGISTERED)
+		if (sender.getLevel() == LEVEL_REGISTERED)
 		{
 			sender.setNextTimeout(time(NULL) + NEXTTIMEOUT);
 			sender.setPingChallenge(this->_name);
@@ -745,7 +715,7 @@ void	Server::_checkTimeout(void)
 	Server::fdMap_iterator	it;
 
 	for (it = this->_fdMap.begin(); it != this->_fdMap.end();)
-		this->_checkSenderTimeout(*(it++)->second);
+		this->_checkConnectionTimeout(*(it++)->second);
 }
 
 void	Server::_loop(void)
@@ -775,4 +745,9 @@ void	Server::_loop(void)
 			this->_checkConsoleInput();
 		}
 	}
+}
+
+void	Server::_updateMask(void)
+{
+	this->_mask = this->_host;
 }

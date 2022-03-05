@@ -34,7 +34,7 @@ void	JoinCommand::createChannelEvent(Message& message)
 	message.hideReceiver();
 	message.send();
 	message.setCmd("NAMES");
-	message.process();
+	message.internal();
 }
 
 void	JoinCommand::joinChannelEvent(Message& message)
@@ -44,10 +44,10 @@ void	JoinCommand::joinChannelEvent(Message& message)
 	message.setReceiver(message.getSender());	// cuando el canal está vacio, hay que añadir a uno mismo
 	message.hideReceiver();
 	message.send();
-	message.clearReceiver();
+	message.clearReceivers();
 	message.setReceiver(message.getSender());
 	message.setCmd("NAMES");
-	message.process();
+	message.internal();
 }
 
 void	JoinCommand::alreadyChannelEvent(Message& message)
@@ -78,7 +78,7 @@ void	JoinCommand::errChannelEvent(Message& message)
 
 bool	JoinCommand::_recvUser(Message& message)
 {
-	User*						user = this->userSender;
+	User*						user = this->senderUser;
 	Server::channelMap_iterator	currentIt;
 
 	if (message[0] == "0")
@@ -92,7 +92,7 @@ bool	JoinCommand::_recvUser(Message& message)
 			++it;
 			message[0] = currentIt->second->getName();
 			this->server.delFromChannel(message);
-			message.clearReceiver();
+			message.clearReceivers();
 		}
 	}
 	else

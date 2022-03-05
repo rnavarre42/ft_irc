@@ -21,7 +21,7 @@ void	AwayCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	AwayCommand::_recvUser(Message& message)
 {
-	User*	user = this->userSender;
+	User*	user = this->senderUser;
 
 	if (!message.size() || message[0].empty())
 	{

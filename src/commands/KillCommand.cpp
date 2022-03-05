@@ -21,7 +21,7 @@ void	KillCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	KillCommand::_recvUser(Message& message)
 {
-	User*						user = this->userSender;
+	User*						user = this->senderUser;
 	Server::userMap_iterator	userKillIt;
 
 	if ((userKillIt = server.userFind(message[0])) != server.getUserMap().end())

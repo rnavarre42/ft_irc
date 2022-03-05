@@ -56,14 +56,15 @@ Message::Message(Server &server)
 	, _channel(NULL)
 	, _command(NULL)
 	, _hideReceiver(false)
+	, _hideSemicolon(false)
 {}
 
 Message::~Message(void)
 {}
 
-void	Message::set(ASender& sender, std::string data)
+void	Message::set(ASender* sender, std::string data)
 {
-	this->_sender = &sender;
+	this->_sender = sender;
 	leftTrim(data);
 	if (data.empty())
 		return;
@@ -226,7 +227,7 @@ void	Message::clear(void)
 	this->_hideReceiver = false;
 }
 
-void	Message::clearReceiver(void)
+void	Message::clearReceivers(void)
 {
 	this->_receiverVector.clear();
 }
@@ -246,10 +247,12 @@ void	Message::replyNumeric(int numeric)
 	this->reply(Numeric::builder(*this, numeric));
 }
 
+/*
 void	Message::sendNumeric(int numeric)
 {
 	this->send(Numeric::builder(*this, numeric));
 }
+*/
 
 void	Message::send(void)
 {
@@ -266,7 +269,7 @@ void	Message::send(const std::string& data)
 	this->_receiverVector[0]->send(data);
 }
 
-void	Message::process(void)
+void	Message::internal(void)
 {
 	this->_server.sendCommand(*this);
 }

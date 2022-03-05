@@ -101,3 +101,6 @@ const std::string&	Unknown::getMask(void) const
 	return this->_mask;
 }
 
+void	Unknown::_updateMask(void)
+{
+}

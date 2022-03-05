@@ -14,6 +14,11 @@ class Server;
 class Message
 {
 public:
+	typedef std::vector<ASender*>				receiverVector_type;
+	typedef receiverVector_type::iterator		receiverVector_iterator;
+	typedef std::vector<std::string>			paramVector_type;
+	typedef paramVector_type::iterator			paramVector_iterator;
+
 	Message(Server& server);
 	~Message(void);
 
@@ -22,17 +27,20 @@ public:
 	void				setCmd(const std::string& value);
 	const std::string&	getCmd(void) const;
 
-	void		set(ASender& sender, std::string data);
+	void		set(ASender* sender, std::string data);
 	void		setReceiver(Channel* channel);
 	void		setReceiver(Server::userVector_type& userVector);
 	void		setReceiver(ASender* value);
 	void		hideReceiver(void);
+	void		hideSemicolon(void);
+
 	ASender*	getReceiver(void);
 
 	void		clear(void);
-	void		clearReceiver(void);
+	void		clearReceivers(void);
 
 	void		setSender(ASender* value);
+
 	ASender*	getSender(void);
 	Server*		getServer(void);
 
@@ -41,11 +49,11 @@ public:
 
 	void		reply(void);
 	void		reply(const std::string& data);
-	void		replyNumeric(int numeric);
+	void		replyNumeric(int numeric); //its for reply a client
 	void		send(void);
 	void		send(const std::string& data);
-	void		sendNumeric(int numeric);
-	void		process(void);
+//	void		sendNumeric(int numeric); //for server only???? 
+	void		internal(void); //for process internally command to send a new one.
 
 	std::size_t	size(void);
 	bool		empty(void);
@@ -71,12 +79,13 @@ private:
 	Server&						_server;
 	ASender*					_sender;
 	Channel*					_channel;
-	std::vector<ASender*>		_receiverVector;
+	receiverVector_type			_receiverVector;
+	paramVector_type			_paramVector;
 	std::string 				_prefix;
 	std::string 				_cmd;
 	ACommand*					_command;
-	std::vector<std::string>	_paramVector;
 	bool						_hideReceiver;
+	bool						_hideSemicolon;
 };
 
 #endif

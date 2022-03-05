@@ -21,7 +21,7 @@ void	NoticeCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	NoticeCommand::_recvUser(Message& message)
 {
-	User*						user = this->userSender;
+	User*						user = this->senderUser;
 	User*						targetUser;
 	std::string					target;
 	Channel*					targetChannel;

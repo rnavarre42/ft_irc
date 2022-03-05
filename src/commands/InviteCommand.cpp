@@ -23,7 +23,7 @@ void	InviteCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	InviteCommand::_recvUser(Message& message)
 {
-	User*						user = this->userSender;
+	User*						user = this->senderUser;
 //	Server::channelMap_iterator	channelIt;
 //	Server::userMap_iterator	invitedUserIt;
 	Channel*					channel;
@@ -34,33 +34,33 @@ bool	InviteCommand::_recvUser(Message& message)
 	if (!(invitedUser = server.userAt(message[0])))
 	{
 		Numeric::insertField(message[0]);
-		message.sendNumeric(ERR_NOSUCHNICK);
+		message.replyNumeric(ERR_NOSUCHNICK);
 		return true;
 	}
 	invitedName = invitedUser->getName();
 	if (!(channel = server.channelAt(message[1])))
 	{
 		Numeric::insertField(message[1]);
-		message.sendNumeric(ERR_NOSUCHCHANNEL);
+		message.replyNumeric(ERR_NOSUCHCHANNEL);
 		return true;
 	}
 	channelName = channel->getName();
 	if (!user->isOnChannel(*channel))
 	{
 		Numeric::insertField(channelName);
-		message.sendNumeric(ERR_NOTONCHANNEL);
+		message.replyNumeric(ERR_NOTONCHANNEL);
 		return true;
 	}
 	Numeric::insertField(invitedName);
 	Numeric::insertField(channelName);
 	if (invitedUser->isOnChannel(*channel))
-		message.sendNumeric(ERR_USERONCHANNEL);
+		message.replyNumeric(ERR_USERONCHANNEL);
 	else
 	{
 		server.invite().insert(invitedUser, channel);
 		Console::log(LOG_INFO, user->getName() + " ha invitado a " + invitedName + " a " + channelName);
-		message.sendNumeric(RPL_INVITING);
-		message.clearReceiver();
+		message.replyNumeric(RPL_INVITING);
+		message.clearReceivers();
 		message.eraseAt(0);
 		message[0] = channelName;
 		message.setSender(user);

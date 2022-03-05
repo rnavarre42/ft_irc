@@ -39,7 +39,7 @@
 # define IDLETIMEOUT		120
 # define REGTIMEOUT			15
 # define NEXTTIMEOUT		120
-# define BUFFERSIZE			512
+//# define BUFFERSIZE			512
 # define MAXUSERS			10
 # define MAXLISTEN			5
 
@@ -82,6 +82,7 @@ class Channel;
 class Server : public ASender
 {
 public:
+	Server(const Unknown& src);
 	~Server(void);
 
 	typedef EventHandler<int, Message>				eventHandler_type;
@@ -108,12 +109,10 @@ public:
 
 	static void			signalHandler(int sig);
 	static Server&		getInstance(void);
-	static Server*		createInstance(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password);
+	static Server*		createInstance(const std::string& listenIp, int listenPort, const std::string& pass, const std::string& name, const std::string& real);
 	static void			deleteInstance(void);
-	const std::string&	getName(void) const;
 	userMap_type&		getUserMap(void);
 	channelMap_type&	getChannelMap(void);
-	const std::string&	getMask(void) const;
 	AChanMode*			findChanMode(char modeChar);
 
 	Invite&	invite(void)
@@ -141,9 +140,7 @@ public:
 	bool		isOper(void);
 	int			getType(void);
 	const int&	getFd(void) const;
-	int			getStatus(void);
-	void		setStatus(int value);
-	void		setSenderStatus(ASender& sender, int value);
+	void		setSenderLevel(ASender& sender, int value);
 	void		setIdleTime(time_t value);
 	const time_t&	getIdleTime(void) const;
 	void		setNextTimeout(time_t value);
@@ -224,24 +221,20 @@ public:
 	};
 
 private:
-	Server(const std::string& listenIp, int listenPort, const std::string& name, const std::string& password);
 	Server(void);
 
+protected:
+	Server(const std::string& listenIp, int listenPort, const std::string& pass, const std::string& name, const std::string& real);
+	Server(Server& server, time_t signTime, int status, const std::string& pass, const std::string& name, const std::string& host, const std::string& real);
+
 	std::string	_ip;
-	int			_fd;
 	int			_port;
 	int			_opt;
 	int			_addrlen;
 	int			_pollTimeout;
 	Message&	_message;
 
-	int			_status;
 	bool		_stop;
-
-	std::string	_pass;
-	std::string	_name;
-	int			_type;
-	time_t		_idleTime;
 
 	struct sockaddr_in	_address;
 	// El motivo de usar una estructura de tamaño fijo es porque en user almacenamos el indice donde se encuentra registrado el fd en pollfds
@@ -273,13 +266,16 @@ private:
 	void	_checkConsoleInput(void);
 	void	_checkUserIO(void);
 	void	_checkTimeout(void);
-	void	_checkSenderTimeout(ASender& sender);
+	void	_checkConnectionTimeout(ASender& sender);
 	void	_closeClients(const std::string& msg);
 	void	_loop(void);
 	void	_initSocket(void);
 	void	_bind(void);
 	void	_listen(void);
 	Unknown*	_accept();
+
+
+	void	_updateMask(void);
 };
 
 #endif

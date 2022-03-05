@@ -5,12 +5,6 @@
 
 # include <string>
 
-# define LEVEL_UNREGISTERED	0x01
-# define LEVEL_NEGOTIATING	0x02
-# define LEVEL_REGISTERED	0x04
-# define LEVEL_IRCOPERATOR	0x08
-# define LEVEL_ALL			LEVEL_UNREGISTERED | LEVEL_NEGOTIATING | LEVEL_REGISTERED | LEVEL_IRCOPERATOR
-
 //class Server;
 class Message;
 class User;
@@ -44,10 +38,10 @@ protected:
 	Server&		server;
 	int			levelAccess;
 	size_t		minParam;
-	Server*		serverSender;
-	User*		userSender;
-	Server*		serverReceiver;
-	User*		userReceiver;
+	Server*		senderServer;
+	User*		senderUser;
+	Server*		receiverServer;
+	User*		receiverUser;
 };
 
 #endif

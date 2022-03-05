@@ -29,8 +29,8 @@ public:
 	int					getStatus(void);
 	void				setIdleTime(time_t value);
 	void				setNextTimeout(time_t value);
-	const time_t&	getIdleTime(void) const;
-	const time_t&	getNextTimeout(void) const;
+	const time_t&		getIdleTime(void) const;
+	const time_t&		getNextTimeout(void) const;
 	bool				isServer(void);
 	bool				isUser(void);
 	bool				isOper(void);
@@ -59,6 +59,7 @@ private:
 	int					_type;
 	int					_pollIndex;
 
+	void	_updateMask(void);
 };
 
 #endif

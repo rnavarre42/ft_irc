@@ -32,7 +32,7 @@ bool	MotdCommand::_recvServer(Message&)
 
 bool	MotdCommand::_sendUser(Message& message)
 {
-	User*			user = this->userReceiver;
+	User*			user = this->receiverUser;
 	std::ifstream	ifs;
 	std::string		line;
 

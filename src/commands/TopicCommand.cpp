@@ -24,7 +24,7 @@ void	TopicCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	TopicCommand::_recvUser(Message& message)
 {
-	User*						user = this->userSender;
+	User*						user = this->senderUser;
 	std::string					target;
 	std::string					newTopic;
 	Channel*					channel;

@@ -13,14 +13,14 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
-User::User(int fd, Server& server)
-	: _server(server)
+User::User(Server& server, int fd)
+	: ASender(server, fd, time(NULL), LEVEL_UNREGISTERED, TYPE_LOCALUSER, "", "", "", "")
 	, _ident("anonymous")
-	, _status(1)
-	, _signTime(time(NULL))
-	, _nextTimeout(this->_signTime + REGTIMEOUT)
-	, _fd(fd)
-	, _type(TYPE_USER)
+{}
+
+User::User(Server& server, time_t signTime, const std::string& pass, const std::string& name, const std::string& ident, const std::string& host, const std::string& real)
+	: ASender(server, -1, signTime, LEVEL_REGISTERED, TYPE_REMOTEUSER, pass, name, host, real)
+	, _ident(ident)
 {}
 
 User::~User(void)
@@ -31,17 +31,12 @@ User::~User(void)
 }
 
 User::User(const Unknown& src)
-	: _server(src._server)
-	, _host(src._host)
-	, _ident(src._ident)
-	, _pass(src._pass)
-	, _status(1)
-	, _signTime(src._signTime)
-	, _nextTimeout(src._nextTimeout)
-	, _pollIndex(src._pollIndex)
-	, _fd(src._fd)
-	, _type(TYPE_USER)
-{}
+	: ASender(src._server, src._fd, src._signTime, src._level, TYPE_LOCALUSER, src._pass, src._name, src._host, src._real)
+{
+	this->_nextTimeout = src._nextTimeout;
+	this->_idleInnerTime = time(NULL);
+
+}
 
 void	User::setHost(const std::string& value)
 {
@@ -146,16 +141,6 @@ const std::string&	User::getPass(void) const
 	return this->_pass;
 }
 
-bool	User::isUser(void)
-{
-	return this->_type == TYPE_USER;
-}
-
-bool	User::isServer(void)
-{
-	return this->_type == TYPE_SERVER;
-}
-
 bool	User::isOper(void)
 {
 	return this->_oper;
@@ -164,11 +149,6 @@ bool	User::isOper(void)
 void	User::enableOper(void)
 {
 	this->_oper = true;
-}
-
-int		User::getType(void)
-{
-	return this->_type;
 }
 
 void	User::setPollIndex(int value)
@@ -197,59 +177,9 @@ const time_t&	User::getAwayTime(void) const
 	return this->_awayTime;
 }
 
-void	User::setIdleTime(time_t value)
-{
-	this->_idleTime = value;
-}
-
-const time_t&	User::getIdleTime(void) const
-{
-	return this->_idleTime;
-}
-
-void	User::setNextTimeout(time_t value)
-{
-	this->_nextTimeout = value;
-}
-
-const time_t&	User::getNextTimeout(void) const
-{
-	return this->_nextTimeout;
-}
-
-void	User::setFd(int value)
-{
-	this->_fd = value;
-}
-
-const int&	User::getFd(void) const
-{
-	return this->_fd;
-}
-
 void	User::clearPingChallenge(void)
 {
 	this->_pingChallenge.clear();
-}
-
-void	User::setPingChallenge(const std::string& value)
-{
-	this->_pingChallenge = value;
-}
-
-const std::string&	User::getPingChallenge(void) const
-{
-	return this->_pingChallenge;
-}
-
-void	User::setStatus(int value)
-{
-	this->_status = value;
-}
-
-int	User::getStatus(void)
-{
-	return this->_status;
 }
 
 void	User::insert(Channel* channel)
@@ -260,11 +190,6 @@ void	User::insert(Channel* channel)
 void	User::erase(Channel* channel)
 {
 	this->_channelMap.erase(strToUpper(channel->getName()));
-}
-
-const Server&	User::getServer(void) const
-{
-	return this->_server;
 }
 
 bool	User::isAway(void)
@@ -316,63 +241,6 @@ ssize_t	User::send(const Message& message)
 {
 	this->sendToBuffer(message.toString());
 	return this->send();
-}
-
-size_t	User::recv(int fd)
-{
-	size_t	size;
-	char	buffer[BUFFERSIZE + 1];
-
-	size = ::recv(fd, buffer, BUFFERSIZE, 0);
-	buffer[size] = '\0';
-	this->_inputBuffer += buffer;
-	return size;
-}
-
-std::string	User::_getLine(size_t pos)
-{
-	std::string	line;
-
-	line = this->_inputBuffer.substr(0, pos);
-	this->_inputBuffer.erase(0, pos + 1);
-	while ((pos = line.find('\r')) != std::string::npos)
-		line.erase(pos, 1);
-	return line;
-}
-
-size_t	User::checkInput(int fd, Message& message)
-{
-	size_t		size;
-	size_t		pos;
-	std::string	lineBuffer;
-
-	size = this->recv(fd);
-	while ((pos = this->_inputBuffer.find('\n')) != std::string::npos)
-	{
-		lineBuffer = this->_getLine(pos);
-		message.set(*this, lineBuffer);
-		if (!message.empty() && !this->_server.recvCommand(message))
-		{
-			Numeric::insertField(message.getCmd());
-			this->send(Numeric::builder(this->_server, *this, ERR_UNKNOWNCOMMAND));
-		}
-		message.clear();
-	}
-	return size;
-}
-
-bool	User::checkOutput(int fd)
-{
-	size_t	size;
-
-	size = ::send(fd, this->_outputBuffer.c_str(), this->_outputBuffer.size(), 0);
-	if (size == this->_outputBuffer.size())
-	{
-		this->_outputBuffer.clear();
-		return true;
-	}
-	this->_outputBuffer.erase(0, size);
-	return false;
 }
 
 Channel*	User::findFullestChannel(void)

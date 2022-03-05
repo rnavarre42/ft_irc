@@ -35,7 +35,7 @@ void	WhoisCommand::unloadEvents(Server::eventHandler_type& eventHandler)
 //
 bool	WhoisCommand::_recvUser(Message& message)
 {
-	User&			user = *this->userSender;
+	User&			user = *this->senderUser;
 	User*			targetUser;
 	std::string&	target = message[0];
 
@@ -81,7 +81,7 @@ bool	WhoisCommand::_recvUser(Message& message)
 
 bool	WhoisCommand::_recvServer(Message& message)
 {
-	Server&	server = *this->serverSender;
+	Server&	server = *this->senderServer;
 
 	(void)message;
 	(void)server;
@@ -90,7 +90,7 @@ bool	WhoisCommand::_recvServer(Message& message)
 
 bool	WhoisCommand::_sendUser(Message& message)
 {
-	User*	user = this->userReceiver;
+	User*	user = this->receiverUser;
 
 	(void)message;
 	(void)user;
@@ -99,7 +99,7 @@ bool	WhoisCommand::_sendUser(Message& message)
 
 bool	WhoisCommand::_sendServer(Message& message)
 {
-	Server*	server = this->serverReceiver;
+	Server*	server = this->receiverServer;
 
 	(void)message;
 	(void)server;

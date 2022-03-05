@@ -31,10 +31,10 @@ bool	NamesCommand::_recvUser(Message& message)
 	{
 		message.setChannel(channel);
 		message.getServer()->names(*channel);
-		message.sendNumeric(RPL_NAMREPLY);
+		message.replyNumeric(RPL_NAMREPLY);
 	}
 	Numeric::insertField(target);
-	message.sendNumeric(RPL_ENDOFNAMES);
+	message.replyNumeric(RPL_ENDOFNAMES);
 	return true;
 }
 
