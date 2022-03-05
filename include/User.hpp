@@ -94,9 +94,6 @@ public:
 	const std::string&	getAwayMsg(void) const;
 	const time_t&		getAwayTime(void) const;
 
-	void		setPollIndex(int value);
-	const int&	getPollIndex(void) const;
-
 	bool	isPingSended(void);
 	bool	isAway(void);
 

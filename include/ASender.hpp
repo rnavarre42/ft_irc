@@ -55,7 +55,10 @@ public:
 
 	void						setPingChallenge(const std::string& value) ;
 	const std::string&			getPingChallenge(void) const;
-	
+
+	void						setPollIndex(int value);
+	int							getPollIndex(void);
+
 	virtual ssize_t				send(void) = 0;
 	virtual ssize_t				send(const std::string& data) = 0;
 	virtual ssize_t				send(const Message& message) = 0;
@@ -79,6 +82,8 @@ protected:
 	time_t		_nextTimeout;
 	time_t		_idleInnerTime;
 	time_t		_idleTime;
+	
+	int			_pollIndex;
 
 	int			_level;
 	int			_type;
@@ -87,7 +92,6 @@ protected:
 	std::string _name;
 	std::string	_host;
 	std::string	_real;
-
 
 	std::string	_mask;
 	std::string	_pingChallenge;

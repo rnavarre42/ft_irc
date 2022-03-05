@@ -149,6 +149,15 @@ const std::string&	ASender::getPingChallenge(void) const
 	return this->_pingChallenge;
 }
 
+void	ASender::setPollIndex(int value)
+{
+	this->_pollIndex = value;
+}
+
+int		ASender::getPollIndex(void)
+{
+	return this->_pollIndex;
+}
 
 size_t	ASender::recv(void)
 {

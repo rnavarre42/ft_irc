@@ -354,7 +354,7 @@ Unknown*	Server::_accept(void)
 		close(newFd);
 		return NULL;
 	}
-	unknown = new Unknown(newFd, *this);
+	unknown = new Unknown(*this, newFd);
 	unknown->setHost(inet_ntoa(newAddress.sin_addr));
 	unknown->setPollIndex(this->_freePollIndexFind());
 	this->_pollfds[unknown->getPollIndex()].fd = newFd;

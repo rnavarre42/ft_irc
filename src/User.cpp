@@ -151,16 +151,6 @@ void	User::enableOper(void)
 	this->_oper = true;
 }
 
-void	User::setPollIndex(int value)
-{
-	this->_pollIndex = value;
-}
-
-const int&	User::getPollIndex(void) const
-{
-	return this->_pollIndex;
-}
-
 void	User::setAwayMsg(const std::string& value)
 {
 	this->_awayMsg = value;
