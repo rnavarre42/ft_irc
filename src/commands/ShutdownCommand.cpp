@@ -30,6 +30,11 @@ bool	ShutdownCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	ShutdownCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	ShutdownCommand::_sendUser(Message&)
 {
 	return false;

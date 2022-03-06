@@ -31,6 +31,11 @@ bool	PassCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	PassCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	PassCommand::_sendUser(Message&)
 {
 	return false;

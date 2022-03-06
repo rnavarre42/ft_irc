@@ -49,6 +49,11 @@ bool	PingCommand::_sendUser(Message&)
 	return false;
 }
 
+bool	PingCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	PingCommand::_sendServer(Message&)
 {
 	return false;

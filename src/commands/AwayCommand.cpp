@@ -41,6 +41,11 @@ bool	AwayCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	AwayCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	AwayCommand::_sendUser(Message&)
 {
 	return false;

@@ -19,6 +19,7 @@ public:
 private:
 	bool	_recvUser(Message& message);
 	bool	_recvServer(Message& message);
+	bool	_recvUnknown(Message& message);
 	bool	_sendUser(Message& message);
 	bool	_sendServer(Message& message);
 };

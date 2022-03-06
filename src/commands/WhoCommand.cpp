@@ -11,7 +11,7 @@ WhoCommand::WhoCommand(Server& server, int accessLevel, int paramCount)
 WhoCommand::~WhoCommand(void)
 {}
 
-bool WhoCommand::_execUser(Message& message)
+bool	WhoCommand::_recvUser(Message& message)
 {
 	User&	user = *this->userSender;
 
@@ -20,11 +20,16 @@ bool WhoCommand::_execUser(Message& message)
 	return false;
 }
 
-bool WhoCommand::_execServer(Message& message)
+bool	WhoCommand::_recvServer(Message& message)
 {
 	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
+	return false;
+}
+
+bool	WhoCommand::_recvUnknown(Message&)
+{
 	return false;
 }

@@ -76,6 +76,12 @@ bool	PongCommand::_recvServer(Message&)
 {
 	return false;
 }
+
+bool	PongCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	PongCommand::_sendUser(Message&)
 {
 	return false;

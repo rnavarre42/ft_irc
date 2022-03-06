@@ -40,6 +40,11 @@ bool	OperCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	OperCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	OperCommand::_sendUser(Message&)
 {
 	return false;

@@ -70,6 +70,12 @@ bool	PrivmsgCommand::_recvServer(Message&)
 {
 	return false;
 }
+
+bool	PrivmsgCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	PrivmsgCommand::_sendUser(Message&)
 {
 	return false;

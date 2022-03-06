@@ -68,6 +68,11 @@ bool	KickCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	KickCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	KickCommand::_sendUser(Message&)
 {
 	return false;

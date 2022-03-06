@@ -139,7 +139,7 @@ enum
 	ERR_NOOPERHOST			= 491,	// "No O-lines for your host"
 
 	ERR_UMODEUNKNOWNFLAG	= 501,	// "Unknown MODE flag"
-	ERR_USERSDONTMATCH		= 502,	// ":Cannot change mode for other users"
+	ERR_USERSDONTMATCH		= 502	// ":Cannot change mode for other users"
 
 };
 

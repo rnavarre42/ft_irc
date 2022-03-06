@@ -43,6 +43,11 @@ bool	NamesCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	NamesCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	NamesCommand::_sendUser(Message& message)
 {
 	this->_recvUser(message);

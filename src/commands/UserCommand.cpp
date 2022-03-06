@@ -53,6 +53,11 @@ bool	UserCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	UserCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	UserCommand::_sendUser(Message&)
 {
 	return false;

@@ -21,7 +21,9 @@ User::User(Server& server, int fd)
 User::User(Server& server, time_t signTime, const std::string& pass, const std::string& name, const std::string& ident, const std::string& host, const std::string& real)
 	: ASender(server, -1, signTime, LEVEL_REGISTERED, TYPE_REMOTEUSER, pass, name, host, real)
 	, _ident(ident)
-{}
+{
+	this->_updateMask();
+}
 
 User::~User(void)
 {
@@ -35,44 +37,8 @@ User::User(const Unknown& src)
 {
 	this->_nextTimeout = src._nextTimeout;
 	this->_idleInnerTime = time(NULL);
-
-}
-
-void	User::setHost(const std::string& value)
-{
-	this->_host = value;
 	this->_updateMask();
-}
 
-const std::string&	User::getHost(void) const
-{
-	return this->_host;
-}
-
-void	User::setIdent(const std::string& value)
-{
-	this->_ident = value;
-}
-
-const std::string&	User::getIdent(void) const
-{
-	return this->_ident;
-}
-
-void	User::setReal(const std::string& value)
-{
-	this->_real = value;
-	this->_updateMask();
-}
-
-const std::string&	User::getReal(void) const
-{
-	return this->_real;
-}
-
-std::string&	User::getInputBuffer(void)
-{
-	return this->_inputBuffer;
 }
 
 bool	User::isOnChannel(const std::string& channelName)
@@ -83,37 +49,6 @@ bool	User::isOnChannel(const std::string& channelName)
 bool	User::isOnChannel(const Channel& channel)
 {
 	return (this->find(channel.getName()) != this->_channelMap.end());
-}
-
-std::string&	User::getOutputBuffer(void)
-{
-	return this->_outputBuffer;
-}
-
-void	User::setSignTime(time_t value)
-{
-	this->_signTime = value;
-}
-
-const time_t&	User::getSignTime(void) const
-{
-	return this->_signTime;
-}
-
-void	User::setName(const std::string& value)
-{
-	this->_name = value;
-	this->_updateMask();
-}
-
-const std::string&	User::getName(void) const
-{
-	return this->_name;
-}
-
-void	User::setPass(const std::string& value)
-{
-	this->_pass = value;
 }
 
 void	User::setMode(AUserMode* userMode)
@@ -129,16 +64,6 @@ void	User::unsetMode(AUserMode* userMode)
 bool	User::isSetMode(AUserMode* userMode)
 {
 	return this->_modes & userMode->getFlag();
-}
-
-const std::string&	User::getMask(void) const
-{
-	return this->_mask;
-}
-
-const std::string&	User::getPass(void) const
-{
-	return this->_pass;
 }
 
 bool	User::isOper(void)
@@ -192,22 +117,15 @@ void	User::_updateMask(void)
 	this->_mask = this->_name + "!" + this->_ident + "@" + this->_host;
 }
 
-void	User::sendToBuffer(const Message& message)
-{
-	this->sendToBuffer(message.toString());
-}
-
-void	User::sendToBuffer(std::string msg)
-{
-
-	if (msg.size() > (MAXLINE - 2))
-		msg.erase((MAXLINE - 2), std::string::npos);
-	this->_outputBuffer += msg + "\r\n";
-}
-
 ssize_t	User::send(void)
 {
 	return this->send("");
+}
+
+ssize_t	User::send(const Message& message)
+{
+	this->sendToBuffer(message.toString());
+	return this->send();
 }
 
 ssize_t	User::send(const std::string& data)
@@ -225,12 +143,6 @@ ssize_t	User::send(const std::string& data)
 	else
 		this->_outputBuffer.clear();
 	return len;
-}
-
-ssize_t	User::send(const Message& message)
-{
-	this->sendToBuffer(message.toString());
-	return this->send();
 }
 
 Channel*	User::findFullestChannel(void)

@@ -88,6 +88,11 @@ bool	WhoisCommand::_recvServer(Message& message)
 	return false;
 }
 
+bool	WhoisCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	WhoisCommand::_sendUser(Message& message)
 {
 	User*	user = this->receiverUser;

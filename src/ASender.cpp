@@ -36,7 +36,6 @@ ASender::ASender(Server& server
 		this->_nextTimeout = this->_signTime + REGTIMEOUT;
 		this->_level = LEVEL_UNREGISTERED;
 	}
-	this->_doUpdateMask();
 }
 
 ASender::~ASender(void)
@@ -59,6 +58,17 @@ void	ASender::setName(const std::string& value)
 }
 
 const std::string&	ASender::getName(void) const
+{
+	return this->_name;
+}
+
+void	ASender::setIdent(const std::string& value)
+{
+	this->_name = value;
+	this->_updateMask();
+}
+
+const std::string&	ASender::getIdent(void) const
 {
 	return this->_name;
 }
@@ -159,6 +169,16 @@ int		ASender::getPollIndex(void)
 	return this->_pollIndex;
 }
 
+std::string&	ASender::getInputBuffer(void)
+{
+	return this->_inputBuffer;
+}
+
+std::string&	ASender::getOutputBuffer(void)
+{
+	return this->_outputBuffer;
+}
+
 size_t	ASender::recv(void)
 {
 	size_t	size;
@@ -216,7 +236,25 @@ std::string	ASender::_getLine(size_t pos)
 	return line;
 }
 
-void	ASender::_doUpdateMask(void)
+ssize_t	ASender::send(void)
 {
-	this->_updateMask();
+	return this->send("");
+}
+
+ssize_t	ASender::send(const Message& message)
+{
+	this->sendToBuffer(message.toString());
+	return this->send();
+}
+
+void	ASender::sendToBuffer(const Message& message)
+{
+	this->sendToBuffer(message.toString());
+}
+
+void	ASender::sendToBuffer(std::string msg)
+{
+	if (msg.size() > (MAXLINE - 2))
+		msg.erase((MAXLINE - 2), std::string::npos);
+	this->_outputBuffer += msg + "\r\n";
 }

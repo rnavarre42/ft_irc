@@ -40,6 +40,11 @@ bool	ListCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	ListCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	ListCommand::_sendUser(Message&)
 {
 	return false;

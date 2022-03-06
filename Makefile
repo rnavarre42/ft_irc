@@ -6,7 +6,7 @@ SERVEROBJS	=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(SRCS:.cpp=.o))
 SERVERDEPS	=	$(SERVEROBJS:.o=.d)
 CLIENTOBJS	=	$(patsubst $(SRCSPATH)%, $(OBJSPATH)%, $(CSRCS:.cpp=.o))
 CLIENTDEPS	=	$(CLIENTOBJS:.o=.d)
-CXXFLAGS	=	-Wall -Wextra -Werror -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
+CXXFLAGS	=	-Wall -Wextra -Werror -pedantic -MD -I$(INCLUDEPATH) $(COMMONFLAGS) -std=c++98
 COMMONFLAGS	=
 LDFLAGS		=	$(LDLIBS) $(COMMONFLAGS)
 LDLIBS		=

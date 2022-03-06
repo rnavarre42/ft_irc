@@ -1,6 +1,7 @@
 #include "ACommand.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
+#include "Unknown.hpp"
 #include "User.hpp"
 
 #include <string>
@@ -17,29 +18,42 @@ ACommand::~ACommand(void)
 
 void ACommand::recv(Message& message)
 {
-	bool	ret = true;
-
 	senderUser = dynamic_cast<User*>(message.getSender());
 	senderServer = dynamic_cast<Server*>(message.getSender());
+	senderUnknown = dynamic_cast<Unknown*>(message.getSender());
 
-	if (senderUser->getLevel() & this->levelAccess || (senderUser && senderUser->isOper()))
+	if (senderUser && (senderUser->getLevel() & this->levelAccess || senderUser->isOper()))
 	{
 		if (message.size() < this->minParam)
 		{
 			Numeric::insertField(message.getCmd());
 			message.replyNumeric(ERR_NEEDMOREPARAMS);
 		}
-		else
+		else if (!this->_recvUser(message))
 		{
-			if (senderUser)
-				ret = this->_recvUser(message);
-			else if (senderServer)
-				ret = this->_recvServer(message);
-			if (!ret)
-			{
-				Numeric::insertField(message.getCmd());
-				message.replyNumeric(ERR_NOTIMPLEMENTED);
-			}
+			Numeric::insertField(message.getCmd());
+			message.replyNumeric(ERR_NOTIMPLEMENTED);
+		}
+	}
+	else if (senderUnknown && senderUnknown->getLevel() & this->levelAccess)
+	{
+		if (message.size() < this->minParam)
+		{
+			Numeric::insertField(message.getCmd());
+			message.replyNumeric(ERR_NEEDMOREPARAMS);
+		}
+		else if (!this->_recvUnknown(message))
+		{
+			Numeric::insertField(message.getCmd());
+			message.replyNumeric(ERR_NOTIMPLEMENTED);
+		}
+	}
+	else if (senderServer && senderServer->getLevel() & this->levelAccess)
+	{
+		if (!this->_recvServer(message))
+		{
+			Numeric::insertField(message.getCmd());
+			message.replyNumeric(ERR_NOTIMPLEMENTED);
 		}
 	}
 	else if (this->levelAccess & (LEVEL_REGISTERED | LEVEL_NEGOTIATING))

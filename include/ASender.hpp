@@ -1,20 +1,10 @@
 #ifndef ASENDER_HPP
 # define ASENDER_HPP
 
+# include "config.hpp"
+
 # include <string>
 # include <sys/types.h>
-
-# define LEVEL_UNREGISTERED	0x01
-# define LEVEL_NEGOTIATING	0x02
-# define LEVEL_REGISTERED	0x04
-# define LEVEL_IRCOPERATOR	0x08
-# define LEVEL_ALL			LEVEL_UNREGISTERED | LEVEL_NEGOTIATING | LEVEL_REGISTERED | LEVEL_IRCOPERATOR
-
-# define TYPE_UNKNOWN		0x00
-# define TYPE_LOCALSERVER	0x01
-# define TYPE_LOCALUSER		0x02
-# define TYPE_REMOTESERVER	0x03
-# define TYPE_REMOTEUSER	0x04
 
 class Server;
 class Message;
@@ -29,6 +19,9 @@ public:
 
 	void						setName(const std::string& value);
 	const std::string&			getName(void) const;
+
+	void						setIdent(const std::string& value);
+	const std::string&			getIdent(void) const;
 
 	void						setHost(const std::string& value);
 	const std::string&		 	getHost(void) const;
@@ -59,9 +52,15 @@ public:
 	void						setPollIndex(int value);
 	int							getPollIndex(void);
 
+	std::string&				getInputBuffer(void);
+	std::string&				getOutputBuffer(void);
+
+	void						sendToBuffer(std::string msg);
+	void						sendToBuffer(const Message& message);
+
 	virtual ssize_t				send(void) = 0;
-	virtual ssize_t				send(const std::string& data) = 0;
 	virtual ssize_t				send(const Message& message) = 0;
+	virtual ssize_t				send(const std::string& data) = 0;
 
 	size_t						recv(void);
 	size_t						checkInput(Message& message);

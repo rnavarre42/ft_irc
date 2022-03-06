@@ -178,6 +178,11 @@ bool	ModeCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	ModeCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	ModeCommand::_sendUser(Message&)
 {
 	return false;

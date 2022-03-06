@@ -75,6 +75,11 @@ bool	InviteCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	InviteCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	InviteCommand::_sendUser(Message&)
 {
 	return false;

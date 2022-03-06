@@ -61,6 +61,11 @@ bool	PartCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	PartCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	PartCommand::_sendUser(Message&)
 {
 	return false;

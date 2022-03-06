@@ -23,13 +23,13 @@ void	QuitCommand::unloadEvents(Server::eventHandler_type&)
 
 void	QuitCommand::delUserEvent(Message& message)
 {
-	User*	user = reinterpret_cast<User*>(message.getSender());
-	
-	if (user->getName().empty())
+	ASender&		sender = *message.getSender();
+
+	if (sender.getName().empty())
 		Console::log(LOG_INFO, "User <anonymous> disconnected (" + message[0] + ")");
 	else
-		Console::log(LOG_INFO, "User <" + user->getName() + "> disconnected" + " (" + message[0] + ")");
-	message.send("ERROR :Closing link: (" + user->getIdent() + "@" + user->getHost() + ") [" + message[0] + "]");
+		Console::log(LOG_INFO, "User <" + sender.getName() + "> disconnected" + " (" + message[0] + ")");
+	message.send("ERROR :Closing link: (" + sender.getIdent() + "@" + sender.getHost() + ") [" + message[0] + "]");
 }
 
 void	QuitCommand::quitEvent(Message& message)
@@ -50,6 +50,11 @@ bool	QuitCommand::_recvUser(Message& message)
 }
 
 bool	QuitCommand::_recvServer(Message&)
+{
+	return false;
+}
+
+bool	QuitCommand::_recvUnknown(Message&)
 {
 	return false;
 }

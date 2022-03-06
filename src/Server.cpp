@@ -1,34 +1,14 @@
 #include "Server.hpp"
-#include "User.hpp"
-#include "Channel.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
 #include "chanmodes.hpp"
 #include "commands.hpp"
 #include "Numeric.hpp"
-#include "ChanModeConfig.hpp"
-#include "utils.hpp"
 #include "Unknown.hpp"
 
-#include <cerrno>
-#include <set>
-#include <string>
-#include <cstring>
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <ctime>
-#include <exception>
-#include <csignal>
-#include <cstdlib>
-#include <sstream>
-
-//	socket, setsockopt, getsockname, getprotobyname, gethostbyname, getaddrinfo, freeaddrinfo, bind, connect
-//	listen, accept, htons, htonl, ntohs, ntohl, inet_addr, inet_htoa, send, recv, signal, lseek, fstat, fcntl
-//	poll
 
 Server*	Server::_instance = NULL;
 
@@ -60,7 +40,9 @@ Server::Server(const std::string& listenIp, int listenPort, const std::string& p
 Server::Server(Server& server, time_t signTime, int level, const std::string& pass, const std::string& name, const std::string& host, const std::string& real)
 	: ASender(server, -1, signTime, level, TYPE_REMOTESERVER, pass, name, host, real)
 	, _message(server._message)
-{}
+{
+	this->_updateMask();
+}
 
 Server::~Server(void)
 {
@@ -77,7 +59,6 @@ Server::~Server(void)
 
 void	Server::_loadCommands(void)
 {
-
 	this->_commandMap["AWAY"]		= new AwayCommand	  (*this, LEVEL_REGISTERED, 0);
 	this->_commandMap["INVITE"]		= new InviteCommand	  (*this, LEVEL_REGISTERED, 2);
 	this->_commandMap["JOIN"]		= new JoinCommand	  (*this, LEVEL_REGISTERED, 1);
@@ -219,26 +200,11 @@ Server::channelMap_type&	Server::getChannelMap(void)
 int		Server::count(void)
 {
 	return this->_fdMap.size();
-}
+}    
 
-const int&	Server::getFd(void) const
+void	Server::setPollout(ASender& sender)
 {
-	return this->_fd;
-}
-
-void	Server::setPass(const std::string& value)
-{
-	this->_pass = value;
-}
-
-const std::string&	Server::getPass(void) const
-{
-	return this->_pass;
-}
-
-void	Server::setPollout(User& user)
-{
-	this->_pollfds[user.getPollIndex()].events |= POLLOUT;
+	this->_pollfds[sender.getPollIndex()].events |= POLLOUT;
 }
 
 ssize_t	Server::send(void)
@@ -246,32 +212,19 @@ ssize_t	Server::send(void)
 	return this->send("");
 }
 
-ssize_t	Server::send(const std::string& data)
-{
-	//int usersLeft;
-	Server::fdMap_iterator	it;
-
-	//usersLeft = this->fdMap.size();
-	for (it = this->_fdMap.begin(); it != this->_fdMap.end(); it++)
-		it->second->send(data);
-/*
-	for (size_t i = 1; usersLeft; i++)
-	{
-		if (this->pollfds[i].fd)
-		{
-			this->fdMap[this->pollfds[i].fd]->send(data);
-			usersLeft--;
-		}
-	}
-*/
-//	for (std::vector<User *>::iterator it = userVector.begin(); it != userVector.end(); it++)
-//		it->sendTo(data);
-	return 0;
-}
-
 ssize_t	Server::send(const Message& message)
 {
-	return this->send(message.toString());
+	this->sendToBuffer(message.toString());
+	return this->send();
+}
+
+ssize_t	Server::send(const std::string& data)
+{
+	Server::fdMap_iterator	it;
+
+	for (it = this->_fdMap.begin(); it != this->_fdMap.end(); it++)
+		it->second->send(data);
+	return 0;
 }
 
 void	Server::setSenderLevel(ASender& sender, int value)
@@ -470,38 +423,38 @@ void	Server::removeUserFromChannel(Channel& channel, User& user)
 
 void	Server::deleteUser(ASender& sender, const std::string& text)
 {
-	User&						user = static_cast<User&>(sender);
-	Server::userVector_type*	userVector = user.getUniqueVector();
+	User*					user = dynamic_cast<User*>(&sender);
+	Server::userVector_type*	userVector = NULL;
 	Server::channelMap_iterator	currentIt;
 
 	this->_message.clear();
-	this->_message.setSender(&user);
-	this->_message.setReceiver(&user);
+	this->_message.setSender(user);
+	this->_message.setReceiver(user);
 	this->_message.insertField(text);
 	this->_eventHandler.raise(DELUSEREVENT, this->_message);
-	if (user.getLevel() == LEVEL_REGISTERED) //Si está registrado se verifica que esté en más canales
+	if (user->getLevel() == LEVEL_REGISTERED) //Si está registrado se verifica que esté en más canales
 	{
 		this->_message.setCmd("QUIT");
 		this->_message.clearReceivers();
 		this->_message.setReceiver(*userVector);
 		this->_message.hideReceiver();
 		this->_eventHandler.raise(QUITEVENT, this->_message);
-		for (Server::channelMap_iterator it = user.begin(); it != user.end();)
+		for (Server::channelMap_iterator it = user->begin(); it != user->end();)
 		{
 			currentIt = it;
 			++it;
 			this->_message.setChannel(currentIt->second);
-			this->removeUserFromChannel(*currentIt->second, user);
+			this->removeUserFromChannel(*currentIt->second, *user);
 		}
 	}
-	if (!user.getName().empty())
-		this->_userMap.erase(strToUpper(user.getName()));
-	this->_fdMap.erase(user.getFd());
-	this->_pollfds[user.getPollIndex()].fd = 0;
-	this->_pollfds[user.getPollIndex()].events = 0;
+	if (!user->getName().empty())
+		this->_userMap.erase(strToUpper(user->getName()));
+	this->_fdMap.erase(user->getFd());
+	this->_pollfds[user->getPollIndex()].fd = 0;
+	this->_pollfds[user->getPollIndex()].events = 0;
 	this->_message.clear();
-	this->_invite.erase(&user);
-	delete &user;
+	this->_invite.erase(user);
+	delete user;
 	delete userVector;
 }
 

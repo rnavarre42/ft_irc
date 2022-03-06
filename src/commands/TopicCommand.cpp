@@ -80,6 +80,11 @@ bool	TopicCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	TopicCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	TopicCommand::_sendUser(Message&)
 {
 	return false;

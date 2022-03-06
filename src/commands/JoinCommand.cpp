@@ -105,6 +105,11 @@ bool	JoinCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	JoinCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	JoinCommand::_sendUser(Message&)
 {
 	return false;

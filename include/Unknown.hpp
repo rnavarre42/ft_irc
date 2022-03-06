@@ -16,16 +16,13 @@ public:
 	~Unknown(void);
 
 	ssize_t				send(void);
-	ssize_t				send(const std::string& data);
 	ssize_t				send(const Message& message);
+	ssize_t				send(const std::string& data);
 
 	friend 				User::User(const Unknown& src);
 
 private:
 	Unknown&	operator=(const Unknown& rhs);
-
-	std::string			_ident;
-	int					_pollIndex;
 
 	void	_updateMask(void);
 };

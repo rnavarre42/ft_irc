@@ -15,8 +15,11 @@ public:
 	void	unloadEvents(Server::eventHandler_type& eventHandler);
 
 private:
-	bool	_execUser(Message& message);
-	bool	_execServer(Message& message);
+	bool	_recvUser(Message& message);
+	bool	_recvServer(Message& message);
+	bool	_recvUnknown(Message& message);
+	bool	_sendUser(Message& message);
+	bool	_sendServer(Message& message);
 };
 
 #endif

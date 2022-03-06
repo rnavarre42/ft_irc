@@ -7,7 +7,7 @@ WhowasCommand::WhowasCommand(Server& server, int accessLevel, int paramCount)
 	: ACommand(server, accessLevel, paramCount)
 {}
 
-bool WhowasCommand::_execUser(Message& message)
+bool 	WhowasCommand::_execUser(Message& message)
 {
 	User&	user = *this->userSender;
 
@@ -16,11 +16,16 @@ bool WhowasCommand::_execUser(Message& message)
 	return false;
 }
 
-bool WhowasCommand::_execServer(Message& message)
+bool 	WhowasCommand::_execServer(Message& message)
 {
 	Server&	server = *this->serverSender;
 
 	(void)message;
 	(void)server;
+	return false;
+}
+
+bool	WhowasCommand::_recvUnknown(Message&)
+{
 	return false;
 }

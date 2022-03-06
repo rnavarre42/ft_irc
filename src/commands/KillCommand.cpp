@@ -39,6 +39,11 @@ bool	KillCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	KillCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	KillCommand::_sendUser(Message&)
 {
 	return false;

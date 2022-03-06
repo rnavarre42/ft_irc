@@ -22,26 +22,6 @@ public:
 	User(const Unknown& src);
 	~User(void);
 
-	void				setHost(const std::string& value);
-	const std::string&	getHost(void) const;
-
-	void				setIdent(const std::string& value);
-	const std::string&	getIdent(void) const;
-
-	void				setReal(const std::string& value);
-	const std::string&	getReal(void) const;
-	const std::string&	getMask(void) const;
-
-	void				setPass(const std::string& value);
-	const std::string&	getPass(void) const;
-
-	void				setSignTime(time_t volue);
-	const time_t&		getSignTime(void) const;
-		
-	void				setName(const std::string& value);
-	const std::string&	getName(void) const;
-	const std::string&	getUpperName(void) const;
-
 	void				insert(Channel* channel);
 	void				erase(Channel* channel);
 
@@ -80,9 +60,6 @@ public:
 		return !operator==(rhs);
 	}
 
-	std::string&	getInputBuffer(void);
-	std::string&	getOutputBuffer(void);
-
 	bool	isOper(void);
 	void	enableOper(void);
 	bool	isOnChannel(const Channel& channel);
@@ -102,15 +79,14 @@ public:
 	bool	isSetMode(AUserMode* userMode);
 
 	void	sendPing(void);
+
 	ssize_t	send(void);
-	ssize_t	send(const std::string& text);
 	ssize_t	send(const Message& message);
-	void	sendToBuffer(std::string msg);
-	void	sendToBuffer(const Message& message);
+	ssize_t	send(const std::string& data);
 
 	size_t	recv(int fd);
 
-	Message*	buildMessage(std::string& buff);
+//	Message*	buildMessage(std::string& buff);
 
 	size_t	checkInput(int fd, Message& message);
 	bool	checkOutput(int fd);

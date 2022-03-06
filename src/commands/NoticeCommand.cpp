@@ -66,6 +66,11 @@ bool	NoticeCommand::_recvServer(Message&)
 	return false;
 }
 
+bool	NoticeCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	NoticeCommand::_sendUser(Message&)
 {
 	return false;

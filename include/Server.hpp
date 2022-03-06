@@ -17,57 +17,6 @@
 # include <netinet/in.h>
 # include <poll.h>
 
-# define LOG_LEVEL LOG_INFO | LOG_WARNING | LOG_ERROR | LOG_FATAL
-
-# define VERSION			"ircServ 0.1"
-# define SHUTDOWN_STRING	"Server shutting down"
-
-# define OPERPASSWORD		"1234"
-# define OPERLOGIN			"laura"
-
-# define MAXNICK			9
-# define MAXCHANNEL			3
-# define MAXSERVER			63
-# define MAXTOPIC			307
-# define MAXLINE			512
-# define MAXHOST			63
-# define MAXAWAY			200
-# define MAXQUIT			255
-# define MAXKICK			255
-# define MAXREAL			100
-
-# define IDLETIMEOUT		120
-# define REGTIMEOUT			15
-# define NEXTTIMEOUT		120
-//# define BUFFERSIZE			512
-# define MAXUSERS			10
-# define MAXLISTEN			5
-
-# define NEWCONNECTIONEVENT	0x000001
-# define DELUSEREVENT		0x000002
-# define REGUSEREVENT		0x000004
-# define NICKEVENT			0x000008
-# define QUITEVENT			0x000010
-# define JOINEVENT			0x000020
-# define PARTEVENT			0x000040
-# define KICKEVENT			0x000080
-# define CHANMODEEVENT		0x000100
-# define NICKMODEEVENT		0x000200
-# define CHANTOPICEVENT		0x000400
-# define CHANFULLEVENT		0x000800
-# define CHANBANEVENT		0x001000
-# define CHANKEYEVENT		0x002000
-# define AWAYEVENT			0x004000
-# define INVITEEVENT		0x008000
-# define NEWCHANEVENT		0x010000
-# define DELCHANEVENT		0x020000
-# define ALREADYEVENT		0x040000
-# define MAXCHANEVENT		0x080000
-# define ERRCHANEVENT		0x100000
-# define NOTINCHANEVENT		0x200000
-# define NOTCHANEVENT		0x400000
-
-//hispano:
 //	registerTimeout	 30s
 //	idleTimeout		120s
 //	pingTimeout		120s
@@ -129,9 +78,6 @@ public:
 	void	insertUser(User* user);
 	void	insertUnknown(Unknown* unknown);
 
-	void				setPass(const std::string& value);
-	const std::string&	getPass(void) const;
-
 	void	names(Channel& channel);
 	void	removeUserFromChannel(Channel& channel, User& user);
 
@@ -149,9 +95,10 @@ public:
 	const std::string&	getPingChallenge(void) const;
 
 	void	run(void);
+	
 	ssize_t	send(void);
-	ssize_t	send(const std::string& data);
 	ssize_t	send(const Message& message);
+	ssize_t	send(const std::string& data);
 
 	void	addToChannel(Message& message);
 	void	delFromChannel(Message& message);
@@ -167,7 +114,7 @@ public:
 	bool	recvCommand(Message& msg);
 	bool	sendCommand(Message& msg);
 
-	void	setPollout(User& user);
+	void	setPollout(ASender& sender);
 	
 	size_t	checkInput(int fd, Message& message);
 	bool	checkOutput(int fd);

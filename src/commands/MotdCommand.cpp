@@ -54,6 +54,11 @@ bool	MotdCommand::_sendUser(Message& message)
 	return true;
 }
 
+bool	MotdCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	MotdCommand::_sendServer(Message&)
 {
 	return false;

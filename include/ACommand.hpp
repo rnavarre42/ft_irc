@@ -27,6 +27,7 @@ public:
 private:
 	virtual bool	_recvUser(Message& message) = 0;
 	virtual bool	_recvServer(Message& message) = 0;
+	virtual bool	_recvUnknown(Message& message) = 0;
 	virtual bool	_sendUser(Message& message) = 0;
 	virtual bool	_sendServer(Message& message) = 0;
 
@@ -38,6 +39,7 @@ protected:
 	Server&		server;
 	int			levelAccess;
 	size_t		minParam;
+	Unknown*	senderUnknown;
 	Server*		senderServer;
 	User*		senderUser;
 	Server*		receiverServer;

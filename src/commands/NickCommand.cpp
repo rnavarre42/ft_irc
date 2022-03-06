@@ -115,6 +115,12 @@ bool	NickCommand::_recvServer(Message&)
 {
 	return false;
 }
+
+bool	NickCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	NickCommand::_sendUser(Message&)
 {
 	return false;
