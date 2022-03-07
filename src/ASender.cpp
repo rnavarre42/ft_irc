@@ -159,6 +159,11 @@ const std::string&	ASender::getPingChallenge(void) const
 	return this->_pingChallenge;
 }
 
+void	ASender::clearPingChallenge(void)
+{
+	this->_pingChallenge.clear();
+}
+
 void	ASender::setPollIndex(int value)
 {
 	this->_pollIndex = value;

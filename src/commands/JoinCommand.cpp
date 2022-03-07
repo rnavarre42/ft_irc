@@ -29,7 +29,7 @@ void	JoinCommand::unloadEvents(Server::eventHandler_type&)
 
 void	JoinCommand::createChannelEvent(Message& message)
 {
-	Console::log(LOG_INFO, message.getSender()->getName() + " ha creado el canal " + message[0]);
+	Console::log(LOG_INFO, message.getSender().getName() + " ha creado el canal " + message[0]);
 	message.setReceiver(message.getSender());
 	message.hideReceiver();
 	message.send();
@@ -39,7 +39,7 @@ void	JoinCommand::createChannelEvent(Message& message)
 
 void	JoinCommand::joinChannelEvent(Message& message)
 {
-	Console::log(LOG_INFO, message.getSender()->getName() + " ha entrado al canal " + message[0]);
+	Console::log(LOG_INFO, message.getSender().getName() + " ha entrado al canal " + message[0]);
 	message.setReceiver(message.getChannel());
 	message.setReceiver(message.getSender());	// cuando el canal está vacio, hay que añadir a uno mismo
 	message.hideReceiver();
@@ -52,12 +52,12 @@ void	JoinCommand::joinChannelEvent(Message& message)
 
 void	JoinCommand::alreadyChannelEvent(Message& message)
 {
-	Console::log(LOG_INFO, message.getSender()->getName() + " ya está en " + message[0]);
+	Console::log(LOG_INFO, message.getSender().getName() + " ya está en " + message[0]);
 }
 
 void	JoinCommand::limitChannelEvent(Message& message)
 {
-	Console::log(LOG_INFO, message.getSender()->getName() + " ha alcanzado el limite de canales");
+	Console::log(LOG_INFO, message.getSender().getName() + " ha alcanzado el limite de canales");
 	message.setReceiver(message.getSender());
 	Numeric::insertField(message[0]);
 	message.send(Numeric::builder(message, ERR_TOOMANYCHANNELS));
@@ -65,7 +65,7 @@ void	JoinCommand::limitChannelEvent(Message& message)
 
 void	JoinCommand::delChannelEvent(Message& message)
 {
-	Console::log(LOG_INFO, message.getChannel()->getName() + " el canal se ha eliminado");
+	Console::log(LOG_INFO, message.getChannel().getName() + " el canal se ha eliminado");
 }
 
 void	JoinCommand::errChannelEvent(Message& message)
@@ -116,6 +116,11 @@ bool	JoinCommand::_sendUser(Message&)
 }
 
 bool	JoinCommand::_sendServer(Message&)
+{
+	return false;
+}
+
+bool	JoinCommand::_sendUnknown(Message&)
 {
 	return false;
 }

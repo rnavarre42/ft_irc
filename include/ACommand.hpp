@@ -30,6 +30,7 @@ private:
 	virtual bool	_recvUnknown(Message& message) = 0;
 	virtual bool	_sendUser(Message& message) = 0;
 	virtual bool	_sendServer(Message& message) = 0;
+	virtual bool	_sendUnknown(Message& message) = 0;
 
 	ACommand(void);
 	ACommand(const ACommand& src);

@@ -19,9 +19,9 @@ VoiceChanMode::~VoiceChanMode(void)
 
 void	VoiceChanMode::onChanEvent(Access& access, int, Message& message, int&)
 {
-	Channel*	channel = message.getChannel();
+	Channel&	channel = message.getChannel();
 
-	if (channel->isOper(message.getSender()) || channel->isVoice(message.getSender()))
+	if (channel.isOper(message.getSender()) || channel.isVoice(message.getSender()))
 		access = AChanMode::allow;
 }
 

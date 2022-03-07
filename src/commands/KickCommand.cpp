@@ -47,10 +47,10 @@ bool	KickCommand::_recvUser(Message& message)
 	{
 		std::cout << message.toString() << std::endl;
 //		channel = channelIt->second;
-		message.setChannel(channel);
+		message.setChannel(*channel);
 		if (!this->server.checkChannelMode(message, COMMAND_KICK))
 			return true;
-		message.setReceiver(channel);
+		message.setReceiver(*channel);
 		message.setReceiver(message.getSender());
 		message[0] = channel->getName();
 		message[1] = userKick->getName();
@@ -79,6 +79,11 @@ bool	KickCommand::_sendUser(Message&)
 }
 
 bool	KickCommand::_sendServer(Message&)
+{
+	return false;
+}
+
+bool	KickCommand::_sendUnknown(Message&)
 {
 	return false;
 }

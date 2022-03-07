@@ -42,10 +42,10 @@ bool	PrivmsgCommand::_recvUser(Message& message)
 			message.replyNumeric(ERR_NOSUCHCHANNEL);
 			return true;
 		}
-		message.setChannel(channel);
+		message.setChannel(*channel);
 		if (!server.checkChannelMode(message, COMMAND_PRIVMSG))
 			return true;
-		message.setReceiver(channel);
+		message.setReceiver(*channel);
 		message.limitMaxParam(2);
 		message.hideReceiver();
 	}
@@ -58,10 +58,10 @@ bool	PrivmsgCommand::_recvUser(Message& message)
 			return true;
 		}
 		message.eraseAt(0);
-		message.setReceiver(targetUser);
+		message.setReceiver(*targetUser);
 		message.limitMaxParam(1);
 	}
-	message.setSender(user);
+	message.setSender(*user);
 	message.send();
 	return true;
 }

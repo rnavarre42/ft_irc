@@ -19,15 +19,15 @@ TopicChanMode::~TopicChanMode(void)
 
 void	TopicChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
-	Channel*	channel = message.getChannel();
+	Channel&	channel = message.getChannel();
 
-	if (!this->isSetMode(*channel))
+	if (!this->isSetMode(channel))
 		return ;
-	if (message.getChannel()->isOper(message.getSender()))
+	if (message.getChannel().isOper(message.getSender()))
 		access = allow;
 	else
 	{
-		Numeric::insertField(message.getChannel()->getName());
+		Numeric::insertField(channel.getName());
 		numeric = ERR_CHANOPRIVSNEEDED;
 		access = AChanMode::deny;
 	}

@@ -40,7 +40,7 @@ bool	NoticeCommand::_recvUser(Message& message)
 			message.replyNumeric(ERR_NOSUCHCHANNEL);
 			return true;
 		}
-		message.setReceiver(targetChannel);
+		message.setReceiver(*targetChannel);
 		message.limitMaxParam(2);
 		message.hideReceiver();
 	}
@@ -53,10 +53,10 @@ bool	NoticeCommand::_recvUser(Message& message)
 			return true;
 		}
 		message.eraseAt(0);
-		message.setReceiver(targetUser);
+		message.setReceiver(*targetUser);
 		message.limitMaxParam(1);
 	}
-	message.setSender(user);
+	message.setSender(*user);
 	message.send();
 	return true;
 }
@@ -77,6 +77,11 @@ bool	NoticeCommand::_sendUser(Message&)
 }
 
 bool	NoticeCommand::_sendServer(Message&)
+{
+	return false;
+}
+
+bool	NoticeCommand::_sendUnknown(Message&)
 {
 	return false;
 }

@@ -18,13 +18,18 @@ void	PingCommand::loadEvents(Server::eventHandler_type&)
 void	PingCommand::unloadEvents(Server::eventHandler_type&)
 {}
 
+bool	PingCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
 bool	PingCommand::_recvUser(Message& message)
 {
-	User*		user = this->senderUser;
+//	User*		user = this->senderUser;
 	std::string	param;
 
-	message.setReceiver(message.getSender());
-	message.setSender(&this->server);
+//	message.setReceiver(message.getSender());
+	message.setSender(this->server);
 	message.setCmd("PONG");
 	message.hideReceiver();
 	if (message.size() == 1)
@@ -35,7 +40,7 @@ bool	PingCommand::_recvUser(Message& message)
 	else
 		message.swapField(0, 1);
 	message.limitMaxParam(2);
-	user->send(message);
+	message.reply();
 	return true;
 }
 
@@ -45,11 +50,6 @@ bool	PingCommand::_recvServer(Message&)
 }
 
 bool	PingCommand::_sendUser(Message&)
-{
-	return false;
-}
-
-bool	PingCommand::_recvUnknown(Message&)
 {
 	return false;
 }

@@ -1,5 +1,6 @@
 #include "PassCommand.hpp"
 #include "User.hpp"
+#include "Unknown.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
 
@@ -18,20 +19,20 @@ void	PassCommand::loadEvents(Server::eventHandler_type&)
 void	PassCommand::unloadEvents(Server::eventHandler_type&)
 {}
 
-bool	PassCommand::_recvUser(Message& message)
+bool	PassCommand::_recvUnknown(Message& message)
 {
-	User*	user = this->senderUser;
+	Unknown&	unknown = *this->senderUnknown;
 
-	user->setPass(message[0]);
+	unknown.setPass(message[0]);
+	return true;
+}
+
+bool	PassCommand::_recvUser(Message&)
+{
 	return true;
 }
 
 bool	PassCommand::_recvServer(Message&)
-{
-	return false;
-}
-
-bool	PassCommand::_recvUnknown(Message&)
 {
 	return false;
 }

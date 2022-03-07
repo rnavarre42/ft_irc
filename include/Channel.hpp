@@ -113,8 +113,8 @@ public:
 	const std::string&				getName(void) const;
 	bool							empty(void);
 
-	bool							isOper(const ASender* sender);
-	bool							isVoice(const ASender* sender);
+	bool							isOper(const ASender& sender);
+	bool							isVoice(const ASender& sender);
 
 	void							setTopicInfo(const std::string& own, const std::string& topic);
 	const TopicInfo&				getTopicInfo(void) const;

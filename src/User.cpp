@@ -92,11 +92,6 @@ const time_t&	User::getAwayTime(void) const
 	return this->_awayTime;
 }
 
-void	User::clearPingChallenge(void)
-{
-	this->_pingChallenge.clear();
-}
-
 void	User::insert(Channel* channel)
 {
 	this->_channelMap.insert(std::make_pair(strToUpper(channel->getName()), channel));

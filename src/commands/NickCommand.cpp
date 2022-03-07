@@ -81,7 +81,7 @@ bool	NickCommand::_recvUser(Message& message)
 		{
 			for (Server::channelMap_iterator it = user->begin(); it != user->end(); ++it)
 			{
-				message.setChannel(it->second);
+				message.setChannel(*it->second);
 				if (!server.checkChannelMode(message, COMMAND_NICK))
 					return true;
 			}
@@ -127,6 +127,11 @@ bool	NickCommand::_sendUser(Message&)
 }
 
 bool	NickCommand::_sendServer(Message&)
+{
+	return false;
+}
+
+bool	NickCommand::_sendUnknown(Message&)
 {
 	return false;
 }

@@ -75,8 +75,8 @@ public:
 	Channel*	insertChannel(const std::string& channelName, const User& owner);
 
 	void	eraseUser(User& user);
-	void	insertUser(User* user);
-	void	insertUnknown(Unknown* unknown);
+	void	insertUser(User& user);
+	void	insertUnknown(Unknown& unknown);
 
 	void	names(Channel& channel);
 	void	removeUserFromChannel(Channel& channel, User& user);

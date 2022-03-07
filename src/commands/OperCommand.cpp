@@ -54,3 +54,8 @@ bool	OperCommand::_sendServer(Message&)
 {
 	return false;
 }
+
+bool	OperCommand::_sendUnknown(Message&)
+{
+	return false;
+}

@@ -75,7 +75,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
 		return ;
 	}
-	message.setChannel(channel);
+	message.setChannel(*channel);
 	for (std::string::iterator strIt = message[1].begin(); strIt != message[1].end(); )
 	{
 		currentIt = strIt;
@@ -129,8 +129,8 @@ void	ModeCommand::_checkChanModes(Message& message)
 	message.limitMaxParam(pos);
 	if (!message[1].empty())
 	{
-		message.setReceiver(channel);
-		message.setReceiver(this->senderUser);
+		message.setReceiver(*channel);
+		message.setReceiver(*this->senderUser);
 		message.hideReceiver();
 		message.send();
 	}
@@ -189,6 +189,11 @@ bool	ModeCommand::_sendUser(Message&)
 }
 
 bool	ModeCommand::_sendServer(Message&)
+{
+	return false;
+}
+
+bool	ModeCommand::_sendUnknown(Message&)
 {
 	return false;
 }

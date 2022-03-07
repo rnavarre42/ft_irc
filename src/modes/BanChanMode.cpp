@@ -27,20 +27,20 @@ BanChanMode::~BanChanMode(void)
 
 void	BanChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
-	Channel*	channel = message.getChannel();
-	std::string	mask = message.getSender()->getMask();
+	Channel&	channel = message.getChannel();
+	std::string	mask = message.getSender().getMask();
 	BanInfo*	banInfo;
 
 	if (access == AChanMode::deny)
 		return ;
-	for (Channel::Mode::rangePairMultimap_type pairList = channel->mode.getList('b')
+	for (Channel::Mode::rangePairMultimap_type pairList = channel.mode.getList('b')
 			; pairList.first != pairList.second
 			; ++pairList.first)
 	{
 		banInfo = reinterpret_cast<BanInfo*>(pairList.first->second);
 		if (*banInfo == mask)
 		{
-			Numeric::insertField(channel->getName());
+			Numeric::insertField(channel.getName());
 			if (event & COMMAND_NICK)
 				numeric = ERR_CANTCHANGENICK;
 			if (event & COMMAND_JOIN)
@@ -76,7 +76,7 @@ bool	BanChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Message& 
 	maskIt = findMask(rangePair, newMask);
 	if (sign && maskIt == rangePair.second)
 	{
-		banInfo = new BanInfo(newMask, message.getSender()->getName());
+		banInfo = new BanInfo(newMask, message.getSender().getName());
 		message[pos] = newMask;
 		this->setMode(channel, banInfo);
 		return true;

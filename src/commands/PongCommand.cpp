@@ -1,5 +1,6 @@
 #include "PongCommand.hpp"
 #include "User.hpp"
+#include "Unknown.hpp"
 #include "Console.hpp"
 #include "Message.hpp"
 #include "Numeric.hpp"
@@ -24,9 +25,9 @@ void	PongCommand::unloadEvents(Server::eventHandler_type&)
 
 void	PongCommand::registerUserEvent(Message& message)
 {
-	Console::log(LOG_INFO, "El usuario " + message.getSender()->getName() + " se ha registrado");	
+	Console::log(LOG_INFO, "El usuario " + message.getSender().getName() + " se ha registrado");	
 	message.limitMaxParam(0);
-	message.setReceiver(this->senderUser);
+	message.setReceiver(*this->senderUser);
 	message.insertField("");
 	message.setCmd("MODE");
 	message.send();
@@ -34,7 +35,7 @@ void	PongCommand::registerUserEvent(Message& message)
 	Numeric::insertField(this->senderUser->getMask());
 	message.send(Numeric::builder(message, RPL_WELCOME));
 	
-	Numeric::insertField(message.getSender()->getMask());
+	Numeric::insertField(message.getSender().getMask());
 	message.send(Numeric::builder(message, RPL_YOURHOST));
 	
 	message.send(Numeric::builder(message, RPL_CREATED));
@@ -51,18 +52,17 @@ void	PongCommand::registerUserEvent(Message& message)
 	message.internal();
 }
 
-bool	PongCommand::_recvUser(Message& message)
+bool	PongCommand::_recvUnknown(Message& message)
 {
-	User*	user = this->senderUser;
+	Unknown&	unknown = *this->senderUnknown;
 
-	if (message[0] == user->getPingChallenge())
+	if (message[0] == unknown.getPingChallenge())
 	{
-		if (user->getLevel() & ~LEVEL_REGISTERED)
-			this->server.setSenderLevel(*user, LEVEL_REGISTERED);
-		user->clearPingChallenge();
-		user->setNextTimeout(0);
+		this->server.setSenderLevel(unknown, LEVEL_REGISTERED);
+		unknown.clearPingChallenge();
+		unknown.setNextTimeout(0);
 	}
-	else if (user->getLevel() & ~LEVEL_REGISTERED)
+	else
 	{
 		message.limitMaxParam(1);
 		message.setCmd("QUIT");
@@ -72,12 +72,19 @@ bool	PongCommand::_recvUser(Message& message)
 	return true;
 }
 
-bool	PongCommand::_recvServer(Message&)
+bool	PongCommand::_recvUser(Message& message)
 {
-	return false;
+	User&	user = *this->senderUser;
+
+	if (message[0] == user.getPingChallenge())
+	{
+		user.clearPingChallenge();
+		user.setNextTimeout(0);
+	}
+	return true;
 }
 
-bool	PongCommand::_recvUnknown(Message&)
+bool	PongCommand::_recvServer(Message&)
 {
 	return false;
 }

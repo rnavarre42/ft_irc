@@ -1,5 +1,6 @@
 #include "QuitCommand.hpp"
 #include "User.hpp"
+#include "Unknown.hpp"
 #include "Message.hpp"
 #include "Server.hpp"
 #include "Console.hpp"
@@ -23,7 +24,7 @@ void	QuitCommand::unloadEvents(Server::eventHandler_type&)
 
 void	QuitCommand::delUserEvent(Message& message)
 {
-	ASender&		sender = *message.getSender();
+	ASender&		sender = message.getSender();
 
 	if (sender.getName().empty())
 		Console::log(LOG_INFO, "User <anonymous> disconnected (" + message[0] + ")");
@@ -37,9 +38,22 @@ void	QuitCommand::quitEvent(Message& message)
 	message.send();
 }
 
+bool	QuitCommand::_recvUnknown(Message& message)
+{
+	Unknown&	unknown = *this->senderUnknown;
+
+	if (message.size())
+		message[0].insert(0, "Quit: ");
+	message.setCmd("QUIT");
+	message.setReceiver(unknown);
+	message.internal();
+	std::cout << "que me voy" << std::endl;
+	return true;
+}
+
 bool	QuitCommand::_recvUser(Message& message)
 {
-	User*	user = this->senderUser;
+	User&	user = *this->senderUser;
 
 	if (message.size())
 		message[0].insert(0, "Quit: ");
@@ -50,11 +64,6 @@ bool	QuitCommand::_recvUser(Message& message)
 }
 
 bool	QuitCommand::_recvServer(Message&)
-{
-	return false;
-}
-
-bool	QuitCommand::_recvUnknown(Message&)
 {
 	return false;
 }

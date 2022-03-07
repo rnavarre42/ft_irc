@@ -5,24 +5,23 @@
 # include <cstddef>
 
 class ASender;
-class User;
 class Channel;
 
 class Invite
 {
 public:
-	typedef std::pair<User*, Channel*>			userChannelPair_type;
-	typedef std::vector<userChannelPair_type>	inviteVector_type;
+	typedef std::pair<ASender*, Channel*>		senderChannelPair_type;
+	typedef std::vector<senderChannelPair_type>	inviteVector_type;
 	typedef inviteVector_type::iterator			inviteVector_iterator;
 
 	Invite(void);
 	~Invite(void);
 
-	bool					insert(User* user, Channel* channel);
-	inviteVector_iterator	find(ASender* sender, Channel* channel);
-	bool					erase(User* user, Channel* channel);
-	void					erase(Channel* channel);
-	void					erase(User* user);
+	bool					insert(ASender& sender, Channel& channel);
+	inviteVector_iterator	find(ASender& sender, Channel& channel);
+	bool					erase(ASender& sender, Channel& channel);
+	void					erase(Channel& channel);
+	void					erase(ASender& sender);
 
 	inviteVector_iterator	begin(void)
 	{

@@ -63,3 +63,8 @@ bool	MotdCommand::_sendServer(Message&)
 {
 	return false;
 }
+
+bool	MotdCommand::_sendUnknown(Message&)
+{
+	return false;
+}

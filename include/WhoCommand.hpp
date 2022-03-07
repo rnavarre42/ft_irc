@@ -20,6 +20,7 @@ private:
 	bool	_recvUnknown(Message& message);
 	bool	_sendUser(Message& message);
 	bool	_sendServer(Message& message);
+	bool	_sendUnknown(Message& message);
 };
 
 #endif

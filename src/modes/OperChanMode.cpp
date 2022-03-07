@@ -20,10 +20,10 @@ OperChanMode::~OperChanMode(void)
 
 void	OperChanMode::onChanEvent(Access& access, int event, Message& message, int& numeric)
 {
-	Channel*	channel = message.getChannel();
+	Channel&	channel = message.getChannel();
 
 	// modo +o puesto al nick
-	if (this->isSetMode(*channel, message.getSender()))
+	if (this->isSetMode(channel, &message.getSender()))
 	{
 //		if (event == COMMAND_KICK)
 		access = AChanMode::allow;
@@ -32,7 +32,7 @@ void	OperChanMode::onChanEvent(Access& access, int event, Message& message, int&
 	{
 		if (event != COMMAND_NICK)
 		{
-			Numeric::insertField(channel->getName());
+			Numeric::insertField(channel.getName());
 			numeric = ERR_CHANOPRIVSNEEDED;
 			access = AChanMode::deny;
 		}

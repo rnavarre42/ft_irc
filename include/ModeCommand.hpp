@@ -19,9 +19,10 @@ private:
 	bool	_recvUnknown(Message& message);
 	bool	_sendUser(Message& message);
 	bool	_sendServer(Message& message);
+	bool	_sendUnknown(Message& message);
 
-	void			_checkChanModes(Message& message);
-	void			_checkUserModes(Message& message);
+	void	_checkChanModes(Message& message);
+	void	_checkUserModes(Message& message);
 };
 
 #endif

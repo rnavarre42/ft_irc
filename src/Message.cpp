@@ -84,31 +84,35 @@ void	Message::set(ASender* sender, std::string data)
 	}
 }
 
-void	Message::setReceiver(Channel* channel)
+void	Message::setReceiver(Channel& channel)
 {
-	for (Server::userMap_iterator it = channel->begin(); it != channel->end(); it++)
+	for (Server::userMap_iterator it = channel.begin(); it != channel.end(); it++)
+	{	
 		if (it->second != this->_sender)
 			this->_receiverVector.push_back(it->second);
+	}
 }
 
 
 void	Message::setReceiver(Server::userVector_type& userVector)
 {
 	for (Server::userVector_iterator it = userVector.begin(); it != userVector.end(); it++)
+	{
 		if (*it != this->_sender)
 			this->_receiverVector.push_back(*it);
+	}
 }
 
-void	Message::setReceiver(ASender* value)
+void	Message::setReceiver(ASender& value)
 {
-	this->_receiverVector.push_back(value);
+	this->_receiverVector.push_back(&value);
 }
 
-ASender*	Message::getReceiver(void)
+ASender&	Message::getReceiver(void)
 {
-	if (this->_receiverVector.size())
-		return this->_receiverVector[0];
-	return NULL;
+	if (!this->_receiverVector.size())
+		throw ASender::NullReferenceException();
+	return *this->_receiverVector[0];
 }
 
 std::string		Message::toString(void) const
@@ -187,29 +191,33 @@ void	Message::swapField(size_t first, size_t second)
 	this->_paramVector[second] = field;
 }
 
-void	Message::setSender(ASender* value)
+void	Message::setSender(ASender& value)
 {
-	this->_sender = value;
+	this->_sender = &value;
 }
 
-ASender*	Message::getSender(void)
+ASender&	Message::getSender(void)
 {
-	return this->_sender;
+	if (this->_sender == NULL)
+		throw ASender::NullReferenceException();
+	return *this->_sender;
 }
 
-Server*	Message::getServer(void)
+Server&	Message::getServer(void)
 {
-	return &this->_server;
+	return this->_server;
 }
 
-void	Message::setChannel(Channel* value)
+void	Message::setChannel(Channel& value)
 {
-	this->_channel = value;
+	this->_channel = &value;
 }
 
-Channel*	Message::getChannel(void)
+Channel&	Message::getChannel(void)
 {
-	return this->_channel;
+	if (this->_channel == NULL)
+		throw ASender::NullReferenceException();
+	return *this->_channel;
 }
 
 std::size_t	Message::size(void)
@@ -220,11 +228,11 @@ std::size_t	Message::size(void)
 void	Message::clear(void)
 {
 	this->_receiverVector.clear();
-	this->_sender = NULL;
 	this->_paramVector.clear();
 	this->_cmd.clear();
-	this->_channel = NULL;
 	this->_hideReceiver = false;
+	this->_channel = NULL;
+	this->_sender = NULL;
 }
 
 void	Message::clearReceivers(void)
@@ -232,28 +240,41 @@ void	Message::clearReceivers(void)
 	this->_receiverVector.clear();
 }
 
+/*
+ * Envia un mensaje a sender
+ */
 void	Message::reply(void)
 {
 	this->_sender->send(this->toString());
 }
 
+/*
+ * Envia un mensaje a sender
+ */
 void	Message::reply(const std::string& data)
 {
 	this->_sender->send(data);
 }
 
+/*
+ * Envía un numeric a sender
+ */
 void	Message::replyNumeric(int numeric)
 {
 	this->reply(Numeric::builder(*this, numeric));
 }
 
 /*
+ * Envia un numeric a receiver
+ */
 void	Message::sendNumeric(int numeric)
 {
 	this->send(Numeric::builder(*this, numeric));
 }
-*/
 
+/*
+ * Envia un mensaje a receiver
+ */
 void	Message::send(void)
 {
 	std::string data = this->toString();
@@ -264,11 +285,17 @@ void	Message::send(void)
 			(*it)->send(data);
 }
 
+/*
+ * Envia un mensaje a receiver
+ */
 void	Message::send(const std::string& data)
 {
 	this->_receiverVector[0]->send(data);
 }
 
+/*
+ * Procesa el comando intermanete
+ */
 void	Message::internal(void)
 {
 	this->_server.sendCommand(*this);

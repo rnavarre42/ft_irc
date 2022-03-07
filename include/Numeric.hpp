@@ -26,7 +26,7 @@ public:
 	
 	static std::string	builder(Message& message, int num)
 	{
-		return Numeric::builder(*message.getServer(), *message.getSender(), num);
+		return Numeric::builder(message.getServer(), message.getSender(), num);
 	}
 
 private:

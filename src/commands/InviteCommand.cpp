@@ -23,7 +23,7 @@ void	InviteCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	InviteCommand::_recvUser(Message& message)
 {
-	User*						user = this->senderUser;
+	User&						user = *this->senderUser;
 //	Server::channelMap_iterator	channelIt;
 //	Server::userMap_iterator	invitedUserIt;
 	Channel*					channel;
@@ -45,7 +45,7 @@ bool	InviteCommand::_recvUser(Message& message)
 		return true;
 	}
 	channelName = channel->getName();
-	if (!user->isOnChannel(*channel))
+	if (!user.isOnChannel(*channel))
 	{
 		Numeric::insertField(channelName);
 		message.replyNumeric(ERR_NOTONCHANNEL);
@@ -57,14 +57,14 @@ bool	InviteCommand::_recvUser(Message& message)
 		message.replyNumeric(ERR_USERONCHANNEL);
 	else
 	{
-		server.invite().insert(invitedUser, channel);
-		Console::log(LOG_INFO, user->getName() + " ha invitado a " + invitedName + " a " + channelName);
+		server.invite().insert(*invitedUser, *channel);
+		Console::log(LOG_INFO, user.getName() + " ha invitado a " + invitedName + " a " + channelName);
 		message.replyNumeric(RPL_INVITING);
 		message.clearReceivers();
 		message.eraseAt(0);
 		message[0] = channelName;
 		message.setSender(user);
-		message.setReceiver(invitedUser);
+		message.setReceiver(*invitedUser);
 		message.send();
 	}
 	return true;
@@ -86,6 +86,11 @@ bool	InviteCommand::_sendUser(Message&)
 }
 
 bool	InviteCommand::_sendServer(Message&)
+{
+	return false;
+}
+
+bool	InviteCommand::_sendUnknown(Message&)
 {
 	return false;
 }

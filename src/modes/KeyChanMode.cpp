@@ -18,13 +18,13 @@ KeyChanMode::~KeyChanMode(void)
 
 void	KeyChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
-	Channel*	channel = message.getChannel();
+	Channel&	channel = message.getChannel();
 
-	if (this->isSetMode(*channel))
+	if (this->isSetMode(channel))
 	{
-		if (message.size() == 1 || this->toString(this->getMode(*channel)) != message[1])
+		if (message.size() == 1 || this->toString(this->getMode(channel)) != message[1])
 		{
-			Numeric::insertField(channel->getName());
+			Numeric::insertField(channel.getName());
 			numeric = ERR_BADCHANNELKEY;
 			access = AChanMode::deny;
 		}

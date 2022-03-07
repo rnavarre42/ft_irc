@@ -19,12 +19,12 @@ ModerateChanMode::~ModerateChanMode(void)
 
 void	ModerateChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
-	Channel*	channel = message.getChannel();
-	ASender*	user = message.getSender();
+	Channel&	channel = message.getChannel();
+	ASender&	user = message.getSender();
 
-	if (access != AChanMode::deny && this->isSetMode(*channel) && !(channel->isVoice(user) || channel->isOper(user)))
+	if (access != AChanMode::deny && this->isSetMode(channel) && !(channel.isVoice(user) || channel.isOper(user)))
 	{
-		Numeric::insertField(channel->getName());
+		Numeric::insertField(channel.getName());
 		numeric = ERR_CANNOTSENDTOCHAN;
 		access = AChanMode::deny;
 	}

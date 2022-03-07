@@ -65,8 +65,6 @@ public:
 	bool	isOnChannel(const Channel& channel);
 	bool	isOnChannel(const std::string& channel);
 
-	void				clearPingChallenge();
-
 	void				setAwayMsg(const std::string& value);
 	const std::string&	getAwayMsg(void) const;
 	const time_t&		getAwayTime(void) const;

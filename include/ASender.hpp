@@ -5,6 +5,7 @@
 
 # include <string>
 # include <sys/types.h>
+# include <exception>
 
 class Server;
 class Message;
@@ -46,8 +47,9 @@ public:
 	void						setIdleInnerTime(time_t value);
 	time_t						getIdleInnerTime(void) const;
 
-	void						setPingChallenge(const std::string& value) ;
+	void						setPingChallenge(const std::string& value);
 	const std::string&			getPingChallenge(void) const;
+	void						clearPingChallenge(void);
 
 	void						setPollIndex(int value);
 	int							getPollIndex(void);
@@ -65,6 +67,14 @@ public:
 	size_t						recv(void);
 	size_t						checkInput(Message& message);
 	bool						checkOutput(void);
+
+	class NullReferenceException : public std::exception
+	{
+		const char*	what() const throw()
+		{
+			return "Null reference exception";
+		}
+	};
 
 protected:
 	ASender(void);

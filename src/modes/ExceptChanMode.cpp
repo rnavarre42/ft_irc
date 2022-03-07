@@ -34,12 +34,12 @@ Channel::Mode::multimap_iterator	findMask(Channel::Mode::rangePairMultimap_type 
 
 void	ExceptChanMode::onChanEvent(Access& access, int event, Message& message, int&)
 {
-	Channel*								channel = message.getChannel();
-	std::string								mask = message.getSender()->getMask();
-	Channel::Mode::rangePairMultimap_type	pairList = channel->mode.getList('e');
+	Channel&								channel = message.getChannel();
+	std::string								mask = message.getSender().getMask();
+	Channel::Mode::rangePairMultimap_type	pairList = channel.mode.getList('e');
 	BanInfo*								banInfo;
 
-	if (event & (COMMAND_PRIVMSG | COMMAND_NOTICE) && channel->mode.isSet('m'))
+	if (event & (COMMAND_PRIVMSG | COMMAND_NOTICE) && channel.mode.isSet('m'))
 		return ;
 	for (; pairList.first != pairList.second; ++pairList.first)
 	{
@@ -65,7 +65,7 @@ bool	ExceptChanMode::onChanModeEvent(int pos, int sign, Channel& channel, Messag
 	maskIt = findMask(rangePair, newMask);
 	if (sign && maskIt == rangePair.second)
 	{
-		banInfo = new BanInfo(newMask, message.getSender()->getName());
+		banInfo = new BanInfo(newMask, message.getSender().getName());
 		message[pos] = newMask;
 		this->setMode(channel, banInfo);
 		return true;

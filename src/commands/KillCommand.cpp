@@ -53,3 +53,8 @@ bool	KillCommand::_sendServer(Message&)
 {
 	return false;
 }
+
+bool	KillCommand::_sendUnknown(Message&)
+{
+	return false;
+}

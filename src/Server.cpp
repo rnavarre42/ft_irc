@@ -9,6 +9,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <csignal>
+#include <cstring>
+#include <cerrno>
 
 Server*	Server::_instance = NULL;
 
@@ -365,17 +368,17 @@ Channel*	Server::insertChannel(const std::string& name, const User& user)
 	return channel;
 }
 
-void	Server::insertUser(User* user)
+void	Server::insertUser(User& user)
 {
 	this->_message.setReceiver(user);
-	this->_fdMap.insert(std::make_pair(user->getFd(), user));
+	this->_fdMap.insert(std::make_pair(user.getFd(), &user));
 	this->_eventHandler.raise(NEWCONNECTIONEVENT, this->_message);
 }
 
-void	Server::insertUnknown(Unknown* unknown)
+void	Server::insertUnknown(Unknown& unknown)
 {
 	this->_message.setReceiver(unknown);
-	this->_fdMap.insert(std::make_pair(unknown->getFd(), unknown));
+	this->_fdMap.insert(std::make_pair(unknown.getFd(), &unknown));
 	this->_eventHandler.raise(NEWCONNECTIONEVENT, this->_message);
 }
 
@@ -411,7 +414,7 @@ void	Server::removeUserFromChannel(Channel& channel, User& user)
 	{
 //		this->_source.message->setChannel(&channel);
 		this->_eventHandler.raise(DELCHANEVENT, this->_message);
-		this->_invite.erase(&channel);
+		this->_invite.erase(channel);
 		this->eraseChannel(channel);	// se elimina
 	}
 	else
@@ -423,16 +426,16 @@ void	Server::removeUserFromChannel(Channel& channel, User& user)
 
 void	Server::deleteUser(ASender& sender, const std::string& text)
 {
-	User*					user = dynamic_cast<User*>(&sender);
+	User*						user = dynamic_cast<User*>(&sender);
 	Server::userVector_type*	userVector = NULL;
 	Server::channelMap_iterator	currentIt;
 
 	this->_message.clear();
-	this->_message.setSender(user);
-	this->_message.setReceiver(user);
+	this->_message.setSender(sender);
+	this->_message.setReceiver(sender);
 	this->_message.insertField(text);
 	this->_eventHandler.raise(DELUSEREVENT, this->_message);
-	if (user->getLevel() == LEVEL_REGISTERED) //Si está registrado se verifica que esté en más canales
+	if (sender.getLevel() == LEVEL_REGISTERED) //Si está registrado se verifica que esté en más canales
 	{
 		this->_message.setCmd("QUIT");
 		this->_message.clearReceivers();
@@ -443,18 +446,18 @@ void	Server::deleteUser(ASender& sender, const std::string& text)
 		{
 			currentIt = it;
 			++it;
-			this->_message.setChannel(currentIt->second);
+			this->_message.setChannel(*currentIt->second);
 			this->removeUserFromChannel(*currentIt->second, *user);
 		}
 	}
-	if (!user->getName().empty())
-		this->_userMap.erase(strToUpper(user->getName()));
-	this->_fdMap.erase(user->getFd());
-	this->_pollfds[user->getPollIndex()].fd = 0;
-	this->_pollfds[user->getPollIndex()].events = 0;
+	if (!sender.getName().empty())
+		this->_userMap.erase(strToUpper(sender.getName()));
+	this->_fdMap.erase(sender.getFd());
+	this->_pollfds[sender.getPollIndex()].fd = 0;
+	this->_pollfds[sender.getPollIndex()].events = 0;
 	this->_message.clear();
-	this->_invite.erase(user);
-	delete user;
+	this->_invite.erase(sender);
+	delete &sender;
 	delete userVector;
 }
 
@@ -462,7 +465,7 @@ void	Server::addToChannel(Message& message)
 {
 	Channel*					channel = NULL;
 	const std::string&			channelName = message[0];
-	User*						user = static_cast<User*>(message.getSender());
+	User*						user = static_cast<User*>(&message.getSender());
 	Server::userMap_insert		retUser;
 
 	if (this->isChannel(channelName))
@@ -482,13 +485,13 @@ void	Server::addToChannel(Message& message)
 			channel->insert(user);
 			user->insert(channel);
 			channel->mode.insert('o', user);
-			message.setChannel(channel);
+			message.setChannel(*channel);
 			this->_eventHandler.raise(NEWCHANEVENT, this->_message);
 		}
 		else
 		{
 			//TODO hay que limpiar este código y tratar de hacerlo más compacto
-			message.setChannel(channel);
+			message.setChannel(*channel);
 			if (user->isOnChannel(*channel))
 				this->_eventHandler.raise(ALREADYEVENT, this->_message);
 			else
@@ -497,7 +500,7 @@ void	Server::addToChannel(Message& message)
 					return ;
 				channel->insert(user);
 				//eliminamos la invitación, si existiera.
-				if (this->_invite.erase(user, channel))
+				if (this->_invite.erase(*user, *channel))
 					Console::log(LOG_INFO, user->getName() + " ha hecho efectiva su invitacion");
 				else
 					Console::log(LOG_INFO, user->getName() + " no tenia invitacion");
@@ -515,7 +518,7 @@ void	Server::addToChannel(Message& message)
 void	Server::delFromChannel(Message& message)
 {
 	Channel*					channel = NULL;
-	User*						user = static_cast<User*>(message.getSender());
+	User*						user = static_cast<User*>(&message.getSender());
 	const std::string&			channelName = message[0];
 	Server::channelMap_iterator	it;
 	
@@ -523,7 +526,7 @@ void	Server::delFromChannel(Message& message)
 	{
 		if ((channel = this->channelAt(channelName)))
 		{
-			message.setChannel(channel);
+			message.setChannel(*channel);
 			if ((it = user->find(channelName)) == user->end())
 				this->_eventHandler.raise(NOTINCHANEVENT, this->_message);
 			else
@@ -556,7 +559,7 @@ int	Server::_checkNewConnection(void)
 			Console::log(LOG_WARNING, "Server full, rejecting new connection");
 			return true;
 		}
-		this->insertUnknown(unknown);
+		this->insertUnknown(*unknown);
 		Console::log(LOG_INFO, "New <anonymous> connection");
 		return true;
 	}
@@ -572,9 +575,9 @@ void	Server::names(Channel& channel)
 	Numeric::insertField(channel.getName());
 	for (Server::userMap_iterator it = channel.begin(); it != channel.end(); it++)
 	{
-		if (channel.isOper(it->second))
+		if (channel.isOper(*it->second))
 			mode += "@";
-		if (channel.isVoice(it->second))
+		if (channel.isVoice(*it->second))
 			mode += "+";
 		Numeric::insertField(mode + it->second->getName());
 		mode.clear();
@@ -613,7 +616,7 @@ bool	Server::recvCommand(Message& message)
 {
 	ACommand*	command;
 
-	message.getSender()->setIdleTime(time(NULL));
+	message.getSender().setIdleTime(time(NULL));
 	if ((command = this->commandFind(message.getCmd())))
 	{
 		command->recv(message);
@@ -628,8 +631,10 @@ bool	Server::sendCommand(Message& message)
 
 	if ((command = this->commandFind(message.getCmd())))
 	{
-		if (message.getReceiver() == NULL)
-			message.setReceiver(message.getSender());
+		message.getReceiver();
+//		if (message.getReceiver() == NULL)
+//			throw Message::ReceiverIsEmpty();
+//			message.setReceiver(message.getSender());
 		command->send(message);
 		return true;
 	}

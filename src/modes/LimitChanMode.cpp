@@ -24,12 +24,12 @@ LimitChanMode::~LimitChanMode(void)
 
 void	LimitChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
-	Channel*	channel = message.getChannel();
-	size_t		limit = reinterpret_cast<size_t>(this->getMode(*channel));
+	Channel&	channel = message.getChannel();
+	size_t		limit = reinterpret_cast<size_t>(this->getMode(channel));
 
-	if (limit && limit <= channel->size() && access != AChanMode::deny)
+	if (limit && limit <= channel.size() && access != AChanMode::deny)
 	{
-		Numeric::insertField(channel->getName());
+		Numeric::insertField(channel.getName());
 		numeric = ERR_CHANNELISFULL;
 		access = AChanMode::deny;
 	}

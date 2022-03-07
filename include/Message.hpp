@@ -5,6 +5,7 @@
 
 # include <string>
 # include <vector>
+# include <exception>
 
 class ACommand;
 class ASender;
@@ -28,31 +29,31 @@ public:
 	const std::string&	getCmd(void) const;
 
 	void		set(ASender* sender, std::string data);
-	void		setReceiver(Channel* channel);
+	void		setReceiver(Channel& channel);
 	void		setReceiver(Server::userVector_type& userVector);
-	void		setReceiver(ASender* value);
+	void		setReceiver(ASender& value);
 	void		hideReceiver(void);
 	void		hideSemicolon(void);
 
-	ASender*	getReceiver(void);
+	ASender&	getReceiver(void);
 
 	void		clear(void);
 	void		clearReceivers(void);
 
-	void		setSender(ASender* value);
+	void		setSender(ASender& value);
 
-	ASender*	getSender(void);
-	Server*		getServer(void);
+	ASender&	getSender(void);
+	Server&		getServer(void);
 
-	void		setChannel(Channel* value);
-	Channel*	getChannel(void);
+	void		setChannel(Channel& value);
+	Channel&	getChannel(void);
 
 	void		reply(void);
 	void		reply(const std::string& data);
 	void		replyNumeric(int numeric); //its for reply a client
 	void		send(void);
 	void		send(const std::string& data);
-//	void		sendNumeric(int numeric); //for server only???? 
+	void		sendNumeric(int numeric); //for server only???? 
 	void		internal(void); //for process internally command to send a new one.
 
 	std::size_t	size(void);
@@ -71,6 +72,14 @@ public:
 
 //	static Message		&builder(ASender &sender, std::string data);
 //	static Message		&builder(ASender &sender);
+
+	class ReceiverIsEmpty : public std::exception
+	{
+		const char* what() const throw()
+		{
+			return "The message cannot be delivered. The receiver field is empty";
+		}
+	};
 
 private:
 	Message(ASender& sender, std::string data);

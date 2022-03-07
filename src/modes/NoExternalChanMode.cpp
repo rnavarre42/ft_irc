@@ -19,12 +19,12 @@ NoExternalChanMode::~NoExternalChanMode(void)
 
 void	NoExternalChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
-	Channel*	channel = message.getChannel();
-	User*		user  = static_cast<User*>(message.getSender());
+	Channel&	channel = message.getChannel();
+	User&		user  = static_cast<User&>(message.getSender());
 
-	if (access != AChanMode::deny && this->isSetMode(*channel) && !user->isOnChannel(*channel))
+	if (access != AChanMode::deny && this->isSetMode(channel) && !user.isOnChannel(channel))
 	{
-		Numeric::insertField(channel->getName());
+		Numeric::insertField(channel.getName());
 		numeric = ERR_CANNOTSENDTOCHAN;
 		access = AChanMode::deny;
 	}

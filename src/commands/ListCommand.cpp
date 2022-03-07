@@ -54,3 +54,8 @@ bool	ListCommand::_sendServer(Message&)
 {
 	return false;
 }
+
+bool	ListCommand::_sendUnknown(Message&)
+{
+	return false;
+}

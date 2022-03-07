@@ -26,9 +26,9 @@ void	PartCommand::unloadEvents(Server::eventHandler_type&)
 
 void	PartCommand::partChannelEvent(Message& message)
 {
-	Channel*	channel = message.getChannel();
+	Channel&	channel = message.getChannel();
 
-	Console::log(LOG_INFO, message.getSender()->getName() + " ha salido de " + message.getChannel()->getName());
+	Console::log(LOG_INFO, message.getSender().getName() + " ha salido de " + message.getChannel().getName());
 	message.setReceiver(channel);
 	message.setReceiver(message.getSender());
 	message.limitMaxParam(2);
@@ -76,3 +76,7 @@ bool	PartCommand::_sendServer(Message&)
 	return false;
 }
 
+bool	PartCommand::_sendUnknown(Message&)
+{
+	return false;
+}

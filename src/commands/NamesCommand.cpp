@@ -29,8 +29,8 @@ bool	NamesCommand::_recvUser(Message& message)
 	message.setReceiver(message.getSender());
 	if ((channel = this->server.channelAt(target)))
 	{
-		message.setChannel(channel);
-		message.getServer()->names(*channel);
+		message.setChannel(*channel);
+		message.getServer().names(*channel);
 		message.replyNumeric(RPL_NAMREPLY);
 	}
 	Numeric::insertField(target);
@@ -55,6 +55,11 @@ bool	NamesCommand::_sendUser(Message& message)
 }
 
 bool	NamesCommand::_sendServer(Message&)
+{
+	return false;
+}
+
+bool	NamesCommand::_sendUnknown(Message&)
 {
 	return false;
 }

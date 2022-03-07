@@ -18,9 +18,9 @@ ACommand::~ACommand(void)
 
 void ACommand::recv(Message& message)
 {
-	senderUser = dynamic_cast<User*>(message.getSender());
-	senderServer = dynamic_cast<Server*>(message.getSender());
-	senderUnknown = dynamic_cast<Unknown*>(message.getSender());
+	senderUser = dynamic_cast<User*>(&message.getSender());
+	senderServer = dynamic_cast<Server*>(&message.getSender());
+	senderUnknown = dynamic_cast<Unknown*>(&message.getSender());
 
 	if (senderUser && (senderUser->getLevel() & this->levelAccess || senderUser->isOper()))
 	{
@@ -75,11 +75,14 @@ void ACommand::recv(Message& message)
 
 void ACommand::send(Message& message)
 {
-	receiverUser = dynamic_cast<User*>(message.getReceiver());
-	receiverServer = dynamic_cast<Server*>(message.getReceiver());
+	receiverUser = dynamic_cast<User*>(&message.getReceiver());
+	receiverServer = dynamic_cast<Server*>(&message.getReceiver());
+	receiverUnknown = dynamic_cast<Unknown*>(&message.getReceiver());
 
 	if (receiverUser)
 		this->_sendUser(message);
 	else if (receiverServer)
 		this->_sendServer(message);
+	else if (receiverUnknown)
+		this->_sendUnknown(message);
 }

@@ -55,3 +55,8 @@ bool	AwayCommand::_sendServer(Message&)
 {
 	return false;
 }
+
+bool	AwayCommand::_sendUnknown(Message&)
+{
+	return false;
+}

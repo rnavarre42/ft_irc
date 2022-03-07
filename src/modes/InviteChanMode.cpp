@@ -17,15 +17,15 @@ InviteChanMode::~InviteChanMode(void)
 
 void	InviteChanMode::onChanEvent(Access& access, int, Message& message, int& numeric)
 {
-	Channel*	channel = message.getChannel();
+	Channel&	channel = message.getChannel();
 
-	if (this->isSetMode(*channel))
+	if (this->isSetMode(channel))
 	{
 		if ((this->_server.invite().find(message.getSender(), channel)) == this->_server.invite().end())
 		{
 			if (access != AChanMode::deny)
 			{
-				Numeric::insertField(channel->getName());
+				Numeric::insertField(channel.getName());
 				numeric = ERR_INVITEONLYCHAN;
 				access = AChanMode::deny;
 			}
