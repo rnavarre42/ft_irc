@@ -41,12 +41,12 @@ User::User(const Unknown& src)
 
 }
 
-bool	User::isOnChannel(const std::string& channelName)
+bool	User::isOnChannel(const std::string& channelName) const
 {
 	return (this->find(channelName) != this->_channelMap.end());
 }
 
-bool	User::isOnChannel(const Channel& channel)
+bool	User::isOnChannel(const Channel& channel) const
 {
 	return (this->find(channel.getName()) != this->_channelMap.end());
 }
@@ -61,12 +61,12 @@ void	User::unsetMode(AUserMode* userMode)
 	this->_modes &= ~userMode->getFlag();
 }
 
-bool	User::isSetMode(AUserMode* userMode)
+bool	User::isSetMode(AUserMode* userMode) const
 {
 	return this->_modes & userMode->getFlag();
 }
 
-bool	User::isOper(void)
+bool	User::isOper(void) const
 {
 	return this->_oper;
 }
@@ -102,7 +102,7 @@ void	User::erase(Channel* channel)
 	this->_channelMap.erase(strToUpper(channel->getName()));
 }
 
-bool	User::isAway(void)
+bool	User::isAway(void) const
 {
 	return !this->_awayMsg.empty();
 }

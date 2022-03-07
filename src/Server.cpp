@@ -424,7 +424,8 @@ void	Server::removeUserFromChannel(Channel& channel, User& user)
 	}
 }
 
-void	Server::deleteUser(ASender& sender, const std::string& text)
+// text debe ser una copia y no una referencia o puntero. message se elimina y se usa más tarde
+void	Server::deleteUser(ASender& sender, std::string text)
 {
 	User*						user = dynamic_cast<User*>(&sender);
 	Server::userVector_type*	userVector = NULL;

@@ -37,6 +37,7 @@ public:
 	typedef EventHandler<int, Message>				eventHandler_type;
 	typedef std::map<std::string, Channel*>			channelMap_type;
 	typedef channelMap_type::iterator				channelMap_iterator;
+	typedef channelMap_type::const_iterator			channelMap_const_iterator;
 	typedef std::pair<channelMap_iterator, bool>	channelMap_insert;
 	typedef std::pair<std::string, Channel*>		stringChannelPair_type;
 	typedef std::map<std::string, User*>			userMap_type;
@@ -107,7 +108,7 @@ public:
 	void	quit(const std::string& msg);
 	
 	void	createUser(User& user);
-	void	deleteUser(ASender& sender, const std::string& text);
+	void	deleteUser(ASender& sender, std::string text);
 	
 	int	count(void);
 

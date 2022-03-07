@@ -27,12 +27,12 @@ void	PongCommand::registerUserEvent(Message& message)
 {
 	Console::log(LOG_INFO, "El usuario " + message.getSender().getName() + " se ha registrado");	
 	message.limitMaxParam(0);
-	message.setReceiver(*this->senderUser);
+	message.setReceiver(*this->_senderUser);
 	message.insertField("");
 	message.setCmd("MODE");
 	message.send();
 
-	Numeric::insertField(this->senderUser->getMask());
+	Numeric::insertField(this->_senderUser->getMask());
 	message.send(Numeric::builder(message, RPL_WELCOME));
 	
 	Numeric::insertField(message.getSender().getMask());
@@ -40,7 +40,7 @@ void	PongCommand::registerUserEvent(Message& message)
 	
 	message.send(Numeric::builder(message, RPL_CREATED));
 	
-	Numeric::insertField(this->server.getName());
+	Numeric::insertField(this->_server.getName());
 	Numeric::insertField("iO");
 	Numeric::insertField("beiklmnostv");
 	message.send(Numeric::builder(message, RPL_MYINFO));
@@ -54,11 +54,11 @@ void	PongCommand::registerUserEvent(Message& message)
 
 bool	PongCommand::_recvUnknown(Message& message)
 {
-	Unknown&	unknown = *this->senderUnknown;
+	Unknown&	unknown = *this->_senderUnknown;
 
 	if (message[0] == unknown.getPingChallenge())
 	{
-		this->server.setSenderLevel(unknown, LEVEL_REGISTERED);
+		this->_server.setSenderLevel(unknown, LEVEL_REGISTERED);
 		unknown.clearPingChallenge();
 		unknown.setNextTimeout(0);
 	}
@@ -74,7 +74,7 @@ bool	PongCommand::_recvUnknown(Message& message)
 
 bool	PongCommand::_recvUser(Message& message)
 {
-	User&	user = *this->senderUser;
+	User&	user = *this->_senderUser;
 
 	if (message[0] == user.getPingChallenge())
 	{
@@ -85,6 +85,11 @@ bool	PongCommand::_recvUser(Message& message)
 }
 
 bool	PongCommand::_recvServer(Message&)
+{
+	return false;
+}
+
+bool	PongCommand::_sendUnknown(Message&)
 {
 	return false;
 }

@@ -37,14 +37,15 @@ private:
 	ACommand&	operator=(const ACommand& rhs);
 
 protected:
-	Server&		server;
-	int			levelAccess;
-	size_t		minParam;
-	Unknown*	senderUnknown;
-	Server*		senderServer;
-	User*		senderUser;
-	Server*		receiverServer;
-	User*		receiverUser;
+	Server&		_server;
+	int			_levelAccess;
+	size_t		_minParam;
+	Unknown*	_senderUnknown;
+	Server*		_senderServer;
+	User*		_senderUser;
+	Unknown*	_receiverUnknown;
+	Server*		_receiverServer;
+	User*		_receiverUser;
 };
 
 #endif

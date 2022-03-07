@@ -21,7 +21,7 @@ void	ShutdownCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	ShutdownCommand::_recvUser(Message& message)
 {
-	server.quit("Server shutdown: reason (" + message[0] + ")");
+	this->_server.quit("Server shutdown: reason (" + message[0] + ")");
 	return true;
 }
 
@@ -31,6 +31,11 @@ bool	ShutdownCommand::_recvServer(Message&)
 }
 
 bool	ShutdownCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
+bool	ShutdownCommand::_sendUnknown(Message&)
 {
 	return false;
 }

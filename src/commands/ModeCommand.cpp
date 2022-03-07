@@ -69,7 +69,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 		//TODO Mostrar raw 324 (modes) 329 (creation time)
 		return ;
 	// Si el canal no existe...
-	if (!(channel = server.channelAt(target)))
+	if (!(channel = this->_server.channelAt(target)))
 	{
 		Numeric::insertField(target);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
@@ -84,7 +84,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 			set = true;
 		else if (*currentIt == '-')
 			set = false;
-		else if ((chanMode = server.findChanMode(*currentIt)))
+		else if ((chanMode = this->_server.findChanMode(*currentIt)))
 		{
 			if (hasParamMode(set, chanMode) && message.size() <= pos)
 			{
@@ -93,7 +93,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 				message[1].erase(currentIt);
 				--strIt;
 			}
-			else if (!server.checkChannelMode(message, COMMAND_MODE)) // Si el usuario no es operador...
+			else if (!this->_server.checkChannelMode(message, COMMAND_MODE)) // Si el usuario no es operador...
 			{
 				message[1].erase(currentIt);
 				--strIt;
@@ -130,7 +130,7 @@ void	ModeCommand::_checkChanModes(Message& message)
 	if (!message[1].empty())
 	{
 		message.setReceiver(*channel);
-		message.setReceiver(*this->senderUser);
+		message.setReceiver(*this->_senderUser);
 		message.hideReceiver();
 		message.send();
 	}
@@ -143,15 +143,15 @@ void	ModeCommand::_checkChanModes(Message& message)
 
 void	ModeCommand::_checkUserModes(Message& message)
 {
-	Server::userMap_iterator	it = server.userFind(message[0]);
+	Server::userMap_iterator	it = this->_server.userFind(message[0]);
 
-	if (it == this->server.getUserMap().end())
+	if (it == this->_server.getUserMap().end())
 	{
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_NOSUCHNICK);
 		return ;
 	}	  
-	if (*this->senderUser != message[0])
+	if (*this->_senderUser != message[0])
 	{
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_USERSDONTMATCH);
@@ -161,12 +161,12 @@ void	ModeCommand::_checkUserModes(Message& message)
 
 bool	ModeCommand::_recvUser(Message& message)
 {
-	User&	user = *this->senderUser;
+	User&	user = *this->_senderUser;
 
 	(void)user;
 
 	// El mensaje va destinado a un canal
-	if (server.isChannel((message[0])))
+	if (this->_server.isChannel((message[0])))
 		this->_checkChanModes(message);
 	else // El mensaje va destinado al propio cliente.
 		this->_checkUserModes(message);

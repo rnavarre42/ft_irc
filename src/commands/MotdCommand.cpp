@@ -32,24 +32,24 @@ bool	MotdCommand::_recvServer(Message&)
 
 bool	MotdCommand::_sendUser(Message& message)
 {
-	User*			user = this->receiverUser;
+	User*			user = this->_receiverUser;
 	std::ifstream	ifs;
 	std::string		line;
 
 	ifs.open("motd.txt", std::fstream::in);
 	if (ifs.fail())
 	{
-		message.send(Numeric::builder(this->server, *user, ERR_NOMOTD));
+		message.send(Numeric::builder(this->_server, *user, ERR_NOMOTD));
 		return true;
 	}
-	Numeric::insertField(this->server.getMask());
-	user->sendToBuffer(Numeric::builder(this->server, *user, RPL_MOTDSTART));
+	Numeric::insertField(this->_server.getMask());
+	user->sendToBuffer(Numeric::builder(this->_server, *user, RPL_MOTDSTART));
 	while (std::getline(ifs, line))
 	{
 		Numeric::insertField(line);
-		user->sendToBuffer(Numeric::builder(this->server, *user, RPL_MOTD));
+		user->sendToBuffer(Numeric::builder(this->_server, *user, RPL_MOTD));
 	}
-	user->send(Numeric::builder(this->server, *user, RPL_ENDOFMOTD));
+	user->send(Numeric::builder(this->_server, *user, RPL_ENDOFMOTD));
 	ifs.close();
 	return true;
 }

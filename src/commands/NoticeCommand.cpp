@@ -21,7 +21,7 @@ void	NoticeCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	NoticeCommand::_recvUser(Message& message)
 {
-	User*						user = this->senderUser;
+	User&						user = *this->_senderUser;
 	User*						targetUser;
 	std::string					target;
 	Channel*					targetChannel;
@@ -32,9 +32,9 @@ bool	NoticeCommand::_recvUser(Message& message)
 		return true;
 	}
 	target = message[0]; 
-	if (this->server.isChannel(target))
+	if (this->_server.isChannel(target))
 	{
-		if (!(targetChannel = this->server.channelAt(target)))
+		if (!(targetChannel = this->_server.channelAt(target)))
 		{	
 			Numeric::insertField(target);
 			message.replyNumeric(ERR_NOSUCHCHANNEL);
@@ -46,7 +46,7 @@ bool	NoticeCommand::_recvUser(Message& message)
 	}
 	else
 	{
-		if (!(targetUser = this->server.userAt(target)))
+		if (!(targetUser = this->_server.userAt(target)))
 		{
 			Numeric::insertField(target);
 			message.replyNumeric(ERR_NOSUCHNICK);
@@ -56,7 +56,7 @@ bool	NoticeCommand::_recvUser(Message& message)
 		message.setReceiver(*targetUser);
 		message.limitMaxParam(1);
 	}
-	message.setSender(*user);
+	message.setSender(user);
 	message.send();
 	return true;
 }

@@ -33,7 +33,7 @@ bool	KickCommand::_recvUser(Message& message)
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_BADCHANMASK);
 	}
-	else if (!(channel = this->server.channelAt(message[0])))
+	else if (!(channel = this->_server.channelAt(message[0])))
 	{
 		Numeric::insertField(message[0]);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
@@ -48,7 +48,7 @@ bool	KickCommand::_recvUser(Message& message)
 		std::cout << message.toString() << std::endl;
 //		channel = channelIt->second;
 		message.setChannel(*channel);
-		if (!this->server.checkChannelMode(message, COMMAND_KICK))
+		if (!this->_server.checkChannelMode(message, COMMAND_KICK))
 			return true;
 		message.setReceiver(*channel);
 		message.setReceiver(message.getSender());
@@ -58,7 +58,7 @@ bool	KickCommand::_recvUser(Message& message)
 		message.hideReceiver();
 		std::cout << message.toString() << std::endl;
 		message.send();
-		server.removeUserFromChannel(*channel, *userKick);
+		this->_server.removeUserFromChannel(*channel, *userKick);
 	}
 	return true;
 }

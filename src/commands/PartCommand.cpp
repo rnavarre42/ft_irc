@@ -52,7 +52,7 @@ void	PartCommand::notInChannelEvent(Message& message)
 
 bool	PartCommand::_recvUser(Message& message)
 {
-	this->server.delFromChannel(message);
+	this->_server.delFromChannel(message);
 	return true;
 }
 

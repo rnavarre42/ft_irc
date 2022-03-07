@@ -29,13 +29,13 @@ bool	PingCommand::_recvUser(Message& message)
 	std::string	param;
 
 //	message.setReceiver(message.getSender());
-	message.setSender(this->server);
+	message.setSender(this->_server);
 	message.setCmd("PONG");
 	message.hideReceiver();
 	if (message.size() == 1)
 	{
 		message.insertField(message[0]);
-		message[0] = this->server.getName();
+		message[0] = this->_server.getName();
 	}
 	else
 		message.swapField(0, 1);
@@ -45,6 +45,11 @@ bool	PingCommand::_recvUser(Message& message)
 }
 
 bool	PingCommand::_recvServer(Message&)
+{
+	return false;
+}
+
+bool	PingCommand::_sendUnknown(Message&)
 {
 	return false;
 }

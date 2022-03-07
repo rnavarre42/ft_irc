@@ -45,6 +45,11 @@ public:
 		return this->_channelMap.find(strToUpper(value));
 	}
 
+	Server::channelMap_const_iterator	find(const std::string& value) const
+	{
+		return this->_channelMap.find(strToUpper(value));
+	}
+
 	Channel*&	operator[](const std::string& channelName)
 	{
 		return this->_channelMap.at(strToUpper(channelName));
@@ -60,21 +65,21 @@ public:
 		return !operator==(rhs);
 	}
 
-	bool	isOper(void);
+	bool	isOper(void) const;
 	void	enableOper(void);
-	bool	isOnChannel(const Channel& channel);
-	bool	isOnChannel(const std::string& channel);
+	bool	isOnChannel(const Channel& channel) const;
+	bool	isOnChannel(const std::string& channel) const;
 
 	void				setAwayMsg(const std::string& value);
 	const std::string&	getAwayMsg(void) const;
 	const time_t&		getAwayTime(void) const;
 
-	bool	isPingSended(void);
-	bool	isAway(void);
+	bool	isPingSended(void) const;
+	bool	isAway(void) const;
 
 	void	setMode(AUserMode* userMode);
 	void	unsetMode(AUserMode* userMode);
-	bool	isSetMode(AUserMode* userMode);
+	bool	isSetMode(AUserMode* userMode) const;
 
 	void	sendPing(void);
 

@@ -21,7 +21,7 @@ void	PassCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	PassCommand::_recvUnknown(Message& message)
 {
-	Unknown&	unknown = *this->senderUnknown;
+	Unknown&	unknown = *this->_senderUnknown;
 
 	unknown.setPass(message[0]);
 	return true;
@@ -33,6 +33,11 @@ bool	PassCommand::_recvUser(Message&)
 }
 
 bool	PassCommand::_recvServer(Message&)
+{
+	return false;
+}
+
+bool	PassCommand::_sendUnknown(Message&)
 {
 	return false;
 }

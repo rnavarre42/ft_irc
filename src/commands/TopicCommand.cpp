@@ -24,14 +24,14 @@ void	TopicCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	TopicCommand::_recvUser(Message& message)
 {
-	User*						user = this->senderUser;
+	User*						user = this->_senderUser;
 	std::string					target;
 	std::string					newTopic;
 	Channel*					channel;
 	const Channel::TopicInfo*	topicInfo;
 
 	target = message[0];
-	if (!(channel = server.channelAt(target)))
+	if (!(channel = this->_server.channelAt(target)))
 	{
 		Numeric::insertField(target);
 		message.replyNumeric(ERR_NOSUCHCHANNEL);
@@ -61,7 +61,7 @@ bool	TopicCommand::_recvUser(Message& message)
 		}
 		else
 		{
-			if (!server.checkChannelMode(message, COMMAND_TOPIC))
+			if (!this->_server.checkChannelMode(message, COMMAND_TOPIC))
 				return true;
 			if (topicInfo->topic != newTopic)
 			{
@@ -81,6 +81,11 @@ bool	TopicCommand::_recvServer(Message&)
 }
 
 bool	TopicCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
+bool	TopicCommand::_sendUnknown(Message&)
 {
 	return false;
 }

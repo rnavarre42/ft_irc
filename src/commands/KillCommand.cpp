@@ -21,11 +21,11 @@ void	KillCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	KillCommand::_recvUser(Message& message)
 {
-	User*						user = this->senderUser;
+	User*						user = this->_senderUser;
 	Server::userMap_iterator	userKillIt;
 
-	if ((userKillIt = server.userFind(message[0])) != server.getUserMap().end())
-		server.deleteUser(*userKillIt->second, "Killed by " + user->getName() + ": " + message[1]);
+	if ((userKillIt = this->_server.userFind(message[0])) != this->_server.getUserMap().end())
+		this->_server.deleteUser(*userKillIt->second, "Killed by " + user->getName() + ": " + message[1]);
 	else
 	{
 		Numeric::insertField(userKillIt->second->getName());

@@ -21,7 +21,7 @@ void	OperCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	OperCommand::_recvUser(Message& message)
 {
-	User*	user = this->senderUser;
+	User*	user = this->_senderUser;
 
 	if (message[0] != OPERLOGIN)
 		message.replyNumeric(ERR_NOOPERHOST);

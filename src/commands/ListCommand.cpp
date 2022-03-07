@@ -22,8 +22,8 @@ void	ListCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	ListCommand::_recvUser(Message& message)
 {
-	for (Server::channelMap_iterator it = this->server.getChannelMap().begin()
-			;it != this->server.getChannelMap().end()
+	for (Server::channelMap_iterator it = this->_server.getChannelMap().begin()
+			;it != this->_server.getChannelMap().end()
 			;++it)
 	{
 		Numeric::insertField(it->second->getName());

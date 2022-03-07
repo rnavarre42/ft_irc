@@ -78,7 +78,7 @@ void	JoinCommand::errChannelEvent(Message& message)
 
 bool	JoinCommand::_recvUser(Message& message)
 {
-	User*						user = this->senderUser;
+	User*						user = this->_senderUser;
 	Server::channelMap_iterator	currentIt;
 
 	if (message[0] == "0")
@@ -91,12 +91,12 @@ bool	JoinCommand::_recvUser(Message& message)
 			currentIt = it;
 			++it;
 			message[0] = currentIt->second->getName();
-			this->server.delFromChannel(message);
+			this->_server.delFromChannel(message);
 			message.clearReceivers();
 		}
 	}
 	else
-		this->server.addToChannel(message);
+		this->_server.addToChannel(message);
 	return true;
 }
 

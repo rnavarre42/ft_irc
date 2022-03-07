@@ -24,7 +24,7 @@ void	PrivmsgCommand::unloadEvents(Server::eventHandler_type&)
 
 bool	PrivmsgCommand::_recvUser(Message& message)
 {
-	User*			user = this->senderUser;
+	User*			user = this->_senderUser;
 	std::string&	target = message[0];
 	Channel*		channel;
 	User*		 	targetUser;
@@ -34,16 +34,16 @@ bool	PrivmsgCommand::_recvUser(Message& message)
 		message.replyNumeric(ERR_NOTEXTTOSEND);
 		return true;
 	}
-	if (this->server.isChannel(target))
+	if (this->_server.isChannel(target))
 	{
-		if (!(channel = this->server.channelAt(target)))
+		if (!(channel = this->_server.channelAt(target)))
 		{	
 			Numeric::insertField(target);
 			message.replyNumeric(ERR_NOSUCHCHANNEL);
 			return true;
 		}
 		message.setChannel(*channel);
-		if (!server.checkChannelMode(message, COMMAND_PRIVMSG))
+		if (!this->_server.checkChannelMode(message, COMMAND_PRIVMSG))
 			return true;
 		message.setReceiver(*channel);
 		message.limitMaxParam(2);
@@ -51,7 +51,7 @@ bool	PrivmsgCommand::_recvUser(Message& message)
 	}
 	else
 	{
-		if (!(targetUser = this->server.userAt(target)))
+		if (!(targetUser = this->_server.userAt(target)))
 		{
 			Numeric::insertField(target);
 			message.replyNumeric(ERR_NOSUCHNICK);
@@ -72,6 +72,11 @@ bool	PrivmsgCommand::_recvServer(Message&)
 }
 
 bool	PrivmsgCommand::_recvUnknown(Message&)
+{
+	return false;
+}
+
+bool	PrivmsgCommand::_sendUnknown(Message&)
 {
 	return false;
 }

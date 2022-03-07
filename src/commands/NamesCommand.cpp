@@ -27,7 +27,7 @@ bool	NamesCommand::_recvUser(Message& message)
 //	User*						user = this->userSender;
 
 	message.setReceiver(message.getSender());
-	if ((channel = this->server.channelAt(target)))
+	if ((channel = this->_server.channelAt(target)))
 	{
 		message.setChannel(*channel);
 		message.getServer().names(*channel);

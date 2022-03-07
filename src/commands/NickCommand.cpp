@@ -34,19 +34,19 @@ void	NickCommand::nickEvent(Message&)
 
 bool	NickCommand::_recvUser(Message& message)
 {
-	User*									user = this->senderUser;
-	std::string								oldName = user->getName();
+	User&									user = *this->_senderUser;
+	std::string								oldName = user.getName();
 	std::string								newName = message[0];
 	User*									newUser;
-	std::map<std::string, User* >&			userMap = this->server.getUserMap();
+	std::map<std::string, User* >&			userMap = this->_server.getUserMap();
 	Server::userVector_type*				uniqueUsers;
 
-	message.setReceiver(message.getSender());
+//	message.setReceiver(message.getSender());
 	// valida nick
 	if (newName.size() > MAXNICK || !isValidNick(newName))
 	{
 		Numeric::insertField(newName);
-		message.send(Numeric::builder(message, ERR_ERRONEUSNICKNAME));
+		message.replyNumeric(ERR_ERRONEUSNICKNAME);
 		return true;
 	}
 	if (oldName == newName)
@@ -58,14 +58,14 @@ bool	NickCommand::_recvUser(Message& message)
 	{
 		message.hideReceiver();
 		message.send();
-		user->setName(newName);
+		user.setName(newName);
 		return true;
 	}
-	if (!(newUser = this->server.userAt(newName)))
+	if (!(newUser = this->_server.userAt(newName)))
 	{
-		if (oldName.empty() && user->getIdent() != "anonymous")
+		if (oldName.empty() && user.getIdent() != "anonymous")
 		{
-			if (!this->server.getPass().empty() && user->getPass() != this->server.getPass())
+			if (!this->_server.getPass().empty() && user.getPass() != this->_server.getPass())
 			{
 				message.limitMaxParam(1);
 				message.setCmd("QUIT");
@@ -73,35 +73,35 @@ bool	NickCommand::_recvUser(Message& message)
 				message.internal();
 				return true;
 			}
-			user->setLevel(LEVEL_NEGOTIATING);
-			user->setPingChallenge("challenge-string");
-			user->send("PING :" + user->getPingChallenge());
+			user.setLevel(LEVEL_NEGOTIATING);
+			user.setPingChallenge("challenge-string");
+			user.send("PING :" + user.getPingChallenge());
 		}
 		if (!oldName.empty())
 		{
-			for (Server::channelMap_iterator it = user->begin(); it != user->end(); ++it)
+			for (Server::channelMap_iterator it = user.begin(); it != user.end(); ++it)
 			{
 				message.setChannel(*it->second);
-				if (!server.checkChannelMode(message, COMMAND_NICK))
+				if (!this->_server.checkChannelMode(message, COMMAND_NICK))
 					return true;
 			}
 			userMap.erase(strToUpper(oldName));
-			if ((user->getLevel() & (LEVEL_REGISTERED | LEVEL_IRCOPERATOR)))
+			if ((user.getLevel() & (LEVEL_REGISTERED | LEVEL_IRCOPERATOR)))
 			{
-				uniqueUsers = user->getUniqueVector();
+				uniqueUsers = user.getUniqueVector();
 				message.setReceiver(*uniqueUsers);
 				message.hideReceiver();
 				message.send();
 				delete uniqueUsers;
 			}
-			for (Server::channelMap_iterator it = user->begin(); it != user->end(); ++it)
+			for (Server::channelMap_iterator it = user.begin(); it != user.end(); ++it)
 			{
 				it->second->erase(oldName);
-				it->second->insert(newName, user);
+				it->second->insert(newName, &user);
 			}
 		}
-		user->setName(newName);
-		userMap[strToUpper(newName)] = user;
+		user.setName(newName);
+		userMap[strToUpper(newName)] = &user;
 	}
 	else
 	{

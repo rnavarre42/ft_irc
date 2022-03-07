@@ -8,81 +8,86 @@
 #include <iostream>
 
 ACommand::ACommand(Server& server, int levelAccess, int minParam)
-	: server(server)
-	, levelAccess(levelAccess)
-	, minParam(minParam)
+	: _server(server)
+	, _levelAccess(levelAccess)
+	, _minParam(minParam)
 {}
 
 ACommand::~ACommand(void)
 {}
 
+static void	needMoreParams(Message& message)
+{
+	Numeric::insertField(message.getCmd());
+	message.replyNumeric(ERR_NEEDMOREPARAMS);
+}
+
+static void	notImplemented(Message& message)
+{
+	Numeric::insertField(message.getCmd());
+	message.replyNumeric(ERR_NOTIMPLEMENTED);
+}
+
+
+static void	notRegistered(Message& message)
+{
+	Numeric::insertField(message.getCmd());
+	message.replyNumeric(ERR_NOTREGISTERED);
+}
+
+static void	alreadyRegistered(Message& message)
+{
+	Numeric::insertField(message.getCmd());
+	message.replyNumeric(ERR_ALREADYREGISTERED);
+}
+
+static void	noPrivileges(Message& message)
+{
+	Numeric::insertField(message.getCmd());
+	message.replyNumeric(ERR_NOPRIVILEGES);
+}
+
 void ACommand::recv(Message& message)
 {
-	senderUser = dynamic_cast<User*>(&message.getSender());
-	senderServer = dynamic_cast<Server*>(&message.getSender());
-	senderUnknown = dynamic_cast<Unknown*>(&message.getSender());
+	this->_senderUser = dynamic_cast<User*>(&message.getSender());
+	this->_senderServer = dynamic_cast<Server*>(&message.getSender());
+	this->_senderUnknown = dynamic_cast<Unknown*>(&message.getSender());
 
-	if (senderUser && (senderUser->getLevel() & this->levelAccess || senderUser->isOper()))
+	if (message.size() < this->_minParam)
+		needMoreParams(message);
+	else if (this->_senderUser && (this->_senderUser->getLevel() & this->_levelAccess || this->_senderUser->isOper()))
 	{
-		if (message.size() < this->minParam)
-		{
-			Numeric::insertField(message.getCmd());
-			message.replyNumeric(ERR_NEEDMOREPARAMS);
-		}
-		else if (!this->_recvUser(message))
-		{
-			Numeric::insertField(message.getCmd());
-			message.replyNumeric(ERR_NOTIMPLEMENTED);
-		}
+		if (!this->_recvUser(message))
+			notImplemented(message);
 	}
-	else if (senderUnknown && senderUnknown->getLevel() & this->levelAccess)
+	else if (this->_senderUnknown && this->_senderUnknown->getLevel() & this->_levelAccess)
 	{
-		if (message.size() < this->minParam)
-		{
-			Numeric::insertField(message.getCmd());
-			message.replyNumeric(ERR_NEEDMOREPARAMS);
-		}
-		else if (!this->_recvUnknown(message))
-		{
-			Numeric::insertField(message.getCmd());
-			message.replyNumeric(ERR_NOTIMPLEMENTED);
-		}
+		if (!this->_recvUnknown(message))
+			notImplemented(message);
 	}
-	else if (senderServer && senderServer->getLevel() & this->levelAccess)
+	else if (this->_senderServer && this->_senderServer->getLevel() & this->_levelAccess)
 	{
 		if (!this->_recvServer(message))
-		{
-			Numeric::insertField(message.getCmd());
-			message.replyNumeric(ERR_NOTIMPLEMENTED);
-		}
+			notImplemented(message);
 	}
-	else if (this->levelAccess & (LEVEL_REGISTERED | LEVEL_NEGOTIATING))
-	{
-		Numeric::insertField(message.getCmd());
-		message.replyNumeric(ERR_NOTREGISTERED);
-	}
-	else if (this->levelAccess == LEVEL_UNREGISTERED)
-	{
-		Numeric::insertField(message.getCmd());
-		message.replyNumeric(ERR_ALREADYREGISTERED);
-	}
-	else if (this->levelAccess == LEVEL_IRCOPERATOR)
-	{
-		Numeric::insertField(message.getCmd());
-		message.replyNumeric(ERR_NOPRIVILEGES);
-	}
+	else if (this->_levelAccess & (LEVEL_REGISTERED | LEVEL_NEGOTIATING))
+		notRegistered(message);
+	else if (this->_levelAccess == LEVEL_UNREGISTERED)
+		alreadyRegistered(message);
+	else if (this->_levelAccess == LEVEL_IRCOPERATOR)
+		noPrivileges(message);
 }
 
 void ACommand::send(Message& message)
 {
-	receiverUser = dynamic_cast<User*>(&message.getReceiver());
-	receiverServer = dynamic_cast<Server*>(&message.getReceiver());
-	receiverUnknown = dynamic_cast<Unknown*>(&message.getReceiver());
+	this->_receiverUser = dynamic_cast<User*>(&message.getReceiver());
+	this->_receiverServer = dynamic_cast<Server*>(&message.getReceiver());
+	this->_receiverUnknown = dynamic_cast<Unknown*>(&message.getReceiver());
 
-	if (receiverUser)
+	if (this->_receiverUser)
 		this->_sendUser(message);
-	else if (receiverServer)
+	else if (this->_receiverServer)
 		this->_sendServer(message);
-	else if (receiverUnknown)
+	else if (this->_receiverUnknown)
 		this->_sendUnknown(message);
 }

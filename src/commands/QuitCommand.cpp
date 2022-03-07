@@ -40,20 +40,19 @@ void	QuitCommand::quitEvent(Message& message)
 
 bool	QuitCommand::_recvUnknown(Message& message)
 {
-	Unknown&	unknown = *this->senderUnknown;
+	Unknown&	unknown = *this->_senderUnknown;
 
 	if (message.size())
 		message[0].insert(0, "Quit: ");
 	message.setCmd("QUIT");
 	message.setReceiver(unknown);
 	message.internal();
-	std::cout << "que me voy" << std::endl;
 	return true;
 }
 
 bool	QuitCommand::_recvUser(Message& message)
 {
-	User&	user = *this->senderUser;
+	User&	user = *this->_senderUser;
 
 	if (message.size())
 		message[0].insert(0, "Quit: ");
@@ -68,13 +67,23 @@ bool	QuitCommand::_recvServer(Message&)
 	return false;
 }
 
-bool	QuitCommand::_sendUser(Message& message)
+bool	QuitCommand::_sendUnknown(Message& message)
 {
-	User*	user = this->receiverUser;
+	Unknown&	unknown = *this->_receiverUnknown;
 	
 	if (!message.size())
 		message.insertField("Client exited");
-	this->server.deleteUser(*user, message[0]);
+	this->_server.deleteUser(unknown, message[0]);
+	return true;
+}
+
+bool	QuitCommand::_sendUser(Message& message)
+{
+	User&	user = *this->_receiverUser;
+	
+	if (!message.size())
+		message.insertField("Client exited");
+	this->_server.deleteUser(user, message[0]);
 	return true;
 }
 
